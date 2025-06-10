@@ -1,1 +1,1 @@
-[![Build Status](https://ci.consulo.io/job/consulo-ui-designer/badge/icon)](https://ci.consulo.io/job/consulo-ui-designer/)
+[![Build Status](https://ci.consulo.io/buildStatus/icon?job=consulo-swing-ui-designer)](https://ci.consulo.io/job/consulo-swing-ui-designer/)
