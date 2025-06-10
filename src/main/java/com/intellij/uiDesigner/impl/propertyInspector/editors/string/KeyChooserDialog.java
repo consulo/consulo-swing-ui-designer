@@ -25,7 +25,7 @@ import consulo.dataContext.DataManager;
 import consulo.language.editor.CommonDataKeys;
 import consulo.logging.Logger;
 import consulo.project.Project;
-import consulo.ui.Size;
+import consulo.ui.Size2D;
 import consulo.ui.ex.awt.DialogWrapper;
 import consulo.ui.ex.awt.ScrollPaneFactory;
 import consulo.ui.ex.awt.event.DoubleClickListener;
@@ -122,10 +122,10 @@ public final class KeyChooserDialog extends DialogWrapper
 
 		// Calculate width for "Key" columns
 		final Project projectGuess = DataManager.getInstance().getDataContext(parent).getData(CommonDataKeys.PROJECT);
-		final Size size = DimensionService.getInstance().getSize(getDimensionServiceKey(), projectGuess);
+		final Size2D size = DimensionService.getInstance().getSize(getDimensionServiceKey(), projectGuess);
 		final FontMetrics metrics = myTable.getFontMetrics(myTable.getFont());
 		int minWidth = 200;
-		int maxWidth = size != null ? size.getWidth() / 2 : Integer.MAX_VALUE;
+		int maxWidth = size != null ? size.width() / 2 : Integer.MAX_VALUE;
 		if(minWidth > maxWidth)
 		{
 			minWidth = maxWidth;
