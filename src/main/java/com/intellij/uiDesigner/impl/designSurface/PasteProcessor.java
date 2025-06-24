@@ -16,17 +16,15 @@
 
 package com.intellij.uiDesigner.impl.designSurface;
 
-import consulo.project.ui.wm.StatusBar;
-import consulo.undoRedo.CommandProcessor;
-import consulo.project.ui.wm.WindowManager;
 import com.intellij.uiDesigner.impl.FormEditingUtil;
 import com.intellij.uiDesigner.impl.UIDesignerBundle;
-import com.intellij.uiDesigner.lw.IComponent;
 import com.intellij.uiDesigner.impl.radComponents.RadComponent;
 import com.intellij.uiDesigner.impl.radComponents.RadContainer;
+import com.intellij.uiDesigner.lw.IComponent;
+import consulo.undoRedo.CommandProcessor;
 import consulo.util.collection.primitive.ints.IntList;
-
 import jakarta.annotation.Nonnull;
+
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -80,8 +78,6 @@ public class PasteProcessor extends EventProcessor {
     }
     this.myMinRow = myMinRow;
     this.myMinCol = myMinCol;
-
-    StatusBar.Info.set(UIDesignerBundle.message("paste.choose.destination.prompt"), myEditor.getProject());
   }
 
   protected void processKeyEvent(KeyEvent e) {
@@ -149,11 +145,9 @@ public class PasteProcessor extends EventProcessor {
   private void endPaste() {
     myEditor.getMainProcessor().stopCurrentProcessor();
     myEditor.getActiveDecorationLayer().removeFeedback();
-    WindowManager.getInstance().getStatusBar(myEditor.getProject()).setInfo("");
   }
 
   protected boolean cancelOperation() {
-    WindowManager.getInstance().getStatusBar(myEditor.getProject()).setInfo("");
     return true;
   }
 

@@ -61,19 +61,6 @@ public final class QuickFixManagerImpl extends QuickFixManager<ComponentTree>{
     public void valueChanged(final TreeSelectionEvent e) {
       hideIntentionHint();
       updateIntentionHintVisibility();
-
-      ErrorInfo[] errorInfos = getErrorInfos();
-
-
-      final String text;
-      if (errorInfos.length > 0 && errorInfos [0].myDescription != null) {
-        text = errorInfos [0].myDescription;
-      }
-      else {
-        text = "";
-      }
-
-      StatusBar.Info.set(text, myComponent.getProject());
     }
   }
 }
