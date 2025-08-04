@@ -2,10 +2,9 @@ package com.intellij.uiDesigner.impl.binding;
 
 import com.intellij.uiDesigner.impl.GuiFormFileType;
 import consulo.annotation.component.ExtensionImpl;
-import consulo.ide.impl.idea.lang.cacheBuilder.FileWordsScannerProvider;
+import consulo.language.cacheBuilder.FileWordsScannerProvider;
 import consulo.language.cacheBuilder.WordsScanner;
 import consulo.virtualFileSystem.fileType.FileType;
-
 import jakarta.annotation.Nonnull;
 
 /**
