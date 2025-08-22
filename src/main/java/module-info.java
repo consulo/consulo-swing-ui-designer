@@ -53,5 +53,6 @@ open module com.intellij.uiDesigner
     exports consulo.uiDesigner.impl.icon;
     exports consulo.uiDesigner.impl.localize;
 
+
     //opens com.intellij.uiDesigner.impl.actions to consulo.component.impl;
 }
