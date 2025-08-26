@@ -30,6 +30,7 @@ import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiFile;
 import consulo.language.psi.PsiFileFactory;
 import consulo.language.util.IncorrectOperationException;
+import consulo.localize.LocalizeValue;
 import consulo.logging.Logger;
 import consulo.platform.base.icon.PlatformIconGroup;
 import consulo.project.Project;
@@ -38,6 +39,7 @@ import consulo.ui.ex.awt.DialogWrapper;
 import consulo.ui.ex.awt.TemplateKindCombo;
 import consulo.ui.ex.awt.event.DocumentAdapter;
 import consulo.ui.ex.awtUnsafe.TargetAWT;
+import consulo.uiDesigner.impl.localize.UIDesignerLocalize;
 import jakarta.annotation.Nonnull;
 
 import javax.swing.*;
@@ -49,183 +51,163 @@ import java.util.function.Consumer;
 /**
  * @author yole
  */
-public class CreateFormAction extends AbstractCreateFormAction
-{
-	private static final Logger LOG = Logger.getInstance(CreateFormAction.class);
+public class CreateFormAction extends AbstractCreateFormAction {
+    private static final Logger LOG = Logger.getInstance(CreateFormAction.class);
 
-	private String myLastClassName = null;
-	private String myLastLayoutManager = null;
+    private String myLastClassName = null;
+    private String myLastLayoutManager = null;
 
-	public CreateFormAction()
-	{
-		super(UIDesignerBundle.message("action.gui.form.text"), UIDesignerBundle.message("action.gui.form.description"), AllIcons.FileTypes.UiForm);
-	}
+    public CreateFormAction() {
+        super(UIDesignerLocalize.actionGuiFormText(), UIDesignerLocalize.actionGuiFormDescription(), AllIcons.FileTypes.UiForm);
+    }
 
-	@Override
-	@RequiredUIAccess
-	protected void invokeDialog(Project project, PsiDirectory directory, @Nonnull Consumer<PsiElement[]> consumer)
-	{
-		final MyInputValidator validator = new MyInputValidator(project, directory);
+    @Override
+    @RequiredUIAccess
+    protected void invokeDialog(Project project, PsiDirectory directory, @Nonnull Consumer<PsiElement[]> consumer) {
+        final MyInputValidator validator = new MyInputValidator(project, directory);
 
-		final DialogWrapper dialog = new MyDialog(project, validator);
+        final DialogWrapper dialog = new MyDialog(project, validator);
 
-		dialog.showAsync().doWhenDone(() -> consumer.accept(validator.getCreatedElements()));
-	}
+        dialog.showAsync().doWhenDone(() -> consumer.accept(validator.getCreatedElements()));
+    }
 
-	@RequiredUIAccess
-	@Nonnull
-	protected PsiElement[] create(String newName, PsiDirectory directory) throws Exception
-	{
-		PsiElement createdFile;
-		PsiClass newClass = null;
-		try
-		{
-			final PsiJavaPackage aPackage = JavaDirectoryService.getInstance().getPackage(directory);
-			assert aPackage != null;
-			final String packageName = aPackage.getQualifiedName();
-			String fqClassName = null;
-			if(myLastClassName != null)
-			{
-				fqClassName = packageName.length() == 0 ? myLastClassName : packageName + "." + myLastClassName;
-			}
+    @Override
+    @RequiredUIAccess
+    @Nonnull
+    protected PsiElement[] create(String newName, PsiDirectory directory) throws Exception {
+        PsiElement createdFile;
+        PsiClass newClass = null;
+        try {
+            final PsiJavaPackage aPackage = JavaDirectoryService.getInstance().getPackage(directory);
+            assert aPackage != null;
+            final String packageName = aPackage.getQualifiedName();
+            String fqClassName = null;
+            if (myLastClassName != null) {
+                fqClassName = packageName.length() == 0 ? myLastClassName : packageName + "." + myLastClassName;
+            }
 
-			final String formBody = createFormBody(fqClassName, "/com/intellij/uiDesigner/impl/NewForm.xml",
-					myLastLayoutManager);
-			final String fileName = newName + ".form";
-			final PsiFile formFile = PsiFileFactory.getInstance(directory.getProject())
-					.createFileFromText(fileName, GuiFormFileType.INSTANCE, formBody);
-			createdFile = WriteAction.compute(() -> directory.add(formFile));
+            final String formBody = createFormBody(fqClassName, "/com/intellij/uiDesigner/impl/NewForm.xml",
+                myLastLayoutManager);
+            final String fileName = newName + ".form";
+            final PsiFile formFile = PsiFileFactory.getInstance(directory.getProject())
+                .createFileFromText(fileName, GuiFormFileType.INSTANCE, formBody);
+            createdFile = WriteAction.compute(() -> directory.add(formFile));
 
-			if(myLastClassName != null)
-			{
-				newClass = JavaDirectoryService.getInstance().createClass(directory, myLastClassName);
-			}
-		}
-		catch(IncorrectOperationException e)
-		{
-			throw e;
-		}
-		catch(Exception e)
-		{
-			LOG.error(e);
-			return PsiElement.EMPTY_ARRAY;
-		}
+            if (myLastClassName != null) {
+                newClass = JavaDirectoryService.getInstance().createClass(directory, myLastClassName);
+            }
+        }
+        catch (IncorrectOperationException e) {
+            throw e;
+        }
+        catch (Exception e) {
+            LOG.error(e);
+            return PsiElement.EMPTY_ARRAY;
+        }
 
-		if(newClass != null)
-		{
-			return new PsiElement[]{
-					newClass.getContainingFile(),
-					createdFile
-			};
-		}
-		return new PsiElement[]{createdFile};
-	}
+        if (newClass != null) {
+            return new PsiElement[]{
+                newClass.getContainingFile(),
+                createdFile
+            };
+        }
+        return new PsiElement[]{createdFile};
+    }
 
-	protected String getErrorTitle()
-	{
-		return UIDesignerBundle.message("error.cannot.create.form");
-	}
+    @Override
+    protected LocalizeValue getErrorTitle() {
+        return UIDesignerLocalize.errorCannotCreateForm();
+    }
 
-	protected String getCommandName()
-	{
-		return UIDesignerBundle.message("command.create.form");
-	}
+    @Override
+    protected LocalizeValue getCommandName() {
+        return UIDesignerLocalize.commandCreateForm();
+    }
 
-	private class MyDialog extends DialogWrapper
-	{
-		private JPanel myTopPanel;
-		private JTextField myFormNameTextField;
-		private JCheckBox myCreateBoundClassCheckbox;
-		private JTextField myClassNameTextField;
-		private TemplateKindCombo myBaseLayoutManagerCombo;
-		private JLabel myUpDownHintForm;
-		private boolean myAdjusting = false;
-		private boolean myNeedAdjust = true;
+    private class MyDialog extends DialogWrapper {
+        private JPanel myTopPanel;
+        private JTextField myFormNameTextField;
+        private JCheckBox myCreateBoundClassCheckbox;
+        private JTextField myClassNameTextField;
+        private TemplateKindCombo myBaseLayoutManagerCombo;
+        private JLabel myUpDownHintForm;
+        private boolean myAdjusting = false;
+        private boolean myNeedAdjust = true;
 
-		private final Project myProject;
-		private final MyInputValidator myValidator;
+        private final Project myProject;
+        private final MyInputValidator myValidator;
 
-		public MyDialog(final Project project,
-						final MyInputValidator validator)
-		{
-			super(project, true);
-			myProject = project;
-			myValidator = validator;
-			myBaseLayoutManagerCombo.registerUpDownHint(myFormNameTextField);
-			myUpDownHintForm.setIcon(TargetAWT.to(PlatformIconGroup.ideUpdown()));
-			init();
-			setTitle(UIDesignerBundle.message("title.new.gui.form"));
-			setOKActionEnabled(false);
+        public MyDialog(final Project project,
+                        final MyInputValidator validator) {
+            super(project, true);
+            myProject = project;
+            myValidator = validator;
+            myBaseLayoutManagerCombo.registerUpDownHint(myFormNameTextField);
+            myUpDownHintForm.setIcon(TargetAWT.to(PlatformIconGroup.ideUpdown()));
+            init();
+            setTitle(UIDesignerBundle.message("title.new.gui.form"));
+            setOKActionEnabled(false);
 
-			myCreateBoundClassCheckbox.addChangeListener(new ChangeListener()
-			{
-				public void stateChanged(ChangeEvent e)
-				{
-					myClassNameTextField.setEnabled(myCreateBoundClassCheckbox.isSelected());
-				}
-			});
+            myCreateBoundClassCheckbox.addChangeListener(new ChangeListener() {
+                @Override
+                public void stateChanged(ChangeEvent e) {
+                    myClassNameTextField.setEnabled(myCreateBoundClassCheckbox.isSelected());
+                }
+            });
 
-			myFormNameTextField.getDocument().addDocumentListener(new DocumentAdapter()
-			{
-				protected void textChanged(DocumentEvent e)
-				{
-					setOKActionEnabled(myFormNameTextField.getText().length() > 0);
-					if(myNeedAdjust)
-					{
-						myAdjusting = true;
-						myClassNameTextField.setText(myFormNameTextField.getText());
-						myAdjusting = false;
-					}
-				}
-			});
+            myFormNameTextField.getDocument().addDocumentListener(new DocumentAdapter() {
+                @Override
+                protected void textChanged(DocumentEvent e) {
+                    setOKActionEnabled(myFormNameTextField.getText().length() > 0);
+                    if (myNeedAdjust) {
+                        myAdjusting = true;
+                        myClassNameTextField.setText(myFormNameTextField.getText());
+                        myAdjusting = false;
+                    }
+                }
+            });
 
-			myClassNameTextField.getDocument().addDocumentListener(new DocumentAdapter()
-			{
-				protected void textChanged(DocumentEvent e)
-				{
-					if(!myAdjusting)
-					{
-						myNeedAdjust = false;
-					}
-				}
-			});
+            myClassNameTextField.getDocument().addDocumentListener(new DocumentAdapter() {
+                @Override
+                protected void textChanged(DocumentEvent e) {
+                    if (!myAdjusting) {
+                        myNeedAdjust = false;
+                    }
+                }
+            });
 
-			for(String layoutName : LayoutManagerRegistry.getNonDeprecatedLayoutManagerNames())
-			{
-				String displayName = LayoutManagerRegistry.getLayoutManagerDisplayName(layoutName);
-				myBaseLayoutManagerCombo.addItem(displayName, null, layoutName);
-			}
-			myBaseLayoutManagerCombo.setSelectedName(GuiDesignerConfiguration.getInstance(project).DEFAULT_LAYOUT_MANAGER);
-		}
+            for (String layoutName : LayoutManagerRegistry.getNonDeprecatedLayoutManagerNames()) {
+                String displayName = LayoutManagerRegistry.getLayoutManagerDisplayName(layoutName);
+                myBaseLayoutManagerCombo.addItem(displayName, null, layoutName);
+            }
+            myBaseLayoutManagerCombo.setSelectedName(GuiDesignerConfiguration.getInstance(project).DEFAULT_LAYOUT_MANAGER);
+        }
 
-		protected JComponent createCenterPanel()
-		{
-			return myTopPanel;
-		}
+        @Override
+        protected JComponent createCenterPanel() {
+            return myTopPanel;
+        }
 
-		protected void doOKAction()
-		{
-			if(myCreateBoundClassCheckbox.isSelected())
-			{
-				myLastClassName = myClassNameTextField.getText();
-			}
-			else
-			{
-				myLastClassName = null;
-			}
-			myLastLayoutManager = myBaseLayoutManagerCombo.getSelectedName();
-			GuiDesignerConfiguration.getInstance(myProject).DEFAULT_LAYOUT_MANAGER = myLastLayoutManager;
-			final String inputString = myFormNameTextField.getText().trim();
-			if(myValidator.checkInput(inputString) && myValidator.canClose(inputString))
-			{
-				close(OK_EXIT_CODE);
-			}
-			close(OK_EXIT_CODE);
-		}
+        @Override
+        protected void doOKAction() {
+            if (myCreateBoundClassCheckbox.isSelected()) {
+                myLastClassName = myClassNameTextField.getText();
+            }
+            else {
+                myLastClassName = null;
+            }
+            myLastLayoutManager = myBaseLayoutManagerCombo.getSelectedName();
+            GuiDesignerConfiguration.getInstance(myProject).DEFAULT_LAYOUT_MANAGER = myLastLayoutManager;
+            final String inputString = myFormNameTextField.getText().trim();
+            if (myValidator.checkInput(inputString) && myValidator.canClose(inputString)) {
+                close(OK_EXIT_CODE);
+            }
+            close(OK_EXIT_CODE);
+        }
 
-		public JComponent getPreferredFocusedComponent()
-		{
-			return myFormNameTextField;
-		}
-	}
+        @Override
+        public JComponent getPreferredFocusedComponent() {
+            return myFormNameTextField;
+        }
+    }
 }
