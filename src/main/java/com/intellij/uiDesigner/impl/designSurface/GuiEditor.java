@@ -55,7 +55,6 @@ import consulo.document.event.DocumentAdapter;
 import consulo.document.event.DocumentEvent;
 import consulo.ide.impl.idea.designer.DesignerEditorPanelFacade;
 import consulo.ide.impl.idea.designer.LightFillLayout;
-import consulo.ide.impl.idea.openapi.ui.ThreeComponentsSplitter;
 import consulo.language.editor.DaemonCodeAnalyzer;
 import consulo.language.editor.PlatformDataKeys;
 import consulo.language.editor.highlight.LexerEditorHighlighter;
@@ -75,6 +74,7 @@ import consulo.ui.ex.action.*;
 import consulo.ui.ex.awt.DialogBuilder;
 import consulo.ui.ex.awt.JBLayeredPane;
 import consulo.ui.ex.awt.ScrollPaneFactory;
+import consulo.ui.ex.awt.ThreeComponentsSplitter;
 import consulo.ui.ex.awt.util.Alarm;
 import consulo.ui.ex.awtUnsafe.TargetAWT;
 import consulo.undoRedo.CommandProcessor;
@@ -85,10 +85,10 @@ import consulo.util.lang.ref.Ref;
 import consulo.virtualFileSystem.ReadonlyStatusHandler;
 import consulo.virtualFileSystem.VirtualFile;
 import consulo.xml.ide.highlighter.XmlFileHighlighter;
-import org.jetbrains.annotations.NonNls;
-
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
+import org.jetbrains.annotations.NonNls;
+
 import javax.swing.*;
 import javax.swing.event.EventListenerList;
 import javax.swing.event.ListSelectionEvent;
