@@ -15,7 +15,7 @@
  */
 package com.intellij.uiDesigner.impl.quickFixes;
 
-import consulo.ide.impl.idea.openapi.wm.impl.VisibilityWatcher;
+import consulo.ui.ex.awt.VisibilityWatcher;
 
 import javax.swing.*;
 
