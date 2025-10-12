@@ -17,52 +17,45 @@
 package com.intellij.uiDesigner.impl.inspections;
 
 import com.intellij.uiDesigner.impl.FormEditingUtil;
-import com.intellij.uiDesigner.impl.UIDesignerBundle;
 import com.intellij.uiDesigner.lw.IComponent;
 import com.intellij.uiDesigner.lw.IRootContainer;
 import consulo.annotation.component.ExtensionImpl;
+import consulo.localize.LocalizeValue;
 import consulo.module.Module;
-
+import consulo.uiDesigner.impl.localize.UIDesignerLocalize;
 import jakarta.annotation.Nonnull;
 
 /**
  * @author yole
  */
 @ExtensionImpl
-public class OneButtonGroupInspection extends BaseFormInspection
-{
-	public OneButtonGroupInspection()
-	{
-		super("OneButtonGroup");
-	}
+public class OneButtonGroupInspection extends BaseFormInspection {
+    public OneButtonGroupInspection() {
+        super("OneButtonGroup");
+    }
 
-	@Nonnull
-	@Override
-	public String getDisplayName()
-	{
-		return UIDesignerBundle.message("inspection.one.button.group");
-	}
+    @Nonnull
+    @Override
+    public LocalizeValue getDisplayName() {
+        return UIDesignerLocalize.inspectionOneButtonGroup();
+    }
 
-	protected void checkComponentProperties(Module module, IComponent component, FormErrorCollector collector)
-	{
-		final IRootContainer root = FormEditingUtil.getRoot(component);
-		if(root == null)
-		{
-			return;
-		}
-		String groupName = root.getButtonGroupName(component);
-		if(groupName != null)
-		{
-			final String[] sameGroupComponents = root.getButtonGroupComponentIds(groupName);
-			for(String id : sameGroupComponents)
-			{
-				final IComponent otherComponent = FormEditingUtil.findComponent(root, id);
-				if(otherComponent != null && otherComponent != component)
-				{
-					return;
-				}
-			}
-			collector.addError(getID(), component, null, UIDesignerBundle.message("inspection.one.button.group.error"));
-		}
-	}
+    @Override
+    protected void checkComponentProperties(Module module, IComponent component, FormErrorCollector collector) {
+        final IRootContainer root = FormEditingUtil.getRoot(component);
+        if (root == null) {
+            return;
+        }
+        String groupName = root.getButtonGroupName(component);
+        if (groupName != null) {
+            final String[] sameGroupComponents = root.getButtonGroupComponentIds(groupName);
+            for (String id : sameGroupComponents) {
+                final IComponent otherComponent = FormEditingUtil.findComponent(root, id);
+                if (otherComponent != null && otherComponent != component) {
+                    return;
+                }
+            }
+            collector.addError(getID(), component, null, UIDesignerLocalize.inspectionOneButtonGroupError().get());
+        }
+    }
 }

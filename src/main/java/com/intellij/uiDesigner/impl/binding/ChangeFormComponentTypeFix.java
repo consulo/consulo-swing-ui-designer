@@ -20,84 +20,66 @@ import com.intellij.java.language.psi.PsiClassType;
 import com.intellij.java.language.psi.PsiType;
 import com.intellij.java.language.psi.util.ClassUtil;
 import consulo.codeEditor.Editor;
-import consulo.java.analysis.impl.JavaQuickFixBundle;
+import consulo.java.analysis.impl.localize.JavaQuickFixLocalize;
 import consulo.language.editor.intention.SyntheticIntentionAction;
 import consulo.language.plain.psi.PsiPlainTextFile;
 import consulo.language.psi.PsiFile;
 import consulo.language.util.IncorrectOperationException;
+import consulo.localize.LocalizeValue;
 import consulo.project.Project;
 import consulo.undoRedo.CommandProcessor;
 import consulo.virtualFileSystem.ReadonlyStatusHandler;
-
 import jakarta.annotation.Nonnull;
 
 /**
  * @author Eugene Zhuravlev
  * Date: Jun 15, 2005
  */
-public class ChangeFormComponentTypeFix implements SyntheticIntentionAction
-{
-	private final PsiPlainTextFile myFormFile;
-	private final String myFieldName;
-	private final String myComponentTypeToSet;
+public class ChangeFormComponentTypeFix implements SyntheticIntentionAction {
+    private final PsiPlainTextFile myFormFile;
+    private final String myFieldName;
+    private final String myComponentTypeToSet;
 
-	public ChangeFormComponentTypeFix(PsiPlainTextFile formFile, String fieldName, PsiType componentTypeToSet)
-	{
-		myFormFile = formFile;
-		myFieldName = fieldName;
-		if(componentTypeToSet instanceof PsiClassType)
-		{
-			PsiClass psiClass = ((PsiClassType) componentTypeToSet).resolve();
-			if(psiClass != null)
-			{
-				myComponentTypeToSet = ClassUtil.getJVMClassName(psiClass);
-			}
-			else
-			{
-				myComponentTypeToSet = ((PsiClassType) componentTypeToSet).rawType().getCanonicalText();
-			}
-		}
-		else
-		{
-			myComponentTypeToSet = componentTypeToSet.getCanonicalText();
-		}
-	}
+    public ChangeFormComponentTypeFix(PsiPlainTextFile formFile, String fieldName, PsiType componentTypeToSet) {
+        myFormFile = formFile;
+        myFieldName = fieldName;
+        if (componentTypeToSet instanceof PsiClassType) {
+            PsiClass psiClass = ((PsiClassType) componentTypeToSet).resolve();
+            if (psiClass != null) {
+                myComponentTypeToSet = ClassUtil.getJVMClassName(psiClass);
+            }
+            else {
+                myComponentTypeToSet = ((PsiClassType) componentTypeToSet).rawType().getCanonicalText();
+            }
+        }
+        else {
+            myComponentTypeToSet = componentTypeToSet.getCanonicalText();
+        }
+    }
 
-	@Nonnull
-	public String getText()
-	{
-		return JavaQuickFixBundle.message("uidesigner.change.gui.component.type");
-	}
+    @Override
+    @Nonnull
+    public LocalizeValue getText() {
+        return JavaQuickFixLocalize.uidesignerChangeGuiComponentType();
+    }
 
-	@Nonnull
-	public String getFamilyName()
-	{
-		return getText();
-	}
+    public boolean isAvailable(@Nonnull Project project, Editor editor, PsiFile file) {
+        return true;
+    }
 
-	public boolean isAvailable(@Nonnull Project project, Editor editor, PsiFile file)
-	{
-		return true;
-	}
+    public void invoke(@Nonnull Project project, Editor editor, PsiFile file) throws IncorrectOperationException {
+        CommandProcessor.getInstance().executeCommand(file.getProject(), new Runnable() {
+            public void run() {
+                final ReadonlyStatusHandler readOnlyHandler = ReadonlyStatusHandler.getInstance(myFormFile.getProject());
+                final ReadonlyStatusHandler.OperationStatus status = readOnlyHandler.ensureFilesWritable(myFormFile.getVirtualFile());
+                if (!status.hasReadonlyFiles()) {
+                    FormReferenceProvider.setGUIComponentType(myFormFile, myFieldName, myComponentTypeToSet);
+                }
+            }
+        }, getText().get(), null);
+    }
 
-	public void invoke(@Nonnull Project project, Editor editor, PsiFile file) throws IncorrectOperationException
-	{
-		CommandProcessor.getInstance().executeCommand(file.getProject(), new Runnable()
-		{
-			public void run()
-			{
-				final ReadonlyStatusHandler readOnlyHandler = ReadonlyStatusHandler.getInstance(myFormFile.getProject());
-				final ReadonlyStatusHandler.OperationStatus status = readOnlyHandler.ensureFilesWritable(myFormFile.getVirtualFile());
-				if(!status.hasReadonlyFiles())
-				{
-					FormReferenceProvider.setGUIComponentType(myFormFile, myFieldName, myComponentTypeToSet);
-				}
-			}
-		}, getText(), null);
-	}
-
-	public boolean startInWriteAction()
-	{
-		return true;
-	}
+    public boolean startInWriteAction() {
+        return true;
+    }
 }

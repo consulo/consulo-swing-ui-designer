@@ -15,26 +15,27 @@
  */
 package com.intellij.uiDesigner.impl.inspections;
 
+import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.impl.FormEditingUtil;
 import com.intellij.uiDesigner.impl.SwingProperties;
-import com.intellij.uiDesigner.impl.UIDesignerBundle;
-import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.impl.designSurface.GuiEditor;
-import com.intellij.uiDesigner.lw.IComponent;
-import com.intellij.uiDesigner.lw.IProperty;
 import com.intellij.uiDesigner.impl.palette.ComponentItem;
 import com.intellij.uiDesigner.impl.palette.Palette;
 import com.intellij.uiDesigner.impl.propertyInspector.IntrospectedProperty;
 import com.intellij.uiDesigner.impl.propertyInspector.properties.IntroComponentProperty;
 import com.intellij.uiDesigner.impl.quickFixes.QuickFix;
 import com.intellij.uiDesigner.impl.radComponents.RadComponent;
+import com.intellij.uiDesigner.lw.IComponent;
+import com.intellij.uiDesigner.lw.IProperty;
 import consulo.annotation.component.ExtensionImpl;
+import consulo.localize.LocalizeValue;
 import consulo.module.Module;
+import consulo.uiDesigner.impl.localize.UIDesignerLocalize;
 import consulo.undoRedo.CommandProcessor;
 import consulo.util.lang.StringUtil;
 import consulo.util.lang.ref.Ref;
-
 import jakarta.annotation.Nonnull;
+
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,8 +50,8 @@ public class NoLabelForInspection extends BaseFormInspection {
   }
 
   @Nonnull
-  @Override public String getDisplayName() {
-    return UIDesignerBundle.message("inspection.no.label.for");
+  @Override public LocalizeValue getDisplayName() {
+    return UIDesignerLocalize.inspectionNoLabelFor();
   }
 
   protected void checkComponentProperties(final Module module, final IComponent component, FormErrorCollector collector) {
@@ -105,7 +106,7 @@ public class NoLabelForInspection extends BaseFormInspection {
             }
           };
         }
-        collector.addError(getID(), component, null, UIDesignerBundle.message("inspection.no.label.for.error"), quickFixProviders);
+        collector.addError(getID(), component, null, UIDesignerLocalize.inspectionNoLabelForError().get(), quickFixProviders);
       }
     }
   }
@@ -114,8 +115,7 @@ public class NoLabelForInspection extends BaseFormInspection {
     private final RadComponent myLabel;
 
     public MyQuickFix(final GuiEditor editor, RadComponent component, RadComponent label) {
-      super(editor, UIDesignerBundle.message("inspection.no.label.for.quickfix",
-                                             label.getComponentTitle()), component);
+      super(editor, UIDesignerLocalize.inspectionNoLabelForQuickfix(label.getComponentTitle()).get(), component);
       myLabel = label;
     }
 
@@ -140,7 +140,7 @@ public class NoLabelForInspection extends BaseFormInspection {
         }
       };
       CommandProcessor.getInstance().executeCommand(myEditor.getProject(), runnable,
-                                                    UIDesignerBundle.message("inspection.no.label.for.command"), null);
+          UIDesignerLocalize.inspectionNoLabelForCommand().get(), null);
     }
   }
 }

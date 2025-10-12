@@ -17,7 +17,10 @@ package com.intellij.uiDesigner.impl.inspections;
 
 import com.intellij.java.analysis.impl.codeInspection.BaseJavaLocalInspectionTool;
 import com.intellij.uiDesigner.compiler.Utils;
-import com.intellij.uiDesigner.impl.*;
+import com.intellij.uiDesigner.impl.ErrorInfo;
+import com.intellij.uiDesigner.impl.FormEditingUtil;
+import com.intellij.uiDesigner.impl.GuiFormFileType;
+import com.intellij.uiDesigner.impl.PsiPropertiesProvider;
 import com.intellij.uiDesigner.impl.designSurface.GuiEditor;
 import com.intellij.uiDesigner.impl.radComponents.RadComponent;
 import com.intellij.uiDesigner.lw.IComponent;
@@ -31,13 +34,13 @@ import consulo.language.editor.rawHighlight.HighlightDisplayKey;
 import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiFile;
 import consulo.language.util.ModuleUtilCore;
+import consulo.localize.LocalizeValue;
 import consulo.module.Module;
+import consulo.uiDesigner.impl.localize.UIDesignerLocalize;
 import consulo.virtualFileSystem.VirtualFile;
-import org.jetbrains.annotations.Nls;
-import org.jetbrains.annotations.NonNls;
-
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
+import org.jetbrains.annotations.NonNls;
 
 /**
  * @author yole
@@ -49,14 +52,14 @@ public abstract class BaseFormInspection extends BaseJavaLocalInspectionTool imp
     myInspectionKey = inspectionKey;
   }
 
-  @Nls @Nonnull
-  public String getDisplayName() {
-    return "";
+  @Nonnull
+  public LocalizeValue getDisplayName() {
+    return LocalizeValue.of();
   }
 
   @Nonnull
-  public String getGroupDisplayName() {
-    return UIDesignerBundle.message("form.inspections.group");
+  public LocalizeValue getGroupDisplayName() {
+    return UIDesignerLocalize.formInspectionsGroup();
   }
 
   @Nonnull

@@ -22,76 +22,65 @@ import consulo.application.ApplicationManager;
 import consulo.application.CommonBundle;
 import consulo.codeEditor.Editor;
 import consulo.java.analysis.impl.JavaQuickFixBundle;
+import consulo.java.analysis.impl.localize.JavaQuickFixLocalize;
 import consulo.language.editor.intention.SyntheticIntentionAction;
 import consulo.language.psi.PsiFile;
 import consulo.language.psi.PsiManager;
 import consulo.language.util.IncorrectOperationException;
+import consulo.localize.LocalizeValue;
 import consulo.project.Project;
 import consulo.ui.ex.awt.Messages;
 import consulo.undoRedo.CommandProcessor;
-
 import jakarta.annotation.Nonnull;
 
 /**
  * @author Eugene Zhuravlev
  * Date: Jun 15, 2005
  */
-public class ChangeBoundFieldTypeFix implements SyntheticIntentionAction
-{
-	private final PsiField myField;
-	private final PsiType myTypeToSet;
+public class ChangeBoundFieldTypeFix implements SyntheticIntentionAction {
+    private final PsiField myField;
+    private final PsiType myTypeToSet;
 
-	public ChangeBoundFieldTypeFix(PsiField field, PsiType typeToSet)
-	{
-		myField = field;
-		myTypeToSet = typeToSet;
-	}
+    public ChangeBoundFieldTypeFix(PsiField field, PsiType typeToSet) {
+        myField = field;
+        myTypeToSet = typeToSet;
+    }
 
-	@Override
-	@Nonnull
-	public String getText()
-	{
-		return JavaQuickFixBundle.message("uidesigner.change.bound.field.type");
-	}
+    @Override
+    @Nonnull
+    public LocalizeValue getText() {
+        return JavaQuickFixLocalize.uidesignerChangeBoundFieldType();
+    }
 
-	@Override
-	public boolean isAvailable(@Nonnull Project project, Editor editor, PsiFile file)
-	{
-		return true;
-	}
+    @Override
+    public boolean isAvailable(@Nonnull Project project, Editor editor, PsiFile file) {
+        return true;
+    }
 
-	@Override
-	public void invoke(@Nonnull Project project, Editor editor, PsiFile file) throws IncorrectOperationException
-	{
-		CommandProcessor.getInstance().executeCommand(myField.getProject(), new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				try
-				{
-					final PsiManager manager = myField.getManager();
-					myField.getTypeElement().replace(JavaPsiFacade.getInstance(manager.getProject()).getElementFactory().createTypeElement(myTypeToSet));
-				}
-				catch(final consulo.language.util.IncorrectOperationException e)
-				{
-					ApplicationManager.getApplication().invokeLater(new Runnable()
-					{
-						@Override
-						public void run()
-						{
-							Messages.showErrorDialog(myField.getProject(), JavaQuickFixBundle.message("cannot.change.field.exception", myField.getName(), e.getLocalizedMessage()),
-									CommonBundle.getErrorTitle());
-						}
-					});
-				}
-			}
-		}, getText(), null);
-	}
+    @Override
+    public void invoke(@Nonnull Project project, Editor editor, PsiFile file) throws IncorrectOperationException {
+        CommandProcessor.getInstance().executeCommand(myField.getProject(), new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final PsiManager manager = myField.getManager();
+                    myField.getTypeElement().replace(JavaPsiFacade.getInstance(manager.getProject()).getElementFactory().createTypeElement(myTypeToSet));
+                }
+                catch (final consulo.language.util.IncorrectOperationException e) {
+                    ApplicationManager.getApplication().invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            Messages.showErrorDialog(myField.getProject(), JavaQuickFixBundle.message("cannot.change.field.exception", myField.getName(), e.getLocalizedMessage()),
+                                CommonBundle.getErrorTitle());
+                        }
+                    });
+                }
+            }
+        }, getText().get(), null);
+    }
 
-	@Override
-	public boolean startInWriteAction()
-	{
-		return true;
-	}
+    @Override
+    public boolean startInWriteAction() {
+        return true;
+    }
 }

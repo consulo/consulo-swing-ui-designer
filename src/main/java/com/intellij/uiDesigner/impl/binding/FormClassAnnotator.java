@@ -19,7 +19,6 @@ import com.intellij.java.language.psi.PsiClass;
 import com.intellij.java.language.psi.PsiExpression;
 import com.intellij.java.language.psi.PsiField;
 import com.intellij.java.language.psi.PsiType;
-import com.intellij.uiDesigner.impl.UIDesignerBundle;
 import consulo.codeEditor.Editor;
 import consulo.language.editor.FileModificationService;
 import consulo.language.editor.annotation.Annotation;
@@ -30,11 +29,13 @@ import consulo.language.plain.psi.PsiPlainTextFile;
 import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiFile;
 import consulo.language.util.IncorrectOperationException;
+import consulo.localize.LocalizeValue;
 import consulo.logging.Logger;
 import consulo.project.Project;
-import consulo.ui.ex.UIBundle;
-
+import consulo.ui.ex.localize.UILocalize;
+import consulo.uiDesigner.impl.localize.UIDesignerLocalize;
 import jakarta.annotation.Nonnull;
+
 import java.util.List;
 
 /**
@@ -70,8 +71,7 @@ public class FormClassAnnotator implements Annotator {
     if (guiComponentType != null) {
       final PsiType fieldType = field.getType();
       if (!fieldType.isAssignableFrom(guiComponentType)) {
-        String message = UIDesignerBundle.message("bound.field.type.mismatch", guiComponentType.getCanonicalText(),
-                                                  fieldType.getCanonicalText());
+        String message = UIDesignerLocalize.boundFieldTypeMismatch(guiComponentType.getCanonicalText(), fieldType.getCanonicalText()).get();
         Annotation annotation = holder.createErrorAnnotation(field.getTypeElement(), message);
         annotation.registerFix(new ChangeFormComponentTypeFix((PsiPlainTextFile)boundForm, field.getName(), field.getType()), null, null);
         annotation.registerFix(new ChangeBoundFieldTypeFix(field, guiComponentType), null, null);
@@ -79,17 +79,17 @@ public class FormClassAnnotator implements Annotator {
     }
 
     if (field.hasInitializer()) {
-      final String message = UIDesignerBundle.message("field.is.overwritten.by.generated.code", field.getName());
-      Annotation annotation = holder.createWarningAnnotation(field.getInitializer(), message);
+      final LocalizeValue message = UIDesignerLocalize.fieldIsOverwrittenByGeneratedCode(field.getName());
+      Annotation annotation = holder.createWarningAnnotation(field.getInitializer(), message.get());
       annotation.registerFix(new IntentionAction() {
         @Nonnull
-        public String getText() {
+        public LocalizeValue getText() {
           return message;
         }
 
         @Nonnull
-        public String getFamilyName() {
-          return UIBundle.message("remove.field.initializer.quick.fix");
+        public LocalizeValue getFamilyName() {
+          return UILocalize.removeFieldInitializerQuickFix();
         }
 
         public boolean isAvailable(@Nonnull Project project, Editor editor, PsiFile file) {

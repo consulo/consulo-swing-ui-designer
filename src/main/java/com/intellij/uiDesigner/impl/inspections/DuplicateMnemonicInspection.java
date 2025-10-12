@@ -25,8 +25,10 @@ import com.intellij.uiDesigner.lw.*;
 import com.intellij.uiDesigner.impl.quickFixes.QuickFix;
 import com.intellij.uiDesigner.impl.radComponents.RadComponent;
 import consulo.annotation.component.ExtensionImpl;
+import consulo.localize.LocalizeValue;
 import consulo.module.Module;
 
+import consulo.uiDesigner.impl.localize.UIDesignerLocalize;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 
@@ -53,8 +55,8 @@ public class DuplicateMnemonicInspection extends BaseFormInspection {
 
   @Nonnull
   @Override
-  public String getDisplayName() {
-    return UIDesignerBundle.message("inspection.duplicate.mnemonics");
+  public LocalizeValue getDisplayName() {
+    return UIDesignerLocalize.inspectionDuplicateMnemonics();
   }
 
   @Override public void startCheckForm(IRootContainer radRootContainer) {
