@@ -54,7 +54,7 @@ public abstract class BaseFormInspection extends BaseJavaLocalInspectionTool imp
 
   @Nonnull
   public LocalizeValue getDisplayName() {
-    return LocalizeValue.of();
+    return LocalizeValue.empty();
   }
 
   @Nonnull
