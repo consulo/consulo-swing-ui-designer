@@ -22,7 +22,6 @@ import consulo.configurable.ProjectConfigurable;
 import consulo.configurable.StandardConfigurableIds;
 import consulo.disposer.Disposable;
 import consulo.localize.LocalizeValue;
-import consulo.logging.Logger;
 import consulo.project.Project;
 import consulo.ui.*;
 import consulo.ui.annotation.RequiredUIAccess;
@@ -43,15 +42,13 @@ import jakarta.inject.Provider;
  */
 @ExtensionImpl
 public final class GuiDesignerConfigurable implements ProjectConfigurable, Configurable.NoScroll {
-    private static final Logger LOG = Logger.getInstance(GuiDesignerConfigurable.class);
-
     private final Project myProject;
     private final Provider<GuiDesignerConfiguration> myGuiDesignerConfigurationProvider;
 
     private MyLayout myGeneralUI;
 
     @Inject
-    public GuiDesignerConfigurable(final Project project, Provider<GuiDesignerConfiguration> guiDesignerConfigurationProvider) {
+    public GuiDesignerConfigurable(Project project, Provider<GuiDesignerConfiguration> guiDesignerConfigurationProvider) {
         myProject = project;
         myGuiDesignerConfigurationProvider = guiDesignerConfigurationProvider;
     }
@@ -62,8 +59,8 @@ public final class GuiDesignerConfigurable implements ProjectConfigurable, Confi
         return UIDesignerLocalize.titleGuiDesigner();
     }
 
-    @RequiredUIAccess
     @Override
+    @RequiredUIAccess
     public Component createUIComponent(@Nonnull Disposable uiDisposable) {
         if (myGeneralUI == null) {
             myGeneralUI = new MyLayout();
@@ -72,8 +69,8 @@ public final class GuiDesignerConfigurable implements ProjectConfigurable, Confi
         return myGeneralUI.myPanel;
     }
 
-    @RequiredUIAccess
     @Override
+    @RequiredUIAccess
     public boolean isModified() {
         if (myGeneralUI == null) {
             return false;
@@ -81,38 +78,17 @@ public final class GuiDesignerConfigurable implements ProjectConfigurable, Confi
 
         GuiDesignerConfiguration configuration = myGuiDesignerConfigurationProvider.get();
 
-        if (myGeneralUI.myChkCopyFormsRuntime.getValueOrError() != configuration.COPY_FORMS_RUNTIME_TO_OUTPUT) {
-            return true;
-        }
-
-        if (myGeneralUI.myChkCopyForms.getValueOrError() != configuration.COPY_FORMS_TO_OUTPUT) {
-            return true;
-        }
-
-        if (!Comparing.equal(configuration.DEFAULT_LAYOUT_MANAGER, myGeneralUI.myLayoutManagerCombo.getValueOrError())) {
-            return true;
-        }
-
-        if (!Comparing.equal(configuration.DEFAULT_FIELD_ACCESSIBILITY, myGeneralUI.myDefaultFieldAccessibilityCombo.getValueOrError())) {
-            return true;
-        }
-
-        if (configuration.INSTRUMENT_CLASSES != myGeneralUI.myRbInstrumentClasses.getValueOrError()) {
-            return true;
-        }
-
-        if (configuration.RESIZE_HEADERS != myGeneralUI.myResizeHeaders.getValueOrError()) {
-            return true;
-        }
-
-        if (configuration.USE_JB_SCALING != myGeneralUI.myUseJBScalingCheckBox.getValueOrError()) {
-            return true;
-        }
-        return false;
+        return myGeneralUI.myChkCopyFormsRuntime.getValueOrError() != configuration.COPY_FORMS_RUNTIME_TO_OUTPUT
+            || myGeneralUI.myChkCopyForms.getValueOrError() != configuration.COPY_FORMS_TO_OUTPUT
+            || !Comparing.equal(configuration.DEFAULT_LAYOUT_MANAGER, myGeneralUI.myLayoutManagerCombo.getValueOrError())
+            || !Comparing.equal(configuration.DEFAULT_FIELD_ACCESSIBILITY, myGeneralUI.myDefaultFieldAccessibilityCombo.getValueOrError())
+            || configuration.INSTRUMENT_CLASSES != myGeneralUI.myRbInstrumentClasses.getValueOrError()
+            || configuration.RESIZE_HEADERS != myGeneralUI.myResizeHeaders.getValueOrError()
+            || configuration.USE_JB_SCALING != myGeneralUI.myUseJBScalingCheckBox.getValueOrError();
     }
 
-    @RequiredUIAccess
     @Override
+    @RequiredUIAccess
     public void apply() {
         GuiDesignerConfiguration configuration = myGuiDesignerConfigurationProvider.get();
 
@@ -129,8 +105,8 @@ public final class GuiDesignerConfigurable implements ProjectConfigurable, Confi
         }
     }
 
-    @RequiredUIAccess
     @Override
+    @RequiredUIAccess
     public void reset() {
         if (myGeneralUI == null) {
             return;
@@ -155,8 +131,8 @@ public final class GuiDesignerConfigurable implements ProjectConfigurable, Confi
         myGeneralUI.myUseJBScalingCheckBox.setValue(configuration.USE_JB_SCALING);
     }
 
-    @RequiredUIAccess
     @Override
+    @RequiredUIAccess
     public void disposeUIResources() {
         myGeneralUI = null;
     }
@@ -182,7 +158,11 @@ public final class GuiDesignerConfigurable implements ProjectConfigurable, Confi
             myRbInstrumentClasses = RadioButton.create(UIDesignerLocalize.radioGenerateIntoClass()).toGroup(group);
             myRbInstrumentSources = RadioButton.create(UIDesignerLocalize.radioGenerateIntoJava()).toGroup(group);
 
-            myPanel.add(HorizontalLayout.create().add(DockLayout.create().top(label)).add(VerticalLayout.create().add(myRbInstrumentClasses).add(myRbInstrumentSources)));
+            myPanel.add(
+                HorizontalLayout.create()
+                    .add(DockLayout.create().top(label))
+                    .add(VerticalLayout.create().add(myRbInstrumentClasses).add(myRbInstrumentSources))
+            );
 
             myUseJBScalingCheckBox = CheckBox.create(LocalizeValue.localizeTODO("Use scaling util class (JBUI)"));
             myPanel.add(myUseJBScalingCheckBox);
@@ -209,47 +189,39 @@ public final class GuiDesignerConfigurable implements ProjectConfigurable, Confi
         }
     }
 
-//	private final class MyApplyRunnable implements Runnable
-//	{
+//	private final class MyApplyRunnable implements Runnable {
 //		private final DispatchThreadProgressWindow myProgressWindow;
 //
-//		public MyApplyRunnable(final DispatchThreadProgressWindow progressWindow)
-//		{
+//		public MyApplyRunnable(final DispatchThreadProgressWindow progressWindow) {
 //			myProgressWindow = progressWindow;
 //		}
 //
 //		/**
 //		 * Removes all generated sources
 //		 */
-//		private void vanishGeneratedSources()
-//		{
-//			final PsiShortNamesCache cache = PsiShortNamesCache.getInstance(myProject);
-//			final PsiMethod[] methods = cache.getMethodsByName(AsmCodeGenerator.SETUP_METHOD_NAME,
-//					GlobalSearchScope.projectScope(myProject));
+//		private void vanishGeneratedSources() {
+//			PsiShortNamesCache cache = PsiShortNamesCache.getInstance(myProject);
+//			PsiMethod[] methods =
+//              cache.getMethodsByName(AsmCodeGenerator.SETUP_METHOD_NAME, GlobalSearchScope.projectScope(myProject));
 //
 //			CodeInsightUtil.preparePsiElementsForWrite(methods);
 //
-//			for(int i = 0; i < methods.length; i++)
-//			{
-//				final PsiMethod method = methods[i];
-//				final PsiClass aClass = method.getContainingClass();
-//				if(aClass != null)
-//				{
-//					try
-//					{
-//						final PsiFile psiFile = aClass.getContainingFile();
+//			for (int i = 0; i < methods.length; i++) {
+//				PsiMethod method = methods[i];
+//				PsiClass aClass = method.getContainingClass();
+//				if (aClass != null) {
+//					try {
+//						PsiFile psiFile = aClass.getContainingFile();
 //						LOG.assertTrue(psiFile != null);
-//						final VirtualFile vFile = psiFile.getVirtualFile();
+//						VirtualFile vFile = psiFile.getVirtualFile();
 //						LOG.assertTrue(vFile != null);
 //						myProgressWindow.setText(UIDesignerBundle.message("progress.converting", vFile.getPresentableUrl()));
 //						myProgressWindow.setFraction(((double) i) / ((double) methods.length));
-//						if(vFile.isWritable())
-//						{
+//						if (vFile.isWritable()) {
 //							FormSourceCodeGenerator.cleanup(aClass);
 //						}
 //					}
-//					catch(IncorrectOperationException e)
-//					{
+//					catch(IncorrectOperationException e) {
 //						LOG.error(e);
 //					}
 //				}
@@ -259,23 +231,26 @@ public final class GuiDesignerConfigurable implements ProjectConfigurable, Confi
 //		/**
 //		 * Launches vanish/generate sources processes
 //		 */
-//		private void applyImpl()
-//		{
-//			CommandProcessor.getInstance().executeCommand(myProject, () -> ApplicationManager.getApplication().runWriteAction(() -> {
-//				PsiDocumentManager.getInstance(myProject).commitAllDocuments();
-//				vanishGeneratedSources();
-//			}), "", null);
+//		private void applyImpl() {
+//			CommandProcessor.getInstance().executeCommand(
+//              myProject,
+//              () -> ApplicationManager.getApplication().runWriteAction(() -> {
+//		            PsiDocumentManager.getInstance(myProject).commitAllDocuments();
+//		            vanishGeneratedSources();
+//		    	}),
+//              "",
+//              null
+//          );
 //		}
 //
 //		@Override
-//		public void run()
-//		{
+//		public void run() {
 //			ProgressManager.getInstance().runProcess(() -> applyImpl(), myProgressWindow);
 //		}
 //	}
 
-    @Override
     @Nonnull
+    @Override
     public String getId() {
         return "project.propGUI";
     }
