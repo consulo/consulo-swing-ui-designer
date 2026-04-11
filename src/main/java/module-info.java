@@ -10,6 +10,7 @@ open module com.intellij.uiDesigner
     requires consulo.java.execution.api;
     requires consulo.java.execution.impl;
     requires consulo.java.properties.impl;
+    requires com.intellij.xml.api;
     requires com.intellij.xml;
     requires com.intellij.properties;
     requires consulo.util.nodep;

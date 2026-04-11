@@ -39,7 +39,7 @@ import consulo.module.Module;
 import consulo.project.Project;
 import consulo.util.dataholder.Key;
 import consulo.util.lang.Pair;
-import consulo.xml.ide.highlighter.XmlFileType;
+import consulo.xml.language.XmlFileType;
 import consulo.xml.language.psi.XmlAttribute;
 import consulo.xml.language.psi.XmlAttributeValue;
 import consulo.xml.language.psi.XmlFile;
