@@ -4,16 +4,67 @@
  */
 open module com.intellij.uiDesigner
 {
-    requires consulo.ide.api;
+    requires consulo.application.api;
+    requires consulo.application.content.api;
+    requires consulo.application.ui.api;
+    requires consulo.base.icon.library;
+    requires consulo.bookmark.ui.view.api;
+    requires consulo.code.editor.api;
+    requires consulo.color.scheme.api;
+    requires consulo.compiler.api;
+    requires consulo.component.api;
+    requires consulo.configurable.api;
+    requires consulo.container.api;
+    requires consulo.datacontext.api;
+    requires consulo.disposer.api;
+    requires consulo.document.api;
+    requires consulo.execution.api;
+    requires consulo.file.editor.api;
+    requires consulo.file.template.api;
+    requires consulo.index.io;
+    requires consulo.language.api;
+    requires consulo.language.code.style.api;
+    requires consulo.language.editor.api;
+    requires consulo.language.editor.refactoring.api;
+    requires consulo.language.editor.ui.api;
+    requires consulo.language.spellchecker.editor.api;
+    requires consulo.localize.api;
+    requires consulo.logging.api;
+    requires consulo.module.api;
+    requires consulo.module.content.api;
+    requires consulo.navigation.api;
+    requires consulo.process.api;
+    requires consulo.project.api;
+    requires consulo.project.ui.api;
+    requires consulo.project.ui.view.api;
+    requires consulo.ui.api;
+    requires consulo.ui.ex.api;
+    requires consulo.ui.ex.awt.api;
+    requires consulo.undo.redo.api;
+    requires consulo.usage.api;
+    requires consulo.util.collection;
+    requires consulo.util.dataholder;
+    requires consulo.util.io;
+    requires consulo.util.jdom;
+    requires consulo.util.lang;
+    requires consulo.util.nodep;
+    requires consulo.util.xml.serializer;
+    requires consulo.virtual.file.status.api;
+    requires consulo.virtual.file.system.api;
+
+    requires consulo.ide.impl;
+
+    requires asm;
 
     requires consulo.java;
+    requires consulo.java.analysis.impl;
     requires consulo.java.execution.api;
     requires consulo.java.execution.impl;
+    requires consulo.java.language.api;
     requires consulo.java.properties.impl;
     requires com.intellij.xml.api;
     requires com.intellij.xml;
     requires com.intellij.properties;
-    requires consulo.util.nodep;
 
     requires jgoodies.common;
     requires jgoodies.forms;
@@ -24,7 +75,6 @@ open module com.intellij.uiDesigner
 
     // TODO remove in future
     requires java.desktop;
-    requires consulo.ide.impl;
     requires forms.rt;
 
     exports com.intellij.ide.palette;

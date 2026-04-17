@@ -560,7 +560,7 @@ public class RadGridBagLayoutManager extends RadAbstractGridLayoutManager {
 
     @Override
     public boolean isModified(final RadComponent component) {
-      return !(new Double(0.0).equals(getValue(component)));
+      return !(Double.valueOf(0.0).equals(getValue(component)));
     }
 
     @Override

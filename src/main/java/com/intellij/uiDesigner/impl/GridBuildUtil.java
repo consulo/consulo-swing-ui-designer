@@ -368,8 +368,8 @@ public class GridBuildUtil
 
 
 		return new Pair<Integer, Integer>(
-				new Integer(Util.eliminate(y, rowSpans, null)),
-				new Integer(Util.eliminate(x, colSpans, null))
+				Integer.valueOf(Util.eliminate(y, rowSpans, null)),
+				Integer.valueOf(Util.eliminate(x, colSpans, null))
 		);
 	}
 
