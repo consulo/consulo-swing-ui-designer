@@ -23,7 +23,6 @@ import consulo.component.messagebus.MessageBusConnection;
 import consulo.disposer.Disposable;
 import consulo.disposer.Disposer;
 import consulo.ide.ServiceManager;
-import consulo.ide.impl.idea.openapi.vfs.VfsUtil;
 import consulo.language.util.ModuleUtilCore;
 import consulo.module.Module;
 import consulo.module.content.layer.OrderEnumerator;
@@ -38,10 +37,11 @@ import consulo.util.nodep.classloader.UrlClassLoader;
 import consulo.virtualFileSystem.VirtualFile;
 import consulo.virtualFileSystem.VirtualFileManager;
 import consulo.virtualFileSystem.archive.ArchiveVfsUtil;
+import consulo.virtualFileSystem.util.VirtualFileUtil;
+import jakarta.annotation.Nonnull;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 
-import jakarta.annotation.Nonnull;
 import javax.swing.*;
 import java.io.File;
 import java.net.MalformedURLException;
@@ -142,7 +142,7 @@ public final class LoaderFactory
 			final String s = tokenizer.nextToken();
 			try
 			{
-				VirtualFile vFile = manager.findFileByUrl(VfsUtil.pathToUrl(s));
+				VirtualFile vFile = manager.findFileByUrl(VirtualFileUtil.pathToUrl(s));
 
 				VirtualFile archiveFile = ArchiveVfsUtil.getVirtualFileForArchive(vFile);
 				if(archiveFile != null)

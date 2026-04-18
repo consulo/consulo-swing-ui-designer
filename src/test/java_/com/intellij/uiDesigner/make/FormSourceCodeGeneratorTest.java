@@ -13,12 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.intellij.uiDesigner.make;
 
 import com.intellij.uiDesigner.impl.make.FormSourceCodeGenerator;
 import consulo.util.lang.StringUtil;
-import consulo.ide.impl.idea.openapi.vfs.VfsUtil;
 import consulo.virtualFileSystem.VirtualFile;
 import com.intellij.psi.PsiClass;
 import consulo.language.psi.PsiFile;
@@ -27,6 +25,7 @@ import com.intellij.testFramework.IdeaTestUtil;
 import com.intellij.testFramework.PsiTestCase;
 import com.intellij.testFramework.PsiTestUtil;
 import consulo.undoRedo.CommandProcessor;
+import consulo.virtualFileSystem.util.VirtualFileUtil;
 
 import java.io.IOException;
 
@@ -104,7 +103,7 @@ public abstract class FormSourceCodeGeneratorTest extends PsiTestCase {
     assertNotNull(bindingTestClass);
     final VirtualFile testAfter = myTestProjectRoot.findChild("BindingTest.java.after");
     assertNotNull(testAfter);
-    String expectedText = StringUtil.convertLineSeparators(VfsUtil.loadText(testAfter));
+    String expectedText = StringUtil.convertLineSeparators(VirtualFileUtil.loadText(testAfter));
     final PsiFile psiFile = bindingTestClass.getContainingFile();
     assertNotNull(psiFile);
     final String text = StringUtil.convertLineSeparators(psiFile.getText());
