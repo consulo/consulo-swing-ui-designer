@@ -39,7 +39,6 @@ import consulo.compiler.util.CompilerUtil;
 import consulo.content.bundle.Sdk;
 import consulo.document.Document;
 import consulo.document.FileDocumentManager;
-import consulo.ide.impl.idea.openapi.util.io.FileUtil;
 import consulo.internal.org.objectweb.asm.ClassWriter;
 import consulo.java.compiler.JavaCompilerUtil;
 import consulo.java.language.bundle.JavaSdkTypeUtil;
@@ -54,6 +53,8 @@ import consulo.module.content.DirectoryIndex;
 import consulo.project.Project;
 import consulo.util.collection.ArrayUtil;
 import consulo.util.collection.Chunk;
+import consulo.util.io.FilePermissionCopier;
+import consulo.util.io.FileUtil;
 import consulo.util.lang.ExceptionUtil;
 import consulo.virtualFileSystem.VirtualFile;
 import consulo.virtualFileSystem.util.VirtualFileUtil;
@@ -467,7 +468,7 @@ public final class Form2ByteCodeCompiler implements ClassInstrumentingCompiler
 							FileUtil.createParentDirs(outputFormFile);
 							try
 							{
-								FileUtil.copy(new File(formFile.getPath()), outputFormFile);
+								FileUtil.copy(new File(formFile.getPath()), outputFormFile, FilePermissionCopier.BY_NIO2);
 							}
 							catch(IOException e)
 							{

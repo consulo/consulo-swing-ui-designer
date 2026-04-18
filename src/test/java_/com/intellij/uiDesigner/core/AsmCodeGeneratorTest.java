@@ -18,7 +18,6 @@ package com.intellij.uiDesigner.core;
 import com.intellij.compiler.instrumentation.InstrumentationClassFinder;
 import consulo.ide.impl.idea.openapi.application.PathManager;
 import consulo.ide.impl.idea.openapi.util.SystemInfoRt;
-import consulo.ide.impl.idea.openapi.util.io.FileUtil;
 import consulo.ui.ex.awt.JBTabbedPane;
 import com.intellij.uiDesigner.compiler.AsmCodeGenerator;
 import com.intellij.uiDesigner.compiler.FormErrorInfo;
@@ -31,6 +30,7 @@ import consulo.application.ApplicationManager;
 import consulo.internal.org.objectweb.asm.ClassWriter;
 import consulo.ui.ex.awt.UIUtil;
 import consulo.util.collection.primitive.ints.IntObjectMap;
+import consulo.util.io.FileUtil;
 import junit.framework.TestCase;
 
 import javax.swing.*;
