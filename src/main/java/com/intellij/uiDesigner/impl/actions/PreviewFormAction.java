@@ -26,17 +26,17 @@ import com.intellij.uiDesigner.compiler.FormErrorInfo;
 import com.intellij.uiDesigner.compiler.Utils;
 import com.intellij.uiDesigner.impl.FormEditingUtil;
 import com.intellij.uiDesigner.impl.GuiFormFileType;
-import com.intellij.uiDesigner.impl.UIDesignerBundle;
 import com.intellij.uiDesigner.impl.designSurface.GuiEditor;
 import com.intellij.uiDesigner.impl.make.CopyResourcesUtil;
 import com.intellij.uiDesigner.impl.make.Form2ByteCodeCompiler;
 import com.intellij.uiDesigner.impl.make.PreviewNestedFormLoader;
-import com.intellij.uiDesigner.lw.*;
+import com.intellij.uiDesigner.lw.CompiledClassPropertiesProvider;
+import com.intellij.uiDesigner.lw.LwComponent;
+import com.intellij.uiDesigner.lw.LwRootContainer;
+import consulo.annotation.component.ActionImpl;
 import consulo.application.Application;
-import consulo.application.CommonBundle;
 import consulo.application.util.AsyncFileService;
-import consulo.compiler.CompileContext;
-import consulo.compiler.CompileStatusNotification;
+import consulo.application.util.TempFileService;
 import consulo.compiler.CompilerManager;
 import consulo.compiler.scope.FileSetCompileScope;
 import consulo.container.boot.ContainerPathManager;
@@ -52,35 +52,41 @@ import consulo.execution.executor.Executor;
 import consulo.execution.runner.ExecutionEnvironment;
 import consulo.execution.runner.ProgramRunner;
 import consulo.execution.runner.RunnerRegistry;
-import consulo.ide.impl.idea.openapi.util.io.FileUtil;
 import consulo.java.execution.configurations.OwnJavaParameters;
 import consulo.language.util.ModuleUtilCore;
 import consulo.logging.Logger;
 import consulo.module.Module;
 import consulo.module.content.layer.OrderEnumerator;
+import consulo.platform.base.icon.PlatformIconGroup;
+import consulo.platform.base.localize.CommonLocalize;
 import consulo.process.ExecutionException;
 import consulo.process.event.ProcessEvent;
 import consulo.process.event.ProcessListener;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.action.AnAction;
 import consulo.ui.ex.action.AnActionEvent;
 import consulo.ui.ex.awt.Messages;
 import consulo.ui.image.Image;
+import consulo.uiDesigner.impl.localize.UIDesignerLocalize;
 import consulo.virtualFileSystem.VirtualFile;
 import consulo.virtualFileSystem.util.PathsList;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
-import org.jetbrains.annotations.NonNls;
+import jakarta.inject.Inject;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 /**
  * @author Anton Katilin
  * @author Vladimir Kondratyev
  */
+@ActionImpl(id = "GuiDesigner.PreviewForm")
 public final class PreviewFormAction extends AnAction {
     private static final Logger LOG = Logger.getInstance(PreviewFormAction.class);
 
@@ -89,70 +95,82 @@ public final class PreviewFormAction extends AnAction {
      * import this class to refer
      */
     private static final String CLASS_TO_BIND_NAME = "FormPreviewFrame";
-    @NonNls
     private static final String RUNTIME_BUNDLE_PREFIX = "RuntimeBundle";
-    @NonNls
     public static final String PREVIEW_BINDING_FIELD = "myComponent";
 
+    private final TempFileService myTempFileService;
+
+    @Inject
+    public PreviewFormAction(TempFileService tempFileService) {
+        super(
+            UIDesignerLocalize.actionGuidesignerPreviewformText(),
+            UIDesignerLocalize.actionGuidesignerPreviewformDescription(),
+            PlatformIconGroup.actionsPreview()
+        );
+
+        myTempFileService = tempFileService;
+    }
+
     @Override
-    public void actionPerformed(final AnActionEvent e) {
-        final GuiEditor editor = FormEditingUtil.getActiveEditor(e.getDataContext());
+    @RequiredUIAccess
+    public void actionPerformed(AnActionEvent e) {
+        GuiEditor editor = FormEditingUtil.getActiveEditor(e.getDataContext());
         if (editor != null) {
             showPreviewFrame(editor.getModule(), editor.getFile(), editor.getStringDescriptorLocale());
         }
     }
 
     @Override
-    public void update(final AnActionEvent e) {
-        final GuiEditor editor = FormEditingUtil.getActiveEditor(e.getDataContext());
+    public void update(AnActionEvent e) {
+        GuiEditor editor = FormEditingUtil.getActiveEditor(e.getDataContext());
 
         if (editor == null) {
             e.getPresentation().setVisible(false);
             return;
         }
 
-        final VirtualFile file = editor.getFile();
+        VirtualFile file = editor.getFile();
         e.getPresentation().setVisible(
-            FileDocumentManager.getInstance().getDocument(file) != null &&
-                file.getFileType() == GuiFormFileType.INSTANCE
+            FileDocumentManager.getInstance().getDocument(file) != null
+                && file.getFileType() == GuiFormFileType.INSTANCE
         );
     }
 
-    private static void showPreviewFrame(@Nonnull final consulo.module.Module module, @Nonnull final VirtualFile formFile,
-                                         @Nullable final Locale stringDescriptorLocale) {
-        final String tempPath;
+    @RequiredUIAccess
+    private void showPreviewFrame(@Nonnull Module module, @Nonnull VirtualFile formFile, @Nullable Locale stringDescriptorLocale) {
+        String tempPath;
         try {
-            final File tempDirectory = FileUtil.createTempDirectory("FormPreview", "");
-            tempPath = tempDirectory.getAbsolutePath();
+            Path tempDirectory = myTempFileService.createTempDirectory("FormPreview", "");
+            tempPath = tempDirectory.toAbsolutePath().toString();
 
             CopyResourcesUtil.copyFormsRuntime(tempPath, true);
         }
         catch (IOException e) {
             Messages.showErrorDialog(
                 module.getProject(),
-                UIDesignerBundle.message("error.cannot.preview.form", formFile.getPath().replace('/', File.separatorChar), e.toString()),
-                CommonBundle.getErrorTitle()
+                UIDesignerLocalize.errorCannotPreviewForm(formFile.getPath().replace('/', File.separatorChar), e.toString()).get(),
+                CommonLocalize.titleError().get()
             );
             return;
         }
 
-        final PathsList sources = OrderEnumerator.orderEntries(module).withoutSdk().withoutLibraries().withoutDepModules().getSourcePathsList();
-        final String classPath = OrderEnumerator.orderEntries(module).recursively().getPathsList().getPathsString() + File.pathSeparator +
+        PathsList sources = OrderEnumerator.orderEntries(module).withoutSdk().withoutLibraries().withoutDepModules().getSourcePathsList();
+        String classPath = OrderEnumerator.orderEntries(module).recursively().getPathsList().getPathsString() + File.pathSeparator +
             sources.getPathsString() + File.pathSeparator + /* resources bundles */
             tempPath;
-        final InstrumentationClassFinder finder = Form2ByteCodeCompiler.createClassFinder(classPath);
+        InstrumentationClassFinder finder = Form2ByteCodeCompiler.createClassFinder(classPath);
 
         try {
-            final Document doc = FileDocumentManager.getInstance().getDocument(formFile);
-            final LwRootContainer rootContainer;
+            Document doc = FileDocumentManager.getInstance().getDocument(formFile);
+            LwRootContainer rootContainer;
             try {
                 rootContainer = Utils.getRootContainer(doc.getText(), new CompiledClassPropertiesProvider(finder.getLoader()));
             }
             catch (Exception e) {
                 Messages.showErrorDialog(
                     module.getProject(),
-                    UIDesignerBundle.message("error.cannot.read.form", formFile.getPath().replace('/', File.separatorChar), e.getMessage()),
-                    CommonBundle.getErrorTitle()
+                    UIDesignerLocalize.errorCannotReadForm(formFile.getPath().replace('/', File.separatorChar), e.getMessage()).get(),
+                    CommonLocalize.titleError().get()
                 );
                 return;
             }
@@ -160,8 +178,8 @@ public final class PreviewFormAction extends AnAction {
             if (rootContainer.getComponentCount() == 0) {
                 Messages.showErrorDialog(
                     module.getProject(),
-                    UIDesignerBundle.message("error.cannot.preview.empty.form", formFile.getPath().replace('/', File.separatorChar)),
-                    CommonBundle.getErrorTitle()
+                    UIDesignerLocalize.errorCannotPreviewEmptyForm(formFile.getPath().replace('/', File.separatorChar)).get(),
+                    CommonLocalize.titleError().get()
                 );
                 return;
             }
@@ -172,7 +190,7 @@ public final class PreviewFormAction extends AnAction {
             try {
                 PreviewNestedFormLoader nestedFormLoader = new PreviewNestedFormLoader(module, tempPath, finder);
 
-                final File tempFile = CopyResourcesUtil.copyClass(tempPath, CLASS_TO_BIND_NAME, true);
+                File tempFile = CopyResourcesUtil.copyClass(tempPath, CLASS_TO_BIND_NAME, true);
                 //CopyResourcesUtil.copyClass(tempPath, CLASS_TO_BIND_NAME + "$1", true);
                 CopyResourcesUtil.copyClass(tempPath, CLASS_TO_BIND_NAME + "$MyExitAction", true);
                 CopyResourcesUtil.copyClass(tempPath, CLASS_TO_BIND_NAME + "$MyPackAction", true);
@@ -184,23 +202,29 @@ public final class PreviewFormAction extends AnAction {
                         "_" + locale.getCountry() + PropertiesFileType.DOT_DEFAULT_EXTENSION);
                 }
                 if (locale.getLanguage().length() > 0) {
-                    CopyResourcesUtil.copyProperties(tempPath, RUNTIME_BUNDLE_PREFIX + "_" + locale.getLanguage() + PropertiesFileType.DOT_DEFAULT_EXTENSION);
+                    CopyResourcesUtil.copyProperties(
+                        tempPath,
+                        RUNTIME_BUNDLE_PREFIX + "_" + locale.getLanguage() + PropertiesFileType.DOT_DEFAULT_EXTENSION
+                    );
                 }
-                CopyResourcesUtil.copyProperties(tempPath, RUNTIME_BUNDLE_PREFIX + "_" + locale.getLanguage() + PropertiesFileType.DOT_DEFAULT_EXTENSION);
+                CopyResourcesUtil.copyProperties(
+                    tempPath,
+                    RUNTIME_BUNDLE_PREFIX + "_" + locale.getLanguage() + PropertiesFileType.DOT_DEFAULT_EXTENSION
+                );
                 CopyResourcesUtil.copyProperties(tempPath, RUNTIME_BUNDLE_PREFIX + PropertiesFileType.DOT_DEFAULT_EXTENSION);
 
-                final AsmCodeGenerator codeGenerator = new AsmCodeGenerator(
-                    rootContainer, finder, nestedFormLoader, true, new PsiClassWriter(module)
-                );
+                AsmCodeGenerator codeGenerator =
+                    new AsmCodeGenerator(rootContainer, finder, nestedFormLoader, true, new PsiClassWriter(module));
                 codeGenerator.patchFile(tempFile);
-                final FormErrorInfo[] errors = codeGenerator.getErrors();
+                FormErrorInfo[] errors = codeGenerator.getErrors();
                 if (errors.length != 0) {
                     Messages.showErrorDialog(
                         module.getProject(),
-                        UIDesignerBundle.message("error.cannot.preview.form",
+                        UIDesignerLocalize.errorCannotPreviewForm(
                             formFile.getPath().replace('/', File.separatorChar),
-                            errors[0].getErrorMessage()),
-                        CommonBundle.getErrorTitle()
+                            errors[0].getErrorMessage()
+                        ).get(),
+                        CommonLocalize.titleError().get()
                     );
                     return;
                 }
@@ -209,35 +233,35 @@ public final class PreviewFormAction extends AnAction {
                 LOG.debug(e);
                 Messages.showErrorDialog(
                     module.getProject(),
-                    UIDesignerBundle.message("error.cannot.preview.form", formFile.getPath().replace('/', File.separatorChar),
-                        e.getMessage() != null ? e.getMessage() : e.toString()),
-                    CommonBundle.getErrorTitle()
+                    UIDesignerLocalize.errorCannotPreviewForm(
+                        formFile.getPath().replace('/', File.separatorChar),
+                        e.getMessage() != null ? e.getMessage() : e.toString()
+                    ).get(),
+                    CommonLocalize.titleError().get()
                 );
                 return;
             }
 
             // 2.5. Copy up-to-date properties files to the output directory.
-            final HashSet<String> bundleSet = new HashSet<String>();
+            Set<String> bundleSet = new HashSet<>();
             FormEditingUtil.iterateStringDescriptors(
                 rootContainer,
-                new FormEditingUtil.StringDescriptorVisitor<IComponent>() {
-                    @Override
-                    public boolean visit(final IComponent component, final StringDescriptor descriptor) {
-                        if (descriptor.getBundleName() != null) {
-                            bundleSet.add(descriptor.getDottedBundleName());
-                        }
-                        return true;
+                (component, descriptor) -> {
+                    if (descriptor.getBundleName() != null) {
+                        bundleSet.add(descriptor.getDottedBundleName());
                     }
-                });
+                    return true;
+                }
+            );
 
             if (bundleSet.size() > 0) {
-                HashSet<VirtualFile> virtualFiles = new HashSet<VirtualFile>();
-                HashSet<Module> modules = new HashSet<consulo.module.Module>();
+                Set<VirtualFile> virtualFiles = new HashSet<>();
+                Set<Module> modules = new HashSet<>();
                 PropertiesReferenceManager manager = PropertiesReferenceManager.getInstance(module.getProject());
                 for (String bundleName : bundleSet) {
                     for (PropertiesFile propFile : manager.findPropertiesFiles(module, bundleName)) {
                         virtualFiles.add(propFile.getVirtualFile());
-                        final Module moduleForFile = ModuleUtilCore.findModuleForFile(propFile.getVirtualFile(), module.getProject());
+                        Module moduleForFile = ModuleUtilCore.findModuleForFile(propFile.getVirtualFile(), module.getProject());
                         if (moduleForFile != null) {
                             modules.add(moduleForFile);
                         }
@@ -245,14 +269,14 @@ public final class PreviewFormAction extends AnAction {
                 }
                 FileSetCompileScope scope = new FileSetCompileScope(virtualFiles, modules.toArray(new Module[modules.size()]));
 
-                CompilerManager.getInstance(module.getProject()).make(scope, new CompileStatusNotification() {
-                    @Override
-                    public void finished(boolean aborted, int errors, int warnings, final CompileContext compileContext) {
+                CompilerManager.getInstance(module.getProject()).make(
+                    scope,
+                    (aborted, errors, warnings, compileContext) -> {
                         if (!aborted && errors == 0) {
                             runPreviewProcess(tempPath, sources, module, formFile, stringDescriptorLocale);
                         }
                     }
-                });
+                );
             }
             else {
                 runPreviewProcess(tempPath, sources, module, formFile, stringDescriptorLocale);
@@ -263,14 +287,14 @@ public final class PreviewFormAction extends AnAction {
         }
     }
 
-    public static void setPreviewBindings(final LwRootContainer rootContainer, final String classToBindName) {
+    public static void setPreviewBindings(LwRootContainer rootContainer, String classToBindName) {
         // 1. Prepare form to preview. We have to change container so that it has only one binding.
         rootContainer.setClassToBind(classToBindName);
         FormEditingUtil.iterate(
             rootContainer,
             new FormEditingUtil.ComponentVisitor<LwComponent>() {
                 @Override
-                public boolean visit(final LwComponent iComponent) {
+                public boolean visit(LwComponent iComponent) {
                     iComponent.setBinding(null);
                     return true;
                 }
@@ -282,14 +306,20 @@ public final class PreviewFormAction extends AnAction {
         }
     }
 
-    private static void runPreviewProcess(final String tempPath, final PathsList sources, final Module module, final VirtualFile formFile,
-                                          @Nullable final Locale stringDescriptorLocale) {
+    @RequiredUIAccess
+    private static void runPreviewProcess(
+        String tempPath,
+        PathsList sources,
+        Module module,
+        VirtualFile formFile,
+        @Nullable Locale stringDescriptorLocale
+    ) {
         // 3. Now we are ready to launch Java process
-        final OwnJavaParameters parameters = new OwnJavaParameters();
+        OwnJavaParameters parameters = new OwnJavaParameters();
         parameters.getClassPath().add(tempPath);
         parameters.getClassPath().add(ContainerPathManager.get().findFileInLibDirectory("jgoodies-forms.jar").getAbsolutePath());
-        final List<String> paths = sources.getPathList();
-        for (final String path : paths) {
+        List<String> paths = sources.getPathList();
+        for (String path : paths) {
             parameters.getClassPath().add(path);
         }
         try {
@@ -298,8 +328,8 @@ public final class PreviewFormAction extends AnAction {
         catch (CantRunException e) {
             Messages.showErrorDialog(
                 module.getProject(),
-                UIDesignerBundle.message("error.cannot.preview.form", formFile.getPath().replace('/', File.separatorChar), e.getMessage()),
-                CommonBundle.getErrorTitle()
+                UIDesignerLocalize.errorCannotPreviewForm(formFile.getPath().replace('/', File.separatorChar), e.getMessage()).get(),
+                CommonLocalize.titleError().get()
             );
             return;
         }
@@ -310,8 +340,7 @@ public final class PreviewFormAction extends AnAction {
         }
 
         try {
-            final RunProfile profile = new MyRunProfile(module, parameters, tempPath
-            );
+            RunProfile profile = new MyRunProfile(module, parameters, tempPath);
             ProgramRunner defaultRunner = RunnerRegistry.getInstance().getRunner(DefaultRunExecutor.EXECUTOR_ID, profile);
             LOG.assertTrue(defaultRunner != null);
             Executor executor = DefaultRunExecutor.getRunExecutorInstance();
@@ -320,8 +349,8 @@ public final class PreviewFormAction extends AnAction {
         catch (ExecutionException e) {
             Messages.showErrorDialog(
                 module.getProject(),
-                UIDesignerBundle.message("error.cannot.preview.form", formFile.getPath().replace('/', File.separatorChar), e.getMessage()),
-                CommonBundle.getErrorTitle()
+                UIDesignerLocalize.errorCannotPreviewForm(formFile.getPath().replace('/', File.separatorChar), e.getMessage()).get(),
+                CommonLocalize.titleError().get()
             );
         }
     }
@@ -331,7 +360,7 @@ public final class PreviewFormAction extends AnAction {
         private final OwnJavaParameters myParams;
         private final String myTempPath;
 
-        public MyRunProfile(final consulo.module.Module module, final OwnJavaParameters params, final String tempPath) {
+        public MyRunProfile(Module module, OwnJavaParameters params, String tempPath) {
             myModule = module;
             myParams = params;
             myTempPath = tempPath;
@@ -343,7 +372,7 @@ public final class PreviewFormAction extends AnAction {
         }
 
         @Override
-        public RunProfileState getState(@Nonnull final Executor executor, @Nonnull final ExecutionEnvironment env) throws ExecutionException {
+        public RunProfileState getState(@Nonnull Executor executor, @Nonnull ExecutionEnvironment env) throws ExecutionException {
             return new JavaCommandLineState(env) {
                 @Override
                 protected OwnJavaParameters createJavaParameters() {
@@ -351,7 +380,7 @@ public final class PreviewFormAction extends AnAction {
                 }
 
                 @Override
-                public ExecutionResult execute(@Nonnull final Executor executor, @Nonnull final ProgramRunner runner) throws ExecutionException {
+                public ExecutionResult execute(@Nonnull Executor executor, @Nonnull ProgramRunner runner) throws ExecutionException {
                     ExecutionResult executionResult = super.execute(executor, runner);
                     executionResult.getProcessHandler().addProcessListener(new ProcessListener() {
                         @Override
@@ -367,13 +396,13 @@ public final class PreviewFormAction extends AnAction {
 
         @Override
         public String getName() {
-            return UIDesignerBundle.message("title.form.preview");
+            return UIDesignerLocalize.titleFormPreview().get();
         }
 
         @Override
         @Nonnull
         public Module[] getModules() {
-            return new consulo.module.Module[]{myModule};
+            return new Module[]{myModule};
         }
     }
 }

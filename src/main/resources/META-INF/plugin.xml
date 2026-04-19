@@ -17,8 +17,7 @@
 	<actions>
 		<group id="GuiDesigner.MainToolbarActions">
 			<separator/>
-			<action id="GuiDesigner.PreviewForm" class="com.intellij.uiDesigner.impl.actions.PreviewFormAction"
-					icon="consulo.platform.base.PlatformIconGroup@actions.preview"/>
+			<reference ref="GuiDesigner.PreviewForm"/>
 			<action id="GuiDesigner.DataBindingWizard" class="com.intellij.uiDesigner.impl.actions.DataBindingWizardAction"
 					icon="consulo.platform.base.PlatformIconGroup@actions.lightning"/>
 			<action id="GuiDesigner.ReloadCustomComponents" class="com.intellij.uiDesigner.impl.actions.ReloadCustomComponentsAction"
