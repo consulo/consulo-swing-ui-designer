@@ -13,79 +13,80 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.intellij.uiDesigner.impl.binding;
 
-import consulo.language.cacheBuilder.WordOccurrence;
-import consulo.application.util.function.Processor;
-import com.intellij.uiDesigner.lw.LwRootContainer;
-import com.intellij.uiDesigner.lw.IComponent;
-import com.intellij.uiDesigner.compiler.Utils;
 import com.intellij.uiDesigner.compiler.AlienFormFileException;
 import com.intellij.uiDesigner.compiler.UnexpectedFormElementException;
+import com.intellij.uiDesigner.compiler.Utils;
 import com.intellij.uiDesigner.impl.FormEditingUtil;
+import com.intellij.uiDesigner.lw.IComponent;
+import com.intellij.uiDesigner.lw.LwRootContainer;
 import consulo.language.cacheBuilder.SimpleWordsScanner;
+import consulo.language.cacheBuilder.WordOccurrence;
 import consulo.logging.Logger;
 import org.jdom.input.JDOMParseException;
+
+import java.util.function.Predicate;
 
 /**
  * @author yole
  */
-public class FormWordsScanner extends SimpleWordsScanner
-{
-  private static final Logger LOG = Logger.getInstance(FormWordsScanner.class);
+public class FormWordsScanner extends SimpleWordsScanner {
+    private static final Logger LOG = Logger.getInstance(FormWordsScanner.class);
 
-  @Override
-  public void processWords(CharSequence fileText, final Processor<WordOccurrence> processor) {
-    super.processWords(fileText, processor);
+    @Override
+    public void processWords(CharSequence fileText, final Predicate<WordOccurrence> processor) {
+        super.processWords(fileText, processor);
 
-    try {
-      LwRootContainer container = Utils.getRootContainer(fileText.toString(), null/*no need component classes*/);
-      String className = container.getClassToBind();
-      if (className != null) {
-        processClassAndPackagesNames(className, processor);
-      }
+        try {
+            LwRootContainer container = Utils.getRootContainer(fileText.toString(), null/*no need component classes*/);
+            String className = container.getClassToBind();
+            if (className != null) {
+                processClassAndPackagesNames(className, processor);
+            }
 
-      FormEditingUtil.iterate(container,
-                              new FormEditingUtil.ComponentVisitor() {
-                                WordOccurrence occurence;
-                                public boolean visit(IComponent iComponent) {
-                                  String componentClassName = iComponent.getComponentClassName();
-                                  processClassAndPackagesNames(componentClassName, processor);
-                                  final String binding = iComponent.getBinding();
-                                  if (binding != null) {
-                                    if (occurence == null) occurence = new WordOccurrence(binding, 0, binding.length(),WordOccurrence.Kind.FOREIGN_LANGUAGE);
-                                    else occurence.init(binding, 0, binding.length(),WordOccurrence.Kind.FOREIGN_LANGUAGE);
-                                    processor.process(occurence);
-                                  }
-                                  return true;
-                                }
-                              });
-    }
-    catch(AlienFormFileException ex) {
-      // ignore
-    }
-    catch(UnexpectedFormElementException ex) {
-      // ignore
-    }
-    catch(JDOMParseException ex) {
-      // ignore
-    }
-    catch (Exception e) {
-      LOG.error("Error indexing form file", e);
-    }
-  }
+            FormEditingUtil.iterate(
+                container,
+                new FormEditingUtil.ComponentVisitor() {
+                    WordOccurrence occurence;
 
-  private static void processClassAndPackagesNames(String qName, final Processor<WordOccurrence> processor) {
-    WordOccurrence occurrence = new WordOccurrence(qName, 0, qName.length(), WordOccurrence.Kind.FOREIGN_LANGUAGE);
-    processor.process(occurrence);
-    int idx = qName.lastIndexOf('.');
-    
-    while (idx > 0) {
-      qName = qName.substring(0, idx);
-      occurrence.init(qName, 0,qName.length(),WordOccurrence.Kind.FOREIGN_LANGUAGE);
-      processor.process(occurrence);
-      idx = qName.lastIndexOf('.');
+                    @Override
+                    public boolean visit(IComponent iComponent) {
+                        String componentClassName = iComponent.getComponentClassName();
+                        processClassAndPackagesNames(componentClassName, processor);
+                        String binding = iComponent.getBinding();
+                        if (binding != null) {
+                            if (occurence == null) {
+                                occurence = new WordOccurrence(binding, 0, binding.length(), WordOccurrence.Kind.FOREIGN_LANGUAGE);
+                            }
+                            else {
+                                occurence.init(binding, 0, binding.length(), WordOccurrence.Kind.FOREIGN_LANGUAGE);
+                            }
+                            processor.test(occurence);
+                        }
+                        return true;
+                    }
+                }
+            );
+        }
+        catch (AlienFormFileException | UnexpectedFormElementException | JDOMParseException ex) {
+            // ignore
+        }
+        catch (Exception e) {
+            LOG.error("Error indexing form file", e);
+        }
     }
-  }
+
+    private static void processClassAndPackagesNames(String qName, Predicate<WordOccurrence> processor) {
+        WordOccurrence occurrence = new WordOccurrence(qName, 0, qName.length(), WordOccurrence.Kind.FOREIGN_LANGUAGE);
+        processor.test(occurrence);
+        int idx = qName.lastIndexOf('.');
+
+        while (idx > 0) {
+            qName = qName.substring(0, idx);
+            occurrence.init(qName, 0, qName.length(), WordOccurrence.Kind.FOREIGN_LANGUAGE);
+            processor.test(occurrence);
+            idx = qName.lastIndexOf('.');
+        }
+    }
 }
