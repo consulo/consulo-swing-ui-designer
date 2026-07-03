@@ -15,57 +15,50 @@
  */
 package com.intellij.uiDesigner.impl.quickFixes;
 
-import jakarta.annotation.Nonnull;
-import javax.swing.JComponent;
-
-import consulo.language.editor.CommonDataKeys;
-import consulo.ui.ex.action.ActionManager;
-import consulo.ui.ex.action.AnActionEvent;
-import consulo.ui.ex.action.IdeActions;
 import com.intellij.uiDesigner.impl.designSurface.GuiEditor;
 import com.intellij.uiDesigner.impl.propertyInspector.DesignerToolWindowManager;
 import com.intellij.uiDesigner.impl.propertyInspector.PropertyInspector;
-import consulo.ui.ex.action.AnAction;
+import consulo.language.editor.CommonDataKeys;
+import consulo.ui.annotation.RequiredUIAccess;
+import consulo.ui.ex.action.*;
+import jakarta.annotation.Nonnull;
+
+import javax.swing.*;
 
 /**
  * @author Anton Katilin
  * @author Vladimir Kondratyev
  */
-final class ShowHintAction extends AnAction
-{
-	private final QuickFixManager myManager;
+final class ShowHintAction extends AnAction implements AnActionWithSyncUpdate {
+    private final QuickFixManager myManager;
 
-	public ShowHintAction(@Nonnull final QuickFixManager manager, @Nonnull final JComponent component)
-	{
-		myManager = manager;
-		registerCustomShortcutSet(ActionManager.getInstance().getAction(IdeActions.ACTION_SHOW_INTENTION_ACTIONS).getShortcutSet(), component);
-	}
+    public ShowHintAction(@Nonnull final QuickFixManager manager, @Nonnull final JComponent component) {
+        myManager = manager;
+        registerCustomShortcutSet(ActionManager.getInstance().getAction(IdeActions.ACTION_SHOW_INTENTION_ACTIONS).getShortcutSet(), component);
+    }
 
-	@Override
-	public void actionPerformed(final AnActionEvent e)
-	{
-		final GuiEditor editor = myManager.getEditor();
-		if(editor == null)
-		{
-			return;
-		}
+    @RequiredUIAccess
+    @Override
+    public void actionPerformed(final AnActionEvent e) {
+        final GuiEditor editor = myManager.getEditor();
+        if (editor == null) {
+            return;
+        }
 
-		// 1. Show light bulb
-		myManager.showIntentionHint();
+        // 1. Show light bulb
+        myManager.showIntentionHint();
 
-		// 2. Commit possible non committed value and show popup
-		final PropertyInspector propertyInspector = DesignerToolWindowManager.getInstance(myManager.getEditor()).getPropertyInspector();
-		if(propertyInspector != null && propertyInspector.isEditing())
-		{
-			propertyInspector.stopEditing();
-		}
-		myManager.showIntentionPopup();
-	}
+        // 2. Commit possible non committed value and show popup
+        final PropertyInspector propertyInspector = DesignerToolWindowManager.getInstance(myManager.getEditor()).getPropertyInspector();
+        if (propertyInspector != null && propertyInspector.isEditing()) {
+            propertyInspector.stopEditing();
+        }
+        myManager.showIntentionPopup();
+    }
 
-	@Override
-	public void update(AnActionEvent e)
-	{
-		// Alt-Enter hotkey for editor takes precedence over this action
-		e.getPresentation().setEnabled(e.getData(CommonDataKeys.EDITOR) == null);
-	}
+    @Override
+    public void update(AnActionEvent e) {
+        // Alt-Enter hotkey for editor takes precedence over this action
+        e.getPresentation().setEnabled(e.getData(CommonDataKeys.EDITOR) == null);
+    }
 }

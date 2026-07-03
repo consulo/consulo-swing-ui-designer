@@ -60,6 +60,7 @@ import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.SimpleTextAttributes;
 import consulo.ui.ex.action.AnAction;
 import consulo.ui.ex.action.AnActionEvent;
+import consulo.ui.ex.action.AnActionWithSyncUpdate;
 import consulo.ui.ex.awt.DialogWrapper;
 import consulo.ui.ex.awt.Messages;
 import consulo.ui.ex.awt.event.DocumentAdapter;
@@ -86,10 +87,9 @@ import java.util.TreeSet;
 /**
  * @author yole
  */
-public class CreateSnapShotAction extends AnAction {
+public class CreateSnapShotAction extends AnAction implements AnActionWithSyncUpdate {
     private static final Logger LOG = Logger.getInstance(CreateSnapShotAction.class);
 
-    @RequiredUIAccess
     @Override
     public void update(AnActionEvent e) {
         final Project project = e.getData(Project.KEY);
@@ -108,6 +108,7 @@ public class CreateSnapShotAction extends AnAction {
         return false;
     }
 
+    @Override
     @RequiredUIAccess
     public void actionPerformed(AnActionEvent e) {
         final Project project = e.getData(Project.KEY);

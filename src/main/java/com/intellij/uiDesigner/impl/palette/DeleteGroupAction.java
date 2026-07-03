@@ -16,45 +16,49 @@
 
 package com.intellij.uiDesigner.impl.palette;
 
-import consulo.language.editor.CommonDataKeys;
-import consulo.project.Project;
-import consulo.ui.ex.awt.Messages;
 import com.intellij.uiDesigner.impl.UIDesignerBundle;
 import consulo.application.CommonBundle;
+import consulo.language.editor.CommonDataKeys;
+import consulo.project.Project;
 import consulo.ui.ex.action.AnAction;
 import consulo.ui.ex.action.AnActionEvent;
+import consulo.ui.ex.action.AnActionWithSyncUpdate;
+import consulo.ui.ex.awt.Messages;
 
 import java.util.ArrayList;
 
 /**
  * @author yole
  */
-public class DeleteGroupAction extends AnAction
-{
-  public void actionPerformed(AnActionEvent e) {
-    Project project = e.getData(CommonDataKeys.PROJECT);
-    GroupItem groupToBeRemoved = e.getData(GroupItem.DATA_KEY);
-    if (groupToBeRemoved == null || project == null) return;
+public class DeleteGroupAction extends AnAction implements AnActionWithSyncUpdate {
+    @Override
+    public void actionPerformed(AnActionEvent e) {
+        Project project = e.getData(CommonDataKeys.PROJECT);
+        GroupItem groupToBeRemoved = e.getData(GroupItem.DATA_KEY);
+        if (groupToBeRemoved == null || project == null) {
+            return;
+        }
 
-    if(!Palette.isRemovable(groupToBeRemoved)){
-      Messages.showInfoMessage(
-        project,
-        UIDesignerBundle.message("error.cannot.remove.default.group"),
-        CommonBundle.getErrorTitle()
-      );
-      return;
+        if (!Palette.isRemovable(groupToBeRemoved)) {
+            Messages.showInfoMessage(
+                project,
+                UIDesignerBundle.message("error.cannot.remove.default.group"),
+                CommonBundle.getErrorTitle()
+            );
+            return;
+        }
+
+        Palette palette = Palette.getInstance(project);
+        ArrayList<GroupItem> groups = new ArrayList<GroupItem>(palette.getGroups());
+        groups.remove(groupToBeRemoved);
+        palette.setGroups(groups);
     }
 
-    Palette palette = Palette.getInstance(project);
-    ArrayList<GroupItem> groups = new ArrayList<GroupItem>(palette.getGroups());
-    groups.remove(groupToBeRemoved);
-    palette.setGroups(groups);
-  }
-
-  @Override public void update(AnActionEvent e) {
-    Project project = e.getData(CommonDataKeys.PROJECT);
-    GroupItem groupItem = e.getData(GroupItem.DATA_KEY);
-    ComponentItem selectedItem = e.getData(ComponentItem.DATA_KEY);
-    e.getPresentation().setEnabled(project != null && groupItem != null && !groupItem.isReadOnly() && selectedItem == null);
-  }
+    @Override
+    public void update(AnActionEvent e) {
+        Project project = e.getData(CommonDataKeys.PROJECT);
+        GroupItem groupItem = e.getData(GroupItem.DATA_KEY);
+        ComponentItem selectedItem = e.getData(ComponentItem.DATA_KEY);
+        e.getPresentation().setEnabled(project != null && groupItem != null && !groupItem.isReadOnly() && selectedItem == null);
+    }
 }

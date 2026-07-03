@@ -22,76 +22,64 @@ import com.intellij.uiDesigner.impl.designSurface.GuiEditor;
 import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.action.AnAction;
 import consulo.ui.ex.action.AnActionEvent;
+import consulo.ui.ex.action.AnActionWithSyncUpdate;
 import consulo.ui.ex.action.Presentation;
 import consulo.ui.image.Image;
-
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 
 /**
  * @author yole
  */
-public abstract class RowColumnAction extends AnAction
-{
-	private final String myColumnText;
-	private final Image myColumnIcon;
-	private final String myRowText;
-	private final Image myRowIcon;
+public abstract class RowColumnAction extends AnAction implements AnActionWithSyncUpdate {
+    private final String myColumnText;
+    private final Image myColumnIcon;
+    private final String myRowText;
+    private final Image myRowIcon;
 
-	public RowColumnAction(final String columnText, @Nullable final Image columnIcon, final String rowText, @Nullable final Image rowIcon)
-	{
-		myColumnText = columnText;
-		myColumnIcon = columnIcon;
-		myRowText = rowText;
-		myRowIcon = rowIcon;
-	}
+    public RowColumnAction(final String columnText, @Nullable final Image columnIcon, final String rowText, @Nullable final Image rowIcon) {
+        myColumnText = columnText;
+        myColumnIcon = columnIcon;
+        myRowText = rowText;
+        myRowIcon = rowIcon;
+    }
 
-	@RequiredUIAccess
-	@Override
-	public void actionPerformed(@Nonnull final AnActionEvent e)
-	{
-		GuiEditor editor = FormEditingUtil.getEditorFromContext(e.getDataContext());
-		CaptionSelection selection = e.getData(CaptionSelection.DATA_KEY);
-		if(editor == null || selection == null || !editor.ensureEditable())
-		{
-			return;
-		}
-		actionPerformed(selection);
-		selection.getContainer().revalidate();
-		editor.refreshAndSave(true);
-	}
+    @RequiredUIAccess
+    @Override
+    public void actionPerformed(@Nonnull final AnActionEvent e) {
+        GuiEditor editor = FormEditingUtil.getEditorFromContext(e.getDataContext());
+        CaptionSelection selection = e.getData(CaptionSelection.DATA_KEY);
+        if (editor == null || selection == null || !editor.ensureEditable()) {
+            return;
+        }
+        actionPerformed(selection);
+        selection.getContainer().revalidate();
+        editor.refreshAndSave(true);
+    }
 
-	protected abstract void actionPerformed(CaptionSelection selection);
+    protected abstract void actionPerformed(CaptionSelection selection);
 
-	@RequiredUIAccess
-	@Override
-	public void update(@Nonnull final AnActionEvent e)
-	{
-		final Presentation presentation = e.getPresentation();
-		CaptionSelection selection = e.getData(CaptionSelection.DATA_KEY);
-		if(selection == null)
-		{
-			presentation.setEnabled(false);
-		}
-		else
-		{
-			presentation.setEnabled(selection.getContainer() != null && selection.getFocusedIndex() >= 0);
-			if(!selection.isRow())
-			{
-				presentation.setText(myColumnText);
-				if(myColumnIcon != null)
-				{
-					presentation.setIcon(myColumnIcon);
-				}
-			}
-			else
-			{
-				presentation.setText(myRowText);
-				if(myRowIcon != null)
-				{
-					presentation.setIcon(myRowIcon);
-				}
-			}
-		}
-	}
+    @Override
+    public void update(@Nonnull final AnActionEvent e) {
+        final Presentation presentation = e.getPresentation();
+        CaptionSelection selection = e.getData(CaptionSelection.DATA_KEY);
+        if (selection == null) {
+            presentation.setEnabled(false);
+        }
+        else {
+            presentation.setEnabled(selection.getContainer() != null && selection.getFocusedIndex() >= 0);
+            if (!selection.isRow()) {
+                presentation.setText(myColumnText);
+                if (myColumnIcon != null) {
+                    presentation.setIcon(myColumnIcon);
+                }
+            }
+            else {
+                presentation.setText(myRowText);
+                if (myRowIcon != null) {
+                    presentation.setIcon(myRowIcon);
+                }
+            }
+        }
+    }
 }

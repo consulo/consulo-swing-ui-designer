@@ -16,48 +16,54 @@
 
 package com.intellij.uiDesigner.impl.palette;
 
+import com.intellij.uiDesigner.impl.UIDesignerBundle;
 import consulo.application.CommonBundle;
-import consulo.ui.ex.action.AnActionEvent;
 import consulo.language.editor.CommonDataKeys;
 import consulo.project.Project;
-import consulo.ui.ex.awt.Messages;
-import com.intellij.uiDesigner.impl.UIDesignerBundle;
 import consulo.ui.ex.action.AnAction;
+import consulo.ui.ex.action.AnActionEvent;
+import consulo.ui.ex.action.AnActionWithSyncUpdate;
+import consulo.ui.ex.awt.Messages;
 
 /**
  * @author yole
  */
-public class DeleteComponentAction extends AnAction
-{
-  public void actionPerformed(AnActionEvent e) {
-    Project project = e.getData(CommonDataKeys.PROJECT);
-    ComponentItem selectedItem = e.getData(ComponentItem.DATA_KEY);
-    GroupItem groupItem = e.getData(GroupItem.DATA_KEY);
-    if (project == null || selectedItem == null || groupItem == null) return;
+public class DeleteComponentAction extends AnAction implements AnActionWithSyncUpdate {
+    @Override
+    public void actionPerformed(AnActionEvent e) {
+        Project project = e.getData(CommonDataKeys.PROJECT);
+        ComponentItem selectedItem = e.getData(ComponentItem.DATA_KEY);
+        GroupItem groupItem = e.getData(GroupItem.DATA_KEY);
+        if (project == null || selectedItem == null || groupItem == null) {
+            return;
+        }
 
-    if(!selectedItem.isRemovable()){
-      Messages.showInfoMessage(
-        project,
-        UIDesignerBundle.message("error.cannot.remove.default.palette"),
-        CommonBundle.getErrorTitle()
-      );
-      return;
+        if (!selectedItem.isRemovable()) {
+            Messages.showInfoMessage(
+                project,
+                UIDesignerBundle.message("error.cannot.remove.default.palette"),
+                CommonBundle.getErrorTitle()
+            );
+            return;
+        }
+
+        int rc = Messages.showYesNoDialog(project, UIDesignerBundle.message("delete.component.prompt", selectedItem.getClassShortName()),
+            UIDesignerBundle.message("delete.component.title"), Messages.getQuestionIcon());
+        if (rc != 0) {
+            return;
+        }
+
+        final Palette palette = Palette.getInstance(project);
+        palette.removeItem(groupItem, selectedItem);
+        palette.fireGroupsChanged();
     }
 
-    int rc = Messages.showYesNoDialog(project, UIDesignerBundle.message("delete.component.prompt", selectedItem.getClassShortName()),
-                                      UIDesignerBundle.message("delete.component.title"), Messages.getQuestionIcon());
-    if (rc != 0) return;
-
-    final Palette palette = Palette.getInstance(project);
-    palette.removeItem(groupItem, selectedItem);
-    palette.fireGroupsChanged();
-  }
-
-  @Override public void update(AnActionEvent e) {
-    Project project = e.getData(CommonDataKeys.PROJECT);
-    ComponentItem selectedItem = e.getData(ComponentItem.DATA_KEY);
-    GroupItem groupItem = e.getData(GroupItem.DATA_KEY);
-    e.getPresentation().setEnabled(project != null && selectedItem != null && groupItem != null &&
-                                   !selectedItem.isAnyComponent() && selectedItem.isRemovable());
-  }
+    @Override
+    public void update(AnActionEvent e) {
+        Project project = e.getData(CommonDataKeys.PROJECT);
+        ComponentItem selectedItem = e.getData(ComponentItem.DATA_KEY);
+        GroupItem groupItem = e.getData(GroupItem.DATA_KEY);
+        e.getPresentation().setEnabled(project != null && selectedItem != null && groupItem != null &&
+            !selectedItem.isAnyComponent() && selectedItem.isRemovable());
+    }
 }

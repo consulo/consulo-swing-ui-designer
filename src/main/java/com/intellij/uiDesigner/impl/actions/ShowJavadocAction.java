@@ -20,21 +20,19 @@ import consulo.logging.Logger;
 import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.action.AnAction;
 import consulo.ui.ex.action.AnActionEvent;
-
+import consulo.ui.ex.action.AnActionWithSyncUpdate;
 import jakarta.annotation.Nonnull;
 
 /**
  * @author Anton Katilin
  * @author Vladimir Kondratyev
  */
-public final class ShowJavadocAction extends AnAction
-{
-	private static final Logger LOG = Logger.getInstance(ShowJavadocAction.class);
+public final class ShowJavadocAction extends AnAction implements AnActionWithSyncUpdate {
+    private static final Logger LOG = Logger.getInstance(ShowJavadocAction.class);
 
-	@RequiredUIAccess
-	@Override
-	public void actionPerformed(@Nonnull final AnActionEvent e)
-	{
+    @RequiredUIAccess
+    @Override
+    public void actionPerformed(@Nonnull final AnActionEvent e) {
 //		final PropertyInspectorTable inspector = e.getData(PropertyInspectorTable.DATA_KEY);
 //		final IntrospectedProperty introspectedProperty = inspector.getSelectedIntrospectedProperty();
 //		final PsiClass aClass = inspector.getComponentClass();
@@ -75,13 +73,11 @@ public final class ShowJavadocAction extends AnAction
 //				//component1.requestFocus();
 //			}
 //		});
-	}
+    }
 
-	@RequiredUIAccess
-	@Override
-	public void update(@Nonnull final AnActionEvent e)
-	{
-		final PropertyInspectorTable inspector = e.getData(PropertyInspectorTable.DATA_KEY);
-		e.getPresentation().setEnabled(inspector != null && inspector.getSelectedIntrospectedProperty() != null && inspector.getComponentClass() != null);
-	}
+    @Override
+    public void update(@Nonnull final AnActionEvent e) {
+        final PropertyInspectorTable inspector = e.getData(PropertyInspectorTable.DATA_KEY);
+        e.getPresentation().setEnabled(inspector != null && inspector.getSelectedIntrospectedProperty() != null && inspector.getComponentClass() != null);
+    }
 }

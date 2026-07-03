@@ -16,62 +16,56 @@
 
 package com.intellij.uiDesigner.impl.palette;
 
-import consulo.ui.ex.action.AnAction;
-import consulo.ui.ex.action.AnActionEvent;
-import consulo.project.Project;
-import consulo.ui.ex.awt.Messages;
 import com.intellij.uiDesigner.impl.UIDesignerBundle;
 import consulo.application.CommonBundle;
+import consulo.project.Project;
 import consulo.ui.annotation.RequiredUIAccess;
-
+import consulo.ui.ex.action.AnAction;
+import consulo.ui.ex.action.AnActionEvent;
+import consulo.ui.ex.action.AnActionWithSyncUpdate;
+import consulo.ui.ex.awt.Messages;
+import consulo.uiDesigner.impl.localize.UIDesignerLocalize;
 import jakarta.annotation.Nonnull;
+
 import java.util.ArrayList;
 
 /**
  * @author yole
  */
-public class EditGroupAction extends AnAction
-{
-	@RequiredUIAccess
-	@Override
-	public void actionPerformed(@Nonnull AnActionEvent e)
-	{
-		Project project = e.getData(Project.KEY);
-		GroupItem groupToBeEdited = e.getData(GroupItem.DATA_KEY);
-		if(groupToBeEdited == null || project == null)
-		{
-			return;
-		}
+public class EditGroupAction extends AnAction implements AnActionWithSyncUpdate {
+    @RequiredUIAccess
+    @Override
+    public void actionPerformed(@Nonnull AnActionEvent e) {
+        Project project = e.getData(Project.KEY);
+        GroupItem groupToBeEdited = e.getData(GroupItem.DATA_KEY);
+        if (groupToBeEdited == null || project == null) {
+            return;
+        }
 
-		// Ask group name
-		final String groupName = Messages.showInputDialog(project, UIDesignerBundle.message("edit.enter.group.name"), UIDesignerBundle.message("title.edit.group"), Messages.getQuestionIcon(),
-				groupToBeEdited.getName(), null);
-		if(groupName == null || groupName.equals(groupToBeEdited.getName()))
-		{
-			return;
-		}
+        // Ask group name
+        final String groupName = Messages.showInputDialog(project, UIDesignerLocalize.editEnterGroupName().get(), UIDesignerLocalize.titleEditGroup().get(), Messages.getQuestionIcon(),
+            groupToBeEdited.getName(), null);
+        if (groupName == null || groupName.equals(groupToBeEdited.getName())) {
+            return;
+        }
 
-		Palette palette = Palette.getInstance(project);
-		final ArrayList<GroupItem> groups = palette.getGroups();
-		for(int i = groups.size() - 1; i >= 0; i--)
-		{
-			if(groupName.equals(groups.get(i).getName()))
-			{
-				Messages.showErrorDialog(project, UIDesignerBundle.message("error.group.name.unique"), CommonBundle.getErrorTitle());
-				return;
-			}
-		}
+        Palette palette = Palette.getInstance(project);
+        final ArrayList<GroupItem> groups = palette.getGroups();
+        for (int i = groups.size() - 1; i >= 0; i--) {
+            if (groupName.equals(groups.get(i).getName())) {
+                Messages.showErrorDialog(project, UIDesignerLocalize.errorGroupNameUnique().get(), CommonBundle.getErrorTitle());
+                return;
+            }
+        }
 
-		groupToBeEdited.setName(groupName);
-		palette.fireGroupsChanged();
-	}
+        groupToBeEdited.setName(groupName);
+        palette.fireGroupsChanged();
+    }
 
-	@RequiredUIAccess
-	@Override
-	public void update(@Nonnull AnActionEvent e)
-	{
-		Project project = e.getData(Project.KEY);
-		GroupItem groupItem = e.getData(GroupItem.DATA_KEY);
-		e.getPresentation().setEnabled(project != null && groupItem != null && !groupItem.isReadOnly());
-	}
+    @Override
+    public void update(@Nonnull AnActionEvent e) {
+        Project project = e.getData(Project.KEY);
+        GroupItem groupItem = e.getData(GroupItem.DATA_KEY);
+        e.getPresentation().setEnabled(project != null && groupItem != null && !groupItem.isReadOnly());
+    }
 }

@@ -22,54 +22,58 @@
  */
 package com.intellij.uiDesigner.impl.actions;
 
-import consulo.fileEditor.FileEditorManager;
-import consulo.ui.ex.action.AnAction;
-import consulo.ui.ex.action.AnActionEvent;
-import consulo.language.editor.CommonDataKeys;
-import consulo.fileEditor.FileEditor;
-import consulo.project.Project;
-import consulo.util.lang.ref.Ref;
 import com.intellij.uiDesigner.impl.FormEditingUtil;
 import com.intellij.uiDesigner.impl.LoaderFactory;
 import com.intellij.uiDesigner.impl.designSurface.GuiEditor;
 import com.intellij.uiDesigner.impl.editor.UIFormEditor;
-import com.intellij.uiDesigner.lw.IComponent;
 import com.intellij.uiDesigner.impl.radComponents.RadErrorComponent;
+import com.intellij.uiDesigner.lw.IComponent;
+import consulo.fileEditor.FileEditor;
+import consulo.fileEditor.FileEditorManager;
+import consulo.language.editor.CommonDataKeys;
+import consulo.project.Project;
+import consulo.ui.ex.action.AnAction;
+import consulo.ui.ex.action.AnActionEvent;
+import consulo.ui.ex.action.AnActionWithSyncUpdate;
+import consulo.util.lang.ref.Ref;
 
-public class ReloadCustomComponentsAction extends AnAction {
-  public void actionPerformed(AnActionEvent e) {
-    Project project = e.getData(CommonDataKeys.PROJECT);
-    if (project == null) return;
-    LoaderFactory.getInstance(project).clearClassLoaderCache();
-    final FileEditor[] fileEditors = FileEditorManager.getInstance(project).getAllEditors();
-    for(FileEditor editor: fileEditors) {
-      if (editor instanceof UIFormEditor) {
-        ((UIFormEditor) editor).getEditor().readFromFile(true);
-      }
-    }
-  }
-
-  @Override
-  public void update(AnActionEvent e) {
-    final GuiEditor editor = FormEditingUtil.getActiveEditor(e.getDataContext());
-    e.getPresentation().setVisible(editor != null && haveCustomComponents(editor));
-  }
-
-  private static boolean haveCustomComponents(final GuiEditor editor) {
-    // quick & dirty check
-    if (editor.isFormInvalid()) {
-      return true;
-    }
-    final Ref<Boolean> result = new Ref<Boolean>();
-    FormEditingUtil.iterate(editor.getRootContainer(), new FormEditingUtil.ComponentVisitor() {
-      public boolean visit(final IComponent component) {
-        if (component instanceof RadErrorComponent || !component.getComponentClassName().startsWith("javax.swing")) {
-          result.set(Boolean.TRUE);
-          return false;
+public class ReloadCustomComponentsAction extends AnAction implements AnActionWithSyncUpdate {
+    @Override
+    public void actionPerformed(AnActionEvent e) {
+        Project project = e.getData(CommonDataKeys.PROJECT);
+        if (project == null) {
+            return;
         }
-        return true;
-      }
-    });
-    return !result.isNull();
-  }
+        LoaderFactory.getInstance(project).clearClassLoaderCache();
+        final FileEditor[] fileEditors = FileEditorManager.getInstance(project).getAllEditors();
+        for (FileEditor editor : fileEditors) {
+            if (editor instanceof UIFormEditor) {
+                ((UIFormEditor) editor).getEditor().readFromFile(true);
+            }
+        }
+    }
+
+    @Override
+    public void update(AnActionEvent e) {
+        final GuiEditor editor = FormEditingUtil.getActiveEditor(e.getDataContext());
+        e.getPresentation().setVisible(editor != null && haveCustomComponents(editor));
+    }
+
+    private static boolean haveCustomComponents(final GuiEditor editor) {
+        // quick & dirty check
+        if (editor.isFormInvalid()) {
+            return true;
+        }
+        final Ref<Boolean> result = new Ref<Boolean>();
+        FormEditingUtil.iterate(editor.getRootContainer(), new FormEditingUtil.ComponentVisitor() {
+            public boolean visit(final IComponent component) {
+                if (component instanceof RadErrorComponent || !component.getComponentClassName().startsWith("javax.swing")) {
+                    result.set(Boolean.TRUE);
+                    return false;
+                }
+                return true;
+            }
+        });
+        return !result.isNull();
+    }
 }

@@ -65,6 +65,7 @@ import consulo.process.event.ProcessListener;
 import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.action.AnAction;
 import consulo.ui.ex.action.AnActionEvent;
+import consulo.ui.ex.action.AnActionWithSyncUpdate;
 import consulo.ui.ex.awt.Messages;
 import consulo.ui.image.Image;
 import consulo.uiDesigner.impl.localize.UIDesignerLocalize;
@@ -87,7 +88,7 @@ import java.util.Set;
  * @author Vladimir Kondratyev
  */
 @ActionImpl(id = "GuiDesigner.PreviewForm")
-public final class PreviewFormAction extends AnAction {
+public final class PreviewFormAction extends AnAction implements AnActionWithSyncUpdate {
     private static final Logger LOG = Logger.getInstance(PreviewFormAction.class);
 
     /**

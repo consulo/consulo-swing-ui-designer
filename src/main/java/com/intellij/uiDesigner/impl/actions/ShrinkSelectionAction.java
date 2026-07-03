@@ -15,59 +15,56 @@
  */
 package com.intellij.uiDesigner.impl.actions;
 
-import java.util.Stack;
-
 import com.intellij.uiDesigner.impl.FormEditingUtil;
 import com.intellij.uiDesigner.impl.SelectionState;
 import com.intellij.uiDesigner.impl.componentTree.ComponentPtr;
 import com.intellij.uiDesigner.impl.componentTree.ComponentTreeBuilder;
 import com.intellij.uiDesigner.impl.designSurface.GuiEditor;
 import com.intellij.uiDesigner.impl.propertyInspector.DesignerToolWindowManager;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.action.AnAction;
 import consulo.ui.ex.action.AnActionEvent;
+import consulo.ui.ex.action.AnActionWithSyncUpdate;
 import consulo.ui.ex.action.Presentation;
+
+import java.util.Stack;
 
 /**
  * @author Anton Katilin
  * @author Vladimir Kondratyev
  */
-public final class ShrinkSelectionAction extends AnAction
-{
-	@Override
-	public void actionPerformed(final AnActionEvent e)
-	{
-		final GuiEditor editor = FormEditingUtil.getEditorFromContext(e.getDataContext());
-		assert editor != null;
-		final SelectionState selectionState = editor.getSelectionState();
-		selectionState.setInsideChange(true);
-		ComponentTreeBuilder builder = DesignerToolWindowManager.getInstance(editor).getComponentTreeBuilder();
-		builder.beginUpdateSelection();
+public final class ShrinkSelectionAction extends AnAction implements AnActionWithSyncUpdate {
+    @RequiredUIAccess
+    @Override
+    public void actionPerformed(final AnActionEvent e) {
+        final GuiEditor editor = FormEditingUtil.getEditorFromContext(e.getDataContext());
+        assert editor != null;
+        final SelectionState selectionState = editor.getSelectionState();
+        selectionState.setInsideChange(true);
+        ComponentTreeBuilder builder = DesignerToolWindowManager.getInstance(editor).getComponentTreeBuilder();
+        builder.beginUpdateSelection();
 
-		try
-		{
-			final Stack<ComponentPtr[]> history = selectionState.getSelectionHistory();
-			history.pop();
-			SelectionState.restoreSelection(editor, history.peek());
-		}
-		finally
-		{
-			builder.endUpdateSelection();
-			selectionState.setInsideChange(false);
-		}
-	}
+        try {
+            final Stack<ComponentPtr[]> history = selectionState.getSelectionHistory();
+            history.pop();
+            SelectionState.restoreSelection(editor, history.peek());
+        }
+        finally {
+            builder.endUpdateSelection();
+            selectionState.setInsideChange(false);
+        }
+    }
 
-	@Override
-	public void update(final AnActionEvent e)
-	{
-		final Presentation presentation = e.getPresentation();
-		final GuiEditor editor = FormEditingUtil.getEditorFromContext(e.getDataContext());
-		if(editor == null)
-		{
-			presentation.setEnabled(false);
-			return;
-		}
+    @Override
+    public void update(final AnActionEvent e) {
+        final Presentation presentation = e.getPresentation();
+        final GuiEditor editor = FormEditingUtil.getEditorFromContext(e.getDataContext());
+        if (editor == null) {
+            presentation.setEnabled(false);
+            return;
+        }
 
-		final Stack<ComponentPtr[]> history = editor.getSelectionState().getSelectionHistory();
-		presentation.setEnabled(history.size() > 1);
-	}
+        final Stack<ComponentPtr[]> history = editor.getSelectionState().getSelectionHistory();
+        presentation.setEnabled(history.size() > 1);
+    }
 }

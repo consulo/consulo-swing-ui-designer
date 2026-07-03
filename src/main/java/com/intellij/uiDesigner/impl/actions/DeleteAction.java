@@ -16,75 +16,63 @@
 
 package com.intellij.uiDesigner.impl.actions;
 
-import consulo.ui.ex.action.AnAction;
-import consulo.ui.ex.action.AnActionEvent;
-import consulo.ui.ex.action.Presentation;
 import com.intellij.uiDesigner.impl.CaptionSelection;
 import com.intellij.uiDesigner.impl.FormEditingUtil;
-import com.intellij.uiDesigner.impl.UIDesignerBundle;
+import com.intellij.uiDesigner.impl.UIDesignerIcons;
 import com.intellij.uiDesigner.impl.designSurface.GuiEditor;
 import consulo.ui.annotation.RequiredUIAccess;
-import com.intellij.uiDesigner.impl.UIDesignerIcons;
-
+import consulo.ui.ex.action.AnAction;
+import consulo.ui.ex.action.AnActionEvent;
+import consulo.ui.ex.action.AnActionWithSyncUpdate;
+import consulo.ui.ex.action.Presentation;
+import consulo.uiDesigner.impl.localize.UIDesignerLocalize;
 import jakarta.annotation.Nonnull;
 
 /**
  * @author yole
  */
-public final class DeleteAction extends AnAction
-{
-	public DeleteAction()
-	{
-		getTemplatePresentation().setIcon(UIDesignerIcons.DeleteCell);
-	}
+public final class DeleteAction extends AnAction implements AnActionWithSyncUpdate {
+    public DeleteAction() {
+        getTemplatePresentation().setIcon(UIDesignerIcons.DeleteCell);
+    }
 
-	@RequiredUIAccess
-	@Override
-	public void actionPerformed(@Nonnull final AnActionEvent e)
-	{
-		final GuiEditor editor = FormEditingUtil.getEditorFromContext(e.getDataContext());
-		CaptionSelection selection = e.getData(CaptionSelection.DATA_KEY);
-		if(editor == null || selection == null || selection.getFocusedIndex() < 0)
-		{
-			return;
-		}
-		FormEditingUtil.deleteRowOrColumn(editor, selection.getContainer(), selection.getSelection(), selection.isRow());
-		selection.getContainer().revalidate();
-	}
+    @RequiredUIAccess
+    @Override
+    public void actionPerformed(@Nonnull final AnActionEvent e) {
+        final GuiEditor editor = FormEditingUtil.getEditorFromContext(e.getDataContext());
+        CaptionSelection selection = e.getData(CaptionSelection.DATA_KEY);
+        if (editor == null || selection == null || selection.getFocusedIndex() < 0) {
+            return;
+        }
+        FormEditingUtil.deleteRowOrColumn(editor, selection.getContainer(), selection.getSelection(), selection.isRow());
+        selection.getContainer().revalidate();
+    }
 
-	@RequiredUIAccess
-	@Override
-	public void update(@Nonnull final AnActionEvent e)
-	{
-		final Presentation presentation = e.getPresentation();
-		CaptionSelection selection = e.getData(CaptionSelection.DATA_KEY);
-		if(selection == null || selection.getContainer() == null)
-		{
-			presentation.setVisible(false);
-			return;
-		}
-		presentation.setVisible(true);
-		if(selection.getSelection().length > 1)
-		{
-			presentation.setText(!selection.isRow() ? UIDesignerBundle.message("action.delete.columns") : UIDesignerBundle.message("action.delete.rows"));
-		}
-		else
-		{
-			presentation.setText(!selection.isRow() ? UIDesignerBundle.message("action.delete.column") : UIDesignerBundle.message("action.delete.row"));
-		}
+    @Override
+    public void update(@Nonnull final AnActionEvent e) {
+        final Presentation presentation = e.getPresentation();
+        CaptionSelection selection = e.getData(CaptionSelection.DATA_KEY);
+        if (selection == null || selection.getContainer() == null) {
+            presentation.setVisible(false);
+            return;
+        }
+        presentation.setVisible(true);
+        if (selection.getSelection().length > 1) {
+            presentation.setText(!selection.isRow() ? UIDesignerLocalize.actionDeleteColumns() : UIDesignerLocalize.actionDeleteRows());
+        }
+        else {
+            presentation.setText(!selection.isRow() ? UIDesignerLocalize.actionDeleteColumn() : UIDesignerLocalize.actionDeleteRow());
+        }
 
-		int minCellCount = selection.getContainer().getGridLayoutManager().getMinCellCount();
-		if(selection.getContainer().getGridCellCount(selection.isRow()) - selection.getSelection().length < minCellCount)
-		{
-			presentation.setEnabled(false);
-		}
-		else if(selection.getFocusedIndex() < 0)
-		{
-			presentation.setEnabled(false);
-		}
-		else
-		{
-			presentation.setEnabled(true);
-		}
-	}
+        int minCellCount = selection.getContainer().getGridLayoutManager().getMinCellCount();
+        if (selection.getContainer().getGridCellCount(selection.isRow()) - selection.getSelection().length < minCellCount) {
+            presentation.setEnabled(false);
+        }
+        else if (selection.getFocusedIndex() < 0) {
+            presentation.setEnabled(false);
+        }
+        else {
+            presentation.setEnabled(true);
+        }
+    }
 }
