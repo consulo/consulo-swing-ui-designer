@@ -24,6 +24,7 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.impl.GuiFormFileType;
 import com.intellij.uiDesigner.impl.UIDesignerBundle;
 import com.intellij.uiDesigner.lw.StringDescriptor;
+import consulo.annotation.access.RequiredReadAction;
 import consulo.language.editor.CommonDataKeys;
 import consulo.language.editor.LangDataKeys;
 import consulo.language.psi.PsiElement;
@@ -33,10 +34,15 @@ import consulo.language.psi.util.PsiTreeUtil;
 import consulo.project.Project;
 import consulo.project.content.scope.ProjectScopes;
 import consulo.project.ui.wm.WindowManager;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.action.AnAction;
 import consulo.ui.ex.action.AnActionEvent;
+import consulo.ui.ex.action.AnActionWithAsyncUpdate;
 import consulo.ui.ex.action.AnActionWithSyncUpdate;
+import consulo.ui.ex.action.coroutine.ActionSafeReadLock;
 import consulo.ui.ex.awtUnsafe.TargetAWT;
+import consulo.uiDesigner.impl.localize.UIDesignerLocalize;
+import consulo.util.concurrent.coroutine.Coroutine;
 import jakarta.annotation.Nullable;
 
 import javax.swing.*;
@@ -46,10 +52,11 @@ import java.util.HashMap;
 /**
  * @author yole
  */
-public class AddComponentAction extends AnAction implements AnActionWithSyncUpdate {
+public class AddComponentAction extends AnAction implements AnActionWithAsyncUpdate {
+    @RequiredUIAccess
     @Override
     public void actionPerformed(AnActionEvent e) {
-        Project project = e.getData(CommonDataKeys.PROJECT);
+        Project project = e.getData(Project.KEY);
         if (project == null) {
             return;
         }
@@ -84,7 +91,7 @@ public class AddComponentAction extends AnAction implements AnActionWithSyncUpda
         );
         Window parentWindow = TargetAWT.to(WindowManager.getInstance().suggestParentWindow(project));
         final ComponentItemDialog dialog = new ComponentItemDialog(project, parentWindow, itemToBeAdded, false);
-        dialog.setTitle(UIDesignerBundle.message("title.add.component"));
+        dialog.setTitle(UIDesignerLocalize.titleAddComponent());
         dialog.showGroupChooser(groupItem);
         dialog.show();
         if (!dialog.isOK()) {
@@ -126,21 +133,24 @@ public class AddComponentAction extends AnAction implements AnActionWithSyncUpda
     }
 
     @Override
-    public void update(AnActionEvent e) {
-        Project project = e.getData(CommonDataKeys.PROJECT);
-        if (e.getData(GroupItem.DATA_KEY) != null ||
-            e.getData(ComponentItem.DATA_KEY) != null) {
-            e.getPresentation().setVisible(true);
-            GroupItem groupItem = e.getData(GroupItem.DATA_KEY);
-            e.getPresentation().setEnabled(project != null && (groupItem == null || !groupItem.isReadOnly()));
-        }
-        else {
-            PsiFile psiFile = e.getData(LangDataKeys.PSI_FILE);
-            e.getPresentation().setVisible(psiFile != null && findElementToAdd(psiFile) != null);
-        }
+    public Coroutine<?, ?> updateAsync(AnActionEvent e) {
+        return ActionSafeReadLock.run(e, presentation -> {
+            Project project = e.getData(Project.KEY);
+            if (e.getData(GroupItem.DATA_KEY) != null ||
+                e.getData(ComponentItem.DATA_KEY) != null) {
+                e.getPresentation().setVisible(true);
+                GroupItem groupItem = e.getData(GroupItem.DATA_KEY);
+                e.getPresentation().setEnabled(project != null && (groupItem == null || !groupItem.isReadOnly()));
+            }
+            else {
+                PsiFile psiFile = e.getData(LangDataKeys.PSI_FILE);
+                e.getPresentation().setVisible(psiFile != null && findElementToAdd(psiFile) != null);
+            }
+        }).toCoroutine();
     }
 
     @Nullable
+    @RequiredReadAction
     private static PsiElement findElementToAdd(final PsiFile psiFile) {
         if (psiFile.getFileType().equals(GuiFormFileType.INSTANCE)) {
             return psiFile;
