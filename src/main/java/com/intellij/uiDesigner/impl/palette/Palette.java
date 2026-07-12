@@ -287,10 +287,7 @@ public final class Palette implements PersistentStateComponent<Element>, Disposa
 
 	public void writeExternal(@Nonnull final Element element)
 	{
-		ApplicationManager.getApplication().assertIsDispatchThread();
-
 		writeGroups(element);
-		//element.setAttribute(ATTRIBUTE_VERSION, "2");
 	}
 
 	/**
