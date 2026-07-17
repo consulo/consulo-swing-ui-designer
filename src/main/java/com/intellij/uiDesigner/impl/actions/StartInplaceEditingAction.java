@@ -17,12 +17,15 @@ package com.intellij.uiDesigner.impl.actions;
 
 import consulo.ui.ex.action.AnAction;
 import consulo.ui.ex.action.AnActionEvent;
+import consulo.ui.ex.action.AnActionWithAsyncUpdate;
 import com.intellij.uiDesigner.impl.FormEditingUtil;
 import com.intellij.uiDesigner.impl.radComponents.RadComponent;
 import com.intellij.uiDesigner.impl.designSurface.GuiEditor;
 import com.intellij.uiDesigner.impl.propertyInspector.Property;
 import com.intellij.uiDesigner.impl.propertyInspector.InplaceContext;
 import consulo.ui.ex.action.Presentation;
+import consulo.ui.ex.coroutine.UIAction;
+import consulo.util.concurrent.coroutine.Coroutine;
 
 import jakarta.annotation.Nullable;
 
@@ -32,7 +35,7 @@ import java.util.ArrayList;
  * @author Anton Katilin
  * @author Vladimir Kondratyev
  */
-public final class StartInplaceEditingAction extends AnAction{
+public final class StartInplaceEditingAction extends AnAction implements AnActionWithAsyncUpdate {
 
   private GuiEditor myEditor;
 
@@ -52,18 +55,22 @@ public final class StartInplaceEditingAction extends AnAction{
                                                           component.getDefaultInplaceEditorBounds(), new InplaceContext(true));
   }
 
-  public void update(final AnActionEvent e) {
-    final Presentation presentation = e.getPresentation();
-    final ArrayList<RadComponent> selection = FormEditingUtil.getAllSelectedComponents(myEditor);
+  @Override
+  public Coroutine<?, ?> updateAsync(final AnActionEvent e) {
+    return Coroutine.first(UIAction.apply(input -> {
+      final Presentation presentation = e.getPresentation();
+      final ArrayList<RadComponent> selection = FormEditingUtil.getAllSelectedComponents(myEditor);
 
-    // Inplace editing can be started only if single component is selected
-    if(selection.size() != 1){
-      presentation.setEnabled(false);
-      return;
-    }
+      // Inplace editing can be started only if single component is selected
+      if(selection.size() != 1){
+        presentation.setEnabled(false);
+        return input;
+      }
 
-    // Selected component should have "inplace" property
-    final RadComponent component = selection.get(0);
-    presentation.setEnabled(component.getDefaultInplaceProperty() != null);
+      // Selected component should have "inplace" property
+      final RadComponent component = selection.get(0);
+      presentation.setEnabled(component.getDefaultInplaceProperty() != null);
+      return input;
+    }));
   }
 }

@@ -32,6 +32,7 @@ import consulo.module.Module;
 import consulo.project.Project;
 import consulo.ui.ex.action.AnAction;
 import consulo.ui.ex.action.AnActionEvent;
+import consulo.ui.ex.action.AnActionWithSyncUpdate;
 import consulo.ui.ex.awt.Messages;
 import consulo.virtualFileSystem.VirtualFile;
 
@@ -41,7 +42,7 @@ import java.text.MessageFormat;
  * @author Anton Katilin
  * @author Vladimir Kondratyev
  */
-public final class DataBindingWizardAction extends AnAction
+public final class DataBindingWizardAction extends AnAction implements AnActionWithSyncUpdate
 {
 	private static final Logger LOG = Logger.getInstance(DataBindingWizardAction.class);
 
@@ -140,6 +141,7 @@ public final class DataBindingWizardAction extends AnAction
 		}
 	}
 
+	@Override
 	public void update(final AnActionEvent e)
 	{
 		e.getPresentation().setVisible(FormEditingUtil.getActiveEditor(e.getDataContext()) != null);

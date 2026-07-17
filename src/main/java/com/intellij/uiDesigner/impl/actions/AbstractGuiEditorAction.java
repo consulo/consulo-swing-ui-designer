@@ -17,9 +17,13 @@
 package com.intellij.uiDesigner.impl.actions;
 
 import consulo.application.dumb.DumbAware;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.action.AnAction;
 import consulo.ui.ex.action.AnActionEvent;
+import consulo.ui.ex.action.AnActionWithAsyncUpdate;
+import consulo.ui.ex.coroutine.UIAction;
 import consulo.undoRedo.CommandProcessor;
+import consulo.util.concurrent.coroutine.Coroutine;
 import com.intellij.uiDesigner.impl.FormEditingUtil;
 import com.intellij.uiDesigner.impl.designSurface.GuiEditor;
 import com.intellij.uiDesigner.impl.radComponents.RadComponent;
@@ -32,7 +36,7 @@ import java.util.List;
 /**
  * @author yole
  */
-public abstract class AbstractGuiEditorAction extends AnAction implements DumbAware
+public abstract class AbstractGuiEditorAction extends AnAction implements DumbAware, AnActionWithAsyncUpdate
 {
   private final boolean myModifying;
 
@@ -70,20 +74,25 @@ public abstract class AbstractGuiEditorAction extends AnAction implements DumbAw
 
   protected abstract void actionPerformed(final GuiEditor editor, final List<RadComponent> selection, final AnActionEvent e);
 
-  public final void update(AnActionEvent e) {
-    GuiEditor editor = FormEditingUtil.getEditorFromContext(e.getDataContext());
-    if (editor == null) {
-      e.getPresentation().setVisible(false);
-      e.getPresentation().setEnabled(false);
-    }
-    else {
-      e.getPresentation().setVisible(true);
-      e.getPresentation().setEnabled(true);
-      final ArrayList<RadComponent> selection = FormEditingUtil.getSelectedComponents(editor);
-      update(editor, selection, e);
-    }
+  @Override
+  public final Coroutine<?, ?> updateAsync(AnActionEvent e) {
+    return Coroutine.first(UIAction.apply(input -> {
+      GuiEditor editor = FormEditingUtil.getEditorFromContext(e.getDataContext());
+      if (editor == null) {
+        e.getPresentation().setVisible(false);
+        e.getPresentation().setEnabled(false);
+      }
+      else {
+        e.getPresentation().setVisible(true);
+        e.getPresentation().setEnabled(true);
+        final ArrayList<RadComponent> selection = FormEditingUtil.getSelectedComponents(editor);
+        update(editor, selection, e);
+      }
+      return input;
+    }));
   }
 
+  @RequiredUIAccess
   protected void update(@Nonnull GuiEditor editor, final ArrayList<RadComponent> selection, final AnActionEvent e) {
   }
 
