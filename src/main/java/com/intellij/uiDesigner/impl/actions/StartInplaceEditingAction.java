@@ -15,6 +15,7 @@
  */
 package com.intellij.uiDesigner.impl.actions;
 
+import consulo.ui.UIAction;
 import consulo.ui.ex.action.AnAction;
 import consulo.ui.ex.action.AnActionEvent;
 import consulo.ui.ex.action.AnActionWithAsyncUpdate;
@@ -24,7 +25,6 @@ import com.intellij.uiDesigner.impl.designSurface.GuiEditor;
 import com.intellij.uiDesigner.impl.propertyInspector.Property;
 import com.intellij.uiDesigner.impl.propertyInspector.InplaceContext;
 import consulo.ui.ex.action.Presentation;
-import consulo.ui.ex.coroutine.UIAction;
 import consulo.util.concurrent.coroutine.Coroutine;
 
 import jakarta.annotation.Nullable;

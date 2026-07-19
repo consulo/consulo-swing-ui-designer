@@ -27,12 +27,12 @@ import com.intellij.java.language.psi.util.PsiMethodUtil;
 import com.intellij.java.language.psi.util.PsiUtil;
 import com.intellij.uiDesigner.compiler.AlienFormFileException;
 import com.intellij.uiDesigner.compiler.Utils;
-import com.intellij.uiDesigner.impl.UIDesignerBundle;
 import com.intellij.uiDesigner.impl.binding.FormClassIndex;
 import com.intellij.uiDesigner.lw.LwRootContainer;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.application.ApplicationManager;
 import consulo.codeEditor.Editor;
+import consulo.codeEditor.EditorKeys;
 import consulo.language.editor.CommonDataKeys;
 import consulo.language.editor.PlatformDataKeys;
 import consulo.language.editor.refactoring.rename.SuggestedNameInfo;
@@ -43,12 +43,15 @@ import consulo.language.psi.util.PsiTreeUtil;
 import consulo.language.util.IncorrectOperationException;
 import consulo.logging.Logger;
 import consulo.project.Project;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.action.AnAction;
 import consulo.ui.ex.action.AnActionEvent;
-import consulo.ui.ex.action.AnActionWithSyncUpdate;
+import consulo.ui.ex.action.AnActionWithAsyncUpdate;
+import consulo.ui.ex.action.coroutine.ActionSafeReadLock;
 import consulo.ui.ex.awt.Messages;
 import consulo.uiDesigner.impl.localize.UIDesignerLocalize;
 import consulo.undoRedo.CommandProcessor;
+import consulo.util.concurrent.coroutine.Coroutine;
 
 import javax.swing.*;
 import java.util.Collections;
@@ -57,9 +60,11 @@ import java.util.List;
 /**
  * @author yole
  */
-public class GenerateMainAction extends AnAction implements AnActionWithSyncUpdate {
+public class GenerateMainAction extends AnAction implements AnActionWithAsyncUpdate {
     private static final Logger LOG = Logger.getInstance(GenerateMainAction.class);
 
+    @Override
+    @RequiredUIAccess
     public void actionPerformed(AnActionEvent e) {
         final Project project = e.getData(CommonDataKeys.PROJECT);
         assert project != null;
@@ -82,7 +87,7 @@ public class GenerateMainAction extends AnAction implements AnActionWithSyncUpda
         }
         catch (AlienFormFileException ex) {
             Messages.showMessageDialog(project, "The form bound to the class is not a valid IntelliJ IDEA form",
-                UIDesignerBundle.message("generate.main.title"), Messages.getErrorIcon());
+                UIDesignerLocalize.generateMainTitle().get(), Messages.getErrorIcon());
             return;
         }
         catch (Exception ex) {
@@ -91,14 +96,14 @@ public class GenerateMainAction extends AnAction implements AnActionWithSyncUpda
         }
 
         if (rootContainer.getComponentCount() == 0) {
-            Messages.showMessageDialog(project, UIDesignerBundle.message("generate.main.empty.form"),
-                UIDesignerBundle.message("generate.main.title"), Messages.getErrorIcon());
+            Messages.showMessageDialog(project, UIDesignerLocalize.generateMainEmptyForm().get(),
+                UIDesignerLocalize.generateMainTitle().get(), Messages.getErrorIcon());
             return;
         }
         String rootBinding = rootContainer.getComponent(0).getBinding();
         if (rootBinding == null || psiClass.findFieldByName(rootBinding, true) == null) {
-            Messages.showMessageDialog(project, UIDesignerBundle.message("generate.main.no.root.binding"),
-                UIDesignerBundle.message("generate.main.title"), Messages.getErrorIcon());
+            Messages.showMessageDialog(project, UIDesignerLocalize.generateMainNoRootBinding().get(),
+                UIDesignerLocalize.generateMainTitle().get(), Messages.getErrorIcon());
             return;
         }
 
@@ -136,17 +141,17 @@ public class GenerateMainAction extends AnAction implements AnActionWithSyncUpda
     }
 
     @Override
-    public void update(AnActionEvent e) {
-        e.getPresentation().setVisible(isActionEnabled(e));
+    public Coroutine<?, ?> updateAsync(AnActionEvent e) {
+        return ActionSafeReadLock.run(e, presentation -> presentation.setEnabledAndVisible(isActionEnabled(e))).toCoroutine();
     }
 
     @RequiredReadAction
     private static boolean isActionEnabled(final AnActionEvent e) {
-        Project project = e.getData(CommonDataKeys.PROJECT);
+        Project project = e.getData(Project.KEY);
         if (project == null) {
             return false;
         }
-        Editor editor = e.getData(PlatformDataKeys.EDITOR);
+        Editor editor = e.getData(EditorKeys.EDITOR_SNAPSHOT);
         if (editor == null) {
             return false;
         }
