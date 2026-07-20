@@ -33,9 +33,13 @@ import consulo.module.content.ProjectFileIndex;
 import consulo.module.content.ProjectRootManager;
 import consulo.project.Project;
 import consulo.ui.ex.action.AnActionEvent;
+import consulo.ui.ex.action.AnActionWithAsyncUpdate;
 import consulo.ui.ex.action.Presentation;
+import consulo.ui.ex.action.coroutine.ActionSafeReadLock;
 import consulo.ui.image.Image;
 import consulo.uiDesigner.impl.localize.UIDesignerLocalize;
+import consulo.util.concurrent.coroutine.Coroutine;
+import consulo.util.concurrent.coroutine.step.CallSubroutine;
 import consulo.util.lang.StringUtil;
 import jakarta.annotation.Nullable;
 import org.jetbrains.annotations.NonNls;
@@ -46,34 +50,36 @@ import java.io.InputStream;
 /**
  * @author yole
  */
-public abstract class AbstractCreateFormAction extends CreateElementActionBase implements DumbAware {
+public abstract class AbstractCreateFormAction extends CreateElementActionBase implements DumbAware, AnActionWithAsyncUpdate {
     public AbstractCreateFormAction(LocalizeValue text, LocalizeValue description, Image icon) {
         super(text, description, icon);
     }
 
     @Override
-    public void update(final AnActionEvent e) {
-        super.update(e);
-        final Project project = e.getData(CommonDataKeys.PROJECT);
-        final Presentation presentation = e.getPresentation();
-        if (presentation.isEnabled()) {
-            final Module module = e.getData(LangDataKeys.MODULE);
-            if (module != null && ModuleUtilCore.getExtension(module, JavaModuleExtension.class) != null) {
-                final IdeView view = e.getData(IdeView.KEY);
-                if (view != null) {
-                    final ProjectFileIndex projectFileIndex = ProjectRootManager.getInstance(project).getFileIndex();
-                    final PsiDirectory[] dirs = view.getDirectories();
-                    for (final PsiDirectory dir : dirs) {
-                        if (projectFileIndex.isInSourceContent(dir.getVirtualFile()) && JavaDirectoryService.getInstance().getPackage(dir) != null) {
-                            return;
+    public Coroutine<?, ?> updateAsync(AnActionEvent e) {
+        return CallSubroutine.call(() -> super.updateAsync(e))
+            .toCoroutine()
+            .then(ActionSafeReadLock.run(e, presentation -> {
+                final Project project = e.getData(Project.KEY);
+                if (project != null && presentation.isEnabled()) {
+                    final Module module = e.getData(Module.KEY);
+                    if (module != null && ModuleUtilCore.getExtension(module, JavaModuleExtension.class) != null) {
+                        final IdeView view = e.getData(IdeView.KEY);
+                        if (view != null) {
+                            final ProjectFileIndex projectFileIndex = ProjectRootManager.getInstance(project).getFileIndex();
+                            final PsiDirectory[] dirs = view.getDirectories();
+                            for (final PsiDirectory dir : dirs) {
+                                if (projectFileIndex.isInSourceContent(dir.getVirtualFile()) && JavaDirectoryService.getInstance().getPackage(dir) != null) {
+                                    return;
+                                }
+                            }
                         }
                     }
-                }
-            }
 
-            presentation.setEnabled(false);
-            presentation.setVisible(false);
-        }
+                    presentation.setEnabled(false);
+                    presentation.setVisible(false);
+                }
+            }));
     }
 
     protected String createFormBody(@Nullable final String fullQualifiedClassName, @NonNls final String formName, final String layoutManager)
