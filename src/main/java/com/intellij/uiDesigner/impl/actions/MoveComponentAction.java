@@ -13,18 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.intellij.uiDesigner.impl.actions;
 
-import consulo.ui.ex.action.AnActionEvent;
 import com.intellij.uiDesigner.impl.designSurface.GuiEditor;
 import com.intellij.uiDesigner.impl.radComponents.RadComponent;
+import consulo.ui.annotation.RequiredUIAccess;
+import consulo.ui.ex.action.AnActionEvent;
 import jakarta.annotation.Nonnull;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Collections;
-import java.util.Comparator;
+import java.util.List;
 
 /**
  * @author yole
@@ -43,15 +41,14 @@ public class MoveComponentAction extends AbstractGuiEditorAction {
     myColSpanDelta = colSpanDelta;
   }
 
+  @Override
   protected void actionPerformed(final GuiEditor editor, final List<RadComponent> selection, final AnActionEvent e) {
     if (myColumnDelta != 0) {
       // sort the selection so that move in indexed layout will handle components in correct order
-      Collections.sort(selection, new Comparator<RadComponent>() {
-        public int compare(final RadComponent o1, final RadComponent o2) {
-          int index1 = o1.getParent().indexOfComponent(o1);
-          int index2 = o2.getParent().indexOfComponent(o2);
-          return (index2 - index1) * myColumnDelta;
-        }
+      Collections.sort(selection, (o1, o2) -> {
+        int index1 = o1.getParent().indexOfComponent(o1);
+        int index2 = o2.getParent().indexOfComponent(o2);
+        return (index2 - index1) * myColumnDelta;
       });
     }
     for(RadComponent c: selection) {
@@ -60,7 +57,8 @@ public class MoveComponentAction extends AbstractGuiEditorAction {
   }
 
   @Override
-  protected void update(@Nonnull GuiEditor editor, final ArrayList<RadComponent> selection, final AnActionEvent e) {
+  @RequiredUIAccess
+  protected void update(@Nonnull GuiEditor editor, List<RadComponent> selection, AnActionEvent e) {
     e.getPresentation().setEnabled(true);
     for(RadComponent c: selection) {
       if (!c.getParent().getLayoutManager().canMoveComponent(c, myRowDelta, myColumnDelta, myRowSpanDelta, myColSpanDelta)) {

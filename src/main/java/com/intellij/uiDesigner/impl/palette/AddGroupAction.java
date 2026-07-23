@@ -13,33 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.intellij.uiDesigner.impl.palette;
 
-import com.intellij.uiDesigner.impl.UIDesignerBundle;
-import consulo.application.CommonBundle;
-import consulo.language.editor.CommonDataKeys;
+import consulo.platform.base.localize.CommonLocalize;
 import consulo.project.Project;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.action.AnAction;
 import consulo.ui.ex.action.AnActionEvent;
 import consulo.ui.ex.awt.Messages;
+import consulo.ui.ex.awt.UIUtil;
+import consulo.uiDesigner.impl.localize.UIDesignerLocalize;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author yole
  */
 public class AddGroupAction extends AnAction
 {
+  @Override
+  @RequiredUIAccess
   public void actionPerformed(AnActionEvent e) {
-    Project project = e.getData(CommonDataKeys.PROJECT);
+    Project project = e.getData(Project.KEY);
     if (project == null) return;
     // Ask group name
     final String groupName = Messages.showInputDialog(
       project,
-      UIDesignerBundle.message("message.enter.group.name"),
-      UIDesignerBundle.message("title.add.group"),
-      Messages.getQuestionIcon()
+      UIDesignerLocalize.messageEnterGroupName().get(),
+      UIDesignerLocalize.titleAddGroup().get(),
+      UIUtil.getQuestionIcon()
     );
     if(groupName == null){
       return;
@@ -47,18 +50,20 @@ public class AddGroupAction extends AnAction
 
     Palette palette = Palette.getInstance(project);
     // Check that name of the group is unique
-    final ArrayList<GroupItem> groups = palette.getGroups();
+    List<GroupItem> groups = palette.getGroups();
     for(int i = groups.size() - 1; i >= 0; i--){
       if(groupName.equals(groups.get(i).getName())){
-        Messages.showErrorDialog(project,
-                                 UIDesignerBundle.message("error.group.name.unique"),
-                                 CommonBundle.getErrorTitle());
+        Messages.showErrorDialog(
+          project,
+          UIDesignerLocalize.errorGroupNameUnique().get(),
+          CommonLocalize.titleError().get()
+        );
         return;
       }
     }
 
     final GroupItem groupToBeAdded = new GroupItem(groupName);
-    ArrayList<GroupItem> newGroups = new ArrayList<GroupItem>(groups);
+    List<GroupItem> newGroups = new ArrayList<>(groups);
     newGroups.add(groupToBeAdded);
     palette.setGroups(newGroups);
   }

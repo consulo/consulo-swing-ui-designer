@@ -27,13 +27,14 @@ import consulo.language.psi.PsiFile;
 import consulo.language.util.IncorrectOperationException;
 import consulo.localize.LocalizeValue;
 import consulo.project.Project;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.undoRedo.CommandProcessor;
 import consulo.virtualFileSystem.ReadonlyStatusHandler;
 import jakarta.annotation.Nonnull;
 
 /**
  * @author Eugene Zhuravlev
- * Date: Jun 15, 2005
+ * @since 2005-06-15
  */
 public class ChangeFormComponentTypeFix implements SyntheticIntentionAction {
     private final PsiPlainTextFile myFormFile;
@@ -43,13 +44,13 @@ public class ChangeFormComponentTypeFix implements SyntheticIntentionAction {
     public ChangeFormComponentTypeFix(PsiPlainTextFile formFile, String fieldName, PsiType componentTypeToSet) {
         myFormFile = formFile;
         myFieldName = fieldName;
-        if (componentTypeToSet instanceof PsiClassType) {
-            PsiClass psiClass = ((PsiClassType) componentTypeToSet).resolve();
+        if (componentTypeToSet instanceof PsiClassType classType) {
+            PsiClass psiClass = classType.resolve();
             if (psiClass != null) {
                 myComponentTypeToSet = ClassUtil.getJVMClassName(psiClass);
             }
             else {
-                myComponentTypeToSet = ((PsiClassType) componentTypeToSet).rawType().getCanonicalText();
+                myComponentTypeToSet = classType.rawType().getCanonicalText();
             }
         }
         else {
@@ -63,22 +64,27 @@ public class ChangeFormComponentTypeFix implements SyntheticIntentionAction {
         return JavaQuickFixLocalize.uidesignerChangeGuiComponentType();
     }
 
+    @Override
     public boolean isAvailable(@Nonnull Project project, Editor editor, PsiFile file) {
         return true;
     }
 
+    @Override
+    @RequiredUIAccess
     public void invoke(@Nonnull Project project, Editor editor, PsiFile file) throws IncorrectOperationException {
-        CommandProcessor.getInstance().executeCommand(file.getProject(), new Runnable() {
-            public void run() {
-                final ReadonlyStatusHandler readOnlyHandler = ReadonlyStatusHandler.getInstance(myFormFile.getProject());
-                final ReadonlyStatusHandler.OperationStatus status = readOnlyHandler.ensureFilesWritable(myFormFile.getVirtualFile());
+        CommandProcessor.getInstance().newCommand()
+            .project(file.getProject())
+            .name(getText())
+            .run(() -> {
+                ReadonlyStatusHandler readOnlyHandler = ReadonlyStatusHandler.getInstance(myFormFile.getProject());
+                ReadonlyStatusHandler.OperationStatus status = readOnlyHandler.ensureFilesWritable(myFormFile.getVirtualFile());
                 if (!status.hasReadonlyFiles()) {
                     FormReferenceProvider.setGUIComponentType(myFormFile, myFieldName, myComponentTypeToSet);
                 }
-            }
-        }, getText().get(), null);
+            });
     }
 
+    @Override
     public boolean startInWriteAction() {
         return true;
     }

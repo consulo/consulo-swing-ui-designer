@@ -13,34 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.intellij.uiDesigner.impl.componentTree;
 
 import com.intellij.uiDesigner.impl.radComponents.RadButtonGroup;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.tree.NodeDescriptor;
 
 /**
  * @author yole
  */
-public class ButtonGroupDescriptor extends NodeDescriptor
-{
-  private final RadButtonGroup myGroup;
+public class ButtonGroupDescriptor extends NodeDescriptor {
+    private final RadButtonGroup myGroup;
 
-  public ButtonGroupDescriptor(final NodeDescriptor parentDescriptor, final RadButtonGroup group) {
-    super(parentDescriptor);
-    myGroup = group;
-  }
+    public ButtonGroupDescriptor(NodeDescriptor parentDescriptor, RadButtonGroup group) {
+        super(parentDescriptor);
+        myGroup = group;
+    }
 
-  public boolean update() {
-    return false;
-  }
+    @Override
+    @RequiredUIAccess
+    public boolean update() {
+        return false;
+    }
 
-  public Object getElement() {
-    return myGroup;
-  }
+    @Override
+    public Object getElement() {
+        return myGroup;
+    }
 
-  @Override
-  public String toString() {
-    return myGroup.getName();
-  }
+    @Override
+    public String toString() {
+        return myGroup.getName();
+    }
 }

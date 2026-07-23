@@ -13,26 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.intellij.uiDesigner.impl.actions;
 
-import consulo.logging.Logger;
+import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.impl.CutCopyPasteSupport;
 import com.intellij.uiDesigner.impl.FormEditingUtil;
-import com.intellij.uiDesigner.impl.UIDesignerBundle;
-import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.impl.designSurface.GuiEditor;
-import com.intellij.uiDesigner.lw.IProperty;
 import com.intellij.uiDesigner.impl.propertyInspector.properties.BindingProperty;
 import com.intellij.uiDesigner.impl.propertyInspector.properties.IntroComponentProperty;
 import com.intellij.uiDesigner.impl.radComponents.RadComponent;
 import com.intellij.uiDesigner.impl.radComponents.RadContainer;
+import com.intellij.uiDesigner.lw.IProperty;
+import consulo.localize.LocalizeValue;
+import consulo.logging.Logger;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.action.AnActionEvent;
+import consulo.uiDesigner.impl.localize.UIDesignerLocalize;
 import consulo.util.collection.primitive.ints.IntSet;
 import consulo.util.collection.primitive.ints.IntSets;
-
 import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
+
 import java.util.*;
 
 /**
@@ -45,12 +45,13 @@ public class DuplicateComponentsAction extends AbstractGuiEditorAction {
     super(true);
   }
 
+  @Override
   protected void actionPerformed(final GuiEditor editor, final List<RadComponent> selection, final AnActionEvent e) {
     FormEditingUtil.remapToActionTargets(selection);
     RadContainer parent = FormEditingUtil.getSelectionParent(selection);
     assert parent != null;
-    List<RadComponent> duplicates = new ArrayList<RadComponent>();
-    Map<RadComponent, RadComponent> duplicateMap = new HashMap<RadComponent, RadComponent>();
+    List<RadComponent> duplicates = new ArrayList<>();
+    Map<RadComponent, RadComponent> duplicateMap = new HashMap<>();
     IntSet insertedRows = IntSets.newHashSet();
     boolean incrementRow = true;
     if (selection.size() > 1 && canDuplicate(selection, false) && FormEditingUtil.getSelectionBounds(selection).width == 1) {
@@ -135,7 +136,9 @@ public class DuplicateComponentsAction extends AbstractGuiEditorAction {
     return true;
   }
 
-  protected void update(@Nonnull GuiEditor editor, final ArrayList<RadComponent> selection, final AnActionEvent e) {
+  @Override
+  @RequiredUIAccess
+  protected void update(@Nonnull GuiEditor editor, List<RadComponent> selection, final AnActionEvent e) {
     FormEditingUtil.remapToActionTargets(selection);
     final RadContainer parent = FormEditingUtil.getSelectionParent(selection);
     e.getPresentation().setEnabled(parent != null && (parent.getLayoutManager().isGrid() || parent.getLayoutManager().isIndexed()));
@@ -162,8 +165,8 @@ public class DuplicateComponentsAction extends AbstractGuiEditorAction {
     return true;
   }
 
-  @Override @Nullable
-  protected String getCommandName() {
-    return UIDesignerBundle.message("command.duplicate");
+  @Override
+  protected LocalizeValue getCommandName() {
+    return UIDesignerLocalize.commandDuplicate();
   }
 }

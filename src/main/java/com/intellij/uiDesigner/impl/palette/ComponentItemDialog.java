@@ -23,14 +23,13 @@ import com.intellij.java.language.psi.PsiJavaPackage;
 import com.intellij.java.language.psi.util.InheritanceUtil;
 import com.intellij.java.language.util.TreeClassChooser;
 import com.intellij.java.language.util.TreeClassChooserFactory;
+import com.intellij.uiDesigner.compiler.Utils;
+import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.impl.FormEditingUtil;
 import com.intellij.uiDesigner.impl.GuiFormFileType;
 import com.intellij.uiDesigner.impl.ImageFileFilter;
-import com.intellij.uiDesigner.impl.UIDesignerBundle;
-import com.intellij.uiDesigner.compiler.Utils;
-import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.lw.LwRootContainer;
-import consulo.application.CommonBundle;
+import consulo.annotation.access.RequiredReadAction;
 import consulo.application.HelpManager;
 import consulo.document.Document;
 import consulo.ide.impl.idea.openapi.module.ResourceFileUtil;
@@ -42,16 +41,19 @@ import consulo.language.psi.PsiFile;
 import consulo.language.psi.PsiManager;
 import consulo.language.psi.scope.GlobalSearchScope;
 import consulo.language.psi.util.PsiTreeUtil;
+import consulo.platform.base.localize.CommonLocalize;
 import consulo.project.Project;
 import consulo.project.content.scope.ProjectScopes;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.awt.ComponentWithBrowseButton;
 import consulo.ui.ex.awt.DialogWrapper;
 import consulo.ui.ex.awt.Messages;
 import consulo.ui.ex.awt.TextFieldWithBrowseButton;
 import consulo.ui.ex.awt.event.DocumentAdapter;
+import consulo.uiDesigner.impl.localize.UIDesignerLocalize;
 import consulo.virtualFileSystem.VirtualFile;
-
 import jakarta.annotation.Nonnull;
+
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -59,9 +61,7 @@ import javax.swing.event.DocumentEvent;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Predicate;
 
 /**
@@ -90,7 +90,7 @@ public final class ComponentItemDialog extends DialogWrapper
 	private JCheckBox myCanAttachLabelCheckbox;
 	private JPanel myHSizePolicyPanel;
 	private JPanel myVSizePolicyPanel;
-	private JComboBox myGroupComboBox;
+	private JComboBox<GroupItem> myGroupComboBox;
 	private JLabel myGroupLabel;
 	private JCheckBox myIsContainerCheckBox;
 	private JLabel myErrorLabel;
@@ -111,7 +111,7 @@ public final class ComponentItemDialog extends DialogWrapper
 
 		myEditorTextField = new EditorTextField("", project, JavaFileType.INSTANCE);
 		myEditorTextField.setFontInheritedFromLAF(true);
-		myTfClassName = new ComponentWithBrowseButton<EditorTextField>(myEditorTextField, new MyChooseClassActionListener(project));
+		myTfClassName = new ComponentWithBrowseButton<>(myEditorTextField, new MyChooseClassActionListener(project));
 
 		PsiFile boundForm = itemToBeEdited.getBoundForm();
 		if(boundForm != null)
@@ -128,7 +128,8 @@ public final class ComponentItemDialog extends DialogWrapper
 
 		myTfClassName.getChildComponent().addDocumentListener(new consulo.document.event.DocumentAdapter()
 		{
-			public void documentChanged(consulo.document.event.DocumentEvent e)
+			@Override
+            public void documentChanged(consulo.document.event.DocumentEvent e)
 			{
 				updateOKAction();
 			}
@@ -139,20 +140,24 @@ public final class ComponentItemDialog extends DialogWrapper
 		myClassNamePlaceholder.add(myTfClassName, BorderLayout.CENTER);
 
 		myTfIconPath.setText(myItemToBeEdited.getIconPath());
-		myTfIconPath.addActionListener(new MyChooseFileActionListener(project, new ImageFileFilter(null), myTfIconPath,
-				UIDesignerBundle.message("add.component.choose.icon")));
+		myTfIconPath.addActionListener(new MyChooseFileActionListener(
+		    project,
+            new ImageFileFilter(null),
+            myTfIconPath,
+            UIDesignerLocalize.addComponentChooseIcon().get()
+        ));
 
-		myTfNestedForm.addActionListener(new MyChooseFileActionListener(project, new Predicate<PsiFile>()
-		{
-			public boolean test(PsiFile file)
-			{
-				return file.getFileType().equals(GuiFormFileType.INSTANCE);
-			}
-		}, myTfNestedForm, UIDesignerBundle.message("add.component.choose.form")));
+		myTfNestedForm.addActionListener(new MyChooseFileActionListener(
+		    project,
+            file -> file.getFileType().equals(GuiFormFileType.INSTANCE),
+            myTfNestedForm,
+            UIDesignerLocalize.addComponentChooseForm().get()
+        ));
 
 		myTfNestedForm.getTextField().getDocument().addDocumentListener(new DocumentAdapter()
 		{
-			protected void textChanged(DocumentEvent e)
+			@Override
+            protected void textChanged(DocumentEvent e)
 			{
 				updateOKAction();
 			}
@@ -202,16 +207,10 @@ public final class ComponentItemDialog extends DialogWrapper
 	{
 		myGroupLabel.setVisible(true);
 		myGroupComboBox.setVisible(true);
-		final ArrayList<GroupItem> groups = Palette.getInstance(myProject).getGroups();
-		myGroupComboBox.setModel(new DefaultComboBoxModel(groups.toArray()));
+		List<GroupItem> groups = Palette.getInstance(myProject).getGroups();
+		myGroupComboBox.setModel(new DefaultComboBoxModel<>(groups.toArray(GroupItem[]::new)));
 		myGroupComboBox.setSelectedItem(defaultGroup);
-		myGroupComboBox.addItemListener(new ItemListener()
-		{
-			public void itemStateChanged(ItemEvent e)
-			{
-				updateOKAction();
-			}
-		});
+		myGroupComboBox.addItemListener(e -> updateOKAction());
 		updateOKAction();
 	}
 
@@ -231,6 +230,7 @@ public final class ComponentItemDialog extends DialogWrapper
 	}
 
 	@Nonnull
+    @Override
 	protected Action[] createActions()
 	{
 		return new Action[]{
@@ -240,12 +240,15 @@ public final class ComponentItemDialog extends DialogWrapper
 		};
 	}
 
-	protected void doHelpAction()
+    @Override
+    @RequiredUIAccess
+    protected void doHelpAction()
 	{
 		HelpManager.getInstance().invokeHelp("reference.dialogs.addEditPaletteComponent");
 	}
 
-	protected void doOKAction()
+	@Override
+    protected void doOKAction()
 	{
 		// TODO[vova] implement validation
 		if(myClassRadioButton.isSelected())
@@ -261,13 +264,10 @@ public final class ComponentItemDialog extends DialogWrapper
 				myItemToBeEdited.setClassName(className);
 			}
 		}
-		else
+		else if (!saveNestedForm())
 		{
-			if(!saveNestedForm())
-			{
-				return;
-			}
-		}
+            return;
+        }
 		myItemToBeEdited.setIconPath(myTfIconPath.getText().trim());
 
 		{
@@ -299,12 +299,17 @@ public final class ComponentItemDialog extends DialogWrapper
 		super.doOKAction();
 	}
 
-	private boolean saveNestedForm()
+	@RequiredUIAccess
+    private boolean saveNestedForm()
 	{
 		VirtualFile formFile = ResourceFileUtil.findResourceFileInProject(myProject, myTfNestedForm.getText());
 		if(formFile == null)
 		{
-			Messages.showErrorDialog(getWindow(), UIDesignerBundle.message("add.component.cannot.load.form", myTfNestedForm.getText()), CommonBundle.getErrorTitle());
+            Messages.showErrorDialog(
+			    getWindow(),
+                UIDesignerLocalize.addComponentCannotLoadForm(myTfNestedForm.getText()).get(),
+                CommonLocalize.titleError().get()
+            );
 			return false;
 		}
 		LwRootContainer lwRootContainer;
@@ -314,18 +319,17 @@ public final class ComponentItemDialog extends DialogWrapper
 		}
 		catch(Exception e)
 		{
-			Messages.showErrorDialog(getWindow(), e.getMessage(), CommonBundle.getErrorTitle());
+			Messages.showErrorDialog(getWindow(), e.getMessage(), CommonLocalize.titleError().get());
 			return false;
 		}
 		if(lwRootContainer.getClassToBind() == null)
 		{
-			Messages.showErrorDialog(getWindow(), UIDesignerBundle.message("add.component.form.not.bound"), CommonBundle.getErrorTitle());
+			Messages.showErrorDialog(getWindow(), UIDesignerLocalize.addComponentFormNotBound().get(), CommonLocalize.titleError().get());
 			return false;
 		}
 		if(lwRootContainer.getComponent(0).getBinding() == null)
 		{
-			Messages.showErrorDialog(getWindow(), UIDesignerBundle.message("add.component.root.not.bound"),
-					CommonBundle.getErrorTitle());
+			Messages.showErrorDialog(getWindow(), UIDesignerLocalize.addComponentRootNotBound().get(), CommonLocalize.titleError().get());
 			return false;
 		}
 		PsiClass psiClass =
@@ -341,7 +345,8 @@ public final class ComponentItemDialog extends DialogWrapper
 		return true;
 	}
 
-	protected String getDimensionServiceKey()
+	@Override
+    protected String getDimensionServiceKey()
 	{
 		if(myOneOff)
 		{
@@ -350,12 +355,14 @@ public final class ComponentItemDialog extends DialogWrapper
 		return "#com.intellij.uiDesigner.palette.ComponentItemDialog";
 	}
 
-	public JComponent getPreferredFocusedComponent()
+	@Override
+    public JComponent getPreferredFocusedComponent()
 	{
 		return myTfClassName.getChildComponent();
 	}
 
-	protected JComponent createCenterPanel()
+	@Override
+    protected JComponent createCenterPanel()
 	{
 		return myPanel;
 	}
@@ -386,7 +393,7 @@ public final class ComponentItemDialog extends DialogWrapper
 			{
 				if(myDocument.getTextLength() > 0)
 				{
-					myErrorLabel.setText(UIDesignerBundle.message("add.component.error.qualified.name.required"));
+					myErrorLabel.setText(UIDesignerLocalize.addComponentErrorQualifiedNameRequired().get());
 				}
 				return false;
 			}
@@ -394,7 +401,7 @@ public final class ComponentItemDialog extends DialogWrapper
 			PsiClass componentClass = javaPsiFacade.findClass(JComponent.class.getName(), (GlobalSearchScope) ProjectScopes.getAllScope(myProject));
 			if(psiClass != null && componentClass != null && !InheritanceUtil.isInheritorOrSelf(psiClass, componentClass, true))
 			{
-				myErrorLabel.setText(UIDesignerBundle.message("add.component.error.component.required"));
+				myErrorLabel.setText(UIDesignerLocalize.addComponentErrorComponentRequired().get());
 				return false;
 			}
 		}
@@ -405,12 +412,8 @@ public final class ComponentItemDialog extends DialogWrapper
 				return false;
 			}
 		}
-		if(myGroupComboBox.isVisible() && myGroupComboBox.getSelectedItem() == null)
-		{
-			return false;
-		}
-		return true;
-	}
+        return !myGroupComboBox.isVisible() || myGroupComboBox.getSelectedItem() != null;
+    }
 
 	private static String getClassOrInnerName(final PsiClass aClass)
 	{
@@ -431,12 +434,19 @@ public final class ComponentItemDialog extends DialogWrapper
 			myProject = project;
 		}
 
-		public void actionPerformed(final ActionEvent e)
+        @Override
+        @RequiredUIAccess
+        public void actionPerformed(final ActionEvent e)
 		{
 			final TreeClassChooserFactory factory = TreeClassChooserFactory.getInstance(myProject);
-			final TreeClassChooser chooser = factory.createInheritanceClassChooser(UIDesignerBundle.message("title.choose.component.class"),
-					GlobalSearchScope.allScope(myProject), JavaPsiFacade.getInstance(myProject).findClass(
-							JComponent.class.getName(), GlobalSearchScope.allScope(myProject)), true, true, null);
+			TreeClassChooser chooser = factory.createInheritanceClassChooser(
+                UIDesignerLocalize.titleChooseComponentClass().get(),
+				GlobalSearchScope.allScope(myProject),
+                JavaPsiFacade.getInstance(myProject).findClass(JComponent.class.getName(), GlobalSearchScope.allScope(myProject)),
+                true,
+                true,
+                null
+            );
 			chooser.showDialog();
 			final PsiClass result = chooser.getSelected();
 			if(result != null)
@@ -464,7 +474,9 @@ public final class ComponentItemDialog extends DialogWrapper
 			myTitle = title;
 		}
 
-		public void actionPerformed(ActionEvent e)
+		@Override
+        @RequiredReadAction
+        public void actionPerformed(ActionEvent e)
 		{
 			final TreeClassChooserFactory factory = TreeClassChooserFactory.getInstance(myProject);
 			PsiFile formFile = null;
@@ -488,7 +500,8 @@ public final class ComponentItemDialog extends DialogWrapper
 
 	private class MyRadioChangeListener implements ChangeListener
 	{
-		public void stateChanged(ChangeEvent e)
+		@Override
+        public void stateChanged(ChangeEvent e)
 		{
 			updateEnabledTextField();
 		}

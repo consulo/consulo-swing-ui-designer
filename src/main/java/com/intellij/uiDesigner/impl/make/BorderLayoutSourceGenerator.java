@@ -13,32 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.intellij.uiDesigner.impl.make;
 
 import com.intellij.uiDesigner.lw.LwComponent;
 import com.intellij.uiDesigner.lw.LwContainer;
-import org.jetbrains.annotations.NonNls;
 
-import java.awt.BorderLayout;
+import java.awt.*;
 
 /**
  * @author yole
  */
 public class BorderLayoutSourceGenerator extends LayoutSourceGenerator {
+    @Override
+    public void generateContainerLayout(LwContainer component, FormSourceCodeGenerator generator, String variable) {
+        generateLayoutWithGaps(component, generator, variable, BorderLayout.class);
+    }
 
-  @Override public void generateContainerLayout(final LwContainer component, final FormSourceCodeGenerator generator, final String variable) {
-    generateLayoutWithGaps(component, generator, variable, BorderLayout.class);
-  }
-
-  public void generateComponentLayout(final LwComponent component,
-                                      @NonNls final FormSourceCodeGenerator generator,
-                                      final String variable,
-                                      final String parentVariable) {
-    generator.startMethodCall(parentVariable, "add");
-    generator.pushVar(variable);
-    generator.checkParameter();
-    generator.append("BorderLayout." + ((String) component.getCustomLayoutConstraints()).toUpperCase());
-    generator.endMethod();
-  }
+    @Override
+    public void generateComponentLayout(LwComponent component, FormSourceCodeGenerator generator, String variable, String parentVariable) {
+        generator.startMethodCall(parentVariable, "add");
+        generator.pushVar(variable);
+        generator.checkParameter();
+        generator.append("BorderLayout." + ((String) component.getCustomLayoutConstraints()).toUpperCase());
+        generator.endMethod();
+    }
 }

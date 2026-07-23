@@ -21,10 +21,9 @@ import com.intellij.uiDesigner.impl.propertyInspector.PropertyRenderer;
 import com.intellij.uiDesigner.impl.propertyInspector.editors.IntRegexEditor;
 import com.intellij.uiDesigner.impl.propertyInspector.renderers.InsetsPropertyRenderer;
 import com.intellij.uiDesigner.impl.radComponents.RadComponent;
-import org.jetbrains.annotations.NonNls;
 import jakarta.annotation.Nonnull;
 
-import java.awt.Insets;
+import java.awt.*;
 
 /**
  * @author Anton Katilin
@@ -35,11 +34,11 @@ public abstract class AbstractInsetsProperty<T extends RadComponent> extends Pro
   private final InsetsPropertyRenderer myRenderer;
   private IntRegexEditor<Insets> myEditor;
 
-  public AbstractInsetsProperty(@NonNls final String name) {
+  public AbstractInsetsProperty(String name) {
     this(null, name);
   }
 
-  public AbstractInsetsProperty(Property parent, @NonNls final String name){
+  public AbstractInsetsProperty(Property parent, String name){
     super(parent, name);
     myChildren=new Property[]{
       new IntFieldProperty(this, "top", 0, new Insets(0, 0, 0, 0)),
@@ -51,23 +50,27 @@ public abstract class AbstractInsetsProperty<T extends RadComponent> extends Pro
   }
 
   @Nonnull
+  @Override
   public final Property[] getChildren(final RadComponent component) {
     return myChildren;
   }
 
   @Nonnull
+  @Override
   public final PropertyRenderer<Insets> getRenderer() {
     return myRenderer;
   }
 
+  @Override
   public final PropertyEditor<Insets> getEditor() {
     if (myEditor == null) {
-      myEditor = new IntRegexEditor<Insets>(Insets.class, myRenderer, new int[] { 0, 0, 0, 0 }) {
+      myEditor = new IntRegexEditor<>(Insets.class, myRenderer, new int[] { 0, 0, 0, 0 }) {
+        @Override
         public Insets getValue() throws Exception {
           // if a single number has been entered, interpret it as same value for all parts (IDEADEV-7330)
           try {
             int value = Integer.parseInt(myTf.getText());
-            final Insets insets = new Insets(value, value, value, value);
+            Insets insets = new Insets(value, value, value, value);
             myTf.setText(myRenderer.formatText(insets));
             return insets;
           }

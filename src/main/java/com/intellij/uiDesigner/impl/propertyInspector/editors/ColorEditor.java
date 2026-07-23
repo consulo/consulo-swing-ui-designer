@@ -15,33 +15,31 @@
  */
 package com.intellij.uiDesigner.impl.propertyInspector.editors;
 
-import com.intellij.uiDesigner.impl.UIDesignerBundle;
-import com.intellij.uiDesigner.lw.ColorDescriptor;
 import com.intellij.uiDesigner.impl.propertyInspector.InplaceContext;
 import com.intellij.uiDesigner.impl.propertyInspector.PropertyEditor;
 import com.intellij.uiDesigner.impl.propertyInspector.renderers.ColorRenderer;
 import com.intellij.uiDesigner.impl.radComponents.RadComponent;
+import com.intellij.uiDesigner.lw.ColorDescriptor;
 import consulo.project.Project;
 import consulo.ui.ex.awt.DialogWrapper;
 import consulo.ui.ex.awt.JBList;
 import consulo.ui.ex.awt.ScrollPaneFactory;
 import consulo.ui.ex.awt.TextFieldWithBrowseButton;
 import consulo.ui.ex.awt.speedSearch.ListSpeedSearch;
-
+import consulo.uiDesigner.impl.localize.UIDesignerLocalize;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
+
 import javax.swing.*;
 import javax.swing.colorchooser.AbstractColorChooserPanel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.plaf.ColorChooserUI;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.List;
-import java.util.*;
 
 /**
  * @author yole
@@ -58,28 +56,26 @@ public class ColorEditor extends PropertyEditor<ColorDescriptor>
 		myPropertyName = propertyName;
 		myTextField.getTextField().setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
 		myTextField.getTextField().setEditable(false);
-		myTextField.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent e)
-			{
-				MyColorChooserDialog dialog = new MyColorChooserDialog(myProject);
-				dialog.setSelectedValue(myValue);
-				dialog.show();
-				if(dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE)
-				{
-					myValue = dialog.getSelectedValue();
-					updateTextField();
-				}
-			}
-		});
+		myTextField.addActionListener(e -> {
+            MyColorChooserDialog dialog = new MyColorChooserDialog(myProject);
+            dialog.setSelectedValue(myValue);
+            dialog.show();
+            if(dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE)
+            {
+                myValue = dialog.getSelectedValue();
+                updateTextField();
+            }
+        });
 	}
 
-	public ColorDescriptor getValue() throws Exception
+	@Override
+    public ColorDescriptor getValue() throws Exception
 	{
 		return myValue;
 	}
 
-	public JComponent getComponent(RadComponent component, ColorDescriptor value, InplaceContext inplaceContext)
+	@Override
+    public JComponent getComponent(RadComponent component, ColorDescriptor value, InplaceContext inplaceContext)
 	{
 		myValue = value != null ? value : new ColorDescriptor(new Color(0));
 		myProject = component.getProject();
@@ -92,7 +88,8 @@ public class ColorEditor extends PropertyEditor<ColorDescriptor>
 		myTextField.setText(myValue == null ? "" : myValue.toString());
 	}
 
-	public void updateUI()
+	@Override
+    public void updateUI()
 	{
 		SwingUtilities.updateComponentTreeUI(myTextField);
 	}
@@ -123,20 +120,26 @@ public class ColorEditor extends PropertyEditor<ColorDescriptor>
 		public MyColorChooserDialog(Project project)
 		{
 			super(project, false);
-			setTitle(UIDesignerBundle.message("color.chooser.title", myPropertyName));
+			setTitle(UIDesignerLocalize.colorChooserTitle(myPropertyName));
 			init();
 		}
 
-		protected JComponent createCenterPanel()
+		@Override
+        protected JComponent createCenterPanel()
 		{
 			myColorChooser = new JColorChooser();
-			mySwingChooserPanel = new MyDescriptorChooserPanel(UIDesignerBundle.message("color.chooser.swing.palette"), collectSwingColorDescriptors());
+			mySwingChooserPanel =
+                new MyDescriptorChooserPanel(UIDesignerLocalize.colorChooserSwingPalette().get(), collectSwingColorDescriptors());
 			myColorChooser.addChooserPanel(mySwingChooserPanel);
-			mySystemChooserPanel = new MyDescriptorChooserPanel(UIDesignerBundle.message("color.chooser.system.palette"),
-					collectColorFields(SystemColor.class, true));
+			mySystemChooserPanel = new MyDescriptorChooserPanel(
+			    UIDesignerLocalize.colorChooserSystemPalette().get(),
+				collectColorFields(SystemColor.class, true)
+            );
 			myColorChooser.addChooserPanel(mySystemChooserPanel);
-			myAWTChooserPanel = new MyDescriptorChooserPanel(UIDesignerBundle.message("color.chooser.awt.palette"),
-					collectColorFields(Color.class, false));
+			myAWTChooserPanel = new MyDescriptorChooserPanel(
+			    UIDesignerLocalize.colorChooserAwtPalette().get(),
+				collectColorFields(Color.class, false)
+            );
 			myColorChooser.addChooserPanel(myAWTChooserPanel);
 			return myColorChooser;
 		}
@@ -177,19 +180,15 @@ public class ColorEditor extends PropertyEditor<ColorDescriptor>
 					}
 				}
 			}
-			catch(NoSuchFieldException e)
+			catch(NoSuchFieldException | IllegalAccessException e)
 			{
 				// ignore
 			}
-			catch(IllegalAccessException e)
-			{
-				// ignore
-			}
-		}
+        }
 
 		private List<ColorDescriptor> collectSwingColorDescriptors()
 		{
-			ArrayList<ColorDescriptor> result = new ArrayList<ColorDescriptor>();
+			List<ColorDescriptor> result = new ArrayList<>();
 			UIDefaults defaults = UIManager.getDefaults();
 			Enumeration e = defaults.keys();
 			while(e.hasMoreElements())
@@ -206,7 +205,7 @@ public class ColorEditor extends PropertyEditor<ColorDescriptor>
 
 		private List<ColorDescriptor> collectColorFields(final Class aClass, final boolean isSystem)
 		{
-			ArrayList<ColorDescriptor> result = new ArrayList<ColorDescriptor>();
+			List<ColorDescriptor> result = new ArrayList<>();
 			Field[] colorFields = aClass.getDeclaredFields();
 			for(Field field : colorFields)
 			{
@@ -250,53 +249,48 @@ public class ColorEditor extends PropertyEditor<ColorDescriptor>
 		{
 			myDisplayName = displayName;
 
-			Collections.sort(colorDescriptorList, new Comparator<ColorDescriptor>()
-			{
-				public int compare(final ColorDescriptor o1, final ColorDescriptor o2)
-				{
-					return o1.toString().compareTo(o2.toString());
-				}
-			});
+			Collections.sort(colorDescriptorList, (o1, o2) -> o1.toString().compareTo(o2.toString()));
 
 			myColorDescriptors = colorDescriptorList.toArray(new ColorDescriptor[colorDescriptorList.size()]);
 		}
 
-		public void updateChooser()
+		@Override
+        public void updateChooser()
 		{
 			myDescriptorList.setSelectedValue(getColorFromModel(), true);
 		}
 
-		protected void buildChooser()
+		@Override
+        protected void buildChooser()
 		{
 			setLayout(new BorderLayout());
-			myDescriptorList = new JBList(myColorDescriptors);
+			myDescriptorList = new JBList<>(myColorDescriptors);
 			myDescriptorList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 			myDescriptorList.setVisibleRowCount(15);
 			myDescriptorList.setCellRenderer(new ColorRenderer());
-			myDescriptorList.addListSelectionListener(new ListSelectionListener()
-			{
-				public void valueChanged(ListSelectionEvent e)
-				{
-					ColorDescriptor descriptor = (ColorDescriptor) myDescriptorList.getSelectedValue();
-					getColorSelectionModel().setSelectedColor(new ColorDescriptorWrapper(descriptor));
-				}
-			});
+			myDescriptorList.addListSelectionListener(e -> {
+                ColorDescriptor descriptor = (ColorDescriptor) myDescriptorList.getSelectedValue();
+                getColorSelectionModel().setSelectedColor(new ColorDescriptorWrapper(descriptor));
+            });
 			new ListSpeedSearch(myDescriptorList);
 			add(ScrollPaneFactory.createScrollPane(myDescriptorList), BorderLayout.CENTER);
 		}
 
-		public String getDisplayName()
+		@Override
+        public String getDisplayName()
 		{
 			return myDisplayName;
 		}
 
 		@Nullable
+        @Override
 		public Icon getSmallDisplayIcon()
 		{
 			return null;
 		}
 
 		@Nullable
+        @Override
 		public Icon getLargeDisplayIcon()
 		{
 			return null;

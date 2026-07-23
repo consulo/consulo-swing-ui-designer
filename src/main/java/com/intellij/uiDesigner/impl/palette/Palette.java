@@ -18,7 +18,6 @@ package com.intellij.uiDesigner.impl.palette;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.impl.Properties;
 import com.intellij.uiDesigner.impl.SwingProperties;
-import com.intellij.uiDesigner.impl.UIDesignerBundle;
 import com.intellij.uiDesigner.impl.propertyInspector.IntrospectedProperty;
 import com.intellij.uiDesigner.impl.propertyInspector.Property;
 import com.intellij.uiDesigner.impl.propertyInspector.PropertyEditor;
@@ -33,7 +32,6 @@ import consulo.annotation.component.ComponentScope;
 import consulo.annotation.component.ServiceAPI;
 import consulo.annotation.component.ServiceImpl;
 import consulo.application.Application;
-import consulo.application.ApplicationManager;
 import consulo.component.persist.PersistentStateComponent;
 import consulo.component.persist.State;
 import consulo.component.persist.Storage;
@@ -42,18 +40,20 @@ import consulo.ide.impl.idea.ide.ui.LafManager;
 import consulo.ide.impl.idea.ide.ui.LafManagerListener;
 import consulo.logging.Logger;
 import consulo.project.Project;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.awt.Messages;
+import consulo.ui.ex.awt.UIUtil;
+import consulo.uiDesigner.impl.localize.UIDesignerLocalize;
 import consulo.util.collection.Lists;
 import consulo.util.jdom.JDOMUtil;
 import consulo.util.lang.function.Condition;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import org.jdom.Document;
 import org.jdom.Element;
-import org.jetbrains.annotations.NonNls;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 import javax.swing.*;
 import java.awt.*;
 import java.beans.BeanInfo;
@@ -82,7 +82,7 @@ public final class Palette implements PersistentStateComponent<Element>, Disposa
 	private final Map<Class, IntrospectedProperty[]> myClass2Properties;
 	private final Map<String, ComponentItem> myClassName2Item;
 	/*All groups in the palette*/
-	private final ArrayList<GroupItem> myGroups;
+	private final List<GroupItem> myGroups;
 	/*Listeners, etc*/
 	private final List<Listener> myListeners = Lists.newLockFreeCopyOnWriteList();
 	private final Project myProject;
@@ -92,55 +92,30 @@ public final class Palette implements PersistentStateComponent<Element>, Disposa
 	 * Predefined item for javax.swing.JPanel
 	 */
 	private ComponentItem myPanelItem;
-	@NonNls
 	private static final String ATTRIBUTE_VSIZE_POLICY = "vsize-policy";
-	@NonNls
 	private static final String ATTRIBUTE_HSIZE_POLICY = "hsize-policy";
-	@NonNls
 	private static final String ATTRIBUTE_ANCHOR = "anchor";
-	@NonNls
 	private static final String ATTRIBUTE_FILL = "fill";
-	@NonNls
 	private static final String ELEMENT_MINIMUM_SIZE = "minimum-size";
-	@NonNls
 	private static final String ATTRIBUTE_WIDTH = "width";
-	@NonNls
 	private static final String ATTRIBUTE_HEIGHT = "height";
-	@NonNls
 	private static final String ELEMENT_PREFERRED_SIZE = "preferred-size";
-	@NonNls
 	private static final String ELEMENT_MAXIMUM_SIZE = "maximum-size";
-	@NonNls
 	private static final String ATTRIBUTE_CLASS = "class";
-	@NonNls
 	private static final String ATTRIBUTE_ICON = "icon";
-	@NonNls
 	private static final String ATTRIBUTE_TOOLTIP_TEXT = "tooltip-text";
-	@NonNls
 	private static final String ELEMENT_DEFAULT_CONSTRAINTS = "default-constraints";
-	@NonNls
 	private static final String ELEMENT_INITIAL_VALUES = "initial-values";
-	@NonNls
 	private static final String ELEMENT_PROPERTY = "property";
-	@NonNls
 	private static final String ATTRIBUTE_NAME = "name";
-	@NonNls
 	private static final String ATTRIBUTE_VALUE = "value";
-	@NonNls
 	private static final String ATTRIBUTE_REMOVABLE = "removable";
-	@NonNls
 	private static final String ELEMENT_ITEM = "item";
-	@NonNls
 	private static final String ELEMENT_GROUP = "group";
-	@NonNls
 	private static final String ATTRIBUTE_VERSION = "version";
-	@NonNls
 	private static final String ATTRIBUTE_SINCE_VERSION = "since-version";
-	@NonNls
 	private static final String ATTRIBUTE_AUTO_CREATE_BINDING = "auto-create-binding";
-	@NonNls
 	private static final String ATTRIBUTE_CAN_ATTACH_LABEL = "can-attach-label";
-	@NonNls
 	private static final String ATTRIBUTE_IS_CONTAINER = "is-container";
 
 	public static Palette getInstance(@Nonnull final Project project)
@@ -153,9 +128,9 @@ public final class Palette implements PersistentStateComponent<Element>, Disposa
 	{
 		myProject = project;
 		myLafManagerListener = new MyLafManagerListener();
-		myClass2Properties = new HashMap<Class, IntrospectedProperty[]>();
-		myClassName2Item = new HashMap<String, ComponentItem>();
-		myGroups = new ArrayList<GroupItem>();
+		myClass2Properties = new HashMap<>();
+		myClassName2Item = new HashMap<>();
+		myGroups = new ArrayList<>();
 
 		if(project != null)
 		{
@@ -172,18 +147,19 @@ public final class Palette implements PersistentStateComponent<Element>, Disposa
 
 	}
 
-	public Element getState()
+	@Override
+    public Element getState()
 	{
 		final Element e = new Element("state");
 		writeExternal(e);
 		return e;
 	}
 
-	public void loadState(Element state)
+	@Override
+    public void loadState(Element state)
 	{
 		readExternal(state);
 	}
-
 
 	/**
 	 * Adds specified listener.
@@ -314,7 +290,7 @@ public final class Palette implements PersistentStateComponent<Element>, Disposa
 	 * @return read-only list of all groups in the palette.
 	 * <em>DO NOT MODIFY OR CACHE THIS LIST</em>.
 	 */
-	public ArrayList<GroupItem> getGroups()
+	public List<GroupItem> getGroups()
 	{
 		return myGroups;
 	}
@@ -333,7 +309,7 @@ public final class Palette implements PersistentStateComponent<Element>, Disposa
 	/**
 	 * @param groups list of new groups.
 	 */
-	public void setGroups(@Nonnull final ArrayList<GroupItem> groups)
+	public void setGroups(@Nonnull List<GroupItem> groups)
 	{
 		myGroups.clear();
 		myGroups.addAll(groups);
@@ -348,16 +324,17 @@ public final class Palette implements PersistentStateComponent<Element>, Disposa
 	 * @throws IllegalArgumentException if an item for the same class
 	 *                                  is already exists in the palette
 	 */
-	public void addItem(@Nonnull final GroupItem group, @Nonnull final ComponentItem item)
+	@RequiredUIAccess
+    public void addItem(@Nonnull final GroupItem group, @Nonnull final ComponentItem item)
 	{
 		// class -> item
 		final String componentClassName = item.getClassName();
 		if(getItem(componentClassName) != null)
 		{
-			Messages.showMessageDialog(
-					UIDesignerBundle.message("error.item.already.added", componentClassName),
-					Application.get().getName().get(),
-					Messages.getErrorIcon()
+            Messages.showMessageDialog(
+                UIDesignerLocalize.errorItemAlreadyAdded(componentClassName).get(),
+				Application.get().getName().get(),
+                UIUtil.getErrorIcon()
 			);
 			return;
 		}
@@ -468,7 +445,7 @@ public final class Palette implements PersistentStateComponent<Element>, Disposa
 			constraints = new GridConstraints();
 		}
 
-		final HashMap<String, StringDescriptor> propertyName2initialValue = new HashMap<String, StringDescriptor>();
+		Map<String, StringDescriptor> propertyName2initialValue = new HashMap<>();
 		{
 			final Element initialValues = itemElement.getChild(ELEMENT_INITIAL_VALUES);
 			if(initialValues != null)
@@ -584,7 +561,7 @@ public final class Palette implements PersistentStateComponent<Element>, Disposa
 	 */
 	private static void writeInitialValuesElement(
 			@Nonnull final Element itemElement,
-			@Nonnull final HashMap<String, StringDescriptor> name2value
+			@Nonnull final Map<String, StringDescriptor> name2value
 	)
 	{
 		LOG.assertTrue(ELEMENT_ITEM.equals(itemElement.getName()));
@@ -706,7 +683,7 @@ public final class Palette implements PersistentStateComponent<Element>, Disposa
 			return myClass2Properties.get(aClass);
 		}
 
-		final ArrayList<IntrospectedProperty> result = new ArrayList<IntrospectedProperty>();
+		List<IntrospectedProperty> result = new ArrayList<>();
 		try
 		{
 			final BeanInfo beanInfo = Introspector.getBeanInfo(aClass);
@@ -732,7 +709,7 @@ public final class Palette implements PersistentStateComponent<Element>, Disposa
 					storeAsClient = true;
 				}
 
-				@NonNls final String name = descriptor.getName();
+				final String name = descriptor.getName();
 
 				final IntrospectedProperty property;
 
@@ -844,14 +821,10 @@ public final class Palette implements PersistentStateComponent<Element>, Disposa
 					Condition<RadComponent> filter = null;
 					if(name.equals(SwingProperties.LABEL_FOR))
 					{
-						filter = new Condition<RadComponent>()
-						{
-							public boolean value(final RadComponent t)
-							{
-								ComponentItem item = getItem(t.getComponentClassName());
-								return item != null && item.isCanAttachLabel();
-							}
-						};
+						filter = t -> {
+                            ComponentItem item = getItem(t.getComponentClassName());
+                            return item != null && item.isCanAttachLabel();
+                        };
 					}
 					property = new IntroComponentProperty(name, readMethod, writeMethod, propertyType, filter, storeAsClient);
 				}
@@ -968,7 +941,8 @@ public final class Palette implements PersistentStateComponent<Element>, Disposa
 			}
 		}
 
-		public void lookAndFeelChanged(final LafManager source)
+		@Override
+        public void lookAndFeelChanged(final LafManager source)
 		{
 			for(final IntrospectedProperty[] properties : myClass2Properties.values())
 			{

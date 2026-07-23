@@ -15,31 +15,32 @@
  */
 package com.intellij.uiDesigner.impl.propertyInspector.editors;
 
-import consulo.util.lang.function.Condition;
 import com.intellij.uiDesigner.impl.FormEditingUtil;
-import com.intellij.uiDesigner.lw.IComponent;
-import com.intellij.uiDesigner.impl.propertyInspector.renderers.ComponentRenderer;
 import com.intellij.uiDesigner.impl.propertyInspector.InplaceContext;
+import com.intellij.uiDesigner.impl.propertyInspector.renderers.ComponentRenderer;
 import com.intellij.uiDesigner.impl.radComponents.RadComponent;
 import com.intellij.uiDesigner.impl.radComponents.RadContainer;
 
 import javax.swing.*;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Predicate;
 
 /**
  * @author yole
  */
 public class ComponentEditor extends ComboBoxPropertyEditor<String> {
   private final Class myPropertyType;
-  private final Condition<RadComponent> myFilter;
+  private final Predicate<RadComponent> myFilter;
   private String myOldValue;
 
-  public ComponentEditor(final Class propertyType, final Condition<RadComponent> filter) {
+  public ComponentEditor(Class propertyType, Predicate<RadComponent> filter) {
     myPropertyType = propertyType;
     myFilter = filter;
     myCbx.setRenderer(new ComponentRenderer());
   }
 
+  @Override
   public JComponent getComponent(RadComponent component, String value, InplaceContext inplaceContext) {
     RadComponent[] components = collectFilteredComponents(component);
     // components [0] = null (<none>)
@@ -60,7 +61,7 @@ public class ComponentEditor extends ComboBoxPropertyEditor<String> {
   }
 
   protected RadComponent[] collectFilteredComponents(final RadComponent component) {
-    final ArrayList<RadComponent> result = new ArrayList<RadComponent>();
+    List<RadComponent> result = new ArrayList<>();
     result.add(null);
 
     RadContainer container = component.getParent();
@@ -68,18 +69,16 @@ public class ComponentEditor extends ComboBoxPropertyEditor<String> {
       container = container.getParent();
     }
 
-    FormEditingUtil.iterate(container, new FormEditingUtil.ComponentVisitor() {
-      public boolean visit(final IComponent component) {
-        RadComponent radComponent = (RadComponent) component;
-        final JComponent delegee = radComponent.getDelegee();
-        if (!myPropertyType.isInstance(delegee)) {
-          return true;
-        }
-        if (myFilter == null || myFilter.value(radComponent)) {
-          result.add(radComponent);
-        }
+    FormEditingUtil.iterate(container, component1 -> {
+      RadComponent radComponent = (RadComponent) component1;
+      final JComponent delegee = radComponent.getDelegee();
+      if (!myPropertyType.isInstance(delegee)) {
         return true;
       }
+      if (myFilter == null || myFilter.test(radComponent)) {
+        result.add(radComponent);
+      }
+      return true;
     });
 
     return result.toArray(new RadComponent[result.size()]);

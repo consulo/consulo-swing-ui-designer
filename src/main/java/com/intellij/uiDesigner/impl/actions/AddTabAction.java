@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.intellij.uiDesigner.impl.actions;
 
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.action.AnActionEvent;
 import com.intellij.uiDesigner.impl.designSurface.GuiEditor;
 import com.intellij.uiDesigner.impl.designSurface.InsertComponentProcessor;
@@ -37,6 +37,7 @@ public class AddTabAction extends AbstractGuiEditorAction {
     super(true);
   }
 
+  @Override
   protected void actionPerformed(final GuiEditor editor, final List<RadComponent> selection, final AnActionEvent e) {
     RadTabbedPane tabbedPane = (RadTabbedPane) selection.get(0);
     Palette palette = Palette.getInstance(editor.getProject());
@@ -47,7 +48,9 @@ public class AddTabAction extends AbstractGuiEditorAction {
                              new ComponentItemDragObject(palette.getPanelItem()));
   }
 
-  @Override protected void update(@Nonnull GuiEditor editor, final ArrayList<RadComponent> selection, final AnActionEvent e) {
+  @Override
+  @RequiredUIAccess
+  protected void update(@Nonnull GuiEditor editor, List<RadComponent> selection, final AnActionEvent e) {
     e.getPresentation().setVisible(selection.size() == 1 && selection.get(0) instanceof RadTabbedPane);
   }
 }

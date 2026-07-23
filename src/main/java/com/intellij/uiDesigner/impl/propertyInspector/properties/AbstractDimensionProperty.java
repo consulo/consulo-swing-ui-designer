@@ -51,19 +51,23 @@ public abstract class AbstractDimensionProperty<T extends RadComponent> extends 
   }
 
   @Nonnull
-  public final Property[] getChildren(final RadComponent component){
+  @Override
+  public final Property[] getChildren(RadComponent component){
     return myChildren;
   }
 
   @Nonnull
+  @Override
   public final PropertyRenderer<Dimension> getRenderer() {
     return myRenderer;
   }
 
+  @Override
   public final PropertyEditor<Dimension> getEditor() {
     return myEditor;
   }
 
+  @Override
   public Dimension getValue(T component) {
     return getValueImpl(component.getConstraints());
   }

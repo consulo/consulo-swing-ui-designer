@@ -15,17 +15,17 @@
  */
 package com.intellij.uiDesigner.impl.propertyInspector.renderers;
 
-import consulo.ui.ex.awt.ColoredListCellRenderer;
-import consulo.ui.ex.SimpleTextAttributes;
 import com.intellij.uiDesigner.impl.FormEditingUtil;
-import com.intellij.uiDesigner.impl.radComponents.RadComponent;
-import com.intellij.uiDesigner.impl.radComponents.RadRootContainer;
-import com.intellij.uiDesigner.impl.UIDesignerBundle;
 import com.intellij.uiDesigner.impl.componentTree.ComponentTree;
 import com.intellij.uiDesigner.impl.propertyInspector.PropertyRenderer;
+import com.intellij.uiDesigner.impl.radComponents.RadComponent;
+import com.intellij.uiDesigner.impl.radComponents.RadRootContainer;
+import consulo.ui.ex.SimpleTextAttributes;
+import consulo.ui.ex.awt.ColoredListCellRenderer;
 import consulo.ui.ex.awt.UIUtil;
-
+import consulo.uiDesigner.impl.localize.UIDesignerLocalize;
 import jakarta.annotation.Nullable;
+
 import javax.swing.*;
 
 /**
@@ -43,7 +43,7 @@ public class ComponentRenderer extends ColoredListCellRenderer implements Proper
         renderComponent(target, selected);
       }
       else {
-        append(UIDesignerBundle.message("component.not.found"), SimpleTextAttributes.ERROR_ATTRIBUTES);
+        append(UIDesignerLocalize.componentNotFound(), SimpleTextAttributes.ERROR_ATTRIBUTES);
       }
     }
 
@@ -55,7 +55,7 @@ public class ComponentRenderer extends ColoredListCellRenderer implements Proper
     final SimpleTextAttributes baseAttributes =
       selected ? SimpleTextAttributes.SELECTED_SIMPLE_CELL_ATTRIBUTES : SimpleTextAttributes.SIMPLE_CELL_ATTRIBUTES;
     if (target == null) {
-      append(UIDesignerBundle.message("component.none"), baseAttributes);
+      append(UIDesignerLocalize.componentNone(), baseAttributes);
       return;
     }
     setIcon(ComponentTree.getComponentIcon(target));
@@ -75,6 +75,7 @@ public class ComponentRenderer extends ColoredListCellRenderer implements Proper
     }
   }
 
+  @Override
   protected void customizeCellRenderer(JList list, Object value, int index, boolean selected, boolean hasFocus) {
     renderComponent((RadComponent) value, false);
   }

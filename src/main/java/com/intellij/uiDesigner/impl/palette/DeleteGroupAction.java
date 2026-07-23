@@ -13,27 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.intellij.uiDesigner.impl.palette;
 
-import com.intellij.uiDesigner.impl.UIDesignerBundle;
-import consulo.application.CommonBundle;
-import consulo.language.editor.CommonDataKeys;
+import consulo.platform.base.localize.CommonLocalize;
 import consulo.project.Project;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.action.AnAction;
 import consulo.ui.ex.action.AnActionEvent;
 import consulo.ui.ex.action.AnActionWithSyncUpdate;
 import consulo.ui.ex.awt.Messages;
+import consulo.uiDesigner.impl.localize.UIDesignerLocalize;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author yole
  */
 public class DeleteGroupAction extends AnAction implements AnActionWithSyncUpdate {
     @Override
+    @RequiredUIAccess
     public void actionPerformed(AnActionEvent e) {
-        Project project = e.getData(CommonDataKeys.PROJECT);
+        Project project = e.getData(Project.KEY);
         GroupItem groupToBeRemoved = e.getData(GroupItem.DATA_KEY);
         if (groupToBeRemoved == null || project == null) {
             return;
@@ -42,21 +43,21 @@ public class DeleteGroupAction extends AnAction implements AnActionWithSyncUpdat
         if (!Palette.isRemovable(groupToBeRemoved)) {
             Messages.showInfoMessage(
                 project,
-                UIDesignerBundle.message("error.cannot.remove.default.group"),
-                CommonBundle.getErrorTitle()
+                UIDesignerLocalize.errorCannotRemoveDefaultGroup().get(),
+                CommonLocalize.titleError().get()
             );
             return;
         }
 
         Palette palette = Palette.getInstance(project);
-        ArrayList<GroupItem> groups = new ArrayList<GroupItem>(palette.getGroups());
+        List<GroupItem> groups = new ArrayList<>(palette.getGroups());
         groups.remove(groupToBeRemoved);
         palette.setGroups(groups);
     }
 
     @Override
     public void update(AnActionEvent e) {
-        Project project = e.getData(CommonDataKeys.PROJECT);
+        Project project = e.getData(Project.KEY);
         GroupItem groupItem = e.getData(GroupItem.DATA_KEY);
         ComponentItem selectedItem = e.getData(ComponentItem.DATA_KEY);
         e.getPresentation().setEnabled(project != null && groupItem != null && !groupItem.isReadOnly() && selectedItem == null);

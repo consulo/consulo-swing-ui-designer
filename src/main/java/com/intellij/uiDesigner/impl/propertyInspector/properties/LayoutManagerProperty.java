@@ -36,7 +36,7 @@ import javax.swing.*;
  * @author yole
  */
 public class LayoutManagerProperty extends Property<RadContainer, String> {
-  private final PropertyRenderer<String> myRenderer = new LabelPropertyRenderer<String>() {
+  private final PropertyRenderer<String> myRenderer = new LabelPropertyRenderer<>() {
     @Override
     protected void customize(@Nonnull final String value) {
       setText(LayoutManagerRegistry.getLayoutManagerDisplayName(value));
@@ -45,7 +45,7 @@ public class LayoutManagerProperty extends Property<RadContainer, String> {
 
   private static class LayoutManagerEditor extends ComboBoxPropertyEditor<String> {
     public LayoutManagerEditor() {
-      myCbx.setRenderer(new ListCellRendererWrapper<String>() {
+      myCbx.setRenderer(new ListCellRendererWrapper<>() {
         @Override
         public void customize(JList list, String value, int index, boolean selected, boolean hasFocus) {
           setText(LayoutManagerRegistry.getLayoutManagerDisplayName(value));
@@ -53,12 +53,13 @@ public class LayoutManagerProperty extends Property<RadContainer, String> {
       });
     }
 
+    @Override
     public JComponent getComponent(RadComponent component, String value, InplaceContext inplaceContext) {
       if (UIFormXmlConstants.LAYOUT_XY.equals(value)) {
-        myCbx.setModel(new DefaultComboBoxModel(LayoutManagerRegistry.getLayoutManagerNames()));
+        myCbx.setModel(new DefaultComboBoxModel<>(LayoutManagerRegistry.getLayoutManagerNames()));
       }
       else {
-        myCbx.setModel(new DefaultComboBoxModel(LayoutManagerRegistry.getNonDeprecatedLayoutManagerNames()));
+        myCbx.setModel(new DefaultComboBoxModel<>(LayoutManagerRegistry.getNonDeprecatedLayoutManagerNames()));
       }
       myCbx.setSelectedItem(value);
       return myCbx;
@@ -71,6 +72,7 @@ public class LayoutManagerProperty extends Property<RadContainer, String> {
     super(null, "Layout Manager");
   }
 
+  @Override
   public String getValue(RadContainer component) {
     RadContainer container = component;
     while(container != null) {
@@ -83,6 +85,7 @@ public class LayoutManagerProperty extends Property<RadContainer, String> {
     return UIFormXmlConstants.LAYOUT_INTELLIJ;
   }
 
+  @Override
   protected void setValueImpl(RadContainer component, String value) throws Exception {
     final RadLayoutManager oldLayout = component.getLayoutManager();
     if (oldLayout != null && Comparing.equal(oldLayout.getName(), value)) {
@@ -94,10 +97,12 @@ public class LayoutManagerProperty extends Property<RadContainer, String> {
   }
 
   @Nonnull
+  @Override
   public PropertyRenderer<String> getRenderer() {
     return myRenderer;
   }
 
+  @Override
   public PropertyEditor<String> getEditor() {
     return myEditor;
   }

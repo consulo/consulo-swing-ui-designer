@@ -15,18 +15,17 @@
  */
 package com.intellij.uiDesigner.impl.propertyInspector.editors;
 
-import com.intellij.uiDesigner.impl.propertyInspector.PropertyEditor;
 import com.intellij.uiDesigner.impl.propertyInspector.InplaceContext;
+import com.intellij.uiDesigner.impl.propertyInspector.PropertyEditor;
 import com.intellij.uiDesigner.impl.propertyInspector.properties.IntroFontProperty;
 import com.intellij.uiDesigner.impl.radComponents.RadComponent;
 import com.intellij.uiDesigner.lw.FontDescriptor;
-import consulo.ui.ex.awt.TextFieldWithBrowseButton;
-import consulo.ui.ex.awt.DialogWrapper;
 import consulo.project.Project;
+import consulo.ui.annotation.RequiredUIAccess;
+import consulo.ui.ex.awt.DialogWrapper;
+import consulo.ui.ex.awt.TextFieldWithBrowseButton;
 
 import javax.swing.*;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 
 /**
  * @author yole
@@ -40,13 +39,10 @@ public class FontEditor extends PropertyEditor<FontDescriptor> {
   public FontEditor(String propertyName) {
     myPropertyName = propertyName;
     myTextField.getTextField().setBorder(null);
-    myTextField.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        showFontEditorDialog();
-      }
-    });
+    myTextField.addActionListener(e -> showFontEditorDialog());
   }
 
+  @RequiredUIAccess
   private void showFontEditorDialog() {
     FontEditorDialog dlg = new FontEditorDialog(myProject, myPropertyName);
     dlg.setValue(myValue);
@@ -58,10 +54,12 @@ public class FontEditor extends PropertyEditor<FontDescriptor> {
     }
   }
 
+  @Override
   public FontDescriptor getValue() throws Exception {
     return myValue;
   }
 
+  @Override
   public JComponent getComponent(RadComponent component, FontDescriptor value, InplaceContext inplaceContext) {
     myProject = component.getProject();
     myValue = value != null ? value : new FontDescriptor(null, -1, -1);
@@ -69,6 +67,7 @@ public class FontEditor extends PropertyEditor<FontDescriptor> {
     return myTextField;
   }
 
+  @Override
   public void updateUI() {
     SwingUtilities.updateComponentTreeUI(myTextField);
   }

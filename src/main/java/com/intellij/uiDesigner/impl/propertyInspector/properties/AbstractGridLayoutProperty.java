@@ -40,6 +40,7 @@ public abstract class AbstractGridLayoutProperty extends Property<RadContainer, 
     super(parent, name);
   }
 
+  @Override
   public Boolean getValue(final RadContainer component) {
     final LayoutManager layoutManager = component.getLayout();
     if (!(layoutManager instanceof GridLayoutManager)) return null;
@@ -47,7 +48,8 @@ public abstract class AbstractGridLayoutProperty extends Property<RadContainer, 
     return getGridLayoutPropertyValue(gridLayoutManager);
   }
 
-  protected void setValueImpl(final RadContainer component,final Boolean value) throws Exception {
+  @Override
+  protected void setValueImpl(final RadContainer component, final Boolean value) throws Exception {
     final AbstractLayout layoutManager=(AbstractLayout) component.getLayout();
     if (!(layoutManager instanceof GridLayoutManager)) {
       throw new IllegalArgumentException("grid layout expected: "+layoutManager);
@@ -61,17 +63,19 @@ public abstract class AbstractGridLayoutProperty extends Property<RadContainer, 
   protected abstract void setGridLayoutPropertyValue(GridLayoutManager gridLayoutManager, boolean booleanValue);
 
   @Nonnull
+  @Override
   public PropertyRenderer<Boolean> getRenderer(){
     return myRenderer;
   }
 
+  @Override
   public PropertyEditor<Boolean> getEditor(){
     return myEditor;
   }
 
   @Override public boolean isModified(final RadContainer component) {
     final Boolean value = getValue(component);
-    return value != null && value.booleanValue();
+    return value != null && value;
   }
 
   @Override public void resetValue(RadContainer component) throws Exception {

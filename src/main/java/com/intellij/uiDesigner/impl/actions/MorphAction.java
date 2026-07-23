@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.intellij.uiDesigner.impl.actions;
 
 import com.intellij.java.language.psi.JavaPsiFacade;
@@ -21,12 +20,9 @@ import com.intellij.java.language.psi.PsiElementFactory;
 import com.intellij.java.language.psi.PsiField;
 import com.intellij.java.language.psi.PsiType;
 import com.intellij.uiDesigner.impl.FormEditingUtil;
-import com.intellij.uiDesigner.impl.UIDesignerBundle;
 import com.intellij.uiDesigner.impl.designSurface.GuiEditor;
 import com.intellij.uiDesigner.impl.designSurface.InsertComponentProcessor;
 import com.intellij.uiDesigner.impl.inspections.FormInspectionUtil;
-import com.intellij.uiDesigner.lw.IComponent;
-import com.intellij.uiDesigner.lw.IProperty;
 import com.intellij.uiDesigner.impl.palette.ComponentItem;
 import com.intellij.uiDesigner.impl.palette.Palette;
 import com.intellij.uiDesigner.impl.propertyInspector.IntrospectedProperty;
@@ -36,18 +32,20 @@ import com.intellij.uiDesigner.impl.quickFixes.ChangeFieldTypeFix;
 import com.intellij.uiDesigner.impl.radComponents.RadAtomicComponent;
 import com.intellij.uiDesigner.impl.radComponents.RadComponent;
 import com.intellij.uiDesigner.impl.radComponents.RadContainer;
-import consulo.application.util.function.Processor;
+import com.intellij.uiDesigner.lw.IProperty;
 import consulo.language.util.IncorrectOperationException;
 import consulo.logging.Logger;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.action.AnActionEvent;
 import consulo.ui.ex.popup.JBPopupFactory;
 import consulo.ui.ex.popup.ListPopup;
+import consulo.uiDesigner.impl.localize.UIDesignerLocalize;
 import consulo.undoRedo.CommandProcessor;
-
 import jakarta.annotation.Nonnull;
+
 import javax.swing.*;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 /**
  * @author yole
@@ -61,29 +59,30 @@ public class MorphAction extends AbstractGuiEditorAction {
     super(true);
   }
 
+  @Override
   protected void actionPerformed(final GuiEditor editor, final List<RadComponent> selection, final AnActionEvent e) {
-    Processor<ComponentItem> processor = new Processor<ComponentItem>() {
-      public boolean process(final ComponentItem selectedValue) {
-        SwingUtilities.invokeLater(new Runnable() {
-          public void run() {
-            Runnable runnable = new Runnable() {
-              public void run() {
-                for(RadComponent c: selection) {
-                  if (!morphComponent(editor, c, selectedValue)) break;
-                }
-                editor.refreshAndSave(true);
-              }
-            };
-            CommandProcessor.getInstance().executeCommand(editor.getProject(), runnable, UIDesignerBundle.message("morph.component.command"), null);
-            editor.getGlassLayer().requestFocus();
-          }
-        });
-        return true;
-      }
+    Predicate<ComponentItem> processor = selectedValue -> {
+      SwingUtilities.invokeLater(() -> {
+        CommandProcessor.getInstance().newCommand()
+          .project(editor.getProject())
+          .name(UIDesignerLocalize.morphComponentCommand())
+          .run(() -> {
+            for (RadComponent c: selection) {
+              if (!morphComponent(editor, c, selectedValue)) break;
+            }
+            editor.refreshAndSave(true);
+          });
+        editor.getGlassLayer().requestFocus();
+      });
+      return true;
     };
 
-    PaletteListPopupStep step = new PaletteListPopupStep(editor, myLastMorphComponent, processor,
-                                                         UIDesignerBundle.message("morph.component.title"));
+    PaletteListPopupStep step = new PaletteListPopupStep(
+      editor,
+      myLastMorphComponent,
+      processor,
+      UIDesignerLocalize.morphComponentTitle()
+    );
     step.hideNonAtomic();
     if (selection.size() == 1) {
       step.hideComponentClass(selection.get(0).getComponentClassName());
@@ -155,30 +154,28 @@ public class MorphAction extends AbstractGuiEditorAction {
   }
 
   private static void retargetComponentProperties(final GuiEditor editor, final RadComponent c, final RadComponent newComponent) {
-    FormEditingUtil.iterate(editor.getRootContainer(), new FormEditingUtil.ComponentVisitor() {
-      public boolean visit(final IComponent component) {
-        RadComponent rc = (RadComponent) component;
-        for(IProperty p: component.getModifiedProperties()) {
-          if (p instanceof IntroComponentProperty) {
-            IntroComponentProperty icp = (IntroComponentProperty) p;
-            final String value = icp.getValue(rc);
-            if (value.equals(c.getId())) {
-              try {
-                icp.setValue((RadComponent)component, newComponent.getId());
-              }
-              catch (Exception e) {
-                // ignore
-              }
+    FormEditingUtil.iterate(editor.getRootContainer(), component -> {
+      RadComponent rc = (RadComponent) component;
+      for(IProperty p: component.getModifiedProperties()) {
+        if (p instanceof IntroComponentProperty icp) {
+          String value = icp.getValue(rc);
+          if (value.equals(c.getId())) {
+            try {
+              icp.setValue(rc, newComponent.getId());
+            }
+            catch (Exception e) {
+              // ignore
             }
           }
         }
-        return true;
       }
+      return true;
     });
   }
 
   @Override
-  protected void update(@Nonnull GuiEditor editor, final ArrayList<RadComponent> selection, final AnActionEvent e) {
+  @RequiredUIAccess
+  protected void update(@Nonnull GuiEditor editor, List<RadComponent> selection, AnActionEvent e) {
     if (selection.size() == 0) {
       e.getPresentation().setEnabled(false);
       return;

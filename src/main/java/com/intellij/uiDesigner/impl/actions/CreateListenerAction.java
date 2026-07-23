@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.intellij.uiDesigner.impl.actions;
 
 import com.intellij.java.impl.codeInsight.generation.OverrideImplementUtil;
@@ -25,8 +24,7 @@ import com.intellij.uiDesigner.impl.designSurface.GuiEditor;
 import com.intellij.uiDesigner.impl.propertyInspector.properties.BindingProperty;
 import com.intellij.uiDesigner.impl.radComponents.RadComponent;
 import com.intellij.uiDesigner.impl.radComponents.RadRootContainer;
-import consulo.application.ApplicationManager;
-import consulo.application.CommonBundle;
+import consulo.annotation.access.RequiredWriteAction;
 import consulo.application.ui.wm.IdeFocusManager;
 import consulo.codeEditor.Editor;
 import consulo.dataContext.DataContext;
@@ -38,28 +36,27 @@ import consulo.language.psi.SmartPointerManager;
 import consulo.language.psi.SmartPsiElementPointer;
 import consulo.language.psi.scope.GlobalSearchScope;
 import consulo.language.util.IncorrectOperationException;
-import consulo.language.util.ModuleUtilCore;
 import consulo.logging.Logger;
 import consulo.module.Module;
+import consulo.platform.base.localize.CommonLocalize;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.action.AnAction;
 import consulo.ui.ex.action.AnActionEvent;
 import consulo.ui.ex.action.DefaultActionGroup;
 import consulo.ui.ex.awt.Messages;
 import consulo.ui.ex.popup.JBPopupFactory;
 import consulo.ui.ex.popup.ListPopup;
+import consulo.uiDesigner.impl.localize.UIDesignerLocalize;
 import consulo.undoRedo.CommandProcessor;
 import consulo.util.lang.ref.Ref;
-import org.jetbrains.annotations.NonNls;
-
 import jakarta.annotation.Nonnull;
+
 import javax.swing.*;
 import java.beans.BeanInfo;
 import java.beans.EventSetDescriptor;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -68,13 +65,19 @@ import java.util.List;
 public class CreateListenerAction extends AbstractGuiEditorAction {
   private static final Logger LOG = Logger.getInstance(CreateListenerAction.class);
 
+  @Override
   protected void actionPerformed(final GuiEditor editor, final List<RadComponent> selection, final AnActionEvent e) {
     final DefaultActionGroup actionGroup = prepareActionGroup(selection);
     final JComponent selectedComponent = selection.get(0).getDelegee();
     final DataContext context = DataManager.getInstance().getDataContext(selectedComponent);
     final JBPopupFactory factory = JBPopupFactory.getInstance();
-    final ListPopup popup = factory.createActionGroupPopup(UIDesignerBundle.message("create.listener.title"), actionGroup, context,
-                                                           JBPopupFactory.ActionSelectionAid.NUMBERING, true);
+    final ListPopup popup = factory.createActionGroupPopup(
+      UIDesignerLocalize.createListenerTitle().get(),
+      actionGroup,
+      context,
+      JBPopupFactory.ActionSelectionAid.NUMBERING,
+      true
+    );
 
     FormEditingUtil.showPopupUnderComponent(popup, selection.get(0));
   }
@@ -92,11 +95,7 @@ public class CreateListenerAction extends AbstractGuiEditorAction {
     }
     EventSetDescriptor[] sortedDescriptors = new EventSetDescriptor[eventSetDescriptors.length];
     System.arraycopy(eventSetDescriptors, 0, sortedDescriptors, 0, eventSetDescriptors.length);
-    Arrays.sort(sortedDescriptors, new Comparator<EventSetDescriptor>() {
-      public int compare(final EventSetDescriptor o1, final EventSetDescriptor o2) {
-        return o1.getListenerType().getName().compareTo(o2.getListenerType().getName());
-      }
-    });
+    Arrays.sort(sortedDescriptors, (o1, o2) -> o1.getListenerType().getName().compareTo(o2.getListenerType().getName()));
     for(EventSetDescriptor descriptor: sortedDescriptors) {
       actionGroup.add(new MyCreateListenerAction(selection, descriptor));
     }
@@ -104,11 +103,12 @@ public class CreateListenerAction extends AbstractGuiEditorAction {
   }
 
   @Override
-  protected void update(@Nonnull GuiEditor editor, final ArrayList<RadComponent> selection, final AnActionEvent e) {
+  @RequiredUIAccess
+  protected void update(@Nonnull GuiEditor editor, List<RadComponent> selection, final AnActionEvent e) {
     e.getPresentation().setEnabled(canCreateListener(selection));
   }
 
-  private static boolean canCreateListener(final ArrayList<RadComponent> selection) {
+  private static boolean canCreateListener(List<RadComponent> selection) {
     if (selection.size() == 0) return false;
     final RadRootContainer root = (RadRootContainer)FormEditingUtil.getRoot(selection.get(0));
     if (root.getClassToBind() == null) return false;
@@ -124,8 +124,8 @@ public class CreateListenerAction extends AbstractGuiEditorAction {
   {
     private final List<RadComponent> mySelection;
     private final EventSetDescriptor myDescriptor;
-    @NonNls private static final String LISTENER_SUFFIX = "Listener";
-    @NonNls private static final String ADAPTER_SUFFIX = "Adapter";
+    private static final String LISTENER_SUFFIX = "Listener";
+    private static final String ADAPTER_SUFFIX = "Adapter";
 
     public MyCreateListenerAction(final List<RadComponent> selection, EventSetDescriptor descriptor) {
       super(descriptor.getListenerType().getSimpleName());
@@ -133,21 +133,17 @@ public class CreateListenerAction extends AbstractGuiEditorAction {
       myDescriptor = descriptor;
     }
 
+    @Override
+    @RequiredUIAccess
     public void actionPerformed(AnActionEvent e) {
-      CommandProcessor.getInstance().executeCommand(
-        mySelection.get(0).getProject(),
-        new Runnable() {
-          public void run() {
-            ApplicationManager.getApplication().runWriteAction(new Runnable() {
-              public void run() {
-                createListener();
-              }
-            });
-          }
-        }, UIDesignerBundle.message("create.listener.command"), null
-      );
+        CommandProcessor.getInstance().newCommand()
+            .project(mySelection.get(0).getProject())
+            .name(UIDesignerLocalize.createListenerCommand())
+            .inWriteAction()
+            .run(this::createListener);
     }
 
+    @RequiredWriteAction
     private void createListener() {
       RadRootContainer root = (RadRootContainer)FormEditingUtil.getRoot(mySelection.get(0));
       final PsiField[] boundFields = new PsiField[mySelection.size()];
@@ -160,7 +156,7 @@ public class CreateListenerAction extends AbstractGuiEditorAction {
 
       try {
         PsiMethod constructor = findConstructorToInsert(myClass);
-        final Module module = ModuleUtilCore.findModuleForPsiElement(myClass);
+        Module module = myClass.getModule();
         PsiClass listenerClass = null;
         final String listenerClassName = myDescriptor.getListenerType().getName();
         if (listenerClassName.endsWith(LISTENER_SUFFIX)) {
@@ -173,7 +169,11 @@ public class CreateListenerAction extends AbstractGuiEditorAction {
             .findClass(listenerClassName, GlobalSearchScope.moduleWithDependenciesAndLibrariesScope(module));
         }
         if (listenerClass == null) {
-          Messages.showErrorDialog(myClass.getProject(), UIDesignerBundle.message("create.listener.class.not.found"), CommonBundle.getErrorTitle());
+          Messages.showErrorDialog(
+            myClass.getProject(),
+            UIDesignerLocalize.createListenerClassNotFound().get(),
+            CommonLocalize.titleError().get()
+          );
           return;
         }
 
@@ -181,8 +181,8 @@ public class CreateListenerAction extends AbstractGuiEditorAction {
         final PsiCodeBlock body = constructor.getBody();
         LOG.assertTrue(body != null);
 
-        @NonNls StringBuilder builder = new StringBuilder();
-        @NonNls String variableName = null;
+        StringBuilder builder = new StringBuilder();
+        String variableName = null;
         if (boundFields.length == 1) {
           builder.append(boundFields[0].getName());
           builder.append(".");
@@ -240,16 +240,16 @@ public class CreateListenerAction extends AbstractGuiEditorAction {
             final PsiClass newClass = (PsiClass)ptr.getElement();
             final Editor editor = DataManager.getInstance().getDataContext().getData(PlatformDataKeys.EDITOR);
             if (editor != null && newClass != null) {
-              CommandProcessor.getInstance().executeCommand(myClass.getProject(), new Runnable() {
-                public void run() {
+              CommandProcessor.getInstance().newCommand()
+                .project(myClass.getProject())
+                .run(() -> {
                   if (!OverrideImplementUtil.getMethodSignaturesToImplement(newClass).isEmpty()) {
                     OverrideImplementUtil.chooseAndImplementMethods(newClass.getProject(), editor, newClass);
                   }
                   else {
                     OverrideImplementUtil.chooseAndOverrideMethods(newClass.getProject(), editor, newClass);
                   }
-                }
-              }, "", null);
+                });
             }
           }
         });
@@ -259,6 +259,7 @@ public class CreateListenerAction extends AbstractGuiEditorAction {
       }
     }
 
+    @RequiredWriteAction
     private PsiMethod findConstructorToInsert(final PsiClass aClass) throws IncorrectOperationException {
       final PsiMethod[] constructors = aClass.getConstructors();
       if (constructors.length == 0) {

@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.intellij.uiDesigner.impl.componentTree;
 
-import com.intellij.uiDesigner.impl.UIDesignerBundle;
 import com.intellij.uiDesigner.impl.radComponents.RadButtonGroup;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.tree.NodeDescriptor;
+import consulo.uiDesigner.impl.localize.UIDesignerLocalize;
 
 /**
  * @author yole
@@ -27,18 +27,21 @@ public class ButtonGroupListDescriptor extends NodeDescriptor
 {
 	private final RadButtonGroup[] myButtonGroups;
 
-	public ButtonGroupListDescriptor(final NodeDescriptor parentDescriptor, final RadButtonGroup[] buttonGroups)
+	public ButtonGroupListDescriptor(NodeDescriptor parentDescriptor, RadButtonGroup[] buttonGroups)
 	{
 		super(parentDescriptor);
 		myButtonGroups = buttonGroups;
 	}
 
-	public boolean update()
+	@Override
+    @RequiredUIAccess
+    public boolean update()
 	{
 		return false;
 	}
 
-	public Object getElement()
+	@Override
+    public Object getElement()
 	{
 		return myButtonGroups;
 	}
@@ -46,6 +49,6 @@ public class ButtonGroupListDescriptor extends NodeDescriptor
 	@Override
 	public String toString()
 	{
-		return UIDesignerBundle.message("node.button.groups");
+		return UIDesignerLocalize.nodeButtonGroups().get();
 	}
 }

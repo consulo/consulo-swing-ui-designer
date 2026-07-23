@@ -36,6 +36,7 @@ public abstract class AbstractTextFieldEditor<V> extends PropertyEditor<V> {
     myTf.addActionListener(new MyActionListener());
   }
 
+  @Override
   public void updateUI() {
     SwingUtilities.updateComponentTreeUI(myTf);
   }
@@ -44,6 +45,7 @@ public abstract class AbstractTextFieldEditor<V> extends PropertyEditor<V> {
     myTf.setText(value == null ? "" : value.toString());
   }
 
+  @Override
   public JComponent getComponent(final RadComponent ignored, final V value, final InplaceContext inplaceContext) {
     setValueFromComponent(ignored, value);
 
@@ -61,6 +63,7 @@ public abstract class AbstractTextFieldEditor<V> extends PropertyEditor<V> {
   }
 
   protected final class MyActionListener implements ActionListener {
+    @Override
     public void actionPerformed(final ActionEvent e){
       fireValueCommitted(true, false);
     }

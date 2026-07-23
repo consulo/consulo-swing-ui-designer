@@ -17,9 +17,8 @@ package com.intellij.uiDesigner.impl.wizard;
 
 import consulo.ide.impl.idea.ide.wizard.CommitStepException;
 import consulo.ide.impl.idea.ide.wizard.StepAdapter;
-import org.jetbrains.annotations.NonNls;
-
 import jakarta.annotation.Nonnull;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -35,10 +34,8 @@ final class BindCompositeStep extends StepAdapter
   private final BindToNewBeanStep myBindToNewBeanStep;
   private final BindToExistingBeanStep myBindToExistingBeanStep;
 
-  @NonNls
   private static final String CARD_NEW_BEAN = "newBean";
 
-  @NonNls
   private static final String CARD_EXISTING_BEAN = "existingBean";
 
   BindCompositeStep(@Nonnull final WizardData data) {
@@ -52,10 +49,12 @@ final class BindCompositeStep extends StepAdapter
     myCardHolder.add(myBindToExistingBeanStep.getComponent(), CARD_EXISTING_BEAN);
   }
 
+  @Override
   public JComponent getComponent() {
     return myCardHolder;
   }
 
+  @Override
   public void _init() {
     if(myData.myBindToNewBean){
       myBindToNewBeanStep._init();
@@ -69,6 +68,7 @@ final class BindCompositeStep extends StepAdapter
     }
   }
 
+  @Override
   public void _commit(boolean finishChosen) throws CommitStepException
   {
     if(myData.myBindToNewBean){
@@ -79,6 +79,7 @@ final class BindCompositeStep extends StepAdapter
     }
   }
 
+  @Override
   public Icon getIcon() {
     if(myData.myBindToNewBean){
       return myBindToNewBeanStep.getIcon();

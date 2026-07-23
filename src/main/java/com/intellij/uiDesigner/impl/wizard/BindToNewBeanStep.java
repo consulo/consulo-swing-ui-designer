@@ -17,12 +17,13 @@ package com.intellij.uiDesigner.impl.wizard;
 
 import com.intellij.java.language.psi.JavaPsiFacade;
 import com.intellij.java.language.psi.PsiNameHelper;
-import com.intellij.uiDesigner.impl.UIDesignerBundle;
 import consulo.ide.impl.idea.ide.wizard.CommitStepException;
 import consulo.ide.impl.idea.ide.wizard.StepAdapter;
+import consulo.localize.LocalizeValue;
 import consulo.logging.Logger;
-
+import consulo.uiDesigner.impl.localize.UIDesignerLocalize;
 import jakarta.annotation.Nonnull;
+
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellEditor;
@@ -77,19 +78,22 @@ final class BindToNewBeanStep extends StepAdapter
 		myChkIsModified.setSelected(myData.myGenerateIsModified);
 	}
 
-	public JComponent getComponent()
+	@Override
+    public JComponent getComponent()
 	{
 		return myPanel;
 	}
 
-	public void _init()
+	@Override
+    public void _init()
 	{
 		// Check that data is correct
 		LOG.assertTrue(myData.myBindToNewBean);
 		myTableModel.fireTableDataChanged();
 	}
 
-	public void _commit(boolean finishChosen) throws CommitStepException
+	@Override
+    public void _commit(boolean finishChosen) throws CommitStepException
 	{
 		// Stop editing if any
 		final TableCellEditor cellEditor = myTable.getCellEditor();
@@ -111,7 +115,7 @@ final class BindToNewBeanStep extends StepAdapter
 			if(!nameHelper.isIdentifier(binding.myBeanProperty.myName))
 			{
 				throw new CommitStepException(
-						UIDesignerBundle.message("error.X.is.not.a.valid.property.name", binding.myBeanProperty.myName)
+                    UIDesignerLocalize.errorXIsNotAValidPropertyName(binding.myBeanProperty.myName).get()
 				);
 			}
 		}
@@ -121,47 +125,47 @@ final class BindToNewBeanStep extends StepAdapter
 
 	private final class MyTableModel extends AbstractTableModel
 	{
-		private final String[] myColumnNames;
-		private final Class[] myColumnClasses;
+		private final LocalizeValue[] myColumnNames = {
+            UIDesignerLocalize.columnFormField(),
+            UIDesignerLocalize.columnBeanProperty()
+        };
+		private final Class[] myColumnClasses = {
+            Object.class,
+            Object.class
+        };
 
-		public MyTableModel()
-		{
-			myColumnNames = new String[]{
-					UIDesignerBundle.message("column.form.field"),
-					UIDesignerBundle.message("column.bean.property")
-			};
-			myColumnClasses = new Class[]{
-					Object.class,
-					Object.class
-			};
-		}
-
-		public int getColumnCount()
+		@Override
+        public int getColumnCount()
 		{
 			return myColumnNames.length;
 		}
 
-		public String getColumnName(final int column)
+		@Override
+        public String getColumnName(final int column)
 		{
-			return myColumnNames[column];
+			return myColumnNames[column].get();
 		}
 
-		public Class getColumnClass(final int column)
+		@Override
+        public Class getColumnClass(final int column)
 		{
 			return myColumnClasses[column];
 		}
 
-		public int getRowCount()
+		@Override
+        public int getRowCount()
 		{
 			return myData.myBindings.length;
 		}
 
-		public boolean isCellEditable(final int row, final int column)
+		@Override
+        public boolean isCellEditable(final int row, final int column)
 		{
 			return column == 1/*Bean Property*/;
 		}
 
-		public Object getValueAt(final int row, final int column)
+		@Override
+        public Object getValueAt(final int row, final int column)
 		{
 			final FormProperty2BeanProperty binding = myData.myBindings[row];
 			if(column == 0/*Form Property*/)
@@ -178,7 +182,8 @@ final class BindToNewBeanStep extends StepAdapter
 			}
 		}
 
-		public void setValueAt(final Object value, final int row, final int column)
+		@Override
+        public void setValueAt(final Object value, final int row, final int column)
 		{
 			final FormProperty2BeanProperty binding = myData.myBindings[row];
 			if(column == 1/*Bean Property*/)

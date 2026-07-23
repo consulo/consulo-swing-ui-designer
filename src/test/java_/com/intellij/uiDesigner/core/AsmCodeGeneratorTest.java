@@ -65,7 +65,7 @@ public abstract class AsmCodeGeneratorTest extends TestCase
 
 		final String swingPath = PathUtil.getJarPathForClass(AbstractButton.class);
 
-		List<URL> cp = new ArrayList<URL>();
+		List<URL> cp = new ArrayList<>();
 		appendPath(cp, JBTabbedPane.class);
 		appendPath(cp, IntObjectMap.class);
 		appendPath(cp, UIUtil.class);
@@ -524,7 +524,8 @@ public abstract class AsmCodeGeneratorTest extends TestCase
 			myClassData.put(name.replace('.', '/'), bytes);
 		}
 
-		protected InputStream lookupClassBeforeClasspath(String internalClassName)
+		@Override
+        protected InputStream lookupClassBeforeClasspath(String internalClassName)
 		{
 			final byte[] bytes = myClassData.get(internalClassName);
 			if(bytes != null)
@@ -534,7 +535,8 @@ public abstract class AsmCodeGeneratorTest extends TestCase
 			return null;
 		}
 
-		public InputStream getResourceAsStream(String name) throws IOException
+		@Override
+        public InputStream getResourceAsStream(String name) throws IOException
 		{
 			if(name.equals("TestProperties.properties"))
 			{

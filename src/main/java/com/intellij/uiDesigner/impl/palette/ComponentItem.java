@@ -50,6 +50,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Anton Katilin
@@ -61,7 +62,6 @@ public final class ComponentItem implements Cloneable, PaletteItem
 
 	public static final Key<ComponentItem> DATA_KEY = Key.create(ComponentItem.class.getName());
 
-	@NonNls
 	private String myClassName;
 	private final GridConstraints myDefaultConstraints;
 	/**
@@ -81,7 +81,7 @@ public final class ComponentItem implements Cloneable, PaletteItem
 	 * Do not access this field directly. Use {@link #getToolTipText()} instead.
 	 */
 	final String myToolTipText;
-	private final HashMap<String, StringDescriptor> myPropertyName2initialValue;
+	private final Map<String, StringDescriptor> myPropertyName2initialValue;
 	/**
 	 * Whether item is removable or not
 	 */
@@ -101,7 +101,7 @@ public final class ComponentItem implements Cloneable, PaletteItem
 						 @Nullable final String iconPath,
 						 @Nullable final String toolTipText,
 						 @Nonnull final GridConstraints defaultConstraints,
-						 @Nonnull final HashMap<String, StringDescriptor> propertyName2initialValue,
+						 @Nonnull final Map<String, StringDescriptor> propertyName2initialValue,
 						 final boolean removable,
 						 final boolean autoCreateBinding,
 						 final boolean canAttachLabel)
@@ -143,10 +143,20 @@ public final class ComponentItem implements Cloneable, PaletteItem
 	/**
 	 * Creates deep copy of the object. You can edit any properties of the returned object.
 	 */
-	public ComponentItem clone()
+	@Override
+    public ComponentItem clone()
 	{
-		final ComponentItem result = new ComponentItem(myProject, myClassName, myIconPath, myToolTipText, (GridConstraints) myDefaultConstraints.clone(), (HashMap<String, StringDescriptor>)
-				myPropertyName2initialValue.clone(), myRemovable, myAutoCreateBinding, myCanAttachLabel);
+		ComponentItem result = new ComponentItem(
+		    myProject,
+            myClassName,
+            myIconPath,
+            myToolTipText,
+            (GridConstraints) myDefaultConstraints.clone(),
+            new HashMap<>(myPropertyName2initialValue),
+            myRemovable,
+            myAutoCreateBinding,
+            myCanAttachLabel
+        );
 		result.setIsContainer(myIsContainer);
 		return result;
 	}
@@ -309,7 +319,7 @@ public final class ComponentItem implements Cloneable, PaletteItem
 	 * Internal method. It should be used only to externalize initial item's values.
 	 * This method never returns <code>null</code>.
 	 */
-	HashMap<String, StringDescriptor> getInitialValues()
+	Map<String, StringDescriptor> getInitialValues()
 	{
 		return myPropertyName2initialValue;
 	}

@@ -29,38 +29,43 @@ import java.awt.event.ActionListener;
  * @author Vladimir Kondratyev
  */
 public class BooleanEditor extends PropertyEditor<Boolean> {
-  private final JCheckBox myCheckBox;
-  private boolean myInsideChange;
+    private final JCheckBox myCheckBox;
+    private boolean myInsideChange;
 
-  public BooleanEditor(){
-    myCheckBox=new JCheckBox();
-    myCheckBox.addActionListener(new MyActionListener());
-  }
-
-  public void updateUI() {
-    SwingUtilities.updateComponentTreeUI(myCheckBox);
-  }
-
-  public Boolean getValue() throws Exception{
-    return myCheckBox.isSelected();
-  }
-
-  public JComponent getComponent(final RadComponent ignored, final Boolean value, final InplaceContext inplaceContext){
-    myInsideChange=true;
-    try{
-      myCheckBox.setBackground(UIUtil.getTableBackground());
-      myCheckBox.setSelected(value != null && value.booleanValue());
-      return myCheckBox;
-    }finally{
-      myInsideChange=false;
+    public BooleanEditor() {
+        myCheckBox = new JCheckBox();
+        myCheckBox.addActionListener(new MyActionListener());
     }
-  }
 
-  private final class MyActionListener implements ActionListener{
-    public void actionPerformed(final ActionEvent e){
-      if(!myInsideChange){
-        fireValueCommitted(true, false);
-      }
+    @Override
+    public void updateUI() {
+        SwingUtilities.updateComponentTreeUI(myCheckBox);
     }
-  }
+
+    @Override
+    public Boolean getValue() throws Exception {
+        return myCheckBox.isSelected();
+    }
+
+    @Override
+    public JComponent getComponent(RadComponent ignored, Boolean value, InplaceContext inplaceContext) {
+        myInsideChange = true;
+        try {
+            myCheckBox.setBackground(UIUtil.getTableBackground());
+            myCheckBox.setSelected(value != null && value);
+            return myCheckBox;
+        }
+        finally {
+            myInsideChange = false;
+        }
+    }
+
+    private final class MyActionListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (!myInsideChange) {
+                fireValueCommitted(true, false);
+            }
+        }
+    }
 }

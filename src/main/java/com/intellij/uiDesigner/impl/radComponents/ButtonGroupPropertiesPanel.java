@@ -13,18 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.intellij.uiDesigner.impl.radComponents;
 
 import com.intellij.uiDesigner.impl.FormEditingUtil;
 import com.intellij.uiDesigner.impl.propertyInspector.properties.BindingProperty;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.util.collection.Lists;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.util.List;
@@ -41,36 +39,27 @@ public class ButtonGroupPropertiesPanel implements CustomPropertiesPanel
 	private final RadButtonGroup myGroup;
 	private final List<ChangeListener> myListeners = Lists.newLockFreeCopyOnWriteList();
 
-	public ButtonGroupPropertiesPanel(final RadRootContainer rootContainer, final RadButtonGroup group)
+	public ButtonGroupPropertiesPanel(RadRootContainer rootContainer, RadButtonGroup group)
 	{
 		myRootContainer = rootContainer;
 		myGroup = group;
 		myNameTextField.setText(group.getName());
 		myBindToFieldCheckBox.setSelected(group.isBound());
-		myBindToFieldCheckBox.addChangeListener(new ChangeListener()
-		{
-			public void stateChanged(ChangeEvent e)
-			{
-				saveButtonGroupIsBound();
-			}
-		});
+		myBindToFieldCheckBox.addChangeListener(e -> saveButtonGroupIsBound());
 		myNameTextField.addFocusListener(new FocusAdapter()
 		{
-			public void focusLost(FocusEvent e)
+			@Override
+            @RequiredUIAccess
+            public void focusLost(FocusEvent e)
 			{
 				saveButtonGroupName();
 			}
 		});
-		myNameTextField.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent e)
-			{
-				saveButtonGroupName();
-			}
-		});
+		myNameTextField.addActionListener(e -> saveButtonGroupName());
 	}
 
-	private void saveButtonGroupIsBound()
+	@RequiredUIAccess
+    private void saveButtonGroupIsBound()
 	{
 		if(myGroup.isBound() != myBindToFieldCheckBox.isSelected())
 		{
@@ -88,7 +77,8 @@ public class ButtonGroupPropertiesPanel implements CustomPropertiesPanel
 		}
 	}
 
-	private void saveButtonGroupName()
+	@RequiredUIAccess
+    private void saveButtonGroupName()
 	{
 		String oldName = myGroup.getName();
 		String newName = myNameTextField.getText();
@@ -103,22 +93,25 @@ public class ButtonGroupPropertiesPanel implements CustomPropertiesPanel
 		}
 	}
 
-	public JComponent getComponent()
+	@Override
+    public JComponent getComponent()
 	{
 		return myPanel;
 	}
 
-	public void addChangeListener(ChangeListener listener)
+	@Override
+    public void addChangeListener(ChangeListener listener)
 	{
 		myListeners.add(listener);
 	}
 
-	public void removeChangeListener(ChangeListener listener)
+	@Override
+    public void removeChangeListener(ChangeListener listener)
 	{
 		myListeners.remove(listener);
 	}
 
-	private void notifyListeners(final ChangeEvent event)
+	private void notifyListeners(ChangeEvent event)
 	{
 		for(ChangeListener changeListener : myListeners)
 		{

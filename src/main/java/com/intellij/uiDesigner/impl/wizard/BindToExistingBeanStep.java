@@ -18,14 +18,14 @@ package com.intellij.uiDesigner.impl.wizard;
 import com.intellij.java.language.psi.PsiMethod;
 import com.intellij.java.language.psi.PsiType;
 import com.intellij.java.language.psi.util.PropertyUtil;
-import com.intellij.uiDesigner.impl.UIDesignerBundle;
 import consulo.ide.impl.idea.ide.wizard.StepAdapter;
+import consulo.localize.LocalizeValue;
 import consulo.logging.Logger;
 import consulo.ui.ex.awt.ComboBox;
+import consulo.uiDesigner.impl.localize.UIDesignerLocalize;
 import consulo.util.collection.ArrayUtil;
-import org.jetbrains.annotations.NonNls;
-
 import jakarta.annotation.Nonnull;
+
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellEditor;
@@ -33,6 +33,7 @@ import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * @author Anton Katilin
@@ -87,12 +88,14 @@ final class BindToExistingBeanStep extends StepAdapter
 		myChkIsModified.setSelected(myData.myGenerateIsModified);
 	}
 
-	public JComponent getComponent()
+	@Override
+    public JComponent getComponent()
 	{
 		return myPanel;
 	}
 
-	public void _init()
+	@Override
+    public void _init()
 	{
 		// Check that data is correct
 		LOG.assertTrue(!myData.myBindToNewBean);
@@ -100,7 +103,8 @@ final class BindToExistingBeanStep extends StepAdapter
 		myTableModel.fireTableDataChanged();
 	}
 
-	public void _commit(boolean finishChosen)
+	@Override
+    public void _commit(boolean finishChosen)
 	{
 		// Stop editing if any
 		final TableCellEditor cellEditor = myTable.getCellEditor();
@@ -116,37 +120,37 @@ final class BindToExistingBeanStep extends StepAdapter
 
 	private final class MyTableModel extends AbstractTableModel
 	{
-		private final String[] myColumnNames;
+		private final LocalizeValue[] myColumnNames = {
+            UIDesignerLocalize.columnFormField(),
+            UIDesignerLocalize.columnBeanProperty()
+        };
 
-		public MyTableModel()
-		{
-			myColumnNames = new String[]{
-					UIDesignerBundle.message("column.form.field"),
-					UIDesignerBundle.message("column.bean.property")
-			};
-		}
-
-		public int getColumnCount()
+		@Override
+        public int getColumnCount()
 		{
 			return myColumnNames.length;
 		}
 
-		public String getColumnName(final int column)
+		@Override
+        public String getColumnName(final int column)
 		{
-			return myColumnNames[column];
+			return myColumnNames[column].get();
 		}
 
-		public int getRowCount()
+		@Override
+        public int getRowCount()
 		{
 			return myData.myBindings.length;
 		}
 
-		public boolean isCellEditable(final int row, final int column)
+		@Override
+        public boolean isCellEditable(final int row, final int column)
 		{
 			return column == 1/*Bean Property*/;
 		}
 
-		public Object getValueAt(final int row, final int column)
+		@Override
+        public Object getValueAt(final int row, final int column)
 		{
 			if(column == 0/*Form Property*/)
 			{
@@ -162,7 +166,8 @@ final class BindToExistingBeanStep extends StepAdapter
 			}
 		}
 
-		public void setValueAt(final Object value, final int row, final int column)
+		@Override
+        public void setValueAt(final Object value, final int row, final int column)
 		{
 			LOG.assertTrue(column == 1/*Bean Property*/);
 			final FormProperty2BeanProperty binding = myData.myBindings[row];
@@ -172,13 +177,13 @@ final class BindToExistingBeanStep extends StepAdapter
 
 	private final class MyTableCellEditor extends AbstractCellEditor implements TableCellEditor
 	{
-		private final ComboBox myCbx;
+		private final ComboBox<BeanProperty> myCbx;
 		/* -1 if not defined*/
 		private int myEditingRow;
 
 		public MyTableCellEditor()
 		{
-			myCbx = new ComboBox();
+			myCbx = new ComboBox<>();
 			myCbx.setEditable(true);
 			myCbx.setRenderer(new BeanPropertyListCellRenderer());
 			myCbx.putClientProperty("tableCellEditor", this);
@@ -194,7 +199,7 @@ final class BindToExistingBeanStep extends StepAdapter
 		 * @return whether it's possible to convert <code>type1</code> into <code>type2</code>
 		 * and vice versa.
 		 */
-		private boolean canConvert(@NonNls final String type1, @NonNls final String type2)
+		private boolean canConvert(final String type1, final String type2)
 		{
 			if("boolean".equals(type1) || "boolean".equals(type2))
 			{
@@ -206,14 +211,15 @@ final class BindToExistingBeanStep extends StepAdapter
 			}
 		}
 
-		public Component getTableCellEditorComponent(
-				final JTable table,
-				final Object value,
-				final boolean isSelected,
-				final int row,
-				final int column
+		@Override
+        public Component getTableCellEditorComponent(
+            final JTable table,
+            final Object value,
+            final boolean isSelected,
+            final int row,
+            final int column
 		)
-		{
+        {
 			myEditingRow = row;
 			final DefaultComboBoxModel model = (DefaultComboBoxModel) myCbx.getModel();
 			model.removeAllElements();
@@ -222,7 +228,7 @@ final class BindToExistingBeanStep extends StepAdapter
 			// Fill combobox with available bean's properties
 			final String[] rProps = PropertyUtil.getReadableProperties(myData.myBeanClass, true);
 			final String[] wProps = PropertyUtil.getWritableProperties(myData.myBeanClass, true);
-			final ArrayList<BeanProperty> rwProps = new ArrayList<BeanProperty>();
+			List<BeanProperty> rwProps = new ArrayList<>();
 
 			outer:
 			for(int i = rProps.length - 1; i >= 0; i--)
@@ -242,7 +248,7 @@ final class BindToExistingBeanStep extends StepAdapter
 					LOG.assertTrue(returnType != null);
 
 					// There are two possible types: boolean and java.lang.String
-					@NonNls final String typeName = returnType.getCanonicalText();
+					final String typeName = returnType.getCanonicalText();
 					LOG.assertTrue(typeName != null);
 					if(!"boolean".equals(typeName) && !"java.lang.String".equals(typeName))
 					{
@@ -294,7 +300,8 @@ final class BindToExistingBeanStep extends StepAdapter
 			return myCbx;
 		}
 
-		public Object getCellEditorValue()
+		@Override
+        public Object getCellEditorValue()
 		{
 			LOG.assertTrue(myEditingRow != -1);
 			try

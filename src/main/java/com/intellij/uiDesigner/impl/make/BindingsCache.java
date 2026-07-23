@@ -81,12 +81,14 @@ final class BindingsCache
 	{
 		return new BindingsStateCache<>(new File(cacheStoreDirectory, BINDINGS_FILE_NAME))
 		{
-			public MyState read(final DataInput stream) throws IOException
+			@Override
+            public MyState read(final DataInput stream) throws IOException
 			{
 				return new MyState(stream.readLong(), stream.readUTF());
 			}
 
-			public void write(final MyState myState, final DataOutput out) throws IOException
+			@Override
+            public void write(final MyState myState, final DataOutput out) throws IOException
 			{
 				out.writeLong(myState.getFormTimeStamp());
 				out.writeUTF(myState.getClassName());

@@ -15,15 +15,13 @@
  */
 package com.intellij.uiDesigner.impl.propertyInspector.properties;
 
-import jakarta.annotation.Nonnull;
-
 import com.intellij.uiDesigner.impl.propertyInspector.Property;
-import com.intellij.uiDesigner.impl.propertyInspector.PropertyRenderer;
 import com.intellij.uiDesigner.impl.propertyInspector.PropertyEditor;
-import com.intellij.uiDesigner.impl.propertyInspector.renderers.LabelPropertyRenderer;
+import com.intellij.uiDesigner.impl.propertyInspector.PropertyRenderer;
 import com.intellij.uiDesigner.impl.propertyInspector.editors.IntEditor;
+import com.intellij.uiDesigner.impl.propertyInspector.renderers.LabelPropertyRenderer;
 import com.intellij.uiDesigner.impl.radComponents.RadComponent;
-import org.jetbrains.annotations.NonNls;
+import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 
 /**
@@ -31,27 +29,29 @@ import jakarta.annotation.Nullable;
  */
 public abstract class AbstractIntProperty<T extends RadComponent> extends Property<T, Integer> {
   private final int myDefaultValue;
-  private final LabelPropertyRenderer<Integer> myRenderer = new LabelPropertyRenderer<Integer>();
+  private final LabelPropertyRenderer<Integer> myRenderer = new LabelPropertyRenderer<>();
   private final IntEditor myEditor;
 
-  protected AbstractIntProperty(Property parent, @Nonnull @NonNls String name, int defaultValue) {
+  protected AbstractIntProperty(Property parent, @Nonnull String name, int defaultValue) {
     super(parent, name);
     myDefaultValue = defaultValue;
     myEditor = new IntEditor(defaultValue);
   }
 
   @Nonnull
+  @Override
   public PropertyRenderer<Integer> getRenderer() {
     return myRenderer;
   }
 
+  @Override
   @Nullable public PropertyEditor<Integer> getEditor() {
     return myEditor;
   }
 
   @Override public boolean isModified(final T component) {
     Integer intValue = getValue(component);
-    return intValue != null && intValue.intValue() != getDefaultValue(component);
+    return intValue != null && intValue != getDefaultValue(component);
   }
 
   @Override public void resetValue(T component) throws Exception {
