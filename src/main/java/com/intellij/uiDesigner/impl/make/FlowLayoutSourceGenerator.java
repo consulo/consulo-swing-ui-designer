@@ -37,9 +37,9 @@ public class FlowLayoutSourceGenerator extends LayoutSourceGenerator {
     myAlignMap.put(FlowLayout.TRAILING, "FlowLayout.TRAILING");
   }
 
-  @Override public void generateContainerLayout(final LwContainer component,
-                                                final FormSourceCodeGenerator generator,
-                                                final String variable) {
+  @Override public void generateContainerLayout(LwContainer component,
+                                                FormSourceCodeGenerator generator,
+                                                String variable) {
     generator.startMethodCall(variable, "setLayout");
 
     FlowLayout layout = (FlowLayout) component.getLayout();
@@ -53,10 +53,10 @@ public class FlowLayoutSourceGenerator extends LayoutSourceGenerator {
     generator.endMethod();
   }
 
-  public void generateComponentLayout(final LwComponent component,
-                                      final FormSourceCodeGenerator generator,
-                                      final String variable,
-                                      final String parentVariable) {
+  public void generateComponentLayout(LwComponent component,
+                                      FormSourceCodeGenerator generator,
+                                      String variable,
+                                      String parentVariable) {
     generator.startMethodCall(parentVariable, "add");
     generator.pushVar(variable);
     generator.endMethod();

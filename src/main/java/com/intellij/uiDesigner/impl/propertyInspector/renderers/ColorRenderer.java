@@ -42,7 +42,7 @@ public class ColorRenderer extends ColoredListCellRenderer implements PropertyRe
     return this;
   }
 
-  private void prepareComponent(final ColorDescriptor value, final boolean selected) {
+  private void prepareComponent(ColorDescriptor value, boolean selected) {
     myColorDescriptor = value;
     clear();
     setIcon(UIDesignerIcons.Empty);
@@ -56,7 +56,7 @@ public class ColorRenderer extends ColoredListCellRenderer implements PropertyRe
   @Override protected void paintComponent(Graphics g) {
     super.paintComponent(g);
     if (myColorDescriptor != null) {
-      final int size = getBounds().height;
+      int size = getBounds().height;
       g.setColor(getBackground());
       g.fillRect(0, 0, size+getIconTextGap()+1, size);
       g.setColor(myColorDescriptor.getResolvedColor());

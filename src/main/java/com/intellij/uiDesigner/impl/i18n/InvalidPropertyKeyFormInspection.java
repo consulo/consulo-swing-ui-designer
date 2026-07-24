@@ -40,11 +40,11 @@ public class InvalidPropertyKeyFormInspection extends StringDescriptorInspection
 		super("UnresolvedPropertyKey");
 	}
 
-	protected void checkStringDescriptor(final consulo.module.Module module,
-										 final IComponent component,
-										 final IProperty prop,
-										 final StringDescriptor descriptor,
-										 final FormErrorCollector collector)
+	protected void checkStringDescriptor(consulo.module.Module module,
+                                         IComponent component,
+                                         IProperty prop,
+                                         StringDescriptor descriptor,
+                                         FormErrorCollector collector)
 	{
 		String error = checkDescriptor(descriptor, module);
 		if(error != null)
@@ -54,10 +54,10 @@ public class InvalidPropertyKeyFormInspection extends StringDescriptorInspection
 	}
 
 	@Nullable
-	private static String checkDescriptor(final StringDescriptor descriptor, final Module module)
+	private static String checkDescriptor(StringDescriptor descriptor, Module module)
 	{
-		final String bundleName = descriptor.getDottedBundleName();
-		final String key = descriptor.getKey();
+		String bundleName = descriptor.getDottedBundleName();
+		String key = descriptor.getKey();
 		if(bundleName == null && key == null)
 		{
 			return null;
@@ -82,7 +82,7 @@ public class InvalidPropertyKeyFormInspection extends StringDescriptorInspection
 
 		for(PropertiesFile propFile : propFiles)
 		{
-			final com.intellij.lang.properties.IProperty property = propFile.findPropertyByKey(key);
+			com.intellij.lang.properties.IProperty property = propFile.findPropertyByKey(key);
 			if(property == null)
 			{
 				return UIDesignerBundle.message("inspection.invalid.property.in.form.quickfix.error.key.not.found",

@@ -28,13 +28,13 @@ public abstract class MoveFileTest extends MultiFileTestCase {
     doTest(new PerformAction() {
       @Override
       public void performAction(VirtualFile rootDir, VirtualFile rootAfter) throws Exception {
-        final VirtualFile child = rootDir.findFileByRelativePath(fileToMove);
+        VirtualFile child = rootDir.findFileByRelativePath(fileToMove);
         assertNotNull("File " + fileToMove + " not found", child);
         PsiFile file = myPsiManager.findFile(child);
 
-        final VirtualFile child1 = rootDir.findChild(targetDirName);
+        VirtualFile child1 = rootDir.findChild(targetDirName);
         assertNotNull("File " + targetDirName + " not found", child1);
-        final PsiDirectory targetDirectory = myPsiManager.findDirectory(child1);
+        PsiDirectory targetDirectory = myPsiManager.findDirectory(child1);
 
         new MoveFilesOrDirectoriesProcessor(myProject, new PsiElement[] {file}, targetDirectory,
                                             false, false, null, null).run();

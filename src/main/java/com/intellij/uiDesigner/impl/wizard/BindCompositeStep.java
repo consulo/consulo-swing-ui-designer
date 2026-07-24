@@ -38,7 +38,7 @@ final class BindCompositeStep extends StepAdapter
 
   private static final String CARD_EXISTING_BEAN = "existingBean";
 
-  BindCompositeStep(@Nonnull final WizardData data) {
+  BindCompositeStep(@Nonnull WizardData data) {
     myData = data;
 
     myBindToNewBeanStep = new BindToNewBeanStep(data);
@@ -58,12 +58,12 @@ final class BindCompositeStep extends StepAdapter
   public void _init() {
     if(myData.myBindToNewBean){
       myBindToNewBeanStep._init();
-      final CardLayout layout = (CardLayout)myCardHolder.getLayout();
+      CardLayout layout = (CardLayout)myCardHolder.getLayout();
       layout.show(myCardHolder, CARD_NEW_BEAN);
     }
     else{
       myBindToExistingBeanStep._init();
-      final CardLayout layout = (CardLayout)myCardHolder.getLayout();
+      CardLayout layout = (CardLayout)myCardHolder.getLayout();
       layout.show(myCardHolder, CARD_EXISTING_BEAN);
     }
   }

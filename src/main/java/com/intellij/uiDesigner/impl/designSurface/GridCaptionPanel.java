@@ -74,7 +74,7 @@ public class GridCaptionPanel extends JPanel implements ComponentSelectionListen
 	private final DeleteProvider myDeleteProvider = new MyDeleteProvider();
 	private final Alarm myAlarm = new Alarm();
 
-	public GridCaptionPanel(final GuiEditor editor, final boolean isRow)
+	public GridCaptionPanel(final GuiEditor editor, boolean isRow)
 	{
 		myEditor = editor;
 		myIsRow = isRow;
@@ -90,7 +90,7 @@ public class GridCaptionPanel extends JPanel implements ComponentSelectionListen
 		setBackground(getGutterColor());
 		editor.addComponentSelectionListener(this);
 
-		final MyMouseListener listener = new MyMouseListener();
+		MyMouseListener listener = new MyMouseListener();
 		addMouseListener(listener);
 		addMouseMotionListener(listener);
 		addKeyListener(new MyKeyListener());
@@ -125,7 +125,7 @@ public class GridCaptionPanel extends JPanel implements ComponentSelectionListen
 
 	public static JBColor getGutterColor()
 	{
-		return new JBColor(new Supplier<Color>()
+		return new JBColor(new Supplier<>()
 		{
 			@Nonnull
 			@Override
@@ -169,9 +169,9 @@ public class GridCaptionPanel extends JPanel implements ComponentSelectionListen
 		super.paintComponent(g);
 		Graphics2D g2d = (Graphics2D) g;
 
-		final Rectangle bounds = getBounds();
-		final int paintedSize = 8;
-		final int paintOffset = 7;
+		Rectangle bounds = getBounds();
+		int paintedSize = 8;
+		int paintOffset = 7;
 
 		RadContainer container = getSelectedGridContainer();
 		if(container == null)
@@ -256,7 +256,7 @@ public class GridCaptionPanel extends JPanel implements ComponentSelectionListen
 
 	}
 
-	private Color getCaptionColor(final int i)
+	private Color getCaptionColor(int i)
 	{
 		if(mySelectionModel.isSelectedIndex(i))
 		{
@@ -266,7 +266,7 @@ public class GridCaptionPanel extends JPanel implements ComponentSelectionListen
 		{
 			if(i >= 0 && i < mySelectedContainer.getGridCellCount(myIsRow))
 			{
-				final GridChangeUtil.CellStatus status = GridChangeUtil.canDeleteCell(mySelectedContainer, i, myIsRow);
+				GridChangeUtil.CellStatus status = GridChangeUtil.canDeleteCell(mySelectedContainer, i, myIsRow);
 				if(status == GridChangeUtil.CellStatus.Empty || status == GridChangeUtil.CellStatus.Redundant)
 				{
 					return Color.PINK;
@@ -279,7 +279,7 @@ public class GridCaptionPanel extends JPanel implements ComponentSelectionListen
 	@Nullable
 	private RadContainer getSelectedGridContainer()
 	{
-		final ArrayList<RadComponent> selection = FormEditingUtil.getSelectedComponents(myEditor);
+		ArrayList<RadComponent> selection = FormEditingUtil.getSelectedComponents(myEditor);
 		if(selection.size() == 1 && selection.get(0) instanceof RadContainer)
 		{
 			RadContainer container = (RadContainer) selection.get(0);
@@ -291,7 +291,7 @@ public class GridCaptionPanel extends JPanel implements ComponentSelectionListen
 		RadContainer container = FormEditingUtil.getSelectionParent(selection);
 		if(container == null && myEditor.getRootContainer().getComponentCount() > 0)
 		{
-			final RadComponent topComponent = myEditor.getRootContainer().getComponent(0);
+			RadComponent topComponent = myEditor.getRootContainer().getComponent(0);
 			if(topComponent instanceof RadContainer)
 			{
 				container = (RadContainer) topComponent;
@@ -340,7 +340,7 @@ public class GridCaptionPanel extends JPanel implements ComponentSelectionListen
 		return myEditor.getData(dataId);
 	}
 
-	public void attachToScrollPane(final JScrollPane scrollPane)
+	public void attachToScrollPane(JScrollPane scrollPane)
 	{
 		scrollPane.getViewport().addChangeListener(e -> repaint());
 	}
@@ -362,9 +362,9 @@ public class GridCaptionPanel extends JPanel implements ComponentSelectionListen
 		return myIsRow ? mySelectedContainer.getGridRowAt(pnt.y) : mySelectedContainer.getGridColumnAt(pnt.x);
 	}
 
-	public int[] getSelectedCells(@Nullable final Point dragOrigin)
+	public int[] getSelectedCells(@Nullable Point dragOrigin)
 	{
-		ArrayList<Integer> selection = new ArrayList<Integer>();
+		ArrayList<Integer> selection = new ArrayList<>();
 		RadContainer container = getSelectedGridContainer();
 		if(container == null)
 		{
@@ -396,7 +396,7 @@ public class GridCaptionPanel extends JPanel implements ComponentSelectionListen
 
 	private int getCellCount()
 	{
-		final RadContainer gridContainer = getSelectedGridContainer();
+		RadContainer gridContainer = getSelectedGridContainer();
 		assert gridContainer != null;
 		return myIsRow ? gridContainer.getGridRowCount() : gridContainer.getGridColumnCount();
 	}
@@ -469,7 +469,7 @@ public class GridCaptionPanel extends JPanel implements ComponentSelectionListen
 			}
 		}
 
-		private boolean checkShowPopupMenu(final MouseEvent e)
+		private boolean checkShowPopupMenu(MouseEvent e)
 		{
 			int cell = getCellAt(e.getPoint());
 
@@ -482,7 +482,7 @@ public class GridCaptionPanel extends JPanel implements ComponentSelectionListen
 				ActionGroup group = mySelectedContainer.getGridLayoutManager().getCaptionActions();
 				if(group != null)
 				{
-					final ActionPopupMenu popupMenu = ActionManager.getInstance().createActionPopupMenu(ActionPlaces.UNKNOWN, group);
+					ActionPopupMenu popupMenu = ActionManager.getInstance().createActionPopupMenu(ActionPlaces.UNKNOWN, group);
 					popupMenu.getComponent().show(GridCaptionPanel.this, e.getX(), e.getY());
 					return true;
 				}
@@ -490,7 +490,7 @@ public class GridCaptionPanel extends JPanel implements ComponentSelectionListen
 			return false;
 		}
 
-		private void doResize(final Point pnt)
+		private void doResize(Point pnt)
 		{
 			int[] coords = mySelectedContainer.getGridLayoutManager().getGridCellCoords(mySelectedContainer, myIsRow);
 			int prevCoord = coords[myResizeLine - 1];
@@ -552,7 +552,7 @@ public class GridCaptionPanel extends JPanel implements ComponentSelectionListen
 
 				String toolTip = mySelectedContainer.getGridLayoutManager().getCellResizeTooltip(mySelectedContainer, myIsRow, myResizeLine - 1,
 						newSize);
-				final ActiveDecorationLayer layer = myEditor.getActiveDecorationLayer();
+				ActiveDecorationLayer layer = myEditor.getActiveDecorationLayer();
 				Rectangle rc;
 				if(myIsRow)
 				{
@@ -634,7 +634,7 @@ public class GridCaptionPanel extends JPanel implements ComponentSelectionListen
 			return true;
 		}
 
-		private boolean canDragCell(final int cell)
+		private boolean canDragCell(int cell)
 		{
 			if(mySelectedContainer == null)
 			{
@@ -665,7 +665,7 @@ public class GridCaptionPanel extends JPanel implements ComponentSelectionListen
 		{
 		}
 
-		public void dropActionChanged(final int gestureModifiers)
+		public void dropActionChanged(int gestureModifiers)
 		{
 		}
 	}
@@ -707,9 +707,9 @@ public class GridCaptionPanel extends JPanel implements ComponentSelectionListen
 			return false;
 		}
 
-		private int getDropGridLine(final DnDEvent aEvent)
+		private int getDropGridLine(DnDEvent aEvent)
 		{
-			final Point point = aEvent.getPointOn(mySelectedContainer.getDelegee());
+			Point point = aEvent.getPointOn(mySelectedContainer.getDelegee());
 			return mySelectedContainer.getGridLayoutManager().getGridLineNear(mySelectedContainer, myIsRow, point, 20);
 		}
 
@@ -742,7 +742,7 @@ public class GridCaptionPanel extends JPanel implements ComponentSelectionListen
 		{
 		}
 
-		private void setDropInsertLine(final int i)
+		private void setDropInsertLine(int i)
 		{
 			if(myDropInsertLine != i)
 			{
@@ -757,7 +757,7 @@ public class GridCaptionPanel extends JPanel implements ComponentSelectionListen
 		public boolean isRow;
 		public int[] cells;
 
-		public MyDragBean(final boolean row, final int[] cells)
+		public MyDragBean(boolean row, int[] cells)
 		{
 			isRow = row;
 			this.cells = cells;
@@ -788,7 +788,7 @@ public class GridCaptionPanel extends JPanel implements ComponentSelectionListen
 			}
 		}
 
-		private void moveSelection(final KeyEvent e, final int delta)
+		private void moveSelection(KeyEvent e, int delta)
 		{
 			int leadIndex = mySelectionModel.getLeadSelectionIndex();
 			int newLeadIndex = leadIndex + delta;

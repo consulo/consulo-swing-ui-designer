@@ -26,7 +26,7 @@ import com.intellij.uiDesigner.impl.radComponents.RadComponent;
  * @author yole
  */
 public abstract class PopupQuickFix<T> extends QuickFix {
-  public PopupQuickFix(@Nonnull final GuiEditor editor, @Nonnull final String name, @Nullable RadComponent component) {
+  public PopupQuickFix(@Nonnull GuiEditor editor, @Nonnull String name, @Nullable RadComponent component) {
     super(editor, name, component);
   }
 

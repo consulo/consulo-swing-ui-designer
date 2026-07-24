@@ -60,18 +60,18 @@ class PaletteListPopupStep implements ListPopupStep<ComponentItem>, SpeedSearchF
   }
 
   @Override
-  public boolean isSelectable(final ComponentItem value) {
+  public boolean isSelectable(ComponentItem value) {
     return true;
   }
 
   @Override
-  public Image getIconFor(final ComponentItem aValue) {
+  public Image getIconFor(ComponentItem aValue) {
     return aValue.getSmallIcon();
   }
 
   @Nonnull
   @Override
-  public String getTextFor(final ComponentItem value) {
+  public String getTextFor(ComponentItem value) {
     if (value.isAnyComponent()) {
       return UIDesignerLocalize.paletteNonPaletteComponent().get();
     }
@@ -79,7 +79,7 @@ class PaletteListPopupStep implements ListPopupStep<ComponentItem>, SpeedSearchF
   }
 
   @Override
-  public ListSeparator getSeparatorAbove(final ComponentItem value) {
+  public ListSeparator getSeparatorAbove(ComponentItem value) {
     return null;
   }
 
@@ -100,7 +100,7 @@ class PaletteListPopupStep implements ListPopupStep<ComponentItem>, SpeedSearchF
   }
 
   @Override
-  public PopupStep onChosen(final ComponentItem selectedValue, final boolean finalChoice) {
+  public PopupStep onChosen(ComponentItem selectedValue, boolean finalChoice) {
     myRunnable.test(selectedValue);
     return PopupStep.FINAL_CHOICE;
   }
@@ -111,7 +111,7 @@ class PaletteListPopupStep implements ListPopupStep<ComponentItem>, SpeedSearchF
   }
 
   @Override
-  public boolean hasSubstep(final ComponentItem selectedValue) {
+  public boolean hasSubstep(ComponentItem selectedValue) {
     return false;
   }
 
@@ -145,19 +145,19 @@ class PaletteListPopupStep implements ListPopupStep<ComponentItem>, SpeedSearchF
   }
 
   @Override
-  public boolean canBeHidden(final ComponentItem value) {
+  public boolean canBeHidden(ComponentItem value) {
     return true;
   }
 
   @Override
-  public String getIndexedString(final ComponentItem value) {
+  public String getIndexedString(ComponentItem value) {
     if (value.isAnyComponent()) {
       return "";
     }
     return value.getClassShortName();
   }
 
-  public void hideComponentClass(final String componentClassName) {
+  public void hideComponentClass(String componentClassName) {
     for(ComponentItem item: myItems) {
       if (item.getClassName().equals(componentClassName)) {
         myItems.remove(item);

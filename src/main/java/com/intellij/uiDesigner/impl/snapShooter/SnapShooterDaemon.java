@@ -42,13 +42,13 @@ import java.util.concurrent.BlockingQueue;
  * @author yole
  */
 public class SnapShooterDaemon implements Runnable {
-  private final Map<Integer, Component> myIdMap = new HashMap<Integer, Component>();
+  private final Map<Integer, Component> myIdMap = new HashMap<>();
   private int myNextId = 1;
-  private final BlockingQueue<String> myCommandQueue = new ArrayBlockingQueue<String>(20);
-  private final BlockingQueue<String> myResponseQueue = new ArrayBlockingQueue<String>(20);
+  private final BlockingQueue<String> myCommandQueue = new ArrayBlockingQueue<>(20);
+  private final BlockingQueue<String> myResponseQueue = new ArrayBlockingQueue<>(20);
   private final int myPort;
 
-  public SnapShooterDaemon(final int port) {
+  public SnapShooterDaemon(int port) {
     myPort = port;
   }
 
@@ -70,7 +70,7 @@ public class SnapShooterDaemon implements Runnable {
     }
   }
 
-  private void processClientConnection(final ServerSocket serverSocket) {
+  private void processClientConnection(ServerSocket serverSocket) {
     Socket clientSocket;
     try {
       clientSocket = serverSocket.accept();
@@ -98,7 +98,7 @@ public class SnapShooterDaemon implements Runnable {
     }
   }
 
-  private void processCommand(@NonNls final String command, final OutputStreamWriter writer) throws IOException {
+  private void processCommand(@NonNls String command, OutputStreamWriter writer) throws IOException {
     if (command.startsWith("S")) {
       SwingUtilities.invokeLater(new SuspendSwingRunnable());
     }
@@ -119,8 +119,8 @@ public class SnapShooterDaemon implements Runnable {
     }
   }
 
-  private String[] getChildren(final int id) {
-    List<String> result = new ArrayList<String>();
+  private String[] getChildren(int id) {
+    List<String> result = new ArrayList<>();
     List<Component> children = getChildList(id);
     for(Component child: children) {
       SnapShotRemoteComponent rc = new SnapShotRemoteComponent(assignId(child),
@@ -132,7 +132,7 @@ public class SnapShooterDaemon implements Runnable {
     return ArrayUtil.toStringArray(result);
   }
 
-  private static String getLayoutManagerClass(final Component component) {
+  private static String getLayoutManagerClass(Component component) {
     if (component instanceof JPanel) {
       LayoutManager layoutManager = ((Container) component).getLayout();
       if (layoutManager != null) {
@@ -146,8 +146,8 @@ public class SnapShooterDaemon implements Runnable {
     return "";
   }
 
-  private List<Component> getChildList(final int id) {
-    List<Component> children = new ArrayList<Component>();
+  private List<Component> getChildList(int id) {
+    List<Component> children = new ArrayList<>();
     if (id == 0) {
       children = getRootWindows();
     }
@@ -177,15 +177,15 @@ public class SnapShooterDaemon implements Runnable {
     return children;
   }
 
-  private static String getChildText(final Component component) {
+  private static String getChildText(Component component) {
     if (component instanceof Frame) {
       Frame frame = (Frame) component;
       return frame.getTitle();
     }
 
-    final AccessibleContext accessibleContext = component.getAccessibleContext();
+    AccessibleContext accessibleContext = component.getAccessibleContext();
     if (accessibleContext != null) {
-      final String text = accessibleContext.getAccessibleName();
+      String text = accessibleContext.getAccessibleName();
       if (text != null && text.length() > 0) {
         return text;
       }
@@ -194,7 +194,7 @@ public class SnapShooterDaemon implements Runnable {
     return "";
   }
 
-  private int assignId(final Component child) {
+  private int assignId(Component child) {
     int result = myNextId;
     myIdMap.put(result, child);
     myNextId++;
@@ -202,7 +202,7 @@ public class SnapShooterDaemon implements Runnable {
   }
 
   private static List<Component> getRootWindows() {
-    List<Component> result = new ArrayList<Component>();
+    List<Component> result = new ArrayList<>();
     for(Frame frame: Frame.getFrames()) {
       //noinspection HardCodedStringLiteral
       if (!frame.getClass().getName().endsWith("SwingUtilities$SharedOwnerFrame")) {
@@ -250,7 +250,7 @@ public class SnapShooterDaemon implements Runnable {
     }
 
     @NonNls
-    private String doSnapshotCommand(final String command) {
+    private String doSnapshotCommand(String command) {
       int id = Integer.parseInt(command.substring(1));
       Component component = myIdMap.get(id);
       XmlWriter xmlWriter = new XmlWriter();
@@ -266,9 +266,9 @@ public class SnapShooterDaemon implements Runnable {
       return xmlWriter.getText();
     }
 
-    private RadRootContainer createFormSnapshot(final JComponent component) {
+    private RadRootContainer createFormSnapshot(JComponent component) {
       SnapshotContext context = new SnapshotContext();
-      final RadComponent radComponent = RadComponent.createSnapshotComponent(context, component);
+      RadComponent radComponent = RadComponent.createSnapshotComponent(context, component);
       if (radComponent != null) {
         radComponent.setBounds(new Rectangle(new Point(10, 10), component.getPreferredSize()));
         context.getRootContainer().addComponent(radComponent);
@@ -278,7 +278,7 @@ public class SnapShooterDaemon implements Runnable {
     }
 
     @NonNls
-    private String doListCommand(final String command) {
+    private String doListCommand(String command) {
       int id = Integer.parseInt(command.substring(1));
       String[] children = getChildren(id);
       StringBuilder result = new StringBuilder();

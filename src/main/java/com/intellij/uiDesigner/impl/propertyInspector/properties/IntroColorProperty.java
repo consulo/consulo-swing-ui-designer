@@ -41,7 +41,7 @@ public class IntroColorProperty extends IntrospectedProperty<ColorDescriptor> {
   private ColorEditor myColorEditor = null;
   @NonNls private static final String CLIENT_PROPERTY_KEY_PREFIX = "IntroColorProperty_";
 
-  public IntroColorProperty(final String name, final Method readMethod, final Method writeMethod, final boolean storeAsClient) {
+  public IntroColorProperty(String name, Method readMethod, Method writeMethod, boolean storeAsClient) {
     super(name, readMethod, writeMethod, storeAsClient);
   }
 
@@ -65,15 +65,15 @@ public class IntroColorProperty extends IntrospectedProperty<ColorDescriptor> {
     writer.writeColorDescriptor(value);
   }
 
-  @Override public ColorDescriptor getValue(final RadComponent component) {
-    final ColorDescriptor colorDescriptor = (ColorDescriptor)component.getDelegee().getClientProperty(CLIENT_PROPERTY_KEY_PREFIX + getName());
+  @Override public ColorDescriptor getValue(RadComponent component) {
+    ColorDescriptor colorDescriptor = (ColorDescriptor)component.getDelegee().getClientProperty(CLIENT_PROPERTY_KEY_PREFIX + getName());
     if (colorDescriptor == null) {
       return new ColorDescriptor((Color) invokeGetter(component));
     }
     return colorDescriptor;
   }
 
-  @Override protected void setValueImpl(final RadComponent component, final ColorDescriptor value) throws Exception {
+  @Override protected void setValueImpl(RadComponent component, ColorDescriptor value) throws Exception {
     component.getDelegee().putClientProperty(CLIENT_PROPERTY_KEY_PREFIX + getName(), value);
     if (value != null && value.isColorSet()) {
       invokeSetter(component, value.getResolvedColor());
@@ -86,7 +86,7 @@ public class IntroColorProperty extends IntrospectedProperty<ColorDescriptor> {
   }
 
   @Override
-  public void importSnapshotValue(final SnapshotContext context, final JComponent component, final RadComponent radComponent) {
+  public void importSnapshotValue(SnapshotContext context, JComponent component, RadComponent radComponent) {
     try {
       if (component.getParent() != null) {
         Color componentColor = (Color) myReadMethod.invoke(component, EMPTY_OBJECT_ARRAY);

@@ -29,7 +29,7 @@ import jakarta.annotation.Nonnull;
 public class GenerateCreateComponentsFix extends QuickFix {
   private final PsiClass myClass;
 
-  public GenerateCreateComponentsFix(@Nonnull final GuiEditor editor, PsiClass aClass) {
+  public GenerateCreateComponentsFix(@Nonnull GuiEditor editor, PsiClass aClass) {
     super(editor, UIDesignerBundle.message("quickfix.generate.custom.create"), null);
     myClass = aClass;
   }

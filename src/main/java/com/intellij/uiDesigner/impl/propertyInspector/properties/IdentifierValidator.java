@@ -32,7 +32,7 @@ public class IdentifierValidator implements InputValidator
 {
 	private final Project myProject;
 
-	public IdentifierValidator(final Project project)
+	public IdentifierValidator(Project project)
 	{
 		myProject = project;
 	}

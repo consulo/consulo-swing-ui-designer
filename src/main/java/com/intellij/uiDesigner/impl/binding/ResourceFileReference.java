@@ -38,23 +38,23 @@ import jakarta.annotation.Nullable;
  * @author yole
  */
 public class ResourceFileReference extends ReferenceInForm {
-  public ResourceFileReference(final PsiPlainTextFile file, TextRange range) {
+  public ResourceFileReference(PsiPlainTextFile file, TextRange range) {
     super(file, range);
   }
 
   @Nullable
   public PsiElement resolve() {
-    final Project project = myFile.getProject();
-    final ProjectFileIndex fileIndex = ProjectRootManager.getInstance(project).getFileIndex();
-    final VirtualFile formVirtualFile = myFile.getVirtualFile();
+    Project project = myFile.getProject();
+    ProjectFileIndex fileIndex = ProjectRootManager.getInstance(project).getFileIndex();
+    VirtualFile formVirtualFile = myFile.getVirtualFile();
     if (formVirtualFile == null) {
       return null;
     }
-    final Module module = fileIndex.getModuleForFile(formVirtualFile);
+    Module module = fileIndex.getModuleForFile(formVirtualFile);
     if (module == null) {
       return null;
     }
-    final VirtualFile formFile = ResourceFileUtil.findResourceFileInDependents(module, getRangeText());
+    VirtualFile formFile = ResourceFileUtil.findResourceFileInDependents(module, getRangeText());
     if (formFile == null) {
       return null;
     }
@@ -72,7 +72,7 @@ public class ResourceFileReference extends ReferenceInForm {
   }
 
   @Override
-  public PsiElement handleElementRename(final String newElementName) {
+  public PsiElement handleElementRename(String newElementName) {
     return handleFileRename(newElementName, "", true);
   }
 }

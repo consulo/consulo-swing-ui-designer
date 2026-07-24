@@ -54,7 +54,7 @@ public class ConfigureClientPropertiesDialog extends DialogWrapper {
   final private PropertiesComponent myPropertiesComponent = PropertiesComponent.getInstance();
   final private static String SPLITTER_PROPORTION_PROPERTY = "ConfigureClientPropertiesDialog.splitterProportion";
 
-  public ConfigureClientPropertiesDialog(final Project project) {
+  public ConfigureClientPropertiesDialog(Project project) {
     super(project, true);
     myProject = project;
     setTitle(UIDesignerBundle.message("client.properties.title"));
@@ -83,9 +83,9 @@ public class ConfigureClientPropertiesDialog extends DialogWrapper {
     myClassTree.setRootVisible(false);
     myClassTree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
       public void valueChanged(TreeSelectionEvent e) {
-        final TreePath leadSelectionPath = e.getNewLeadSelectionPath();
+        TreePath leadSelectionPath = e.getNewLeadSelectionPath();
         if (leadSelectionPath == null) return;
-        final DefaultMutableTreeNode node = (DefaultMutableTreeNode)leadSelectionPath.getLastPathComponent();
+        DefaultMutableTreeNode node = (DefaultMutableTreeNode)leadSelectionPath.getLastPathComponent();
         mySelectedClass = (Class)node.getUserObject();
         updateSelectedProperties();
       }
@@ -125,7 +125,7 @@ public class ConfigureClientPropertiesDialog extends DialogWrapper {
             if (dlg.getExitCode() == OK_EXIT_CODE) {
               String className = dlg.getClassName();
               if (className.length() == 0) return;
-              final Class aClass;
+              Class aClass;
               try {
                 aClass = Class.forName(className);
               }
@@ -197,8 +197,8 @@ public class ConfigureClientPropertiesDialog extends DialogWrapper {
 
   private void fillClassTree() {
     List<Class> configuredClasses = myManager.getConfiguredClasses(myProject);
-    Collections.sort(configuredClasses, new Comparator<Class>() {
-      public int compare(final Class o1, final Class o2) {
+    Collections.sort(configuredClasses, new Comparator<>() {
+      public int compare(Class o1, Class o2) {
         return getInheritanceLevel(o1) - getInheritanceLevel(o2);
       }
 
@@ -214,7 +214,7 @@ public class ConfigureClientPropertiesDialog extends DialogWrapper {
 
     DefaultMutableTreeNode root = new DefaultMutableTreeNode();
     DefaultTreeModel treeModel = new DefaultTreeModel(root);
-    Map<Class, DefaultMutableTreeNode> classToNodeMap = new HashMap<Class, DefaultMutableTreeNode>();
+    Map<Class, DefaultMutableTreeNode> classToNodeMap = new HashMap<>();
     for (Class cls : configuredClasses) {
       DefaultMutableTreeNode parentNode = root;
       Class superClass = cls.getSuperclass();

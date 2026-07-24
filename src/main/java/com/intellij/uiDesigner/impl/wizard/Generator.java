@@ -68,15 +68,15 @@ public final class Generator
 	/**
 	 * @param rootContainer output parameter; should be LwRootContainer[1]
 	 */
-	public static FormProperty[] exposeForm(final Project project, final VirtualFile formFile, final LwRootContainer[] rootContainer) throws MyException
+	public static FormProperty[] exposeForm(Project project, VirtualFile formFile, LwRootContainer[] rootContainer) throws MyException
 	{
-		final Module module = ModuleUtilCore.findModuleForFile(formFile, project);
+		Module module = ModuleUtilCore.findModuleForFile(formFile, project);
 		LOG.assertTrue(module != null);
 
-		final PsiPropertiesProvider propertiesProvider = new PsiPropertiesProvider(module);
+		PsiPropertiesProvider propertiesProvider = new PsiPropertiesProvider(module);
 
-		final Document doc = FileDocumentManager.getInstance().getDocument(formFile);
-		final LwRootContainer _rootContainer;
+		Document doc = FileDocumentManager.getInstance().getDocument(formFile);
+		LwRootContainer _rootContainer;
 		try
 		{
 			_rootContainer = Utils.getRootContainer(doc.getText(), propertiesProvider);
@@ -104,22 +104,22 @@ public final class Generator
 			throw new MyException(UIDesignerBundle.message("error.bound.class.does.not.exist", classToBind));
 		}
 
-		final ArrayList<FormProperty> result = new ArrayList<FormProperty>();
+		final ArrayList<FormProperty> result = new ArrayList<>();
 		final MyException[] exception = new MyException[1];
 
 		FormEditingUtil.iterate(
 				_rootContainer,
 				new FormEditingUtil.ComponentVisitor<LwComponent>()
 				{
-					public boolean visit(final LwComponent component)
+					public boolean visit(LwComponent component)
 					{
-						final String binding = component.getBinding();
+						String binding = component.getBinding();
 						if(binding == null)
 						{
 							return true;
 						}
 
-						final PsiField[] fields = boundClass.getFields();
+						PsiField[] fields = boundClass.getFields();
 						PsiField field = null;
 						for(int i = fields.length - 1; i >= 0; i--)
 						{
@@ -135,7 +135,7 @@ public final class Generator
 							return false;
 						}
 
-						final PsiClass fieldClass = getClassByType(field.getType());
+						PsiClass fieldClass = getClassByType(field.getType());
 						if(fieldClass == null)
 						{
 							exception[0] = new MyException(UIDesignerBundle.message("error.invalid.binding.field.type", binding, classToBind));
@@ -164,7 +164,7 @@ public final class Generator
 		return result.toArray(new FormProperty[result.size()]);
 	}
 
-	private static PsiClass getClassByType(final PsiType type)
+	private static PsiClass getClassByType(PsiType type)
 	{
 		if(!(type instanceof PsiClassType))
 		{
@@ -173,7 +173,7 @@ public final class Generator
 		return ((PsiClassType) type).resolve();
 	}
 
-	private static boolean instanceOf(final PsiClass jComponentClass, final String baseClassName)
+	private static boolean instanceOf(PsiClass jComponentClass, String baseClassName)
 	{
 		for(PsiClass c = jComponentClass; c != null; c = c.getSuperClass())
 		{
@@ -189,7 +189,7 @@ public final class Generator
 	 * Should be invoked in command and write action
 	 */
 	@SuppressWarnings({"HardCodedStringLiteral"})
-	public static void generateDataBindingMethods(final WizardData data) throws MyException
+	public static void generateDataBindingMethods(WizardData data) throws MyException
 	{
 		if(data.myBindToNewBean)
 		{
@@ -203,11 +203,11 @@ public final class Generator
 			}
 		}
 
-		final HashMap<String, String> binding2beanGetter = new HashMap<String, String>();
-		final HashMap<String, String> binding2beanSetter = new HashMap<String, String>();
+		HashMap<String, String> binding2beanGetter = new HashMap<>();
+		HashMap<String, String> binding2beanSetter = new HashMap<>();
 
-		final FormProperty2BeanProperty[] bindings = data.myBindings;
-		for(final FormProperty2BeanProperty form2bean : bindings)
+		FormProperty2BeanProperty[] bindings = data.myBindings;
+		for(FormProperty2BeanProperty form2bean : bindings)
 		{
 			if(form2bean == null || form2bean.myBeanProperty == null)
 			{
@@ -216,8 +216,8 @@ public final class Generator
 
 			// check that bean contains the property, and if not, try to add the property to the bean
 			{
-				final String setterName = PropertyUtil.suggestSetterName(form2bean.myBeanProperty.myName);
-				final PsiMethod[] methodsByName = data.myBeanClass.findMethodsByName(setterName, true);
+				String setterName = PropertyUtil.suggestSetterName(form2bean.myBeanProperty.myName);
+				PsiMethod[] methodsByName = data.myBeanClass.findMethodsByName(setterName, true);
 				if(methodsByName.length < 1)
 				{
 					// bean does not contain this property
@@ -230,37 +230,37 @@ public final class Generator
 						throw new MyException("Cannot add property to non writable class " + data.myBeanClass.getQualifiedName());
 					}
 
-					final StringBuffer membersBuffer = new StringBuffer();
-					final StringBuffer methodsBuffer = new StringBuffer();
+					StringBuffer membersBuffer = new StringBuffer();
+					StringBuffer methodsBuffer = new StringBuffer();
 
-					final Project project = data.myBeanClass.getProject();
-					final CodeStyleManager formatter = CodeStyleManager.getInstance(project);
-					final JavaCodeStyleManager styler = JavaCodeStyleManager.getInstance(project);
+					Project project = data.myBeanClass.getProject();
+					CodeStyleManager formatter = CodeStyleManager.getInstance(project);
+					JavaCodeStyleManager styler = JavaCodeStyleManager.getInstance(project);
 
 					generateProperty(styler, form2bean.myBeanProperty.myName, form2bean.myBeanProperty.myType, membersBuffer,
 							methodsBuffer);
 
-					final PsiClass fakeClass;
+					PsiClass fakeClass;
 					try
 					{
 						fakeClass = JavaPsiFacade.getInstance(data.myBeanClass.getProject()).getElementFactory()
 								.createClassFromText(membersBuffer.toString() + methodsBuffer.toString(), null);
 
-						final PsiField[] fields = fakeClass.getFields();
+						PsiField[] fields = fakeClass.getFields();
 						{
-							final PsiElement result = data.myBeanClass.add(fields[0]);
+							PsiElement result = data.myBeanClass.add(fields[0]);
 							styler.shortenClassReferences(result);
 							formatter.reformat(result);
 						}
 
-						final PsiMethod[] methods = fakeClass.getMethods();
+						PsiMethod[] methods = fakeClass.getMethods();
 						{
-							final PsiElement result = data.myBeanClass.add(methods[0]);
+							PsiElement result = data.myBeanClass.add(methods[0]);
 							styler.shortenClassReferences(result);
 							formatter.reformat(result);
 						}
 						{
-							final PsiElement result = data.myBeanClass.add(methods[1]);
+							PsiElement result = data.myBeanClass.add(methods[1]);
 							styler.shortenClassReferences(result);
 							formatter.reformat(result);
 						}
@@ -272,8 +272,8 @@ public final class Generator
 				}
 			}
 
-			final PsiMethod propertySetter = PropertyUtil.findPropertySetter(data.myBeanClass, form2bean.myBeanProperty.myName, false, true);
-			final PsiMethod propertyGetter = PropertyUtil.findPropertyGetter(data.myBeanClass, form2bean.myBeanProperty.myName, false, true);
+			PsiMethod propertySetter = PropertyUtil.findPropertySetter(data.myBeanClass, form2bean.myBeanProperty.myName, false, true);
+			PsiMethod propertyGetter = PropertyUtil.findPropertyGetter(data.myBeanClass, form2bean.myBeanProperty.myName, false, true);
 
 			if(propertyGetter == null)
 			{
@@ -286,25 +286,25 @@ public final class Generator
 				continue;
 			}
 
-			final String binding = form2bean.myFormProperty.getLwComponent().getBinding();
+			String binding = form2bean.myFormProperty.getLwComponent().getBinding();
 			binding2beanGetter.put(binding, propertyGetter.getName());
 			binding2beanSetter.put(binding, propertySetter.getName());
 		}
 
-		final String dataBeanClassName = data.myBeanClass.getQualifiedName();
+		String dataBeanClassName = data.myBeanClass.getQualifiedName();
 
-		final LwRootContainer[] rootContainer = new LwRootContainer[1];
-		final FormProperty[] formProperties = exposeForm(data.myProject, data.myFormFile, rootContainer);
+		LwRootContainer[] rootContainer = new LwRootContainer[1];
+		FormProperty[] formProperties = exposeForm(data.myProject, data.myFormFile, rootContainer);
 
-		final StringBuffer getDataBody = new StringBuffer();
-		final StringBuffer setDataBody = new StringBuffer();
-		final StringBuffer isModifiedBody = new StringBuffer();
+		StringBuffer getDataBody = new StringBuffer();
+		StringBuffer setDataBody = new StringBuffer();
+		StringBuffer isModifiedBody = new StringBuffer();
 
 		// iterate exposed formproperties
 
-		for(final FormProperty formProperty : formProperties)
+		for(FormProperty formProperty : formProperties)
 		{
-			final String binding = formProperty.getLwComponent().getBinding();
+			String binding = formProperty.getLwComponent().getBinding();
 			if(!binding2beanGetter.containsKey(binding))
 			{
 				continue;
@@ -325,7 +325,7 @@ public final class Generator
 			setDataBody.append(binding2beanGetter.get(binding));
 			setDataBody.append("());\n");
 
-			final String propertyClassName = formProperty.getComponentPropertyClassName();
+			String propertyClassName = formProperty.getComponentPropertyClassName();
 			if("boolean".equals(propertyClassName))
 			{
 				isModifiedBody.append("if (");
@@ -378,7 +378,7 @@ public final class Generator
 		}
 		isModifiedBody.append("return false;\n");
 
-		final String textOfMethods =
+		String textOfMethods =
 				"public void setData(" + dataBeanClassName + " data){\n" +
 						setDataBody.toString() +
 						"}\n" +
@@ -393,9 +393,9 @@ public final class Generator
 
 		// put them to the bound class
 
-		final Module module = ModuleUtilCore.findModuleForFile(data.myFormFile, data.myProject);
+		Module module = ModuleUtilCore.findModuleForFile(data.myFormFile, data.myProject);
 		LOG.assertTrue(module != null);
-		final PsiClass boundClass = FormEditingUtil.findClassToBind(module, rootContainer[0].getClassToBind());
+		PsiClass boundClass = FormEditingUtil.findClassToBind(module, rootContainer[0].getClassToBind());
 		LOG.assertTrue(boundClass != null);
 
 		if(!CommonRefactoringUtil.checkReadOnlyStatus(module.getProject(), boundClass))
@@ -405,18 +405,18 @@ public final class Generator
 
 		// todo: check that this method does not exist yet
 
-		final PsiClass fakeClass;
+		PsiClass fakeClass;
 		try
 		{
 			fakeClass = JavaPsiFacade.getInstance(data.myProject).getElementFactory().createClassFromText(textOfMethods, null);
 
-			final PsiMethod methodSetData = fakeClass.getMethods()[0];
-			final PsiMethod methodGetData = fakeClass.getMethods()[1];
-			final PsiMethod methodIsModified = fakeClass.getMethods()[2];
+			PsiMethod methodSetData = fakeClass.getMethods()[0];
+			PsiMethod methodGetData = fakeClass.getMethods()[1];
+			PsiMethod methodIsModified = fakeClass.getMethods()[2];
 
-			final PsiMethod existing1 = boundClass.findMethodBySignature(methodSetData, false);
-			final PsiMethod existing2 = boundClass.findMethodBySignature(methodGetData, false);
-			final PsiMethod existing3 = boundClass.findMethodBySignature(methodIsModified, false);
+			PsiMethod existing1 = boundClass.findMethodBySignature(methodSetData, false);
+			PsiMethod existing2 = boundClass.findMethodBySignature(methodGetData, false);
+			PsiMethod existing3 = boundClass.findMethodBySignature(methodIsModified, false);
 
 			// warning already shown
 			if(existing1 != null)
@@ -432,25 +432,25 @@ public final class Generator
 				existing3.delete();
 			}
 
-			final CodeStyleManager formatter = CodeStyleManager.getInstance(module.getProject());
-			final JavaCodeStyleManager styler = JavaCodeStyleManager.getInstance(module.getProject());
+			CodeStyleManager formatter = CodeStyleManager.getInstance(module.getProject());
+			JavaCodeStyleManager styler = JavaCodeStyleManager.getInstance(module.getProject());
 
-			final PsiElement setData = boundClass.add(methodSetData);
+			PsiElement setData = boundClass.add(methodSetData);
 			styler.shortenClassReferences(setData);
 			formatter.reformat(setData);
 
-			final PsiElement getData = boundClass.add(methodGetData);
+			PsiElement getData = boundClass.add(methodGetData);
 			styler.shortenClassReferences(getData);
 			formatter.reformat(getData);
 
 			if(data.myGenerateIsModified)
 			{
-				final PsiElement isModified = boundClass.add(methodIsModified);
+				PsiElement isModified = boundClass.add(methodIsModified);
 				styler.shortenClassReferences(isModified);
 				formatter.reformat(isModified);
 			}
 
-			final OpenFileDescriptor descriptor = OpenFileDescriptorFactory.getInstance(setData.getProject()).builder(setData.getContainingFile().getVirtualFile()).offset(setData.getTextOffset())
+			OpenFileDescriptor descriptor = OpenFileDescriptorFactory.getInstance(setData.getProject()).builder(setData.getContainingFile().getVirtualFile()).offset(setData.getTextOffset())
 					.build();
 			FileEditorManager.getInstance(data.myProject).openTextEditor(descriptor, true);
 		}
@@ -461,22 +461,22 @@ public final class Generator
 	}
 
 	@Nonnull
-	private static PsiClass createBeanClass(final WizardData wizardData) throws MyException
+	private static PsiClass createBeanClass(WizardData wizardData) throws MyException
 	{
-		final PsiManager psiManager = PsiManager.getInstance(wizardData.myProject);
+		PsiManager psiManager = PsiManager.getInstance(wizardData.myProject);
 
-		final ProjectRootManager projectRootManager = ProjectRootManager.getInstance(wizardData.myProject);
-		final ProjectFileIndex fileIndex = projectRootManager.getFileIndex();
-		final VirtualFile sourceRoot = fileIndex.getSourceRootForFile(wizardData.myFormFile);
+		ProjectRootManager projectRootManager = ProjectRootManager.getInstance(wizardData.myProject);
+		ProjectFileIndex fileIndex = projectRootManager.getFileIndex();
+		VirtualFile sourceRoot = fileIndex.getSourceRootForFile(wizardData.myFormFile);
 		if(sourceRoot == null)
 		{
 			throw new MyException(UIDesignerBundle.message("error.form.file.is.not.in.source.root"));
 		}
 
-		final PsiDirectory rootDirectory = psiManager.findDirectory(sourceRoot);
+		PsiDirectory rootDirectory = psiManager.findDirectory(sourceRoot);
 		LOG.assertTrue(rootDirectory != null);
 
-		final PsiJavaPackage aPackage = JavaPsiFacade.getInstance(psiManager.getProject()).findPackage(wizardData.myPackageName);
+		PsiJavaPackage aPackage = JavaPsiFacade.getInstance(psiManager.getProject()).findPackage(wizardData.myPackageName);
 		if(aPackage == null)
 		{
 			throw new MyException(UIDesignerBundle.message("error.package.does.not.exist", wizardData.myPackageName));
@@ -484,8 +484,8 @@ public final class Generator
 
 		PsiDirectory targetDir = null;
 
-		final PsiDirectory[] directories = aPackage.getDirectories();
-		for(final PsiDirectory psiDirectory : directories)
+		PsiDirectory[] directories = aPackage.getDirectories();
+		for(PsiDirectory psiDirectory : directories)
 		{
 			if(PsiTreeUtil.isAncestor(rootDirectory, psiDirectory, false))
 			{
@@ -501,7 +501,7 @@ public final class Generator
 		}
 
 		//noinspection HardCodedStringLiteral
-		final String body =
+		String body =
 				"public class " + wizardData.myShortClassName + "{\n" +
 						"public " + wizardData.myShortClassName + "(){}\n" +
 						"}";
@@ -512,13 +512,13 @@ public final class Generator
 					PsiFileFactory.getInstance(psiManager.getProject()).createFileFromText(wizardData.myShortClassName + ".java", body);
 			sourceFile = (PsiFile) targetDir.add(sourceFile);
 
-			final PsiClass beanClass = ((PsiJavaFile) sourceFile).getClasses()[0];
+			PsiClass beanClass = ((PsiJavaFile) sourceFile).getClasses()[0];
 
-			final ArrayList<String> properties = new ArrayList<String>();
-			final HashMap<String, String> property2fqClassName = new HashMap<String, String>();
+			ArrayList<String> properties = new ArrayList<>();
+			HashMap<String, String> property2fqClassName = new HashMap<>();
 
-			final FormProperty2BeanProperty[] bindings = wizardData.myBindings;
-			for(final FormProperty2BeanProperty binding : bindings)
+			FormProperty2BeanProperty[] bindings = wizardData.myBindings;
+			for(FormProperty2BeanProperty binding : bindings)
 			{
 				if(binding == null || binding.myBeanProperty == null)
 				{
@@ -529,7 +529,7 @@ public final class Generator
 
 				// todo: handle "casts" ?
 
-				final String propertyClassName = binding.myFormProperty.getComponentPropertyClassName();
+				String propertyClassName = binding.myFormProperty.getComponentPropertyClassName();
 
 				property2fqClassName.put(binding.myBeanProperty.myName, propertyClassName);
 			}
@@ -546,27 +546,27 @@ public final class Generator
 
 	// todo: inline
 	private static void generateBean(
-			final PsiClass aClass,
-			final String[] properties,
-			final HashMap<String, String> property2fqClassName
+			PsiClass aClass,
+			String[] properties,
+			HashMap<String, String> property2fqClassName
 	) throws MyException
 	{
-		final StringBuffer membersBuffer = new StringBuffer();
-		final StringBuffer methodsBuffer = new StringBuffer();
+		StringBuffer membersBuffer = new StringBuffer();
+		StringBuffer methodsBuffer = new StringBuffer();
 
-		final CodeStyleManager formatter = CodeStyleManager.getInstance(aClass.getProject());
-		final JavaCodeStyleManager styler = JavaCodeStyleManager.getInstance(aClass.getProject());
+		CodeStyleManager formatter = CodeStyleManager.getInstance(aClass.getProject());
+		JavaCodeStyleManager styler = JavaCodeStyleManager.getInstance(aClass.getProject());
 
-		for(final String property : properties)
+		for(String property : properties)
 		{
 			LOG.assertTrue(property != null);
-			final String type = property2fqClassName.get(property);
+			String type = property2fqClassName.get(property);
 			LOG.assertTrue(type != null);
 
 			generateProperty(styler, property, type, membersBuffer, methodsBuffer);
 		}
 
-		final PsiClass fakeClass;
+		PsiClass fakeClass;
 		try
 		{
 			fakeClass = JavaPsiFacade.getInstance(aClass.getProject()).getElementFactory().createClassFromText(
@@ -574,14 +574,14 @@ public final class Generator
 					null
 			);
 
-			final PsiField[] fields = fakeClass.getFields();
-			for(final PsiField field : fields)
+			PsiField[] fields = fakeClass.getFields();
+			for(PsiField field : fields)
 			{
 				aClass.add(field);
 			}
 
-			final PsiMethod[] methods = fakeClass.getMethods();
-			for(final PsiMethod method : methods)
+			PsiMethod[] methods = fakeClass.getMethods();
+			for(PsiMethod method : methods)
 			{
 				aClass.add(method);
 			}
@@ -595,12 +595,12 @@ public final class Generator
 		}
 	}
 
-	private static void generateProperty(final JavaCodeStyleManager codeStyleManager,
-										 final String property,
-										 final String type,
-										 @NonNls final StringBuffer membersBuffer, @NonNls final StringBuffer methodsBuffer)
+	private static void generateProperty(JavaCodeStyleManager codeStyleManager,
+                                         String property,
+                                         String type,
+                                         @NonNls StringBuffer membersBuffer, @NonNls StringBuffer methodsBuffer)
 	{
-		final String field = codeStyleManager.suggestVariableName(VariableKind.FIELD, property, null, null).names[0];
+		String field = codeStyleManager.suggestVariableName(VariableKind.FIELD, property, null, null).names[0];
 
 		membersBuffer.append("private ");
 		membersBuffer.append(type);
@@ -619,7 +619,7 @@ public final class Generator
 		methodsBuffer.append(";}\n");
 
 		// setter
-		final String parameterName = codeStyleManager.suggestVariableName(VariableKind.PARAMETER, property, null, null).names[0];
+		String parameterName = codeStyleManager.suggestVariableName(VariableKind.PARAMETER, property, null, null).names[0];
 		methodsBuffer.append("public void ");
 		methodsBuffer.append(PropertyUtil.suggestSetterName(property));
 		methodsBuffer.append("(final ");
@@ -638,9 +638,9 @@ public final class Generator
 	}
 
 	@SuppressWarnings({"HardCodedStringLiteral"})
-	private static String suggestGetterName(final String propertyName, final String propertyType)
+	private static String suggestGetterName(String propertyName, String propertyType)
 	{
-		final StringBuffer name = new StringBuffer(StringUtil.capitalize(propertyName));
+		StringBuffer name = new StringBuffer(StringUtil.capitalize(propertyName));
 		if("boolean".equals(propertyType))
 		{
 			name.insert(0, "is");
@@ -652,11 +652,11 @@ public final class Generator
 		return name.toString();
 	}
 
-	public static void prepareWizardData(final WizardData data, PsiClass boundClass) throws MyException
+	public static void prepareWizardData(WizardData data, PsiClass boundClass) throws MyException
 	{
 
-		final PsiMethod[] allGetDataMethods = boundClass.findMethodsByName("getData", false);
-		final PsiMethod[] allSetDataMethods = boundClass.findMethodsByName("setData", false);
+		PsiMethod[] allGetDataMethods = boundClass.findMethodsByName("getData", false);
+		PsiMethod[] allSetDataMethods = boundClass.findMethodsByName("setData", false);
 
 		PsiMethod setDataMethod = null;
 		PsiClass beanClass = null;
@@ -665,39 +665,39 @@ public final class Generator
 		outer:
 		for(int i = 0; i < allGetDataMethods.length; i++)
 		{
-			final PsiMethod _getMethod = allGetDataMethods[i];
+			PsiMethod _getMethod = allGetDataMethods[i];
 
 			if(_getMethod.getReturnType() != PsiType.VOID)
 			{
 				continue;
 			}
 
-			final PsiParameter[] _getMethodParameters = _getMethod.getParameterList().getParameters();
+			PsiParameter[] _getMethodParameters = _getMethod.getParameterList().getParameters();
 			if(_getMethodParameters.length != 1)
 			{
 				continue;
 			}
 
-			final PsiClass _getParameterClass = getClassByType(_getMethodParameters[0].getType());
+			PsiClass _getParameterClass = getClassByType(_getMethodParameters[0].getType());
 			if(_getParameterClass == null)
 			{
 				continue;
 			}
 
-			for(final PsiMethod _setMethod : allSetDataMethods)
+			for(PsiMethod _setMethod : allSetDataMethods)
 			{
 				if(_setMethod.getReturnType() != PsiType.VOID)
 				{
 					continue;
 				}
 
-				final PsiParameter[] _setMethodParameters = _setMethod.getParameterList().getParameters();
+				PsiParameter[] _setMethodParameters = _setMethod.getParameterList().getParameters();
 				if(_setMethodParameters.length != 1)
 				{
 					continue;
 				}
 
-				final PsiClass _setParameterClass = getClassByType(_setMethodParameters[0].getType());
+				PsiClass _setParameterClass = getClassByType(_setMethodParameters[0].getType());
 				if(_setParameterClass != _getParameterClass)
 				{
 					continue;
@@ -722,35 +722,35 @@ public final class Generator
 
 		// parse setData() and try to associate fields with bean
 		{
-			final PsiCodeBlock body = setDataMethod.getBody();
+			PsiCodeBlock body = setDataMethod.getBody();
 			if(body == null)
 			{
 				return;
 			}
 
-			final PsiElement[] children = body.getChildren();
+			PsiElement[] children = body.getChildren();
 			for(PsiElement child : children)
 			{
 				// Parses sequences like: a.foo(b.bar());
-				final PsiField bindingField;
+				PsiField bindingField;
 
 				if(!(child instanceof PsiExpressionStatement))
 				{
 					continue;
 				}
 
-				final PsiExpression expression = ((PsiExpressionStatement) child).getExpression();
+				PsiExpression expression = ((PsiExpressionStatement) child).getExpression();
 				if(!(expression instanceof PsiMethodCallExpression))
 				{
 					continue;
 				}
 
-				final PsiMethodCallExpression callExpression = (PsiMethodCallExpression) expression;
+				PsiMethodCallExpression callExpression = (PsiMethodCallExpression) expression;
 
 				// find binding field ('a')
 				int index = -1;
 				{
-					final PsiElement psiElement = getObjectForWhichMethodWasCalled(callExpression);
+					PsiElement psiElement = getObjectForWhichMethodWasCalled(callExpression);
 					if(!(psiElement instanceof PsiField))
 					{
 						continue;
@@ -764,10 +764,10 @@ public final class Generator
 					bindingField = (PsiField) psiElement;
 
 					// find binding for this field
-					final FormProperty2BeanProperty[] bindings = data.myBindings;
+					FormProperty2BeanProperty[] bindings = data.myBindings;
 					for(int j = 0; j < bindings.length; j++)
 					{
-						final FormProperty2BeanProperty binding = bindings[j];
+						FormProperty2BeanProperty binding = bindings[j];
 						if(bindingField.getName().equals(binding.myFormProperty.getLwComponent().getBinding()))
 						{
 							index = j;
@@ -783,19 +783,19 @@ public final class Generator
 
 				// find 'bar()'
 				{
-					final PsiReferenceParameterList parameterList = callExpression.getMethodExpression().getParameterList();
+					PsiReferenceParameterList parameterList = callExpression.getMethodExpression().getParameterList();
 					if(parameterList == null)
 					{
 						continue;
 					}
 
-					final PsiExpressionList argumentList = callExpression.getArgumentList();
+					PsiExpressionList argumentList = callExpression.getArgumentList();
 					if(argumentList == null)
 					{
 						continue;
 					}
 
-					final PsiExpression[] expressions = argumentList.getExpressions();
+					PsiExpression[] expressions = argumentList.getExpressions();
 					if(expressions == null || expressions.length != 1)
 					{
 						continue;
@@ -806,16 +806,16 @@ public final class Generator
 						continue;
 					}
 
-					final PsiMethodCallExpression callExpression2 = ((PsiMethodCallExpression) expressions[0]);
+					PsiMethodCallExpression callExpression2 = ((PsiMethodCallExpression) expressions[0]);
 
 					// check that 'b' is parameter
-					final PsiElement psiElement = getObjectForWhichMethodWasCalled(callExpression2);
+					PsiElement psiElement = getObjectForWhichMethodWasCalled(callExpression2);
 					if(!(psiElement instanceof PsiParameter))
 					{
 						continue;
 					}
 
-					final PsiMethod barMethod = ((PsiMethod) callExpression2.getMethodExpression().resolve());
+					PsiMethod barMethod = ((PsiMethod) callExpression2.getMethodExpression().resolve());
 					if(barMethod == null)
 					{
 						continue;
@@ -826,7 +826,7 @@ public final class Generator
 						continue;
 					}
 
-					final String propertyName = PropertyUtil.getPropertyName(barMethod);
+					String propertyName = PropertyUtil.getPropertyName(barMethod);
 
 					// There are two possible types: boolean and java.lang.String
 					String typeName = barMethod.getReturnType().getCanonicalText();
@@ -841,9 +841,9 @@ public final class Generator
 		}
 	}
 
-	private static PsiElement getObjectForWhichMethodWasCalled(final PsiMethodCallExpression callExpression)
+	private static PsiElement getObjectForWhichMethodWasCalled(PsiMethodCallExpression callExpression)
 	{
-		final PsiExpression qualifierExpression = callExpression.getMethodExpression().getQualifierExpression();
+		PsiExpression qualifierExpression = callExpression.getMethodExpression().getQualifierExpression();
 		if(!(qualifierExpression instanceof PsiReferenceExpression))
 		{
 			return null;
@@ -853,7 +853,7 @@ public final class Generator
 
 	public static final class MyException extends Exception
 	{
-		public MyException(final String message)
+		public MyException(String message)
 		{
 			super(message);
 		}

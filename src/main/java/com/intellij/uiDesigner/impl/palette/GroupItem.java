@@ -39,15 +39,15 @@ public final class GroupItem implements Cloneable, PaletteGroup {
   @Nonnull
   private String myName;
   @Nonnull
-  private final ArrayList<ComponentItem> myItems = new ArrayList<ComponentItem>();
+  private final ArrayList<ComponentItem> myItems = new ArrayList<>();
   private boolean myReadOnly = false;
   private boolean mySpecialGroup = false;
 
-  public GroupItem(@Nonnull final String name) {
+  public GroupItem(@Nonnull String name) {
     setName(name);
   }
 
-  public GroupItem(final boolean specialGroup) {
+  public GroupItem(boolean specialGroup) {
     mySpecialGroup = specialGroup;
   }
 
@@ -55,7 +55,7 @@ public final class GroupItem implements Cloneable, PaletteGroup {
    * @return deep copy of the {@link GroupItem} with copied items.
    */
   public GroupItem clone(){
-    final GroupItem result = new GroupItem(myName);
+    GroupItem result = new GroupItem(myName);
 
     for(ComponentItem myItem : myItems) {
       result.addItem(myItem.clone());
@@ -68,7 +68,7 @@ public final class GroupItem implements Cloneable, PaletteGroup {
     return myReadOnly;
   }
 
-  public void setReadOnly(final boolean readOnly) {
+  public void setReadOnly(boolean readOnly) {
     myReadOnly = readOnly;
   }
 
@@ -84,7 +84,7 @@ public final class GroupItem implements Cloneable, PaletteGroup {
     return "Swing";
   }
 
-  public void setName(@Nonnull final String name){
+  public void setName(@Nonnull String name){
     myName = name;
   }
 
@@ -97,22 +97,22 @@ public final class GroupItem implements Cloneable, PaletteGroup {
   }
 
   /** Adds specified {@link ComponentItem} to the group.*/
-  public void addItem(@Nonnull final ComponentItem item){
+  public void addItem(@Nonnull ComponentItem item){
     LOG.assertTrue(!myItems.contains(item));
 
     myItems.add(item);
   }
 
   /** Replaces specified item with the new one. */
-  public void replaceItem(@Nonnull final ComponentItem itemToBeReplaced, @Nonnull final ComponentItem replacement) {
+  public void replaceItem(@Nonnull ComponentItem itemToBeReplaced, @Nonnull ComponentItem replacement) {
     LOG.assertTrue(myItems.contains(itemToBeReplaced));
 
-    final int index = myItems.indexOf(itemToBeReplaced);
+    int index = myItems.indexOf(itemToBeReplaced);
     myItems.set(index, replacement);
   }
 
   /** Removed specified {@link ComponentItem} from the group.*/
-  public void removeItem(@Nonnull final ComponentItem item){
+  public void removeItem(@Nonnull ComponentItem item){
     LOG.assertTrue(myItems.contains(item));
 
     myItems.remove(item);
@@ -122,7 +122,7 @@ public final class GroupItem implements Cloneable, PaletteGroup {
     return myItems.contains(item);
   }
 
-  public boolean containsItemClass(@Nonnull final String className){
+  public boolean containsItemClass(@Nonnull String className){
     for(int i = myItems.size() - 1; i >= 0; i--){
       if(className.equals(myItems.get(i).getClassName())){
         return true;
@@ -132,7 +132,7 @@ public final class GroupItem implements Cloneable, PaletteGroup {
     return false;
   }
 
-  public boolean containsItemCopy(@Nonnull final ComponentItem originalItem, final String className) {
+  public boolean containsItemCopy(@Nonnull ComponentItem originalItem, String className) {
     for(int i = myItems.size() - 1; i >= 0; i--){
       if(className.equals(myItems.get(i).getClassName()) && originalItem != myItems.get(i)) {
         return true;

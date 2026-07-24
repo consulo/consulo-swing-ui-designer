@@ -29,12 +29,12 @@ import java.awt.*;
 */
 public class IconRenderer extends LabelPropertyRenderer<IconDescriptor> {
   @Override
-  public JLabel getComponent(final RadRootContainer rootContainer, final IconDescriptor iconDescriptor,
-                             final boolean selected, final boolean hasFocus) {
+  public JLabel getComponent(RadRootContainer rootContainer, IconDescriptor iconDescriptor,
+                             boolean selected, boolean hasFocus) {
     if (iconDescriptor != null) {
       IntroIconProperty.ensureIconLoaded(rootContainer.getModule(), iconDescriptor);
     }
-    final JLabel component = super.getComponent(rootContainer, iconDescriptor, selected, hasFocus);
+    JLabel component = super.getComponent(rootContainer, iconDescriptor, selected, hasFocus);
     if (!selected && iconDescriptor != null && iconDescriptor.getIcon() == null) {
       setForeground(Color.RED);
     }

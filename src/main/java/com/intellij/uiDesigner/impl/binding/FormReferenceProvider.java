@@ -61,7 +61,7 @@ public class FormReferenceProvider extends PsiReferenceProvider
     PsiReference[] myReferences;
     Map<String, Pair<PsiType, TextRange>> myFieldNameToTypeMap;
 
-    public CachedFormData(final PsiReference[] refs, final Map<String, Pair<PsiType, TextRange>> map) {
+    public CachedFormData(PsiReference[] refs, Map<String, Pair<PsiType, TextRange>> map) {
       myReferences = refs;
       myFieldNameToTypeMap = map;
     }
@@ -70,9 +70,9 @@ public class FormReferenceProvider extends PsiReferenceProvider
   private static final Key<CachedValue<CachedFormData>> CACHED_DATA = Key.create("Cached form reference");
 
   @Nonnull
-  public PsiReference[] getReferencesByElement(@Nonnull final PsiElement element, @Nonnull final ProcessingContext context) {
+  public PsiReference[] getReferencesByElement(@Nonnull PsiElement element, @Nonnull ProcessingContext context) {
     if (element instanceof PsiPlainTextFile) {
-      final PsiPlainTextFile plainTextFile = (PsiPlainTextFile) element;
+      PsiPlainTextFile plainTextFile = (PsiPlainTextFile) element;
       if (plainTextFile.getFileType().equals(GuiFormFileType.INSTANCE)) {
         return getCachedData(plainTextFile).myReferences;
       }
@@ -91,12 +91,12 @@ public class FormReferenceProvider extends PsiReferenceProvider
 
   @Nullable
   public static PsiReference getFormReference(PsiField field) {
-    final PsiClass containingClass = field.getContainingClass();
+    PsiClass containingClass = field.getContainingClass();
     if (containingClass != null && containingClass.getQualifiedName() != null) {
-      final List<PsiFile> forms = FormClassIndex.findFormsBoundToClass(containingClass);
+      List<PsiFile> forms = FormClassIndex.findFormsBoundToClass(containingClass);
       for (PsiFile formFile : forms) {
-        final PsiReference[] refs = formFile.getReferences();
-        for (final PsiReference ref : refs) {
+        PsiReference[] refs = formFile.getReferences();
+        for (PsiReference ref : refs) {
           if (ref.isReferenceTo(field)) {
             return ref;
           }
@@ -107,17 +107,17 @@ public class FormReferenceProvider extends PsiReferenceProvider
   }
 
   public static @Nullable
-  PsiType getGUIComponentType(final PsiPlainTextFile file, String fieldName) {
-    final Map<String, Pair<PsiType, TextRange>> fieldNameToTypeMap = getCachedData(file).myFieldNameToTypeMap;
-    final Pair<PsiType, TextRange> typeRangePair = fieldNameToTypeMap.get(fieldName);
+  PsiType getGUIComponentType(PsiPlainTextFile file, String fieldName) {
+    Map<String, Pair<PsiType, TextRange>> fieldNameToTypeMap = getCachedData(file).myFieldNameToTypeMap;
+    Pair<PsiType, TextRange> typeRangePair = fieldNameToTypeMap.get(fieldName);
     return typeRangePair != null? typeRangePair.getFirst() : null;
   }
 
   public static void setGUIComponentType(PsiPlainTextFile file, String fieldName, String typeText) {
-    final Map<String, Pair<PsiType, TextRange>> fieldNameToTypeMap = getCachedData(file).myFieldNameToTypeMap;
-    final Pair<PsiType, TextRange> typeRangePair = fieldNameToTypeMap.get(fieldName);
+    Map<String, Pair<PsiType, TextRange>> fieldNameToTypeMap = getCachedData(file).myFieldNameToTypeMap;
+    Pair<PsiType, TextRange> typeRangePair = fieldNameToTypeMap.get(fieldName);
     if (typeRangePair != null) {
-      final TextRange range = typeRangePair.getSecond();
+      TextRange range = typeRangePair.getSecond();
       if (range != null) {
         PsiDocumentManager.getInstance(file.getProject()).getDocument(file).replaceString(range.getStartOffset(), range.getEndOffset(), typeText);
       }
@@ -128,7 +128,7 @@ public class FormReferenceProvider extends PsiReferenceProvider
     final Project project = file.getProject();
     final XmlTag rootTag = ApplicationManager.getApplication().runReadAction(new Computable<XmlTag>() {
       public XmlTag compute() {
-        final XmlFile xmlFile = (XmlFile) PsiFileFactory.getInstance(project).createFileFromText("a.xml", XmlFileType.INSTANCE, file.getText());
+        XmlFile xmlFile = (XmlFile) PsiFileFactory.getInstance(project).createFileFromText("a.xml", XmlFileType.INSTANCE, file.getText());
         return xmlFile.getRootTag();
       }
     });
@@ -137,22 +137,22 @@ public class FormReferenceProvider extends PsiReferenceProvider
       return;
     }
 
-    @NonNls final String name = rootTag.getName();
+    @NonNls String name = rootTag.getName();
     if (!"form".equals(name)){
       return;
     }
 
     PsiReference classReference = null;
 
-    final XmlAttribute classToBind = rootTag.getAttribute("bind-to-class", null);
+    XmlAttribute classToBind = rootTag.getAttribute("bind-to-class", null);
     if (classToBind != null) {
       // reference to class
-      final XmlAttributeValue valueElement = classToBind.getValueElement();
+      XmlAttributeValue valueElement = classToBind.getValueElement();
       if (valueElement == null) {
         return;
       }
-      final String className = valueElement.getValue().replace('$','.');
-      final PsiReference[] referencesByString = new JavaClassReferenceProvider().getReferencesByString(className, file, valueElement.getTextRange().getStartOffset() + 1);
+      String className = valueElement.getValue().replace('$','.');
+      PsiReference[] referencesByString = new JavaClassReferenceProvider().getReferencesByString(className, file, valueElement.getTextRange().getStartOffset() + 1);
       if(referencesByString.length < 1){
         // There are no references there
         return;
@@ -171,36 +171,36 @@ public class FormReferenceProvider extends PsiReferenceProvider
     });
   }
 
-  private static TextRange getValueRange(final XmlAttribute classToBind) {
-    final XmlAttributeValue valueElement = classToBind.getValueElement();
-    final TextRange textRange = valueElement.getTextRange();
+  private static TextRange getValueRange(XmlAttribute classToBind) {
+    XmlAttributeValue valueElement = classToBind.getValueElement();
+    TextRange textRange = valueElement.getTextRange();
     return new TextRange(textRange.getStartOffset() + 1, textRange.getEndOffset() - 1); // skip " "
   }
 
-  private static void processReferences(final XmlTag tag,
-                                        final PsiReference classReference,
-                                        final PsiPlainTextFile file,
-                                        final PsiReferenceProcessor processor) {
-    final XmlAttribute clsAttribute = tag.getAttribute(UIFormXmlConstants.ATTRIBUTE_CLASS, null);
-    final String classNameStr = clsAttribute != null? clsAttribute.getValue().replace('$','.') : null;
+  private static void processReferences(XmlTag tag,
+                                        PsiReference classReference,
+                                        PsiPlainTextFile file,
+                                        PsiReferenceProcessor processor) {
+    XmlAttribute clsAttribute = tag.getAttribute(UIFormXmlConstants.ATTRIBUTE_CLASS, null);
+    String classNameStr = clsAttribute != null? clsAttribute.getValue().replace('$','.') : null;
     // field
     {
-      final XmlAttribute bindingAttribute = tag.getAttribute(UIFormXmlConstants.ATTRIBUTE_BINDING, null);
+      XmlAttribute bindingAttribute = tag.getAttribute(UIFormXmlConstants.ATTRIBUTE_BINDING, null);
       if (bindingAttribute != null && classReference != null) {
-        final XmlAttribute customCreateAttribute = tag.getAttribute(UIFormXmlConstants.ATTRIBUTE_CUSTOM_CREATE, null);
+        XmlAttribute customCreateAttribute = tag.getAttribute(UIFormXmlConstants.ATTRIBUTE_CUSTOM_CREATE, null);
         boolean customCreate = (customCreateAttribute != null && Boolean.parseBoolean(customCreateAttribute.getValue()));
-        final TextRange nameRange = clsAttribute != null ? getValueRange(clsAttribute) : null;
+        TextRange nameRange = clsAttribute != null ? getValueRange(clsAttribute) : null;
         processor.execute(new FieldFormReference(file, classReference, getValueRange(bindingAttribute), classNameStr, nameRange, customCreate));
       }
-      final XmlAttribute titleBundleAttribute = tag.getAttribute(UIFormXmlConstants.ATTRIBUTE_TITLE_RESOURCE_BUNDLE, null);
-      final XmlAttribute titleKeyAttribute = tag.getAttribute(UIFormXmlConstants.ATTRIBUTE_TITLE_KEY, null);
+      XmlAttribute titleBundleAttribute = tag.getAttribute(UIFormXmlConstants.ATTRIBUTE_TITLE_RESOURCE_BUNDLE, null);
+      XmlAttribute titleKeyAttribute = tag.getAttribute(UIFormXmlConstants.ATTRIBUTE_TITLE_KEY, null);
       if (titleBundleAttribute != null && titleKeyAttribute != null) {
         processResourceBundleFileReferences(file, processor, titleBundleAttribute);
         processor.execute(new ResourceBundleKeyReference(file, titleBundleAttribute.getValue(), getValueRange(titleKeyAttribute)));
       }
 
-      final XmlAttribute bundleAttribute = tag.getAttribute(UIFormXmlConstants.ATTRIBUTE_RESOURCE_BUNDLE, null);
-      final XmlAttribute keyAttribute = tag.getAttribute(UIFormXmlConstants.ATTRIBUTE_KEY, null);
+      XmlAttribute bundleAttribute = tag.getAttribute(UIFormXmlConstants.ATTRIBUTE_RESOURCE_BUNDLE, null);
+      XmlAttribute keyAttribute = tag.getAttribute(UIFormXmlConstants.ATTRIBUTE_KEY, null);
       if (bundleAttribute != null && keyAttribute != null) {
         processResourceBundleFileReferences(file, processor, bundleAttribute);
         processor.execute(new ResourceBundleKeyReference(file, bundleAttribute.getValue(), getValueRange(keyAttribute)));
@@ -213,8 +213,8 @@ public class FormReferenceProvider extends PsiReferenceProvider
     // component class
     {
       if (clsAttribute != null) {
-        final JavaClassReferenceProvider provider = new JavaClassReferenceProvider();
-        final PsiReference[] referencesByString = provider.getReferencesByString(classNameStr, file, clsAttribute.getValueElement().getTextRange().getStartOffset() + 1);
+        JavaClassReferenceProvider provider = new JavaClassReferenceProvider();
+        PsiReference[] referencesByString = provider.getReferencesByString(classNameStr, file, clsAttribute.getValueElement().getTextRange().getStartOffset() + 1);
         if(referencesByString.length < 1){
           // There are no references there
           return;
@@ -237,24 +237,24 @@ public class FormReferenceProvider extends PsiReferenceProvider
       }
     }
 
-    final XmlTag[] subtags = tag.getSubTags();
+    XmlTag[] subtags = tag.getSubTags();
     for (XmlTag subtag : subtags) {
       processReferences(subtag, classReference, file, processor);
     }
   }
 
-  private static void processResourceBundleFileReferences(final PsiPlainTextFile file,
-                                                          final PsiReferenceProcessor processor,
-                                                          final XmlAttribute titleBundleAttribute) {
+  private static void processResourceBundleFileReferences(PsiPlainTextFile file,
+                                                          PsiReferenceProcessor processor,
+                                                          XmlAttribute titleBundleAttribute) {
     processPackageReferences(file, processor, titleBundleAttribute);
     processor.execute(new ResourceBundleFileReference(file, getValueRange(titleBundleAttribute)));
   }
 
-  private static void processPackageReferences(final PsiPlainTextFile file,
-                                               final PsiReferenceProcessor processor,
-                                               final XmlAttribute attribute) {
-    final TextRange valueRange = getValueRange(attribute);
-    final String value = attribute.getValue();
+  private static void processPackageReferences(PsiPlainTextFile file,
+                                               PsiReferenceProcessor processor,
+                                               XmlAttribute attribute) {
+    TextRange valueRange = getValueRange(attribute);
+    String value = attribute.getValue();
     int pos=-1;
     while(true) {
       pos = value.indexOf('/', pos+1);
@@ -265,39 +265,39 @@ public class FormReferenceProvider extends PsiReferenceProvider
     }
   }
 
-  private static void processNestedFormReference(final XmlTag tag, final PsiReferenceProcessor processor, final PsiPlainTextFile file) {
-    final XmlAttribute formFileAttribute = tag.getAttribute(UIFormXmlConstants.ATTRIBUTE_FORM_FILE, null);
+  private static void processNestedFormReference(XmlTag tag, PsiReferenceProcessor processor, PsiPlainTextFile file) {
+    XmlAttribute formFileAttribute = tag.getAttribute(UIFormXmlConstants.ATTRIBUTE_FORM_FILE, null);
     if (formFileAttribute != null) {
       processPackageReferences(file, processor, formFileAttribute);
       processor.execute(new ResourceFileReference(file, getValueRange(formFileAttribute)));
     }
   }
 
-  private static void processButtonGroupReference(final XmlTag tag, final PsiReferenceProcessor processor, final PsiPlainTextFile file,
-                                                  final PsiReference classReference) {
-    final XmlAttribute boundAttribute = tag.getAttribute(UIFormXmlConstants.ATTRIBUTE_BOUND, null);
-    final XmlAttribute nameAttribute = tag.getAttribute(UIFormXmlConstants.ATTRIBUTE_NAME, null);
+  private static void processButtonGroupReference(XmlTag tag, PsiReferenceProcessor processor, PsiPlainTextFile file,
+                                                  PsiReference classReference) {
+    XmlAttribute boundAttribute = tag.getAttribute(UIFormXmlConstants.ATTRIBUTE_BOUND, null);
+    XmlAttribute nameAttribute = tag.getAttribute(UIFormXmlConstants.ATTRIBUTE_NAME, null);
     if (boundAttribute != null && Boolean.parseBoolean(boundAttribute.getValue()) && nameAttribute != null) {
       processor.execute(new FieldFormReference(file, classReference, getValueRange(nameAttribute), null, null, false));
     }
   }
 
-  private static void processPropertyReference(final XmlTag tag, final PsiReferenceProcessor processor, final PsiPlainTextFile file,
+  private static void processPropertyReference(final XmlTag tag, PsiReferenceProcessor processor, final PsiPlainTextFile file,
                                                final String className) {
     final XmlAttribute valueAttribute = tag.getAttribute(UIFormXmlConstants.ATTRIBUTE_VALUE, null);
     if (valueAttribute != null) {
       PsiReference reference = ApplicationManager.getApplication().runReadAction(new Computable<PsiReference>() {
         @Nullable
         public PsiReference compute() {
-          final JavaPsiFacade psiFacade = JavaPsiFacade.getInstance(file.getProject());
-          final Module module = ModuleUtilCore.findModuleForPsiElement(file);
+          JavaPsiFacade psiFacade = JavaPsiFacade.getInstance(file.getProject());
+          Module module = ModuleUtilCore.findModuleForPsiElement(file);
           if (module == null) return null;
-          final GlobalSearchScope scope = GlobalSearchScope.moduleWithDependenciesAndLibrariesScope(module, false);
+          GlobalSearchScope scope = GlobalSearchScope.moduleWithDependenciesAndLibrariesScope(module, false);
           PsiClass psiClass = psiFacade.findClass(className, scope);
           if (psiClass != null) {
             PsiMethod getter = PropertyUtil.findPropertyGetter(psiClass, tag.getName(), false, true);
             if (getter != null) {
-              final PsiType returnType = getter.getReturnType();
+              PsiType returnType = getter.getReturnType();
               if (returnType instanceof PsiClassType) {
                 PsiClassType propClassType = (PsiClassType)returnType;
                 PsiClass propClass = propClassType.resolve();
@@ -325,13 +325,13 @@ public class FormReferenceProvider extends PsiReferenceProvider
   }
 
   @Nullable
-  public static String getBundleName(final PropertiesFile propertiesFile) {
-    final PsiDirectory directory = propertiesFile.getParent();
+  public static String getBundleName(PropertiesFile propertiesFile) {
+    PsiDirectory directory = propertiesFile.getParent();
     if (directory == null) {
       return null;
     }
-    final String packageName;
-    final PsiJavaPackage aPackage = JavaDirectoryService.getInstance().getPackage(directory);
+    String packageName;
+    PsiJavaPackage aPackage = JavaDirectoryService.getInstance().getPackage(directory);
     if (aPackage == null) {
       packageName = "";
     }
@@ -354,25 +354,25 @@ public class FormReferenceProvider extends PsiReferenceProvider
 
     if(data == null) {
       data = CachedValuesManager.getManager(element.getProject()).createCachedValue(new CachedValueProvider<CachedFormData>() {
-        final Map<String, Pair<PsiType, TextRange>> map = new HashMap<String, Pair<PsiType, TextRange>>();
+        final Map<String, Pair<PsiType, TextRange>> map = new HashMap<>();
         public Result<CachedFormData> compute() {
-          final PsiReferenceProcessor.CollectElements processor = new PsiReferenceProcessor.CollectElements() {
+          PsiReferenceProcessor.CollectElements processor = new PsiReferenceProcessor.CollectElements() {
             public boolean execute(PsiReference ref) {
               if (ref instanceof FieldFormReference) {
-                final FieldFormReference fieldRef = ((FieldFormReference)ref);
-                final String componentClassName = fieldRef.getComponentClassName();
+                FieldFormReference fieldRef = ((FieldFormReference)ref);
+                String componentClassName = fieldRef.getComponentClassName();
                 if (componentClassName != null) {
-                  final PsiClassType type = JavaPsiFacade.getInstance(element.getProject()).getElementFactory()
+                  PsiClassType type = JavaPsiFacade.getInstance(element.getProject()).getElementFactory()
                     .createTypeByFQClassName(componentClassName, element.getResolveScope());
-                  map.put(fieldRef.getRangeText(), new Pair<PsiType, TextRange>(type, fieldRef.getComponentClassNameTextRange()));
+                  map.put(fieldRef.getRangeText(), new Pair<>(type, fieldRef.getComponentClassNameTextRange()));
                 }
               }
               return super.execute(ref);
             }
           };
           processReferences(element, processor);
-          final PsiReference[] refs = processor.toArray(PsiReference.EMPTY_ARRAY);
-          return new Result<CachedFormData>(new CachedFormData(refs, map), element);
+          PsiReference[] refs = processor.toArray(PsiReference.EMPTY_ARRAY);
+          return new Result<>(new CachedFormData(refs, map), element);
         }
       }, false);
       element.putUserData(CACHED_DATA, data);

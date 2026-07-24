@@ -39,7 +39,7 @@ final class BeanProperty implements Comparable<BeanProperty>{
   @Nonnull
   public final String myType;
 
-  public BeanProperty(@Nonnull final String name, @Nonnull final String type) {
+  public BeanProperty(@Nonnull String name, @Nonnull String type) {
     if(!"java.lang.String".equals(type) && !"boolean".equals(type)){
       throw new IllegalArgumentException("unknown type: " + type);
     }
@@ -49,7 +49,7 @@ final class BeanProperty implements Comparable<BeanProperty>{
   }
 
   @Override
-  public int compareTo(final BeanProperty property) {
+  public int compareTo(BeanProperty property) {
     if(property == null){
       return 1;
     }

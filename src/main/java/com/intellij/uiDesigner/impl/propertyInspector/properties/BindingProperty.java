@@ -69,14 +69,14 @@ import java.util.regex.Pattern;
 public final class BindingProperty extends Property<RadComponent, String> {
   private final PropertyRenderer<String> myRenderer = new LabelPropertyRenderer<>() {
     @Override
-    protected void customize(@Nonnull final String value) {
+    protected void customize(@Nonnull String value) {
       setText(value);
     }
   };
   private final BindingEditor myEditor;
   private static final String PREFIX_HTML = "<html>";
 
-  public BindingProperty(final Project project){
+  public BindingProperty(Project project){
     super(null, "field name");
     myEditor = new BindingEditor(project);
   }
@@ -93,13 +93,13 @@ public final class BindingProperty extends Property<RadComponent, String> {
   }
 
   @Override
-  public String getValue(final RadComponent component){
+  public String getValue(RadComponent component){
     return component.getBinding();
   }
 
   @Override
   @RequiredUIAccess
-  protected void setValueImpl(final RadComponent component, final String value) throws Exception {
+  protected void setValueImpl(RadComponent component, String value) throws Exception {
     if (Comparing.strEqual(value, component.getBinding(), true)) {
       return;
     }
@@ -108,8 +108,8 @@ public final class BindingProperty extends Property<RadComponent, String> {
       throw new Exception("Value '" + value + "' is not a valid identifier");
     }
 
-    final RadRootContainer root = (RadRootContainer) FormEditingUtil.getRoot(component);
-    final String oldBinding = getValue(component);
+    RadRootContainer root = (RadRootContainer) FormEditingUtil.getRoot(component);
+    String oldBinding = getValue(component);
 
     // Check that binding remains unique
 
@@ -137,17 +137,17 @@ public final class BindingProperty extends Property<RadComponent, String> {
   }
 
   @RequiredUIAccess
-  public static void updateBoundFieldName(final RadRootContainer root, final String oldName, final String newName, final String fieldClassName) {
-    final String classToBind = root.getClassToBind();
+  public static void updateBoundFieldName(RadRootContainer root, String oldName, String newName, String fieldClassName) {
+    String classToBind = root.getClassToBind();
     if (classToBind == null) return;
 
-    final Project project = root.getProject();
+    Project project = root.getProject();
     if (newName.length() == 0) {
       checkRemoveUnusedField(root, oldName, FormEditingUtil.getNextSaveUndoGroupId(project));
       return;
     }
 
-    final PsiClass aClass = JavaPsiFacade.getInstance(project).findClass(classToBind, GlobalSearchScope.allScope(project));
+    PsiClass aClass = JavaPsiFacade.getInstance(project).findClass(classToBind, GlobalSearchScope.allScope(project));
     if(aClass == null){
       return;
     }
@@ -160,7 +160,7 @@ public final class BindingProperty extends Property<RadComponent, String> {
       return;
     }
 
-    final PsiField oldField = aClass.findFieldByName(oldName, true);
+    PsiField oldField = aClass.findFieldByName(oldName, true);
     if(oldField == null){
       return;
     }
@@ -196,36 +196,36 @@ public final class BindingProperty extends Property<RadComponent, String> {
       return;
     }
 
-    final RenameProcessor processor = new RenameProcessor(project, oldField, newName, true, true);
+    RenameProcessor processor = new RenameProcessor(project, oldField, newName, true, true);
     processor.run();
   }
 
 
   @Override
-  public boolean isModified(final RadComponent component) {
+  public boolean isModified(RadComponent component) {
     return component.getBinding() != null;
   }
 
   @Override
   @RequiredUIAccess
-  public void resetValue(final RadComponent component) throws Exception {
+  public void resetValue(RadComponent component) throws Exception {
     setValueImpl(component, "");
   }
 
   @Override
-  public boolean appliesToSelection(final List<RadComponent> selection) {
+  public boolean appliesToSelection(List<RadComponent> selection) {
     return selection.size() == 1;
   }
 
   @Nullable
-  public static PsiField findBoundField(@Nonnull final RadRootContainer root, final String fieldName) {
-    final Project project = root.getProject();
-    final String classToBind = root.getClassToBind();
+  public static PsiField findBoundField(@Nonnull RadRootContainer root, String fieldName) {
+    Project project = root.getProject();
+    String classToBind = root.getClassToBind();
     if (classToBind != null) {
-      final PsiManager manager = PsiManager.getInstance(project);
+      PsiManager manager = PsiManager.getInstance(project);
       PsiClass aClass = JavaPsiFacade.getInstance(manager.getProject()).findClass(classToBind, GlobalSearchScope.allScope(project));
       if (aClass != null) {
-        final PsiField oldBindingField = aClass.findFieldByName(fieldName, false);
+        PsiField oldBindingField = aClass.findFieldByName(fieldName, false);
         if (oldBindingField != null) {
           return oldBindingField;
         }
@@ -235,13 +235,13 @@ public final class BindingProperty extends Property<RadComponent, String> {
   }
 
   @RequiredUIAccess
-  public static void checkRemoveUnusedField(final RadRootContainer rootContainer, final String fieldName, final Object undoGroupId) {
-    final PsiField oldBindingField = findBoundField(rootContainer, fieldName);
+  public static void checkRemoveUnusedField(RadRootContainer rootContainer, String fieldName, Object undoGroupId) {
+    PsiField oldBindingField = findBoundField(rootContainer, fieldName);
     if (oldBindingField == null) {
       return;
     }
-    final Project project = oldBindingField.getProject();
-    final PsiClass aClass = oldBindingField.getContainingClass();
+    Project project = oldBindingField.getProject();
+    PsiClass aClass = oldBindingField.getContainingClass();
     if (isFieldUnreferenced(oldBindingField)) {
       if (!CommonRefactoringUtil.checkReadOnlyStatus(project, aClass)) {
         return;
@@ -266,7 +266,7 @@ public final class BindingProperty extends Property<RadComponent, String> {
     }
   }
 
-  private static boolean isFieldUnreferenced(final PsiField field) {
+  private static boolean isFieldUnreferenced(PsiField field) {
     try {
       return ReferencesSearch.search(field).forEach(t -> {
         PsiFile f = t.getElement().getContainingFile();
@@ -285,7 +285,7 @@ public final class BindingProperty extends Property<RadComponent, String> {
     }
   }
 
-  public static void checkCreateBindingFromText(final RadComponent component, final String text) {
+  public static void checkCreateBindingFromText(RadComponent component, String text) {
     if (!component.isDefaultBinding()) {
       return;
     }
@@ -304,7 +304,7 @@ public final class BindingProperty extends Property<RadComponent, String> {
   }
 
   @Nullable
-  public static String suggestBindingFromText(final RadComponent component, String text) {
+  public static String suggestBindingFromText(RadComponent component, String text) {
     if (StringUtil.startsWithIgnoreCase(text, PREFIX_HTML)) {
       text = Pattern.compile("<.+?>").matcher(text).replaceAll("");
     }
@@ -314,7 +314,7 @@ public final class BindingProperty extends Property<RadComponent, String> {
       for(int i=1; i<words.size() && i < 4; i++) {
         nameBuilder.append(StringUtil.capitalize(words.get(i)));
       }
-      final String shortClassName = StringUtil.capitalize(InsertComponentProcessor.getShortClassName(component.getComponentClassName()));
+      String shortClassName = StringUtil.capitalize(InsertComponentProcessor.getShortClassName(component.getComponentClassName()));
       if (shortClassName.equalsIgnoreCase(nameBuilder.toString())) {
         // avoid "buttonButton" case
         return null;
@@ -332,7 +332,7 @@ public final class BindingProperty extends Property<RadComponent, String> {
     return null;
   }
 
-  public static String getDefaultBinding(final RadComponent c) {
+  public static String getDefaultBinding(RadComponent c) {
     RadRootContainer root = (RadRootContainer) FormEditingUtil.getRoot(c);
     String binding = null;
     String text = FormInspectionUtil.getText(c.getModule(), c);

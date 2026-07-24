@@ -51,9 +51,9 @@ public class GridBuildUtil
 	{
 	}
 
-	public static void breakGrid(final GuiEditor editor)
+	public static void breakGrid(GuiEditor editor)
 	{
-		final ArrayList<RadComponent> selection = FormEditingUtil.getSelectedComponents(editor);
+		ArrayList<RadComponent> selection = FormEditingUtil.getSelectedComponents(editor);
 		if(selection.size() != 1)
 		{
 			return;
@@ -62,7 +62,7 @@ public class GridBuildUtil
 		{
 			return;
 		}
-		final RadContainer container = (RadContainer) selection.get(0);
+		RadContainer container = (RadContainer) selection.get(0);
 		if(
 				container instanceof RadScrollPane ||
 						container instanceof RadSplitPane ||
@@ -72,7 +72,7 @@ public class GridBuildUtil
 			return;
 		}
 
-		final RadContainer parent = container.getParent();
+		RadContainer parent = container.getParent();
 
 		if(parent instanceof RadRootContainer)
 		{
@@ -91,12 +91,12 @@ public class GridBuildUtil
 			// parent is XY
 			// put the contents of the container into 'parent' and remove 'container'
 
-			final int dx = container.getX();
-			final int dy = container.getY();
+			int dx = container.getX();
+			int dy = container.getY();
 
 			while(container.getComponentCount() > 0)
 			{
-				final RadComponent component = container.getComponent(0);
+				RadComponent component = container.getComponent(0);
 				component.shift(dx, dy);
 				parent.addComponent(component);
 			}
@@ -106,7 +106,7 @@ public class GridBuildUtil
 		else
 		{
 			// container becomes XY
-			final XYLayoutManager xyLayout = new XYLayoutManagerImpl();
+			XYLayoutManager xyLayout = new XYLayoutManagerImpl();
 			container.setLayout(xyLayout);
 			xyLayout.setPreferredSize(container.getSize());
 		}
@@ -114,33 +114,33 @@ public class GridBuildUtil
 		editor.refreshAndSave(true);
 	}
 
-	public static void convertToVerticalGrid(final GuiEditor editor)
+	public static void convertToVerticalGrid(GuiEditor editor)
 	{
 		convertToGridImpl(editor, VERTICAL_GRID);
 	}
 
-	public static void convertToHorizontalGrid(final GuiEditor editor)
+	public static void convertToHorizontalGrid(GuiEditor editor)
 	{
 		convertToGridImpl(editor, HORIZONTAL_GRID);
 	}
 
-	public static void convertToGrid(final GuiEditor editor)
+	public static void convertToGrid(GuiEditor editor)
 	{
 		convertToGridImpl(editor, GRID);
 	}
 
-	private static void convertToGridImpl(final GuiEditor editor, final int gridType)
+	private static void convertToGridImpl(GuiEditor editor, int gridType)
 	{
-		final boolean createNewContainer;
+		boolean createNewContainer;
 
-		final RadContainer parent;
-		final RadComponent[] componentsToConvert;
+		RadContainer parent;
+		RadComponent[] componentsToConvert;
 		{
-			final ArrayList<RadComponent> selection = FormEditingUtil.getSelectedComponents(editor);
+			ArrayList<RadComponent> selection = FormEditingUtil.getSelectedComponents(editor);
 			if(selection.size() == 0)
 			{
 				// root container selected
-				final RadRootContainer rootContainer = editor.getRootContainer();
+				RadRootContainer rootContainer = editor.getRootContainer();
 				if(rootContainer.getComponentCount() < 2)
 				{
 					// nothing to convert
@@ -180,14 +180,14 @@ public class GridBuildUtil
 		}
 		for(int i = 1; i < componentsToConvert.length; i++)
 		{
-			final RadComponent component = componentsToConvert[i];
+			RadComponent component = componentsToConvert[i];
 			if(component.getParent() != parent)
 			{
 				return;
 			}
 		}
 
-		final GridLayoutManager gridLayoutManager;
+		GridLayoutManager gridLayoutManager;
 		if(componentsToConvert.length == 0)
 		{
 			// we convert empty XY panel to grid
@@ -213,11 +213,11 @@ public class GridBuildUtil
 			}
 		}
 
-		for(final RadComponent component : componentsToConvert)
+		for(RadComponent component : componentsToConvert)
 		{
 			if(component instanceof RadContainer)
 			{
-				final LayoutManager layout = ((RadContainer) component).getLayout();
+				LayoutManager layout = ((RadContainer) component).getLayout();
 				if(layout instanceof XYLayoutManager)
 				{
 					((XYLayoutManager) layout).setPreferredSize(component.getSize());
@@ -229,9 +229,9 @@ public class GridBuildUtil
 		{
 			// we should create a new panel
 
-			final Module module = editor.getModule();
-			final ComponentItem panelItem = Palette.getInstance(editor.getProject()).getPanelItem();
-			final RadContainer newContainer = new RadContainer(editor, FormEditingUtil.generateId(editor.getRootContainer()));
+			Module module = editor.getModule();
+			ComponentItem panelItem = Palette.getInstance(editor.getProject()).getPanelItem();
+			RadContainer newContainer = new RadContainer(editor, FormEditingUtil.generateId(editor.getRootContainer()));
 			newContainer.setLayout(gridLayoutManager);
 			newContainer.init(editor, panelItem);
 
@@ -240,11 +240,11 @@ public class GridBuildUtil
 				newContainer.addComponent(componentToConvert);
 			}
 
-			final Point topLeftPoint = getTopLeftPoint(componentsToConvert);
+			Point topLeftPoint = getTopLeftPoint(componentsToConvert);
 			newContainer.setLocation(topLeftPoint);
 
-			final Point bottomRightPoint = getBottomRightPoint(componentsToConvert);
-			final Dimension size = new Dimension(bottomRightPoint.x - topLeftPoint.x, bottomRightPoint.y - topLeftPoint.y);
+			Point bottomRightPoint = getBottomRightPoint(componentsToConvert);
+			Dimension size = new Dimension(bottomRightPoint.x - topLeftPoint.x, bottomRightPoint.y - topLeftPoint.y);
 			Util.adjustSize(newContainer.getDelegee(), newContainer.getConstraints(), size);
 			newContainer.getDelegee().setSize(size);
 
@@ -255,7 +255,7 @@ public class GridBuildUtil
 
 			// restore binding of main component
 			{
-				final String mainComponentBinding = editor.getRootContainer().getMainComponentBinding();
+				String mainComponentBinding = editor.getRootContainer().getMainComponentBinding();
 				if(mainComponentBinding != null && parent instanceof RadRootContainer)
 				{
 					newContainer.setBinding(mainComponentBinding);
@@ -276,16 +276,16 @@ public class GridBuildUtil
 		editor.refreshAndSave(true);
 	}
 
-	private static GridLayoutManager createOneDimensionGrid(final RadComponent[] selection, final boolean isVertical)
+	private static GridLayoutManager createOneDimensionGrid(RadComponent[] selection, final boolean isVertical)
 	{
 		Arrays.sort(
 				selection,
-				new Comparator<RadComponent>()
+				new Comparator<>()
 				{
-					public int compare(final RadComponent o1, final RadComponent o2)
+					public int compare(RadComponent o1, RadComponent o2)
 					{
-						final Rectangle bounds1 = o1.getBounds();
-						final Rectangle bounds2 = o2.getBounds();
+						Rectangle bounds1 = o1.getBounds();
+						Rectangle bounds2 = o2.getBounds();
 
 						if(isVertical)
 						{
@@ -301,8 +301,8 @@ public class GridBuildUtil
 
 		for(int i = 0; i < selection.length; i++)
 		{
-			final RadComponent component = selection[i];
-			final GridConstraints constraints = component.getConstraints();
+			RadComponent component = selection[i];
+			GridConstraints constraints = component.getConstraints();
 			if(isVertical)
 			{
 				constraints.setRow(i);
@@ -317,7 +317,7 @@ public class GridBuildUtil
 			constraints.setColSpan(1);
 		}
 
-		final GridLayoutManager gridLayoutManager;
+		GridLayoutManager gridLayoutManager;
 		if(isVertical)
 		{
 			gridLayoutManager = new GridLayoutManager(selection.length, 1);
@@ -339,10 +339,10 @@ public class GridBuildUtil
 	 * @return pair that says how many (rows, columns) are in the composed grid.
 	 */
 	public static Pair<Integer, Integer> layoutInGrid(
-			final int[] x,
-			final int[] y,
-			final int[] rowSpans,
-			final int[] colSpans
+			int[] x,
+			int[] y,
+			int[] rowSpans,
+			int[] colSpans
 	)
 	{
 		LOG.assertTrue(x.length == y.length);
@@ -367,18 +367,18 @@ public class GridBuildUtil
 		}
 
 
-		return new Pair<Integer, Integer>(
+		return new Pair<>(
 				Integer.valueOf(Util.eliminate(y, rowSpans, null)),
 				Integer.valueOf(Util.eliminate(x, colSpans, null))
 		);
 	}
 
-	private static GridLayoutManager createTwoDimensionGrid(final RadComponent[] selection)
+	private static GridLayoutManager createTwoDimensionGrid(RadComponent[] selection)
 	{
-		final int[] x = new int[selection.length];
-		final int[] y = new int[selection.length];
-		final int[] colSpans = new int[selection.length];
-		final int[] rowSpans = new int[selection.length];
+		int[] x = new int[selection.length];
+		int[] y = new int[selection.length];
+		int[] colSpans = new int[selection.length];
+		int[] rowSpans = new int[selection.length];
 
 		for(int i = selection.length - 1; i >= 0; i--)
 		{
@@ -388,11 +388,11 @@ public class GridBuildUtil
 			colSpans[i] = selection[i].getWidth();
 		}
 
-		final Pair<Integer, Integer> pair = layoutInGrid(x, y, rowSpans, colSpans);
+		Pair<Integer, Integer> pair = layoutInGrid(x, y, rowSpans, colSpans);
 		for(int i = 0; i < selection.length; i++)
 		{
-			final RadComponent component = selection[i];
-			final GridConstraints constraints = component.getConstraints();
+			RadComponent component = selection[i];
+			GridConstraints constraints = component.getConstraints();
 
 			constraints.setRow(y[i]);
 			constraints.setRowSpan(rowSpans[i]);
@@ -409,12 +409,12 @@ public class GridBuildUtil
 	 *
 	 * @param components array should contain at least one element
 	 */
-	private static Point getTopLeftPoint(final RadComponent[] components)
+	private static Point getTopLeftPoint(RadComponent[] components)
 	{
 		LOG.assertTrue(components.length > 0);
 
-		final Point point = new Point(Integer.MAX_VALUE, Integer.MAX_VALUE);
-		for(final RadComponent component : components)
+		Point point = new Point(Integer.MAX_VALUE, Integer.MAX_VALUE);
+		for(RadComponent component : components)
 		{
 			point.x = Math.min(component.getX(), point.x);
 			point.y = Math.min(component.getY(), point.y);
@@ -428,12 +428,12 @@ public class GridBuildUtil
 	 *
 	 * @param components array should contain at least one element
 	 */
-	private static Point getBottomRightPoint(final RadComponent[] components)
+	private static Point getBottomRightPoint(RadComponent[] components)
 	{
 		LOG.assertTrue(components.length > 0);
 
-		final Point point = new Point(Integer.MIN_VALUE, Integer.MIN_VALUE);
-		for(final RadComponent component : components)
+		Point point = new Point(Integer.MIN_VALUE, Integer.MIN_VALUE);
+		for(RadComponent component : components)
 		{
 			point.x = Math.max(component.getX() + component.getWidth(), point.x);
 			point.y = Math.max(component.getY() + component.getHeight(), point.y);

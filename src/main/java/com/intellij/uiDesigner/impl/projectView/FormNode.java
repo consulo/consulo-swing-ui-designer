@@ -56,7 +56,7 @@ public class FormNode extends ProjectViewNode<Form>{
   }
 
   public boolean contains(@Nonnull VirtualFile file) {
-    for (final AbstractTreeNode aMyChildren : myChildren) {
+    for (AbstractTreeNode aMyChildren : myChildren) {
       ProjectViewNode treeNode = (ProjectViewNode)aMyChildren;
       if (treeNode.contains(file)) return true;
     }
@@ -72,17 +72,17 @@ public class FormNode extends ProjectViewNode<Form>{
     }
   }
 
-  public void navigate(final boolean requestFocus) {
+  public void navigate(boolean requestFocus) {
     getValue().navigate(requestFocus);
   }
 
   public boolean canNavigate() {
-    final Form value = getValue();
+    Form value = getValue();
     return value != null && value.canNavigate();
   }
 
   public boolean canNavigateToSource() {
-    final Form value = getValue();
+    Form value = getValue();
     return value != null && value.canNavigateToSource();
   }
 
@@ -93,9 +93,9 @@ public class FormNode extends ProjectViewNode<Form>{
   @Override
   public FileStatus getFileStatus() {
     for(BasePsiNode<? extends PsiElement> child: myChildren) {
-      final PsiElement value = child.getValue();
+      PsiElement value = child.getValue();
       if (value == null || !value.isValid()) continue;
-      final FileStatus fileStatus = NavigationItemFileStatus.get(child);
+      FileStatus fileStatus = NavigationItemFileStatus.get(child);
       if (fileStatus != FileStatus.NOT_CHANGED) {
         return fileStatus;
       }
@@ -104,7 +104,7 @@ public class FormNode extends ProjectViewNode<Form>{
   }
 
   @Override
-  public boolean canHaveChildrenMatching(final Predicate<PsiFile> condition) {
+  public boolean canHaveChildrenMatching(Predicate<PsiFile> condition) {
     for(BasePsiNode<? extends PsiElement> child: myChildren) {
       if (condition.test(child.getValue().getContainingFile())) {
         return true;
@@ -113,14 +113,14 @@ public class FormNode extends ProjectViewNode<Form>{
     return false;
   }
 
-  public static AbstractTreeNode constructFormNode(final PsiClass classToBind, final Project project, final ViewSettings settings) {
-    final Form form = new Form(classToBind);
-    final Collection<BasePsiNode<? extends PsiElement>> children = getChildren(project, form, settings);
+  public static AbstractTreeNode constructFormNode(PsiClass classToBind, Project project, ViewSettings settings) {
+    Form form = new Form(classToBind);
+    Collection<BasePsiNode<? extends PsiElement>> children = getChildren(project, form, settings);
     return new FormNode(project, form, settings, children);
   }
 
-  private static Collection<BasePsiNode<? extends PsiElement>> getChildren(final Project project, final Form form, final ViewSettings settings) {
-    final Set<BasePsiNode<? extends PsiElement>> children = new LinkedHashSet<BasePsiNode<? extends PsiElement>>();
+  private static Collection<BasePsiNode<? extends PsiElement>> getChildren(Project project, Form form, ViewSettings settings) {
+    Set<BasePsiNode<? extends PsiElement>> children = new LinkedHashSet<>();
     children.add(new ClassTreeNode(project, form.getClassToBind(), settings));
     for (PsiFile formBoundToClass : form.getFormFiles()) {
       children.add(new PsiFileNode(project, formBoundToClass, settings));

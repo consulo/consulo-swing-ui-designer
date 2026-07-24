@@ -32,7 +32,7 @@ import java.util.List;
 @ExtensionImpl
 public class FormsRenamerFactory implements AutomaticRenamerFactory
 {
-	public boolean isApplicable(final PsiElement element)
+	public boolean isApplicable(PsiElement element)
 	{
 		if(!(element instanceof PsiClass))
 		{
@@ -53,11 +53,11 @@ public class FormsRenamerFactory implements AutomaticRenamerFactory
 		return true;
 	}
 
-	public void setEnabled(final boolean enabled)
+	public void setEnabled(boolean enabled)
 	{
 	}
 
-	public AutomaticRenamer createRenamer(final PsiElement element, final String newName, final Collection<UsageInfo> usages)
+	public AutomaticRenamer createRenamer(PsiElement element, String newName, Collection<UsageInfo> usages)
 	{
 		return new FormsRenamer((PsiClass) element, newName);
 	}

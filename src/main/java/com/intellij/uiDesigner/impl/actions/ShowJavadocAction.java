@@ -32,7 +32,7 @@ public final class ShowJavadocAction extends AnAction implements AnActionWithSyn
 
     @RequiredUIAccess
     @Override
-    public void actionPerformed(@Nonnull final AnActionEvent e) {
+    public void actionPerformed(@Nonnull AnActionEvent e) {
 //		final PropertyInspectorTable inspector = e.getData(PropertyInspectorTable.DATA_KEY);
 //		final IntrospectedProperty introspectedProperty = inspector.getSelectedIntrospectedProperty();
 //		final PsiClass aClass = inspector.getComponentClass();
@@ -76,8 +76,8 @@ public final class ShowJavadocAction extends AnAction implements AnActionWithSyn
     }
 
     @Override
-    public void update(@Nonnull final AnActionEvent e) {
-        final PropertyInspectorTable inspector = e.getData(PropertyInspectorTable.DATA_KEY);
+    public void update(@Nonnull AnActionEvent e) {
+        PropertyInspectorTable inspector = e.getData(PropertyInspectorTable.DATA_KEY);
         e.getPresentation().setEnabled(inspector != null && inspector.getSelectedIntrospectedProperty() != null && inspector.getComponentClass() != null);
     }
 }

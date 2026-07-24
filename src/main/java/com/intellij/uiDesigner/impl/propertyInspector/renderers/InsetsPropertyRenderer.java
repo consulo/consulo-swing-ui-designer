@@ -30,11 +30,11 @@ public final class InsetsPropertyRenderer extends LabelPropertyRenderer<Insets> 
     myBuffer=new StringBuffer();
   }
 
-  protected void customize(@Nonnull final Insets value){
+  protected void customize(@Nonnull Insets value){
     setText(formatText(value)); 
   }
 
-  public String formatText(final Insets value) {
+  public String formatText(Insets value) {
     myBuffer.setLength(0);
     myBuffer.append('[');
     myBuffer.append(value.top).append(", ");

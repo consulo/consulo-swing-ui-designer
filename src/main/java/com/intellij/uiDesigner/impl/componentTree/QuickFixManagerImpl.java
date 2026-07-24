@@ -37,14 +37,14 @@ import java.awt.*;
 public final class QuickFixManagerImpl extends QuickFixManager<ComponentTree>{
   private static final Logger LOG = Logger.getInstance(QuickFixManagerImpl.class);
 
-  public QuickFixManagerImpl(final GuiEditor editor, @Nonnull final ComponentTree componentTree, final JViewport viewPort) {
+  public QuickFixManagerImpl(GuiEditor editor, @Nonnull ComponentTree componentTree, JViewport viewPort) {
     super(editor, componentTree, viewPort);
     myComponent.addTreeSelectionListener(new MyTreeSelectionListener());
   }
 
   @Nonnull
   protected ErrorInfo[] getErrorInfos() {
-    final RadComponent component = myComponent.getSelectedComponent();
+    RadComponent component = myComponent.getSelectedComponent();
     if(component == null){
       return ErrorInfo.EMPTY_ARRAY;
     }
@@ -52,13 +52,13 @@ public final class QuickFixManagerImpl extends QuickFixManager<ComponentTree>{
   }
 
   public Rectangle getErrorBounds() {
-    final TreePath selectionPath = myComponent.getSelectionPath();
+    TreePath selectionPath = myComponent.getSelectionPath();
     LOG.assertTrue(selectionPath != null);
     return myComponent.getPathBounds(selectionPath);
   }
 
   private final class MyTreeSelectionListener implements TreeSelectionListener{
-    public void valueChanged(final TreeSelectionEvent e) {
+    public void valueChanged(TreeSelectionEvent e) {
       hideIntentionHint();
       updateIntentionHintVisibility();
     }

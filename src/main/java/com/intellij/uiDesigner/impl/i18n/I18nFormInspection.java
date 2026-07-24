@@ -58,11 +58,11 @@ public class I18nFormInspection extends StringDescriptorInspection
 		super("HardCodedStringLiteral");
 	}
 
-	protected void checkStringDescriptor(final Module module,
-										 final IComponent component,
-										 final IProperty prop,
-										 final StringDescriptor descriptor,
-										 final FormErrorCollector collector)
+	protected void checkStringDescriptor(Module module,
+                                         IComponent component,
+                                         final IProperty prop,
+                                         StringDescriptor descriptor,
+                                         FormErrorCollector collector)
 	{
 		if(isHardCodedStringDescriptor(descriptor))
 		{
@@ -119,13 +119,13 @@ public class I18nFormInspection extends StringDescriptorInspection
 		}
 	}
 
-	private static boolean isPropertyDescriptor(final IProperty prop)
+	private static boolean isPropertyDescriptor(IProperty prop)
 	{
 		return !prop.getName().equals(BorderProperty.NAME) && !prop.getName().equals(RadTabbedPane.TAB_TITLE_PROPERTY) &&
 				!prop.getName().equals(RadTabbedPane.TAB_TOOLTIP_PROPERTY);
 	}
 
-	private static boolean isHardCodedStringDescriptor(final StringDescriptor descriptor)
+	private static boolean isHardCodedStringDescriptor(StringDescriptor descriptor)
 	{
 		if(descriptor.isNoI18n())
 		{
@@ -136,8 +136,8 @@ public class I18nFormInspection extends StringDescriptorInspection
 				StringUtil.containsAlphaCharacters(descriptor.getValue());
 	}
 
-	private static boolean isSetterNonNls(final Project project, final GlobalSearchScope searchScope,
-										  final String componentClassName, final String propertyName)
+	private static boolean isSetterNonNls(Project project, GlobalSearchScope searchScope,
+                                          String componentClassName, String propertyName)
 	{
 		PsiClass componentClass = JavaPsiFacade.getInstance(project).findClass(componentClassName, searchScope);
 		if(componentClass == null)
@@ -164,7 +164,7 @@ public class I18nFormInspection extends StringDescriptorInspection
 	{
 		if(file.getFileType().equals(GuiFormFileType.INSTANCE))
 		{
-			final PsiDirectory directory = file.getContainingDirectory();
+			PsiDirectory directory = file.getContainingDirectory();
 			if(directory != null && I18nInspection.isPackageNonNls(JavaDirectoryService.getInstance().getPackage(directory)))
 			{
 				return null;

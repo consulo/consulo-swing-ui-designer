@@ -105,7 +105,7 @@ public final class ComponentTree extends Tree implements DataProvider
 	private static final String ourHelpID = "guiDesigner.uiTour.compsTree";
 	private final Project myProject;
 
-	public ComponentTree(@Nonnull final Project project)
+	public ComponentTree(@Nonnull Project project)
 	{
 		super(new DefaultTreeModel(new DefaultMutableTreeNode()));
 		myProject = project;
@@ -160,7 +160,7 @@ public final class ComponentTree extends Tree implements DataProvider
 		myQuickFixManager = new QuickFixManagerImpl(null, this, viewPort);
 	}
 
-	public void setEditor(final GuiEditor editor)
+	public void setEditor(GuiEditor editor)
 	{
 		myEditor = editor;
 		myDeleteProvider.setEditor(editor);
@@ -175,13 +175,13 @@ public final class ComponentTree extends Tree implements DataProvider
 
 	@Override
 	@Nullable
-	public String getToolTipText(final MouseEvent e)
+	public String getToolTipText(MouseEvent e)
 	{
-		final TreePath path = getPathForLocation(e.getX(), e.getY());
-		final RadComponent component = getComponentFromPath(path);
+		TreePath path = getPathForLocation(e.getX(), e.getY());
+		RadComponent component = getComponentFromPath(path);
 		if(component != null)
 		{
-			final ErrorInfo errorInfo = ErrorAnalyzer.getErrorForComponent(component);
+			ErrorInfo errorInfo = ErrorAnalyzer.getErrorForComponent(component);
 			if(errorInfo != null)
 			{
 				return errorInfo.myDescription;
@@ -195,16 +195,16 @@ public final class ComponentTree extends Tree implements DataProvider
 	{
 		if(path != null)
 		{
-			final DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
 			LOG.assertTrue(node != null);
-			final Object userObject = node.getUserObject();
+			Object userObject = node.getUserObject();
 			if(userObject instanceof ComponentPtrDescriptor)
 			{
-				final ComponentPtrDescriptor descriptor = (ComponentPtrDescriptor) userObject;
-				final ComponentPtr ptr = descriptor.getElement();
+				ComponentPtrDescriptor descriptor = (ComponentPtrDescriptor) userObject;
+				ComponentPtr ptr = descriptor.getElement();
 				if(ptr != null && ptr.isValid())
 				{
-					final RadComponent component = ptr.getComponent();
+					RadComponent component = ptr.getComponent();
 					LOG.assertTrue(component != null);
 					return component;
 				}
@@ -233,19 +233,19 @@ public final class ComponentTree extends Tree implements DataProvider
 	@Nonnull
 	public RadComponent[] getSelectedComponents()
 	{
-		final TreePath[] paths = getSelectionPaths();
+		TreePath[] paths = getSelectionPaths();
 		if(paths == null)
 		{
 			return RadComponent.EMPTY_ARRAY;
 		}
-		final ArrayList<RadComponent> result = new ArrayList<RadComponent>(paths.length);
+		ArrayList<RadComponent> result = new ArrayList<>(paths.length);
 		for(TreePath path : paths)
 		{
-			final DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
 			if(node != null && node.getUserObject() instanceof ComponentPtrDescriptor)
 			{
-				final ComponentPtrDescriptor descriptor = (ComponentPtrDescriptor) node.getUserObject();
-				final ComponentPtr ptr = descriptor.getElement();
+				ComponentPtrDescriptor descriptor = (ComponentPtrDescriptor) node.getUserObject();
+				ComponentPtr ptr = descriptor.getElement();
 				if(ptr != null && ptr.isValid())
 				{
 					result.add(ptr.getComponent());
@@ -298,19 +298,19 @@ public final class ComponentTree extends Tree implements DataProvider
 			return null;
 		}
 
-		final RadComponent selectedComponent = getSelectedComponent();
+		RadComponent selectedComponent = getSelectedComponent();
 		if(selectedComponent == null)
 		{
 			return null;
 		}
 
-		final String classToBind = myEditor.getRootContainer().getClassToBind();
+		String classToBind = myEditor.getRootContainer().getClassToBind();
 		if(classToBind == null)
 		{
 			return null;
 		}
 
-		final PsiClass aClass = FormEditingUtil.findClassToBind(myEditor.getModule(), classToBind);
+		PsiClass aClass = FormEditingUtil.findClassToBind(myEditor.getModule(), classToBind);
 		if(aClass == null)
 		{
 			return null;
@@ -321,15 +321,15 @@ public final class ComponentTree extends Tree implements DataProvider
 			return EditSourceUtil.getDescriptor(aClass);
 		}
 
-		final String binding = selectedComponent.getBinding();
+		String binding = selectedComponent.getBinding();
 		if(binding == null)
 		{
 			return null;
 		}
 
-		final PsiField[] fields = aClass.getFields();
+		PsiField[] fields = aClass.getFields();
 
-		for(final PsiField field : fields)
+		for(PsiField field : fields)
 		{
 			if(binding.equals(field.getName()))
 			{
@@ -342,15 +342,15 @@ public final class ComponentTree extends Tree implements DataProvider
 
 	public <T> List<T> getSelectedElements(Class<? extends T> elementClass)
 	{
-		final TreePath[] paths = getSelectionPaths();
+		TreePath[] paths = getSelectionPaths();
 		if(paths == null)
 		{
 			return Collections.emptyList();
 		}
-		final ArrayList<T> result = new ArrayList<T>(paths.length);
+		ArrayList<T> result = new ArrayList<>(paths.length);
 		for(TreePath path : paths)
 		{
-			final DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
 			Object userObject = node.getUserObject();
 			if(userObject instanceof NodeDescriptor && elementClass.isInstance(((NodeDescriptor) userObject).getElement()))
 			{
@@ -361,7 +361,7 @@ public final class ComponentTree extends Tree implements DataProvider
 		return result;
 	}
 
-	private SimpleTextAttributes getAttribute(@Nonnull final SimpleTextAttributes attrs, @Nullable HighlightDisplayLevel level)
+	private SimpleTextAttributes getAttribute(@Nonnull SimpleTextAttributes attrs, @Nullable HighlightDisplayLevel level)
 	{
 		if(level == null)
 		{
@@ -371,14 +371,14 @@ public final class ComponentTree extends Tree implements DataProvider
 		Map<SimpleTextAttributes, SimpleTextAttributes> highlightMap = myHighlightAttributes.get(level.getSeverity());
 		if(highlightMap == null)
 		{
-			highlightMap = new HashMap<SimpleTextAttributes, SimpleTextAttributes>();
+			highlightMap = new HashMap<>();
 			myHighlightAttributes.put(level.getSeverity(), highlightMap);
 		}
 
 		SimpleTextAttributes result = highlightMap.get(attrs);
 		if(result == null)
 		{
-			final TextAttributesKey attrKey = SeverityRegistrar.getSeverityRegistrar(myProject).getHighlightInfoTypeBySeverity(level.getSeverity()).getAttributesKey();
+			TextAttributesKey attrKey = SeverityRegistrar.getSeverityRegistrar(myProject).getHighlightInfoTypeBySeverity(level.getSeverity()).getAttributesKey();
 			TextAttributes textAttrs = EditorColorsManager.getInstance().getGlobalScheme().getAttributes(attrKey);
 			textAttrs = TextAttributes.merge(TextAttributesUtil.toTextAttributes(attrs), textAttrs);
 			result = TextAttributesUtil.fromTextAttributes(textAttrs);
@@ -389,16 +389,16 @@ public final class ComponentTree extends Tree implements DataProvider
 	}
 
 	@Override
-	public void setUI(final TreeUI ui)
+	public void setUI(TreeUI ui)
 	{
 		super.setUI(ui);
 
 		// [vova] we cannot create this hash in constructor and just clear it here. The
 		// problem is that setUI is invoked by constructor of superclass.
-		myHighlightAttributes = new HashMap<HighlightSeverity, Map<SimpleTextAttributes, SimpleTextAttributes>>();
+		myHighlightAttributes = new HashMap<>();
 
-		final EditorColorsScheme globalScheme = EditorColorsManager.getInstance().getGlobalScheme();
-		final TextAttributes attributes = globalScheme.getAttributes(JavaHighlightingColors.STRING);
+		EditorColorsScheme globalScheme = EditorColorsManager.getInstance().getGlobalScheme();
+		TextAttributes attributes = globalScheme.getAttributes(JavaHighlightingColors.STRING);
 
 		myBindingAttributes = new SimpleTextAttributes(SimpleTextAttributes.STYLE_BOLD, UIUtil.getTreeForeground());
 		myClassAttributes = new SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, UIUtil.getTreeForeground());
@@ -407,13 +407,13 @@ public final class ComponentTree extends Tree implements DataProvider
 		myUnknownAttributes = new SimpleTextAttributes(SimpleTextAttributes.STYLE_WAVED, Color.RED);
 	}
 
-	public static Image getComponentIcon(final RadComponent component)
+	public static Image getComponentIcon(RadComponent component)
 	{
 		if(!(component instanceof RadErrorComponent))
 		{
-			final Palette palette = Palette.getInstance(component.getProject());
-			final ComponentItem item = palette.getItem(component.getComponentClassName());
-			final Image icon;
+			Palette palette = Palette.getInstance(component.getProject());
+			ComponentItem item = palette.getItem(component.getComponentClassName());
+			Image icon;
 			if(item != null)
 			{
 				icon = item.getSmallIcon();
@@ -430,7 +430,7 @@ public final class ComponentTree extends Tree implements DataProvider
 		}
 	}
 
-	public void setDropTargetComponent(final @Nullable RadComponent dropTargetComponent)
+	public void setDropTargetComponent(@Nullable RadComponent dropTargetComponent)
 	{
 		if(dropTargetComponent != myDropTargetComponent)
 		{
@@ -439,7 +439,7 @@ public final class ComponentTree extends Tree implements DataProvider
 		}
 	}
 
-	public void setFormEditor(final UIFormEditor formEditor)
+	public void setFormEditor(UIFormEditor formEditor)
 	{
 		myFormEditor = formEditor;
 	}
@@ -450,28 +450,28 @@ public final class ComponentTree extends Tree implements DataProvider
 		private static final String SWING_PACKAGE = "javax.swing";
 
 		@Override
-		public void customizeCellRenderer(final JTree tree, final Object value, final boolean selected, final boolean expanded, final boolean leaf, final int row, final boolean hasFocus)
+		public void customizeCellRenderer(JTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus)
 		{
-			final DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
 			if(node.getUserObject() instanceof ComponentPtrDescriptor)
 			{
-				final ComponentPtrDescriptor descriptor = (ComponentPtrDescriptor) node.getUserObject();
-				final ComponentPtr ptr = descriptor.getElement();
+				ComponentPtrDescriptor descriptor = (ComponentPtrDescriptor) node.getUserObject();
+				ComponentPtr ptr = descriptor.getElement();
 				if(ptr == null)
 				{
 					return;
 				}
-				final RadComponent component = ptr.getComponent();
+				RadComponent component = ptr.getComponent();
 				if(component == null)
 				{
 					return;
 				}
 
-				final HighlightDisplayLevel level = ErrorAnalyzer.getHighlightDisplayLevel(myProject, component);
+				HighlightDisplayLevel level = ErrorAnalyzer.getHighlightDisplayLevel(myProject, component);
 
 				// Text
 				boolean hasText = false;
-				final String binding = component.getBinding();
+				String binding = component.getBinding();
 				if(binding != null)
 				{
 					append(binding, getAttribute(myBindingAttributes, level));
@@ -489,7 +489,7 @@ public final class ComponentTree extends Tree implements DataProvider
 					}
 				}
 
-				final String componentClassName = component.getComponentClassName();
+				String componentClassName = component.getComponentClassName();
 
 				if(component instanceof RadVSpacer)
 				{
@@ -501,14 +501,14 @@ public final class ComponentTree extends Tree implements DataProvider
 				}
 				else if(component instanceof RadErrorComponent)
 				{
-					final RadErrorComponent c = (RadErrorComponent) component;
+					RadErrorComponent c = (RadErrorComponent) component;
 					append(c.getErrorDescription(), getAttribute(myUnknownAttributes, level));
 				}
 				else if(component instanceof RadRootContainer)
 				{
 					append(UIDesignerBundle.message("component.form"), getAttribute(myClassAttributes, level));
 					append(" (", getAttribute(myPackageAttributes, level));
-					final String classToBind = ((RadRootContainer) component).getClassToBind();
+					String classToBind = ((RadRootContainer) component).getClassToBind();
 					if(classToBind != null)
 					{
 						append(classToBind, getAttribute(myPackageAttributes, level));
@@ -560,7 +560,7 @@ public final class ComponentTree extends Tree implements DataProvider
 			}
 			else if(node.getUserObject() != null)
 			{
-				final String fragment = node.getUserObject().toString();
+				String fragment = node.getUserObject().toString();
 				if(fragment != null)
 				{
 					append(fragment, SimpleTextAttributes.REGULAR_ATTRIBUTES);
@@ -587,7 +587,7 @@ public final class ComponentTree extends Tree implements DataProvider
 				RadComponent dropTargetComponent = null;
 				ComponentDragObject dragObject = null;
 
-				final DraggedComponentList dcl = DraggedComponentList.fromTransferable(dtde.getTransferable());
+				DraggedComponentList dcl = DraggedComponentList.fromTransferable(dtde.getTransferable());
 				if(dcl != null)
 				{
 					dragObject = dcl;
@@ -604,11 +604,11 @@ public final class ComponentTree extends Tree implements DataProvider
 				boolean canDrop = false;
 				if(dragObject != null)
 				{
-					final TreePath path = getPathForLocation((int) dtde.getLocation().getX(), (int) dtde.getLocation().getY());
-					final RadComponent targetComponent = getComponentFromPath(path);
+					TreePath path = getPathForLocation((int) dtde.getLocation().getX(), (int) dtde.getLocation().getY());
+					RadComponent targetComponent = getComponentFromPath(path);
 					if(path != null && targetComponent instanceof RadContainer)
 					{
-						final ComponentDropLocation dropLocation = ((RadContainer) targetComponent).getDropLocation(null);
+						ComponentDropLocation dropLocation = ((RadContainer) targetComponent).getDropLocation(null);
 						canDrop = dropLocation.canDrop(dragObject);
 						if(dcl != null && FormEditingUtil.isDropOnChild(dcl, dropLocation))
 						{
@@ -644,26 +644,26 @@ public final class ComponentTree extends Tree implements DataProvider
 		{
 			try
 			{
-				final DraggedComponentList dcl = DraggedComponentList.fromTransferable(dtde.getTransferable());
+				DraggedComponentList dcl = DraggedComponentList.fromTransferable(dtde.getTransferable());
 				ComponentItem componentItem = SimpleTransferable.getData(dtde.getTransferable(), ComponentItem.class);
 				if(dcl != null || componentItem != null)
 				{
-					final TreePath path = getPathForLocation((int) dtde.getLocation().getX(), (int) dtde.getLocation().getY());
-					final RadComponent targetComponent = getComponentFromPath(path);
+					TreePath path = getPathForLocation((int) dtde.getLocation().getX(), (int) dtde.getLocation().getY());
+					RadComponent targetComponent = getComponentFromPath(path);
 					if(!myEditor.ensureEditable())
 					{
 						return;
 					}
 					if(targetComponent instanceof RadContainer)
 					{
-						final ComponentDropLocation dropLocation = ((RadContainer) targetComponent).getDropLocation(null);
+						ComponentDropLocation dropLocation = ((RadContainer) targetComponent).getDropLocation(null);
 						if(dcl != null)
 						{
 							if(!FormEditingUtil.isDropOnChild(dcl, dropLocation))
 							{
 								RadComponent[] components = dcl.getComponents().toArray(new RadComponent[dcl.getComponents().size()]);
 								RadContainer[] originalParents = dcl.getOriginalParents();
-								final GridConstraints[] originalConstraints = dcl.getOriginalConstraints();
+								GridConstraints[] originalConstraints = dcl.getOriginalConstraints();
 								for(int i = 0; i < components.length; i++)
 								{
 									originalParents[i].removeComponent(components[i]);
@@ -698,7 +698,7 @@ public final class ComponentTree extends Tree implements DataProvider
 	{
 		private GuiEditor myEditor;
 
-		public void setEditor(final GuiEditor editor)
+		public void setEditor(GuiEditor editor)
 		{
 			myEditor = editor;
 		}

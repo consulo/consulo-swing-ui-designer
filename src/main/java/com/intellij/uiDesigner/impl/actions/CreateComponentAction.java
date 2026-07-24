@@ -41,7 +41,7 @@ public class CreateComponentAction extends AbstractGuiEditorAction
 	private ComponentItem myLastCreatedComponent = null;
 
 	@Override
-    protected void actionPerformed(final GuiEditor editor, final List<RadComponent> selection, final AnActionEvent e)
+    protected void actionPerformed(GuiEditor editor, List<RadComponent> selection, AnActionEvent e)
 	{
         Predicate<ComponentItem> processor = selectedValue -> {
             if(selectedValue != null)
@@ -58,7 +58,7 @@ public class CreateComponentAction extends AbstractGuiEditorAction
             processor,
             UIDesignerLocalize.createComponentTitle()
         );
-		final ListPopup listPopup = JBPopupFactory.getInstance().createListPopup(step);
+		ListPopup listPopup = JBPopupFactory.getInstance().createListPopup(step);
 
 		if(selection.size() > 0)
 		{
@@ -70,13 +70,13 @@ public class CreateComponentAction extends AbstractGuiEditorAction
 		}
 	}
 
-	private static ComponentDropLocation getCreateLocation(final GuiEditor editor, final List<RadComponent> selection)
+	private static ComponentDropLocation getCreateLocation(GuiEditor editor, List<RadComponent> selection)
 	{
 		ComponentDropLocation dropLocation = null;
 		if(selection.size() > 0)
 		{
 			RadComponent component = selection.get(0);
-			final RadContainer container = component.getParent();
+			RadContainer container = component.getParent();
 			if(container.getLayoutManager().isGrid())
 			{
 				GridConstraints c = component.getConstraints();
@@ -103,7 +103,7 @@ public class CreateComponentAction extends AbstractGuiEditorAction
 		}
 		if(dropLocation == null)
 		{
-			final Point mousePosition = editor.getMainProcessor().getLastMousePosition();
+			Point mousePosition = editor.getMainProcessor().getLastMousePosition();
 			if(mousePosition != null)
 			{
 				RadContainer container = GridInsertProcessor.getDropTargetContainer(editor.getRootContainer(), mousePosition);
@@ -124,7 +124,7 @@ public class CreateComponentAction extends AbstractGuiEditorAction
 			}
 			else
 			{
-				final RadRootContainer container = editor.getRootContainer();
+				RadRootContainer container = editor.getRootContainer();
 				if(container.getComponentCount() == 1 && container.getComponent(0) instanceof RadContainer)
 				{
 					RadContainer childContainer = (RadContainer) container.getComponent(0);

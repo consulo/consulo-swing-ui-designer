@@ -37,8 +37,8 @@ public final class ErrorInfo {
   private final HighlightDisplayLevel myHighlightDisplayLevel;
   private String myInspectionId;
 
-  public ErrorInfo(IComponent component, @NonNls final String propertyName, @Nonnull final String description,
-                   @Nonnull HighlightDisplayLevel highlightDisplayLevel, @Nonnull final QuickFix[] fixes) {
+  public ErrorInfo(IComponent component, @NonNls String propertyName, @Nonnull String description,
+                   @Nonnull HighlightDisplayLevel highlightDisplayLevel, @Nonnull QuickFix[] fixes) {
     myComponent = component instanceof RadComponent ? (RadComponent) component : null;
     myHighlightDisplayLevel = highlightDisplayLevel;
     myPropertyName = propertyName;
@@ -58,7 +58,7 @@ public final class ErrorInfo {
     return myInspectionId;
   }
 
-  public void setInspectionId(final String inspectionId) {
+  public void setInspectionId(String inspectionId) {
     myInspectionId = inspectionId;
   }
 

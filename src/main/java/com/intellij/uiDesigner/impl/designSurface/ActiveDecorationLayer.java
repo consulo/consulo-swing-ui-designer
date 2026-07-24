@@ -42,12 +42,12 @@ final class ActiveDecorationLayer extends JComponent implements FeedbackLayer {
   private final GuiEditor myEditor;
   private final JToolTip myToolTip;
 
-  private final Map<RadComponent, ListenerNavigateButton> myNavigateButtons = new HashMap<RadComponent, ListenerNavigateButton>();
+  private final Map<RadComponent, ListenerNavigateButton> myNavigateButtons = new HashMap<>();
 
   private final FeedbackPainterPanel myFeedbackPainterPanel = new FeedbackPainterPanel();
   private final RectangleFeedbackPainter myRectangleFeedbackPainter = new RectangleFeedbackPainter();
 
-  public ActiveDecorationLayer(@Nonnull final GuiEditor editor) {
+  public ActiveDecorationLayer(@Nonnull GuiEditor editor) {
     myEditor = editor;
     myToolTip = new JToolTip();
   }
@@ -57,7 +57,7 @@ final class ActiveDecorationLayer extends JComponent implements FeedbackLayer {
   }
 
   @Override
-  public void paint(final Graphics g){
+  public void paint(Graphics g){
     layoutListenerNavigateButtons();
 
     // Paint active decorators
@@ -76,12 +76,12 @@ final class ActiveDecorationLayer extends JComponent implements FeedbackLayer {
   }
 
   @Override
-  public void putFeedback(Component relativeTo, final Rectangle rc, final String tooltipText) {
+  public void putFeedback(Component relativeTo, Rectangle rc, String tooltipText) {
     putFeedback(relativeTo, rc, myRectangleFeedbackPainter, tooltipText);
   }
 
   @Override
-  public void putFeedback(Component relativeTo, Rectangle rc, final FeedbackPainter feedbackPainter, final String tooltipText) {
+  public void putFeedback(Component relativeTo, Rectangle rc, FeedbackPainter feedbackPainter, String tooltipText) {
     rc = SwingUtilities.convertRectangle(relativeTo, rc, this);
     myFeedbackPainterPanel.setBounds(rc);
     myFeedbackPainterPanel.setPainter(feedbackPainter != null ? feedbackPainter : myRectangleFeedbackPainter);
@@ -154,8 +154,8 @@ final class ActiveDecorationLayer extends JComponent implements FeedbackLayer {
     protected void paintComponent(Graphics g) {
       super.paintComponent(g);
       Graphics2D g2d = (Graphics2D) g;
-      final Stroke savedStroke = g2d.getStroke();
-      final Color savedColor = g2d.getColor();
+      Stroke savedStroke = g2d.getStroke();
+      Color savedColor = g2d.getColor();
       try {
         myFeedbackPainter.paintFeedback(g2d, new Rectangle(0, 0, getWidth(), getHeight()));
       }
@@ -165,13 +165,13 @@ final class ActiveDecorationLayer extends JComponent implements FeedbackLayer {
       }
     }
 
-    public void setPainter(final FeedbackPainter feedbackPainter) {
+    public void setPainter(FeedbackPainter feedbackPainter) {
       myFeedbackPainter = feedbackPainter;
     }
   }
 
   private class MyNavigateButtonSelectionWatcher extends SelectionWatcher {
-    public MyNavigateButtonSelectionWatcher(final GuiEditor editor) {
+    public MyNavigateButtonSelectionWatcher(GuiEditor editor) {
       super(editor);
     }
 

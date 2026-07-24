@@ -40,7 +40,7 @@ public final class UIFormEditorProvider implements FileEditorProvider, DumbAware
 	private static final Logger LOG = Logger.getInstance(UIFormEditorProvider.class);
 
 	@Override
-	public boolean accept(@Nonnull final Project project, @Nonnull final VirtualFile file)
+	public boolean accept(@Nonnull Project project, @Nonnull VirtualFile file)
 	{
 		return file.getFileType() == GuiFormFileType.INSTANCE &&
 				!GuiFormFileType.INSTANCE.isBinary() &&
@@ -49,28 +49,28 @@ public final class UIFormEditorProvider implements FileEditorProvider, DumbAware
 
 	@Override
 	@Nonnull
-	public FileEditor createEditor(@Nonnull final Project project, @Nonnull final VirtualFile file)
+	public FileEditor createEditor(@Nonnull Project project, @Nonnull VirtualFile file)
 	{
 		LOG.assertTrue(accept(project, file));
 		return new UIFormEditor(project, file);
 	}
 
 	@Override
-	public void disposeEditor(@Nonnull final FileEditor editor)
+	public void disposeEditor(@Nonnull FileEditor editor)
 	{
 		Disposer.dispose(editor);
 	}
 
 	@Override
 	@Nonnull
-	public FileEditorState readState(@Nonnull final Element element, @Nonnull final Project project, @Nonnull final VirtualFile file)
+	public FileEditorState readState(@Nonnull Element element, @Nonnull Project project, @Nonnull VirtualFile file)
 	{
 		//TODO[anton,vova] implement
 		return new MyEditorState(-1, ArrayUtil.EMPTY_STRING_ARRAY);
 	}
 
 	@Override
-	public void writeState(@Nonnull final FileEditorState state, @Nonnull final Project project, @Nonnull final Element element)
+	public void writeState(@Nonnull FileEditorState state, @Nonnull Project project, @Nonnull Element element)
 	{
 		//TODO[anton,vova] implement
 	}

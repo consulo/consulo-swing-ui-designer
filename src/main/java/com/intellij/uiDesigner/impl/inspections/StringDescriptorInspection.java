@@ -69,11 +69,11 @@ public abstract class StringDescriptorInspection extends BaseFormInspection {
     }
   }
 
-  protected abstract void checkStringDescriptor(final consulo.module.Module module,
-                                                final IComponent component,
-                                                final IProperty prop,
-                                                final StringDescriptor descriptor,
-                                                final FormErrorCollector collector);
+  protected abstract void checkStringDescriptor(consulo.module.Module module,
+                                                IComponent component,
+                                                IProperty prop,
+                                                StringDescriptor descriptor,
+                                                FormErrorCollector collector);
 
   private static class MockTabTitleProperty implements IProperty {
     public static MockTabTitleProperty INSTANCE = new MockTabTitleProperty();
@@ -82,7 +82,7 @@ public abstract class StringDescriptorInspection extends BaseFormInspection {
       return ITabbedPane.TAB_TITLE_PROPERTY;
     }
 
-    public Object getPropertyValue(final IComponent component) {
+    public Object getPropertyValue(IComponent component) {
       return null;
     }
   }
@@ -94,7 +94,7 @@ public abstract class StringDescriptorInspection extends BaseFormInspection {
       return ITabbedPane.TAB_TOOLTIP_PROPERTY;
     }
 
-    public Object getPropertyValue(final IComponent component) {
+    public Object getPropertyValue(IComponent component) {
       return null;
     }
   }

@@ -57,20 +57,20 @@ public abstract class SelectionWatcher {
     myEditor.removeHierarchyChangeListener(myHierarchyChangeListener);
   }
 
-  private void install(@Nonnull final RadComponent component){
+  private void install(@Nonnull RadComponent component){
     component.addPropertyChangeListener(myChangeListener);
     if(component instanceof RadContainer){
-      final RadContainer container = (RadContainer)component;
+      RadContainer container = (RadContainer)component;
       for(int i = container.getComponentCount() - 1; i>= 0; i--){
         install(container.getComponent(i));
       }
     }
   }
 
-  private void deinstall(@Nonnull final RadComponent component){
+  private void deinstall(@Nonnull RadComponent component){
     component.removePropertyChangeListener(myChangeListener);
     if(component instanceof RadContainer){
-      final RadContainer container = (RadContainer)component;
+      RadContainer container = (RadContainer)component;
       for(int i = container.getComponentCount() - 1; i>= 0; i--){
         deinstall(container.getComponent(i));
       }
@@ -80,18 +80,18 @@ public abstract class SelectionWatcher {
   protected abstract void selectionChanged(RadComponent component, boolean selected);
 
   private final class MyPropertyChangeListener implements PropertyChangeListener{
-    public void propertyChange(final PropertyChangeEvent e) {
+    public void propertyChange(PropertyChangeEvent e) {
       if(RadComponent.PROP_SELECTED.equals(e.getPropertyName())){
-        final Boolean selected = (Boolean)e.getNewValue();
+        Boolean selected = (Boolean)e.getNewValue();
         selectionChanged((RadComponent)e.getSource(), selected.booleanValue());
       }
       else if(RadContainer.PROP_CHILDREN.equals(e.getPropertyName())){
-        final RadComponent[] oldChildren = (RadComponent[])e.getOldValue();
+        RadComponent[] oldChildren = (RadComponent[])e.getOldValue();
         for(int i = oldChildren.length - 1; i >= 0; i--){
           deinstall(oldChildren[i]);
         }
 
-        final RadComponent[] newChildren = (RadComponent[])e.getNewValue();
+        RadComponent[] newChildren = (RadComponent[])e.getNewValue();
         for(int i = newChildren.length - 1; i >= 0; i--){
           install(newChildren[i]);
         }

@@ -58,7 +58,7 @@ public final class CreateDialogAction extends AbstractCreateFormAction {
 
         final MyContentPane contentPane = new MyContentPane();
 
-        final DialogWrapper dialog = new DialogWrapper(project, true) {
+        DialogWrapper dialog = new DialogWrapper(project, true) {
             {
                 init();
                 setTitle(UIDesignerBundle.message("title.new.dialog"));
@@ -75,7 +75,7 @@ public final class CreateDialogAction extends AbstractCreateFormAction {
                 myRecentGenerateCancel = contentPane.myChkGenerateCancel.isSelected();
                 myRecentGenerateMain = contentPane.myChkGenerateMain.isSelected();
 
-                final String inputString = contentPane.myTfClassName.getText().trim();
+                String inputString = contentPane.myTfClassName.getText().trim();
                 if (
                     validator.checkInput(inputString) &&
                         validator.canClose(inputString)
@@ -105,10 +105,10 @@ public final class CreateDialogAction extends AbstractCreateFormAction {
     }
 
     private static String createClassBody(
-        final String className,
-        final boolean generateOK,
-        final boolean generateCancel,
-        final boolean generateMain
+        String className,
+        boolean generateOK,
+        boolean generateCancel,
+        boolean generateMain
     ) {
         StringBuilder result = new StringBuilder(1024);
 
@@ -196,7 +196,7 @@ public final class CreateDialogAction extends AbstractCreateFormAction {
     @Override
     @RequiredUIAccess
     @Nonnull
-    protected PsiElement[] create(final String newName, final PsiDirectory directory) throws IncorrectOperationException {
+    protected PsiElement[] create(String newName, PsiDirectory directory) throws IncorrectOperationException {
         PsiFile sourceFile = PsiFileFactory.getInstance(directory.getProject())
             .createFileFromText(newName + ".java", createClassBody(newName, myRecentGenerateOK, myRecentGenerateCancel, myRecentGenerateMain));
         sourceFile = (PsiFile) directory.add(sourceFile);
@@ -204,13 +204,13 @@ public final class CreateDialogAction extends AbstractCreateFormAction {
         JavaCodeStyleManager.getInstance(directory.getProject()).shortenClassReferences(sourceFile);
         CodeStyleManager.getInstance(directory.getProject()).reformat(sourceFile);
 
-        final PsiJavaPackage aPackage = JavaDirectoryService.getInstance().getPackage(directory);
-        final String packageName = aPackage.getQualifiedName();
-        final String fqClassName = packageName.length() == 0 ? newName : packageName + "." + newName;
+        PsiJavaPackage aPackage = JavaDirectoryService.getInstance().getPackage(directory);
+        String packageName = aPackage.getQualifiedName();
+        String fqClassName = packageName.length() == 0 ? newName : packageName + "." + newName;
 
-        final String formBody = createFormBody(fqClassName, "/com/intellij/uiDesigner/impl/NewDialog.xml",
+        String formBody = createFormBody(fqClassName, "/com/intellij/uiDesigner/impl/NewDialog.xml",
             GuiDesignerConfiguration.getInstance(directory.getProject()).DEFAULT_LAYOUT_MANAGER);
-        final PsiFile formFile = PsiFileFactory.getInstance(directory.getProject()).createFileFromText(newName + ".form", formBody);
+        PsiFile formFile = PsiFileFactory.getInstance(directory.getProject()).createFileFromText(newName + ".form", formBody);
         PsiElement createdFile = directory.add(formFile);
 
         PsiClass[] classes = ((PsiJavaFile) sourceFile).getClasses();

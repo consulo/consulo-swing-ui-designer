@@ -66,7 +66,7 @@ public class GenerateMainAction extends AnAction implements AnActionWithAsyncUpd
     @Override
     @RequiredUIAccess
     public void actionPerformed(AnActionEvent e) {
-        final Project project = e.getData(CommonDataKeys.PROJECT);
+        Project project = e.getData(CommonDataKeys.PROJECT);
         assert project != null;
         final Editor editor = e.getData(PlatformDataKeys.EDITOR);
         assert editor != null;
@@ -80,8 +80,8 @@ public class GenerateMainAction extends AnAction implements AnActionWithAsyncUpd
             return;
         }
 
-        final List<PsiFile> boundForms = FormClassIndex.findFormsBoundToClass(project, psiClass.getQualifiedName());
-        final LwRootContainer rootContainer;
+        List<PsiFile> boundForms = FormClassIndex.findFormsBoundToClass(project, psiClass.getQualifiedName());
+        LwRootContainer rootContainer;
         try {
             rootContainer = Utils.getRootContainer(boundForms.get(0).getText(), null);
         }
@@ -108,7 +108,7 @@ public class GenerateMainAction extends AnAction implements AnActionWithAsyncUpd
         }
 
         final StringBuilder mainBuilder = new StringBuilder("public static void main(String[] args) { ");
-        final JavaCodeStyleManager csm = JavaCodeStyleManager.getInstance(project);
+        JavaCodeStyleManager csm = JavaCodeStyleManager.getInstance(project);
         SuggestedNameInfo nameInfo = csm.suggestVariableName(VariableKind.LOCAL_VARIABLE, "frame", null, null);
         String varName = nameInfo.names[0];
         mainBuilder.append(JFrame.class.getName()).append(" ").append(varName).append("= new ").append(JFrame.class.getName());
@@ -127,7 +127,7 @@ public class GenerateMainAction extends AnAction implements AnActionWithAsyncUpd
                         try {
                             PsiMethod method =
                                 JavaPsiFacade.getInstance(file.getProject()).getElementFactory().createMethodFromText(mainBuilder.toString(), file);
-                            List<PsiGenerationInfo<PsiMethod>> infos = Collections.singletonList(new PsiGenerationInfo<PsiMethod>(method));
+                            List<PsiGenerationInfo<PsiMethod>> infos = Collections.singletonList(new PsiGenerationInfo<>(method));
                             List<PsiGenerationInfo<PsiMethod>> resultMembers = GenerateMembersUtil.insertMembersAtOffset(file, offset, infos);
                             resultMembers.get(0).positionCaret(editor, false);
                         }
@@ -146,7 +146,7 @@ public class GenerateMainAction extends AnAction implements AnActionWithAsyncUpd
     }
 
     @RequiredReadAction
-    private static boolean isActionEnabled(final AnActionEvent e) {
+    private static boolean isActionEnabled(AnActionEvent e) {
         Project project = e.getData(Project.KEY);
         if (project == null) {
             return false;

@@ -45,14 +45,14 @@ public abstract class I18nizeFormQuickFix extends QuickFix
 {
 	private static final Logger LOG = Logger.getInstance(I18nizeFormQuickFix.class);
 
-	public I18nizeFormQuickFix(final GuiEditor editor, final String name, final RadComponent component)
+	public I18nizeFormQuickFix(GuiEditor editor, String name, RadComponent component)
 	{
 		super(editor, name, component);
 	}
 
 	public void run()
 	{
-		final StringDescriptor descriptor = getStringDescriptorValue();
+		StringDescriptor descriptor = getStringDescriptorValue();
 		final Project project = myEditor.getProject();
 
 		PsiFile psiFile = myEditor.getPsiFile();
@@ -122,7 +122,7 @@ public abstract class I18nizeFormQuickFix extends QuickFix
 
 		if(aPropertiesFile != null)
 		{
-			final ProjectFileIndex fileIndex = ProjectRootManager.getInstance(project).getFileIndex();
+			ProjectFileIndex fileIndex = ProjectRootManager.getInstance(project).getFileIndex();
 			String packageName = fileIndex.getPackageNameByDirectory(aPropertiesFile.getVirtualFile().getParent());
 			if(packageName != null)
 			{
@@ -151,5 +151,5 @@ public abstract class I18nizeFormQuickFix extends QuickFix
 
 	protected abstract StringDescriptor getStringDescriptorValue();
 
-	protected abstract void setStringDescriptorValue(final StringDescriptor descriptor) throws Exception;
+	protected abstract void setStringDescriptorValue(StringDescriptor descriptor) throws Exception;
 }

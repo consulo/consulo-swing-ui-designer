@@ -75,7 +75,7 @@ public abstract class PropertyEditor<V> {
    *
    * @param component cannot be null
    */
-  public JComponent getPreferredFocusedComponent(@Nonnull final JComponent component){
+  public JComponent getPreferredFocusedComponent(@Nonnull JComponent component){
     return null;
   }
 
@@ -90,33 +90,33 @@ public abstract class PropertyEditor<V> {
   /**
    * Adds specified listener
    */
-  public final void addPropertyEditorListener(final PropertyEditorListener l){
+  public final void addPropertyEditorListener(PropertyEditorListener l){
     myListenerList.add(PropertyEditorListener.class,l);
   }
 
   /**
    * Removes specified listener
    */
-  public final void removePropertyEditorListener(final PropertyEditorListener l){
+  public final void removePropertyEditorListener(PropertyEditorListener l){
     myListenerList.remove(PropertyEditorListener.class,l);
   }
 
   protected final void fireEditingCancelled(){
-    final PropertyEditorListener[] listeners=myListenerList.getListeners(PropertyEditorListener.class);
+    PropertyEditorListener[] listeners=myListenerList.getListeners(PropertyEditorListener.class);
     for (PropertyEditorListener listener : listeners) {
       listener.editingCanceled(this);
     }
   }
 
-  protected final void fireValueCommitted(final boolean continueEditing, final boolean closeEditorOnError) {
-    final PropertyEditorListener[] listeners=myListenerList.getListeners(PropertyEditorListener.class);
+  protected final void fireValueCommitted(boolean continueEditing, boolean closeEditorOnError) {
+    PropertyEditorListener[] listeners=myListenerList.getListeners(PropertyEditorListener.class);
     for (PropertyEditorListener listener : listeners) {
       listener.valueCommitted(this, continueEditing, closeEditorOnError);
     }
   }
 
   protected final void preferredSizeChanged(){
-    final PropertyEditorListener[] listeners=myListenerList.getListeners(PropertyEditorListener.class);
+    PropertyEditorListener[] listeners=myListenerList.getListeners(PropertyEditorListener.class);
     for (PropertyEditorListener listener : listeners) {
       listener.preferredSizeChanged(this);
     }

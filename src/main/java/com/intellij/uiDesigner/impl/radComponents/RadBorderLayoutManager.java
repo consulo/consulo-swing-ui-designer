@@ -57,14 +57,14 @@ public class RadBorderLayoutManager extends RadLayoutManager {
   }
 
   @Override
-  public void writeLayout(final XmlWriter writer, final RadContainer radContainer) {
+  public void writeLayout(XmlWriter writer, RadContainer radContainer) {
     BorderLayout layout = (BorderLayout) radContainer.getLayout();
     writer.addAttribute(UIFormXmlConstants.ATTRIBUTE_HGAP, layout.getHgap());
     writer.addAttribute(UIFormXmlConstants.ATTRIBUTE_VGAP, layout.getVgap());
   }
 
   @Override
-  public void addComponentToContainer(final RadContainer container, final RadComponent component, final int index) {
+  public void addComponentToContainer(RadContainer container, RadComponent component, int index) {
     if (component.getCustomLayoutConstraints() == null) {
       if (container.getDelegee().getComponentCount() == 0) {
         component.setCustomLayoutConstraints(BorderLayout.CENTER);
@@ -77,17 +77,17 @@ public class RadBorderLayoutManager extends RadLayoutManager {
   }
 
   @Override
-  public void writeChildConstraints(final XmlWriter writer, final RadComponent child) {
+  public void writeChildConstraints(XmlWriter writer, RadComponent child) {
     writer.addAttribute(UIFormXmlConstants.ATTRIBUTE_BORDER_CONSTRAINT, (String) child.getCustomLayoutConstraints());
   }
 
   @Nonnull
   @Override
-  public ComponentDropLocation getDropLocation(RadContainer container, final Point location) {
+  public ComponentDropLocation getDropLocation(RadContainer container, Point location) {
     return new MyDropLocation(container, getQuadrantAt(container, location));
   }
 
-  private static String getQuadrantAt(final RadContainer container, final Point location) {
+  private static String getQuadrantAt(RadContainer container, Point location) {
     if (location == null) {
       return BorderLayout.CENTER;
     }
@@ -176,7 +176,7 @@ public class RadBorderLayoutManager extends RadLayoutManager {
     }
   }
 
-  @Override public Property[] getContainerProperties(final Project project) {
+  @Override public Property[] getContainerProperties(Project project) {
     return new Property[] {
       HGapProperty.getInstance(project),
       VGapProperty.getInstance(project)
@@ -184,14 +184,14 @@ public class RadBorderLayoutManager extends RadLayoutManager {
   }
 
   @Override
-  public Property[] getComponentProperties(final Project project, final RadComponent component) {
+  public Property[] getComponentProperties(Project project, RadComponent component) {
     return new Property[] {
       BorderSideProperty.INSTANCE
     };
   }
 
   @Override
-  public boolean canMoveComponent(final RadComponent c, final int rowDelta, final int colDelta, final int rowSpanDelta, final int colSpanDelta) {
+  public boolean canMoveComponent(RadComponent c, int rowDelta, int colDelta, int rowSpanDelta, int colSpanDelta) {
     if (rowSpanDelta != 0 || colSpanDelta != 0) {
       return false;
     }
@@ -201,7 +201,7 @@ public class RadBorderLayoutManager extends RadLayoutManager {
   }
 
   @Override
-  public void moveComponent(final RadComponent c, final int rowDelta, final int colDelta, final int rowSpanDelta, final int colSpanDelta) {
+  public void moveComponent(RadComponent c, int rowDelta, int colDelta, int rowSpanDelta, int colSpanDelta) {
     String side = (String) c.getCustomLayoutConstraints();
     String adjSide = getAdjacentSide(side, rowDelta, colDelta);
     if (adjSide != null) {
@@ -210,7 +210,7 @@ public class RadBorderLayoutManager extends RadLayoutManager {
   }
 
   @Nullable
-  private static String getAdjacentSide(final String side, final int rowDelta, final int colDelta) {
+  private static String getAdjacentSide(String side, int rowDelta, int colDelta) {
     if (rowDelta == -1 && colDelta == 0) {
       return getAdjacentSide(side, BorderLayout.NORTH, BorderLayout.SOUTH);
     }
@@ -227,7 +227,7 @@ public class RadBorderLayoutManager extends RadLayoutManager {
   }
 
   @Nullable
-  private static String getAdjacentSide(final String side, final String toEdge, final String fromEdge) {
+  private static String getAdjacentSide(String side, String toEdge, String fromEdge) {
     if (side.equals(toEdge)) {
       return null;
     }
@@ -237,20 +237,20 @@ public class RadBorderLayoutManager extends RadLayoutManager {
     return toEdge;
   }
 
-  @Override public void createSnapshotLayout(final SnapshotContext context,
-                                             final JComponent parent,
-                                             final RadContainer container,
-                                             final LayoutManager layout) {
+  @Override public void createSnapshotLayout(SnapshotContext context,
+                                             JComponent parent,
+                                             RadContainer container,
+                                             LayoutManager layout) {
     BorderLayout borderLayout = (BorderLayout) layout;
     container.setLayout(new BorderLayout(borderLayout.getHgap(), borderLayout.getVgap()));
   }
 
-  @Override public void addSnapshotComponent(final JComponent parent,
-                                             final JComponent child,
-                                             final RadContainer container,
-                                             final RadComponent component) {
+  @Override public void addSnapshotComponent(JComponent parent,
+                                             JComponent child,
+                                             RadContainer container,
+                                             RadComponent component) {
     BorderLayout borderLayout = (BorderLayout) parent.getLayout();
-    final Object constraints = borderLayout.getConstraints(child);
+    Object constraints = borderLayout.getConstraints(child);
     if (constraints != null) {
       // sometimes the container sets the layout manager to BorderLayout but
       // overrides the layout() method so that the component constraints are not used
@@ -263,7 +263,7 @@ public class RadBorderLayoutManager extends RadLayoutManager {
     private final RadContainer myContainer;
     private final String myQuadrant;
 
-    public MyDropLocation(final RadContainer container, final String quadrant) {
+    public MyDropLocation(RadContainer container, String quadrant) {
       myQuadrant = quadrant;
       myContainer = container;
     }
@@ -286,7 +286,7 @@ public class RadBorderLayoutManager extends RadLayoutManager {
                                 myContainer.getDisplayName() + " (" + myQuadrant.toLowerCase() + ")");
     }
 
-    private Rectangle getFeedbackRect(final String quadrant, final Dimension initialSize) {
+    private Rectangle getFeedbackRect(String quadrant, Dimension initialSize) {
       Dimension size = myContainer.getDelegee().getSize();
       int initialWidth = (initialSize.width > 0 && initialSize.width < size.width) ? initialSize.width : size.width/3;
       int initialHeight = (initialSize.height > 0 && initialSize.height < size.height) ? initialSize.height: size.height/3;
@@ -309,7 +309,7 @@ public class RadBorderLayoutManager extends RadLayoutManager {
       return new Rectangle(size.width/3, size.height/3, size.width/3, size.height/3);
     }
 
-    private int getHeightAtConstraint(final String constraint) {
+    private int getHeightAtConstraint(String constraint) {
       BorderLayout layout = (BorderLayout) myContainer.getLayout();
       Component c = layout.getLayoutComponent(myContainer.getDelegee(), constraint);
       if (c == null) {

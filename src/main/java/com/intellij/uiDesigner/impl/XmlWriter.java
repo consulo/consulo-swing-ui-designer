@@ -42,8 +42,8 @@ public final class XmlWriter{
   @NonNls private final StringBuffer myBuffer;
 
   public XmlWriter(){
-    myElementNames = new Stack<String>();
-    myElementHasBody = new Stack<Boolean>();
+    myElementNames = new Stack<>();
+    myElementHasBody = new Stack<>();
     myBuffer = new StringBuffer();
     myBuffer.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
   }
@@ -52,7 +52,7 @@ public final class XmlWriter{
     return myBuffer.toString();
   }
 
-  public void writeDimension(final Dimension dimension, @NonNls final String elementName) {
+  public void writeDimension(Dimension dimension, @NonNls String elementName) {
     if (dimension.width == -1 && dimension.height == -1) {
       return;
     }
@@ -66,11 +66,11 @@ public final class XmlWriter{
     }
   }
 
-  public void startElement(@NonNls final String elementName){
+  public void startElement(@NonNls String elementName){
     startElement(elementName, null);
   }
 
-  public void startElement(@NonNls final String elementName, final String namespace){
+  public void startElement(@NonNls String elementName, String namespace){
     if (myElementNames.size() > 0) {
       if(!myElementHasBody.peek().booleanValue()){
         myBuffer.append(">\n");
@@ -90,8 +90,8 @@ public final class XmlWriter{
   }
 
   public void endElement() {
-    final String elementName = myElementNames.peek();
-    final boolean hasBody = myElementHasBody.peek().booleanValue();
+    String elementName = myElementNames.peek();
+    boolean hasBody = myElementHasBody.peek().booleanValue();
 
     myElementNames.pop();
     myElementHasBody.pop();
@@ -107,44 +107,44 @@ public final class XmlWriter{
   /**
    * Helper method
    */
-  private void addAttributeImpl(final String name,final String value){
+  private void addAttributeImpl(String name, String value){
     myBuffer.append(' ').append(name).append("=\"").append(value).append('"');
   }
 
   /**
    * Helper method
    */
-  public void addAttribute(@NonNls final String name, final String value){
+  public void addAttribute(@NonNls String name, String value){
     addAttributeImpl(name, StringUtil.convertLineSeparators(XmlStringUtil.escapeString(value, true)));
   }
 
   /**
    * Helper method
    */
-  public void addAttribute(@NonNls final String name, final int value){
+  public void addAttribute(@NonNls String name, int value){
     addAttributeImpl(name, Integer.toString(value));
   }
 
   /**
    * Helper method
    */
-  public void addAttribute(@NonNls final String name, final boolean value){
+  public void addAttribute(@NonNls String name, boolean value){
     addAttributeImpl(name, Boolean.toString(value));
   }
 
-  public void addAttribute(@NonNls final String name, final Double value){
+  public void addAttribute(@NonNls String name, Double value){
     addAttributeImpl(name, Double.toString(value));
   }
 
-  public void writeElement(final Element element){
+  public void writeElement(Element element){
     startElement(element.getName());
     try {
-      for (final Object o1 : element.getAttributes()) {
-        final Attribute attribute = (Attribute)o1;
+      for (Object o1 : element.getAttributes()) {
+        Attribute attribute = (Attribute)o1;
         addAttribute(attribute.getName(), attribute.getValue());
       }
-      for (final Object o : element.getChildren()) {
-        final Element child = (Element)o;
+      for (Object o : element.getChildren()) {
+        Element child = (Element)o;
         writeElement(child);
       }
     }
@@ -156,16 +156,16 @@ public final class XmlWriter{
   /**
    * Helper method
    */
-  private void writeSpaces(final int count){
+  private void writeSpaces(int count){
     for (int i=0; i < count; i++) {
       myBuffer.append(' ');
     }
   }
 
-  public void writeStringDescriptor(final StringDescriptor descriptor,
-                                    final String valueAttr,
-                                    final String bundleAttr,
-                                    final String keyAttr) {
+  public void writeStringDescriptor(StringDescriptor descriptor,
+                                    String valueAttr,
+                                    String bundleAttr,
+                                    String keyAttr) {
     if(descriptor.getValue() != null){ // direct value
       addAttribute(valueAttr, descriptor.getValue());
       if (descriptor.isNoI18n()) {
@@ -178,7 +178,7 @@ public final class XmlWriter{
     }
   }
 
-  public void writeColorDescriptor(final ColorDescriptor value) {
+  public void writeColorDescriptor(ColorDescriptor value) {
     Color color = value.getColor();
     if (color != null) {
       addAttribute(UIFormXmlConstants.ATTRIBUTE_COLOR, color.getRGB());
@@ -194,7 +194,7 @@ public final class XmlWriter{
     }
   }
 
-  public void writeFontDescriptor(final FontDescriptor value) {
+  public void writeFontDescriptor(FontDescriptor value) {
     if (value.getSwingFont() != null) {
       addAttribute(UIFormXmlConstants.ATTRIBUTE_SWING_FONT, value.getSwingFont());
     }
@@ -211,7 +211,7 @@ public final class XmlWriter{
     }
   }
 
-  public void writeInsets(final Insets value) {
+  public void writeInsets(Insets value) {
     addAttribute(UIFormXmlConstants.ATTRIBUTE_TOP, value.top);
     addAttribute(UIFormXmlConstants.ATTRIBUTE_LEFT, value.left);
     addAttribute(UIFormXmlConstants.ATTRIBUTE_BOTTOM, value.bottom);

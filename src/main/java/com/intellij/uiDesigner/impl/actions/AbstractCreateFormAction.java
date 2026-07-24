@@ -60,15 +60,15 @@ public abstract class AbstractCreateFormAction extends CreateElementActionBase i
         return CallSubroutine.call(() -> super.updateAsync(e))
             .toCoroutine()
             .then(ActionSafeReadLock.run(e, presentation -> {
-                final Project project = e.getData(Project.KEY);
+                Project project = e.getData(Project.KEY);
                 if (project != null && presentation.isEnabled()) {
-                    final Module module = e.getData(Module.KEY);
+                    Module module = e.getData(Module.KEY);
                     if (module != null && ModuleUtilCore.getExtension(module, JavaModuleExtension.class) != null) {
-                        final IdeView view = e.getData(IdeView.KEY);
+                        IdeView view = e.getData(IdeView.KEY);
                         if (view != null) {
-                            final ProjectFileIndex projectFileIndex = ProjectRootManager.getInstance(project).getFileIndex();
-                            final PsiDirectory[] dirs = view.getDirectories();
-                            for (final PsiDirectory dir : dirs) {
+                            ProjectFileIndex projectFileIndex = ProjectRootManager.getInstance(project).getFileIndex();
+                            PsiDirectory[] dirs = view.getDirectories();
+                            for (PsiDirectory dir : dirs) {
                                 if (projectFileIndex.isInSourceContent(dir.getVirtualFile()) && JavaDirectoryService.getInstance().getPackage(dir) != null) {
                                     return;
                                 }
@@ -82,12 +82,12 @@ public abstract class AbstractCreateFormAction extends CreateElementActionBase i
             }));
     }
 
-    protected String createFormBody(@Nullable final String fullQualifiedClassName, @NonNls final String formName, final String layoutManager)
+    protected String createFormBody(@Nullable String fullQualifiedClassName, @NonNls String formName, String layoutManager)
         throws IncorrectOperationException {
 
-        final InputStream inputStream = getClass().getResourceAsStream(formName);
+        InputStream inputStream = getClass().getResourceAsStream(formName);
 
-        final StringBuffer buffer = new StringBuffer();
+        StringBuffer buffer = new StringBuffer();
         try {
             for (int ch; (ch = inputStream.read()) != -1; ) {
                 buffer.append((char) ch);
@@ -112,7 +112,7 @@ public abstract class AbstractCreateFormAction extends CreateElementActionBase i
     }
 
     @Override
-    protected LocalizeValue getActionName(final PsiDirectory directory, final String newName) {
+    protected LocalizeValue getActionName(PsiDirectory directory, String newName) {
         return UIDesignerLocalize.progressCreatingClass(JavaDirectoryService.getInstance().getPackage(directory).getQualifiedName(), newName);
     }
 }

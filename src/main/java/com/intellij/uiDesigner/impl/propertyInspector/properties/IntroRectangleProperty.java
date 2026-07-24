@@ -37,7 +37,7 @@ public final class IntroRectangleProperty extends IntrospectedProperty<Rectangle
   private final Property[] myChildren;
   private final IntRegexEditor<Rectangle> myEditor;
 
-  public IntroRectangleProperty(final String name, final Method readMethod, final Method writeMethod, final boolean storeAsClient){
+  public IntroRectangleProperty(String name, Method readMethod, Method writeMethod, boolean storeAsClient){
     super(name, readMethod, writeMethod, storeAsClient);
     myRenderer=new RectangleRenderer();
     myChildren=new Property[]{
@@ -49,7 +49,7 @@ public final class IntroRectangleProperty extends IntrospectedProperty<Rectangle
     myEditor = new IntRegexEditor<Rectangle>(Rectangle.class, myRenderer, new int[] { Integer.MIN_VALUE, Integer.MIN_VALUE, 0, 0 });
   }
 
-  public void write(final Rectangle value,final XmlWriter writer){
+  public void write(Rectangle value, XmlWriter writer){
     writer.addAttribute("x",value.x);
     writer.addAttribute("y",value.y);
     writer.addAttribute("width",value.width);
@@ -57,7 +57,7 @@ public final class IntroRectangleProperty extends IntrospectedProperty<Rectangle
   }
 
   @Nonnull
-  public Property[] getChildren(final RadComponent component){
+  public Property[] getChildren(RadComponent component){
     return myChildren;
   }
 

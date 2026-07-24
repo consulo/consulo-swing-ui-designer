@@ -54,8 +54,8 @@ public abstract class FormPropertyUsageTest extends PsiTestCase {
 
   public void testClassUsage() {
     PsiClass psiClass = myJavaFacade.findClass(JButton.class.getName(), GlobalSearchScope.allScope(myProject));
-    final Query<PsiReference> query = ReferencesSearch.search(psiClass);
-    final Collection<PsiReference> result = query.findAll();
+    Query<PsiReference> query = ReferencesSearch.search(psiClass);
+    Collection<PsiReference> result = query.findAll();
     assertEquals(1, result.size());
   }
 
@@ -67,13 +67,13 @@ public abstract class FormPropertyUsageTest extends PsiTestCase {
     doPropertyUsageTest("test_ru.properties");
   }
 
-  private void doPropertyUsageTest(final String propertyFileName) {
+  private void doPropertyUsageTest(String propertyFileName) {
     PropertiesFile propFile = (PropertiesFile) myPsiManager.findFile(myTestProjectRoot.findChild(propertyFileName));
     assertNotNull(propFile);
-    final Property prop = (Property)propFile.findPropertyByKey("key");
+    Property prop = (Property)propFile.findPropertyByKey("key");
     assertNotNull(prop);
-    final Query<PsiReference> query = ReferencesSearch.search(prop);
-    final Collection<PsiReference> result = query.findAll();
+    Query<PsiReference> query = ReferencesSearch.search(prop);
+    Collection<PsiReference> result = query.findAll();
     assertEquals(1, result.size());
     verifyReference(result, 0, "form.form", 960);
   }
@@ -86,18 +86,18 @@ public abstract class FormPropertyUsageTest extends PsiTestCase {
      doPropertyFileUsageTest("test_ru.properties");
   }
 
-  private void doPropertyFileUsageTest(final String fileName) {
+  private void doPropertyFileUsageTest(String fileName) {
     PropertiesFile propFile = (PropertiesFile) myPsiManager.findFile(myTestProjectRoot.findChild(fileName));
     assertNotNull(propFile);
-    final Query<PsiReference> query = ReferencesSearch.search(propFile.getContainingFile());
-    final Collection<PsiReference> result = query.findAll();
+    Query<PsiReference> query = ReferencesSearch.search(propFile.getContainingFile());
+    Collection<PsiReference> result = query.findAll();
     assertEquals(1, result.size());
     verifyReference(result, 0, "form.form", 949);
   }
 
-  private void verifyReference(final Collection<PsiReference> result, final int index, final String fileName, final int offset) {
+  private void verifyReference(Collection<PsiReference> result, int index, String fileName, int offset) {
     PsiReference ref = result.toArray(new PsiReference[result.size()]) [index];
-    final PsiElement element = ref.getElement();
+    PsiElement element = ref.getElement();
     assertEquals(fileName, element.getContainingFile().getName());
     int startOffset = element.getTextOffset() + ref.getRangeInElement().getStartOffset();
     assertEquals(offset, startOffset);

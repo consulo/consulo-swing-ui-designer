@@ -36,9 +36,9 @@ import java.util.Map;
  */
 public class PsiNestedFormLoader implements NestedFormLoader {
   protected consulo.module.Module myModule;
-  private final Map<String, LwRootContainer> myFormCache = new HashMap<String, LwRootContainer>();
+  private final Map<String, LwRootContainer> myFormCache = new HashMap<>();
 
-  public PsiNestedFormLoader(final Module module) {
+  public PsiNestedFormLoader(Module module) {
     myModule = module;
   }
 
@@ -50,7 +50,7 @@ public class PsiNestedFormLoader implements NestedFormLoader {
     if (formFile == null) {
       throw new Exception("Could not find nested form file " + formFileName);
     }
-    final LwRootContainer container = Utils.getRootContainer(formFile.getInputStream(), new PsiPropertiesProvider(myModule));
+    LwRootContainer container = Utils.getRootContainer(formFile.getInputStream(), new PsiPropertiesProvider(myModule));
     myFormCache.put(formFileName, container);
     return container;
   }

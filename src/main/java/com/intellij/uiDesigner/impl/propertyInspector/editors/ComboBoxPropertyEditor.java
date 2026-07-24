@@ -39,7 +39,7 @@ public abstract class ComboBoxPropertyEditor<V> extends PropertyEditor<V> {
   @Override
   public final void updateUI() {
     SwingUtilities.updateComponentTreeUI(myCbx);
-    final ListCellRenderer renderer = myCbx.getRenderer();
+    ListCellRenderer renderer = myCbx.getRenderer();
     if (renderer instanceof JComponent) {
       SwingUtilities.updateComponentTreeUI((JComponent)renderer);
     }
@@ -48,7 +48,7 @@ public abstract class ComboBoxPropertyEditor<V> extends PropertyEditor<V> {
   @Override
   public V getValue() throws Exception {
     if (myCbx.isEditable()) {
-      final Component editorComponent = myCbx.getEditor().getEditorComponent();
+      Component editorComponent = myCbx.getEditor().getEditorComponent();
       //noinspection unchecked
       return (V)((JTextField)editorComponent).getText();
     }
@@ -62,19 +62,19 @@ public abstract class ComboBoxPropertyEditor<V> extends PropertyEditor<V> {
     private boolean myCancelled;
 
     @Override
-    public void popupMenuWillBecomeVisible(final PopupMenuEvent e){
+    public void popupMenuWillBecomeVisible(PopupMenuEvent e){
       myCancelled=false;
     }
 
     @Override
-    public void popupMenuWillBecomeInvisible(final PopupMenuEvent e){
+    public void popupMenuWillBecomeInvisible(PopupMenuEvent e){
       if(!myCancelled){
         fireValueCommitted(true, true);
       }
     }
 
     @Override
-    public void popupMenuCanceled(final PopupMenuEvent e){
+    public void popupMenuCanceled(PopupMenuEvent e){
       myCancelled=true;
     }
   }

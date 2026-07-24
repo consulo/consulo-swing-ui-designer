@@ -29,26 +29,26 @@ public final class CopyResourcesUtil {
   private CopyResourcesUtil() {
   }
 
-  public static File copyClass(final String targetPath, @NonNls final String className, final boolean deleteOnExit) throws IOException{
-    final File targetDir = new File(targetPath).getAbsoluteFile();
-    final File file = new File(targetDir, className + ".class");
+  public static File copyClass(String targetPath, @NonNls String className, boolean deleteOnExit) throws IOException{
+    File targetDir = new File(targetPath).getAbsoluteFile();
+    File file = new File(targetDir, className + ".class");
     FileUtil.createParentDirs(file);
     if (deleteOnExit) {
       for (File f = file; f != null && !FileUtil.filesEqual(f, targetDir); f = FileUtil.getParentFile(f)) {
         f.deleteOnExit();
       }
     }
-    @NonNls final String resourceName = "/" + className + ".class";
-    final InputStream stream = CopyResourcesUtil.class.getResourceAsStream(resourceName);
+    @NonNls String resourceName = "/" + className + ".class";
+    InputStream stream = CopyResourcesUtil.class.getResourceAsStream(resourceName);
     if (stream == null) {
       throw new IOException("cannot load " + resourceName);
     }
     return copyStreamToFile(stream, file);
   }
 
-  private static File copyStreamToFile(final InputStream stream, final File file) throws IOException {
+  private static File copyStreamToFile(InputStream stream, File file) throws IOException {
     try {
-      final FileOutputStream outputStream = new FileOutputStream(file);
+      FileOutputStream outputStream = new FileOutputStream(file);
       try {
         FileUtil.copy(stream, outputStream);
       }
@@ -62,22 +62,22 @@ public final class CopyResourcesUtil {
     return file;
   }
 
-  public static void copyProperties(final String targetPath, final String fileName) throws IOException {
-    final File targetDir = new File(targetPath).getAbsoluteFile();
-    final File file = new File(targetDir, fileName);
+  public static void copyProperties(String targetPath, String fileName) throws IOException {
+    File targetDir = new File(targetPath).getAbsoluteFile();
+    File file = new File(targetDir, fileName);
     FileUtil.createParentDirs(file);
     for (File f = file; f != null && !FileUtil.filesEqual(f, targetDir); f = FileUtil.getParentFile(f)) {
       f.deleteOnExit();
     }
-    final String resourceName = "/" + fileName;
-    final InputStream stream = CopyResourcesUtil.class.getResourceAsStream(resourceName);
+    String resourceName = "/" + fileName;
+    InputStream stream = CopyResourcesUtil.class.getResourceAsStream(resourceName);
     if (stream == null) {
       return;
     }
     copyStreamToFile(stream, file);
   }
 
-  public static List<File> copyFormsRuntime(final String targetDir, final boolean deleteOnExit) throws IOException {
+  public static List<File> copyFormsRuntime(String targetDir, boolean deleteOnExit) throws IOException {
     String[] runtimeClasses = {
       "AbstractLayout",
       "DimensionInfo",
@@ -92,7 +92,7 @@ public final class CopyResourcesUtil {
       "VerticalInfo",
     };
 
-    List<File> copied = new ArrayList<File>();
+    List<File> copied = new ArrayList<>();
     for (String runtimeClass : runtimeClasses) {
       copied.add(copyClass(targetDir, "com/intellij/uiDesigner/core/" + runtimeClass, deleteOnExit));
     }

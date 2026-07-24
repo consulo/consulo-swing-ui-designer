@@ -30,8 +30,8 @@ public final class InsertAfterAction extends RowColumnAction {
           UIDesignerBundle.message("action.insert.row.after.this"), UIDesignerIcons.InsertRowBelow);
   }
 
-  protected void actionPerformed(final CaptionSelection selection) {
-    final RadContainer container = selection.getContainer();
+  protected void actionPerformed(CaptionSelection selection) {
+    RadContainer container = selection.getContainer();
     container.getGridLayoutManager().insertGridCells(container, selection.getFocusedIndex(), selection.isRow(), false, false);
   }
 }

@@ -35,13 +35,13 @@ public abstract class AlignProperty extends Property<RadComponent, Integer> {
   private IntEnumRenderer myRenderer;
   private IntEnumEditor myEditor;
 
-  public AlignProperty(final boolean horizontal) {
+  public AlignProperty(boolean horizontal) {
     super(null, horizontal ? "Horizontal Align" : "Vertical Align");
     myHorizontal = horizontal;
   }
 
   @Override
-  public Integer getValue(final RadComponent component) {
+  public Integer getValue(RadComponent component) {
     AlignPropertyProvider provider = getAlignPropertyProvider(component);
     if (provider != null) {
       return provider.getAlignment(component, myHorizontal);
@@ -49,7 +49,7 @@ public abstract class AlignProperty extends Property<RadComponent, Integer> {
     return Utils.alignFromConstraints(component.getConstraints(), myHorizontal);
   }
 
-  private static AlignPropertyProvider getAlignPropertyProvider(final RadComponent component) {
+  private static AlignPropertyProvider getAlignPropertyProvider(RadComponent component) {
     if (component.getParent().getLayoutManager() instanceof AlignPropertyProvider) {
       return ((AlignPropertyProvider) component.getParent().getLayoutManager());
     }
@@ -57,7 +57,7 @@ public abstract class AlignProperty extends Property<RadComponent, Integer> {
   }
 
   @Override
-  protected void setValueImpl(final RadComponent component, final Integer value) throws Exception {
+  protected void setValueImpl(RadComponent component, Integer value) throws Exception {
     int anchorMask = myHorizontal ? 0x0C : 3;
     int fillMask = myHorizontal ? 1 : 2;
     int anchor = 0;
@@ -85,25 +85,25 @@ public abstract class AlignProperty extends Property<RadComponent, Integer> {
   }
 
   @Override
-  public boolean isModified(final RadComponent component) {
+  public boolean isModified(RadComponent component) {
     AlignPropertyProvider provider = getAlignPropertyProvider(component);
     if (provider != null) {
       return provider.isAlignmentModified(component, myHorizontal);
     }
-    final ComponentItem item = component.getPalette().getItem(component.getComponentClassName());
+    ComponentItem item = component.getPalette().getItem(component.getComponentClassName());
     if (item == null) return false;
     return Utils.alignFromConstraints(component.getConstraints(), myHorizontal) !=
            Utils.alignFromConstraints(item.getDefaultConstraints(), myHorizontal);
   }
 
   @Override
-  public void resetValue(final RadComponent component) throws Exception {
+  public void resetValue(RadComponent component) throws Exception {
     AlignPropertyProvider provider = getAlignPropertyProvider(component);
     if (provider != null) {
       provider.resetAlignment(component, myHorizontal);
     }
     else {
-      final ComponentItem item = component.getPalette().getItem(component.getComponentClassName());
+      ComponentItem item = component.getPalette().getItem(component.getComponentClassName());
       if (item != null) {
         setValueEx(component, Utils.alignFromConstraints(item.getDefaultConstraints(), myHorizontal));
       }

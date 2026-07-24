@@ -39,14 +39,14 @@ final class BeanPropertyTableCellRenderer extends ColoredTableCellRenderer{
 
   @Override
   protected void customizeCellRenderer(
-    final JTable table,
-    final Object value,
-    final boolean selected,
-    final boolean hasFocus,
-    final int row,
-    final int column
+    JTable table,
+    Object value,
+    boolean selected,
+    boolean hasFocus,
+    int row,
+    int column
   ) {
-    final BeanProperty property = (BeanProperty)value;
+    BeanProperty property = (BeanProperty)value;
     if(property == null){
       append(UIDesignerLocalize.propertyNotDefined(), myAttrs2);
     }
@@ -55,9 +55,9 @@ final class BeanPropertyTableCellRenderer extends ColoredTableCellRenderer{
       append(" ", myAttrs1);
 
       // Short type name
-      final String shortClassName;
-      final String packageName;
-      final int lastDotIndex = property.myType.lastIndexOf('.');
+      String shortClassName;
+      String packageName;
+      int lastDotIndex = property.myType.lastIndexOf('.');
       if(lastDotIndex != -1){
         shortClassName = property.myType.substring(lastDotIndex + 1);
         packageName = property.myType.substring(0, lastDotIndex);

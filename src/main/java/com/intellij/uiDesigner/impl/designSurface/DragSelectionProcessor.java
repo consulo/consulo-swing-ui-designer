@@ -51,7 +51,7 @@ public final class DragSelectionProcessor extends EventProcessor {
   private final MyDragGestureRecognizer myDragGestureRecognizer;
   private final MyDragSourceListener myDragSourceListener = new MyDragSourceListener();
 
-  public DragSelectionProcessor(@Nonnull final GuiEditor editor) {
+  public DragSelectionProcessor(@Nonnull GuiEditor editor) {
     myEditor = editor;
     myDragGestureRecognizer = new MyDragGestureRecognizer(DragSource.getDefaultDragSource(),
                                                           myEditor.getActiveDecorationLayer(),
@@ -74,10 +74,10 @@ public final class DragSelectionProcessor extends EventProcessor {
     return true;
   }
 
-  protected void processKeyEvent(final KeyEvent e) {
+  protected void processKeyEvent(KeyEvent e) {
   }
 
-  protected void processMouseEvent(final MouseEvent e) {
+  protected void processMouseEvent(MouseEvent e) {
     if (e.getID() == MouseEvent.MOUSE_PRESSED) {
       myPressPoint = e.getPoint();
     }
@@ -94,7 +94,7 @@ public final class DragSelectionProcessor extends EventProcessor {
     else if (e.getID() == MouseEvent.MOUSE_DRAGGED) {
       if (!myDragStarted) {
         if ((Math.abs(e.getX() - myPressPoint.getX()) > TREMOR || Math.abs(e.getY() - myPressPoint.getY()) > TREMOR)) {
-          ArrayList<InputEvent> eventList = new ArrayList<InputEvent>();
+          ArrayList<InputEvent> eventList = new ArrayList<>();
           eventList.add(e);
           myDragGestureRecognizer.setTriggerEvent(e);
           DragGestureEvent dge = new DragGestureEvent(myDragGestureRecognizer,
@@ -122,7 +122,7 @@ public final class DragSelectionProcessor extends EventProcessor {
     protected void unregisterListeners() {
     }
 
-    public void setTriggerEvent(final MouseEvent e) {
+    public void setTriggerEvent(MouseEvent e) {
       resetRecognizer();
       appendEvent(e);
     }
@@ -130,7 +130,7 @@ public final class DragSelectionProcessor extends EventProcessor {
 
   private class MyDragSourceListener extends DragSourceAdapter {
     public void dropActionChanged(DragSourceDragEvent dsde) {
-      final int shiftDownMask = (dsde.getGestureModifiersEx() & KeyEvent.SHIFT_DOWN_MASK);
+      int shiftDownMask = (dsde.getGestureModifiersEx() & KeyEvent.SHIFT_DOWN_MASK);
       if (shiftDownMask != 0) {
         myEditor.setDesignTimeInsets(12);
       }

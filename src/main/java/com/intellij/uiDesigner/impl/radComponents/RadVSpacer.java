@@ -32,7 +32,7 @@ public final class RadVSpacer extends RadAtomicComponent {
       return new RadVSpacer(module, aClass, id);
     }
 
-    public RadComponent newInstance(final Class componentClass, final String id, final Palette palette) {
+    public RadComponent newInstance(Class componentClass, String id, Palette palette) {
       throw new UnsupportedOperationException("Spacer instances should not be created by SnapShooter");
     }
 
@@ -41,18 +41,18 @@ public final class RadVSpacer extends RadAtomicComponent {
     }
   }
 
-  public RadVSpacer(final ModuleProvider module, final String id) {
+  public RadVSpacer(ModuleProvider module, String id) {
     super(module, VSpacer.class, id);
   }
 
-  public RadVSpacer(final ModuleProvider module, final Class aClass, final String id) {
+  public RadVSpacer(ModuleProvider module, Class aClass, String id) {
     super(module, aClass, id);
   }
 
   /**
    * Constructor for use in SnapShooter
    */
-  public RadVSpacer(final String id, final int row) {
+  public RadVSpacer(String id, int row) {
     super(null, VSpacer.class, id);
     getConstraints().setRow(row);
     getConstraints().setVSizePolicy(GridConstraints.SIZEPOLICY_CAN_GROW |
@@ -60,7 +60,7 @@ public final class RadVSpacer extends RadAtomicComponent {
     getConstraints().setFill(GridConstraints.FILL_VERTICAL);
   }
 
-  public void write(final XmlWriter writer) {
+  public void write(XmlWriter writer) {
     writer.startElement("vspacer");
     try {
       writeId(writer);

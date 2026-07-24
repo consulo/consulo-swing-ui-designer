@@ -40,7 +40,7 @@ import java.util.Map;
  */
 public abstract class RadAbstractGridLayoutManager extends RadLayoutManager
 {
-	protected final Map<RadComponent, MyPropertyChangeListener> myListenerMap = new HashMap<RadComponent, MyPropertyChangeListener>();
+	protected final Map<RadComponent, MyPropertyChangeListener> myListenerMap = new HashMap<>();
 
 	@Override
 	public boolean isGrid()
@@ -67,7 +67,7 @@ public abstract class RadAbstractGridLayoutManager extends RadLayoutManager
 		return getGridCellAt(container, x, false);
 	}
 
-	private int getGridCellAt(final RadContainer container, final int coord, final boolean isRow)
+	private int getGridCellAt(RadContainer container, int coord, boolean isRow)
 	{
 		int[] coords = getGridCellCoords(container, isRow);
 		int[] sizes = getGridCellSizes(container, isRow);
@@ -96,17 +96,17 @@ public abstract class RadAbstractGridLayoutManager extends RadLayoutManager
 	}
 
 	@Nullable
-	public static RadComponent getComponentAtGrid(RadContainer container, final int row, final int column)
+	public static RadComponent getComponentAtGrid(RadContainer container, int row, int column)
 	{
 		// If the target cell is not empty does not allow drop.
 		for(int i = 0; i < container.getComponentCount(); i++)
 		{
-			final RadComponent component = container.getComponent(i);
+			RadComponent component = container.getComponent(i);
 			if(component.isDragging())
 			{
 				continue;
 			}
-			final GridConstraints constraints = component.getConstraints();
+			GridConstraints constraints = component.getConstraints();
 			if(
 					constraints.getRow() <= row && row < constraints.getRow() + constraints.getRowSpan() &&
 							constraints.getColumn() <= column && column < constraints.getColumn() + constraints.getColSpan()
@@ -167,8 +167,8 @@ public abstract class RadAbstractGridLayoutManager extends RadLayoutManager
 		return null;
 	}
 
-	public void paintCaptionDecoration(final RadContainer container, final boolean isRow, final int i, final Graphics2D g,
-									   final Rectangle rc)
+	public void paintCaptionDecoration(RadContainer container, boolean isRow, int i, Graphics2D g,
+                                       Rectangle rc)
 	{
 		if(canCellGrow(container, isRow, i))
 		{
@@ -179,13 +179,13 @@ public abstract class RadAbstractGridLayoutManager extends RadLayoutManager
 	/**
 	 * @return the number of inserted rows or columns
 	 */
-	public int insertGridCells(final RadContainer grid, final int cellIndex, final boolean isRow, final boolean isBefore, final boolean grow)
+	public int insertGridCells(RadContainer grid, int cellIndex, boolean isRow, boolean isBefore, boolean grow)
 	{
 		GridChangeUtil.insertRowOrColumn(grid, cellIndex, isRow, isBefore);
 		return 1;
 	}
 
-	public void copyGridCells(RadContainer source, final RadContainer destination, final boolean isRow, int cellIndex, int cellCount, int targetIndex)
+	public void copyGridCells(RadContainer source, RadContainer destination, boolean isRow, int cellIndex, int cellCount, int targetIndex)
 	{
 		for(int i = 0; i < cellCount; i++)
 		{
@@ -196,13 +196,13 @@ public abstract class RadAbstractGridLayoutManager extends RadLayoutManager
 	/**
 	 * @return the number of deleted rows or columns
 	 */
-	public int deleteGridCells(final RadContainer grid, final int cellIndex, final boolean isRow)
+	public int deleteGridCells(RadContainer grid, int cellIndex, boolean isRow)
 	{
 		GridChangeUtil.deleteCell(grid, cellIndex, isRow);
 		return 1;
 	}
 
-	public void processCellsMoved(final RadContainer container, final boolean isRow, final int[] cells, final int targetCell)
+	public void processCellsMoved(RadContainer container, boolean isRow, int[] cells, int targetCell)
 	{
 		GridChangeUtil.moveCells(container, isRow, cells, targetCell);
 	}
@@ -212,7 +212,7 @@ public abstract class RadAbstractGridLayoutManager extends RadLayoutManager
 		return 0;
 	}
 
-	public int getGapCellSize(final RadContainer container, boolean isRow)
+	public int getGapCellSize(RadContainer container, boolean isRow)
 	{
 		return 0;
 	}
@@ -243,11 +243,11 @@ public abstract class RadAbstractGridLayoutManager extends RadLayoutManager
 		return null;
 	}
 
-	public void processCellResized(RadContainer container, final boolean isRow, final int cell, final int newSize)
+	public void processCellResized(RadContainer container, boolean isRow, int cell, int newSize)
 	{
 	}
 
-	public abstract void copyGridSection(final RadContainer source, final RadContainer destination, final Rectangle rc);
+	public abstract void copyGridSection(RadContainer source, RadContainer destination, Rectangle rc);
 
 	public LayoutManager copyLayout(LayoutManager layout, int rowDelta, int columnDelta)
 	{
@@ -263,13 +263,13 @@ public abstract class RadAbstractGridLayoutManager extends RadLayoutManager
 		return false;
 	}
 
-	protected static void writeGridConstraints(final XmlWriter writer, final RadComponent child)
+	protected static void writeGridConstraints(XmlWriter writer, RadComponent child)
 	{
 		// Constraints in Grid layout
 		writer.startElement("grid");
 		try
 		{
-			final GridConstraints constraints = child.getConstraints();
+			GridConstraints constraints = child.getConstraints();
 			writer.addAttribute("row", constraints.getRow());
 			writer.addAttribute("column", constraints.getColumn());
 			writer.addAttribute("row-span", constraints.getRowSpan());
@@ -295,12 +295,12 @@ public abstract class RadAbstractGridLayoutManager extends RadLayoutManager
 
 	@Override
 	@Nonnull
-	public ComponentDropLocation getDropLocation(RadContainer container, @Nullable final Point location)
+	public ComponentDropLocation getDropLocation(RadContainer container, @Nullable Point location)
 	{
 		if(container.getGridRowCount() == 1 && container.getGridColumnCount() == 1 &&
 				getComponentAtGrid(container, 0, 0) == null)
 		{
-			final Rectangle rc = getGridCellRangeRect(container, 0, 0, 0, 0);
+			Rectangle rc = getGridCellRangeRect(container, 0, 0, 0, 0);
 			if(location == null)
 			{
 				return new FirstComponentInsertLocation(container, rc, 0, 0);
@@ -369,8 +369,8 @@ public abstract class RadAbstractGridLayoutManager extends RadLayoutManager
 
 		boolean spanInsertMode = canSpanningAllowed() && mode == null;
 		boolean normalize = true;
-		final int cellWidth = vertGridLines[col + 1] - vertGridLines[col];
-		final int cellHeight = horzGridLines[row + 1] - horzGridLines[row];
+		int cellWidth = vertGridLines[col + 1] - vertGridLines[col];
+		int cellHeight = horzGridLines[row + 1] - horzGridLines[row];
 		if(mode == null)
 		{
 			RadComponent component = getComponentAtGrid(container, row, col);
@@ -417,7 +417,7 @@ public abstract class RadAbstractGridLayoutManager extends RadLayoutManager
 		return new GridDropLocation(container, row, col);
 	}
 
-	private int getLastNonSpacerRow(final RadContainer container)
+	private int getLastNonSpacerRow(RadContainer container)
 	{
 		int lastRow = getGridRowCount(container) - 1;
 		for(int col = 0; col < getGridColumnCount(container); col++)
@@ -431,15 +431,15 @@ public abstract class RadAbstractGridLayoutManager extends RadLayoutManager
 		return lastRow - 1;
 	}
 
-	protected static void drawGrowMarker(final boolean isRow, final Graphics2D g2d, final Rectangle rc)
+	protected static void drawGrowMarker(boolean isRow, Graphics2D g2d, Rectangle rc)
 	{
 		g2d.setColor(Color.BLACK);
 		if(!isRow)
 		{
 			int maxX = (int) rc.getMaxX();
 			int midY = (int) rc.getCenterY() + 3;
-			final int xStart = Math.max(maxX - 10, rc.x + 2);
-			final int xEnd = maxX - 2;
+			int xStart = Math.max(maxX - 10, rc.x + 2);
+			int xEnd = maxX - 2;
 			g2d.drawLine(xStart, midY, xEnd, midY);
 			g2d.drawLine(xStart, midY, xStart + 2, midY - 2);
 			g2d.drawLine(xStart, midY, xStart + 2, midY + 2);
@@ -450,8 +450,8 @@ public abstract class RadAbstractGridLayoutManager extends RadLayoutManager
 		{
 			int maxY = (int) rc.getMaxY();
 			int midX = (int) rc.getCenterX() + 3;
-			final int yStart = Math.max(maxY - 10, rc.y + 2);
-			final int yEnd = maxY - 2;
+			int yStart = Math.max(maxY - 10, rc.y + 2);
+			int yEnd = maxY - 2;
 			g2d.drawLine(midX, yStart, midX, yEnd);
 			g2d.drawLine(midX, yStart, midX - 2, yStart + 2);
 			g2d.drawLine(midX, yStart, midX + 2, yStart + 2);
@@ -508,20 +508,20 @@ public abstract class RadAbstractGridLayoutManager extends RadLayoutManager
 		}
 	}
 
-	protected void changeLayoutFromGrid(final RadContainer container, final List<RadComponent> contents, final List<Boolean> canRowsGrow,
-										final List<Boolean> canColumnsGrow)
+	protected void changeLayoutFromGrid(RadContainer container, List<RadComponent> contents, List<Boolean> canRowsGrow,
+                                        List<Boolean> canColumnsGrow)
 	{
 		container.setLayoutManager(this);
 	}
 
-	protected void changeLayoutFromIndexed(final RadContainer container, final List<RadComponent> components)
+	protected void changeLayoutFromIndexed(RadContainer container, List<RadComponent> components)
 	{
 		container.setLayoutManager(this);
 	}
 
-	private static List<Boolean> collectCanCellsGrow(final RadAbstractGridLayoutManager grid, final RadContainer container, final boolean isRow)
+	private static List<Boolean> collectCanCellsGrow(RadAbstractGridLayoutManager grid, RadContainer container, boolean isRow)
 	{
-		List<Boolean> result = new ArrayList<Boolean>();
+		List<Boolean> result = new ArrayList<>();
 		for(int i = 0; i < grid.getGridCellCount(container, isRow); i++)
 		{
 			if(!grid.isGapCell(container, isRow, i))
@@ -532,12 +532,12 @@ public abstract class RadAbstractGridLayoutManager extends RadLayoutManager
 		return result;
 	}
 
-	private static List<RadComponent> collectComponents(final RadContainer container)
+	private static List<RadComponent> collectComponents(RadContainer container)
 	{
-		List<RadComponent> contents = new ArrayList<RadComponent>();
+		List<RadComponent> contents = new ArrayList<>();
 		for(int i = container.getComponentCount() - 1; i >= 0; i--)
 		{
-			final RadComponent component = container.getComponent(i);
+			RadComponent component = container.getComponent(i);
 			if(!(component instanceof RadHSpacer) && !(component instanceof RadVSpacer))
 			{
 				contents.add(0, component);
@@ -547,12 +547,12 @@ public abstract class RadAbstractGridLayoutManager extends RadLayoutManager
 		return contents;
 	}
 
-	public boolean canMoveComponent(RadComponent c, int rowDelta, int colDelta, final int rowSpanDelta, final int colSpanDelta)
+	public boolean canMoveComponent(RadComponent c, int rowDelta, int colDelta, int rowSpanDelta, int colSpanDelta)
 	{
-		final int newRow = getNewRow(c, rowDelta);
-		final int newCol = getNewColumn(c, colDelta);
-		final int newRowSpan = getNewRowSpan(c, rowSpanDelta);
-		final int newColSpan = getNewColSpan(c, colSpanDelta);
+		int newRow = getNewRow(c, rowDelta);
+		int newCol = getNewColumn(c, colDelta);
+		int newRowSpan = getNewRowSpan(c, rowSpanDelta);
+		int newColSpan = getNewColSpan(c, colSpanDelta);
 		if(newRow < 0 || newCol < 0 || newRowSpan < 1 || newColSpan < 1 ||
 				newRow + newRowSpan > c.getParent().getGridRowCount() ||
 				newCol + newColSpan > c.getParent().getGridColumnCount())
@@ -560,7 +560,7 @@ public abstract class RadAbstractGridLayoutManager extends RadLayoutManager
 			return false;
 		}
 		c.setDragging(true);
-		final RadComponent overlap = c.getParent().findComponentInRect(newRow, newCol, newRowSpan, newColSpan);
+		RadComponent overlap = c.getParent().findComponentInRect(newRow, newCol, newRowSpan, newColSpan);
 		c.setDragging(false);
 		if(overlap != null)
 		{
@@ -569,30 +569,30 @@ public abstract class RadAbstractGridLayoutManager extends RadLayoutManager
 		return true;
 	}
 
-	private static int getNewRow(final RadComponent c, final int rowDelta)
+	private static int getNewRow(RadComponent c, int rowDelta)
 	{
 		return FormEditingUtil.adjustForGap(c.getParent(), c.getConstraints().getRow() + rowDelta, true, rowDelta);
 	}
 
-	private static int getNewColumn(final RadComponent c, final int colDelta)
+	private static int getNewColumn(RadComponent c, int colDelta)
 	{
 		return FormEditingUtil.adjustForGap(c.getParent(), c.getConstraints().getColumn() + colDelta, false, colDelta);
 	}
 
-	private static int getNewRowSpan(final RadComponent c, final int rowSpanDelta)
+	private static int getNewRowSpan(RadComponent c, int rowSpanDelta)
 	{
 		int gapCount = c.getParent().getGridLayoutManager().getGapCellCount();
 		return c.getConstraints().getRowSpan() + rowSpanDelta * (gapCount + 1);
 	}
 
-	private static int getNewColSpan(final RadComponent c, final int colSpanDelta)
+	private static int getNewColSpan(RadComponent c, int colSpanDelta)
 	{
 		int gapCount = c.getParent().getGridLayoutManager().getGapCellCount();
 		return c.getConstraints().getColSpan() + colSpanDelta * (gapCount + 1);
 	}
 
 	@Override
-	public void moveComponent(RadComponent c, int rowDelta, int colDelta, final int rowSpanDelta, final int colSpanDelta)
+	public void moveComponent(RadComponent c, int rowDelta, int colDelta, int rowSpanDelta, int colSpanDelta)
 	{
 		GridConstraints constraints = c.getConstraints();
 		GridConstraints oldConstraints = (GridConstraints) constraints.clone();
@@ -617,9 +617,9 @@ public abstract class RadAbstractGridLayoutManager extends RadLayoutManager
 	}
 
 	@Override
-	public void removeComponentFromContainer(final RadContainer container, final RadComponent component)
+	public void removeComponentFromContainer(RadContainer container, RadComponent component)
 	{
-		final MyPropertyChangeListener listener = myListenerMap.get(component);
+		MyPropertyChangeListener listener = myListenerMap.get(component);
 		if(listener != null)
 		{
 			component.removePropertyChangeListener(listener);
@@ -637,7 +637,7 @@ public abstract class RadAbstractGridLayoutManager extends RadLayoutManager
 	{
 		private final RadComponent myComponent;
 
-		public MyPropertyChangeListener(final RadComponent component)
+		public MyPropertyChangeListener(RadComponent component)
 		{
 			myComponent = component;
 		}

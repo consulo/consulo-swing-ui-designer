@@ -45,8 +45,8 @@ public abstract class TextDifferTest extends TestCase{
     test("abba","ab1ba",2,2,"1");
   }
 
-  private static void test(final String oldText, final String newText, final int startOffset, final int endOffset, final String replacement) {
-    final GuiEditor.ReplaceInfo replaceInfo = GuiEditor.findFragmentToChange(oldText, newText);
+  private static void test(String oldText, String newText, int startOffset, int endOffset, String replacement) {
+    GuiEditor.ReplaceInfo replaceInfo = GuiEditor.findFragmentToChange(oldText, newText);
     assertEquals(startOffset, replaceInfo.getStartOffset());
     assertEquals(endOffset, replaceInfo.getEndOffset());
     assertEquals(replacement, replaceInfo.getReplacement());

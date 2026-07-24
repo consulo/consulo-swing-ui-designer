@@ -63,12 +63,12 @@ public final class CutCopyPasteSupport implements CopyProvider, CutProvider, Pas
     @NonNls
     private static final String ATTRIBUTE_PARENT_LAYOUT = "parent-layout";
 
-    public CutCopyPasteSupport(final GuiEditor uiEditor) {
+    public CutCopyPasteSupport(GuiEditor uiEditor) {
         myEditor = uiEditor;
     }
 
     @Override
-    public boolean isCopyEnabled(@Nonnull final DataContext dataContext) {
+    public boolean isCopyEnabled(@Nonnull DataContext dataContext) {
         return FormEditingUtil.getSelectedComponents(myEditor).size() > 0 && !myEditor.getInplaceEditingLayer().isEditing();
     }
 
@@ -78,14 +78,14 @@ public final class CutCopyPasteSupport implements CopyProvider, CutProvider, Pas
     }
 
     @Override
-    public void performCopy(@Nonnull final DataContext dataContext) {
+    public void performCopy(@Nonnull DataContext dataContext) {
         doCopy();
     }
 
     private boolean doCopy() {
-        final ArrayList<RadComponent> selectedComponents = FormEditingUtil.getSelectedComponents(myEditor);
-        final SerializedComponentData data = new SerializedComponentData(serializeForCopy(myEditor, selectedComponents));
-        final SimpleTransferable transferable = new SimpleTransferable<SerializedComponentData>(data, SerializedComponentData.class, ourDataFlavor);
+        ArrayList<RadComponent> selectedComponents = FormEditingUtil.getSelectedComponents(myEditor);
+        SerializedComponentData data = new SerializedComponentData(serializeForCopy(myEditor, selectedComponents));
+        SimpleTransferable transferable = new SimpleTransferable<>(data, SerializedComponentData.class, ourDataFlavor);
         try {
             CopyPasteManager.getInstance().setContents(transferable);
             return true;
@@ -97,7 +97,7 @@ public final class CutCopyPasteSupport implements CopyProvider, CutProvider, Pas
     }
 
     @Override
-    public boolean isCutEnabled(@Nonnull final DataContext dataContext) {
+    public boolean isCutEnabled(@Nonnull DataContext dataContext) {
         return isCopyEnabled(dataContext) && FormEditingUtil.canDeleteSelection(myEditor);
     }
 
@@ -107,7 +107,7 @@ public final class CutCopyPasteSupport implements CopyProvider, CutProvider, Pas
     }
 
     @Override
-    public void performCut(@Nonnull final DataContext dataContext) {
+    public void performCut(@Nonnull DataContext dataContext) {
         if (doCopy() && myEditor.ensureEditable()) {
             CommandProcessor.getInstance().executeCommand(myEditor.getProject(), new Runnable() {
                 @Override
@@ -119,33 +119,33 @@ public final class CutCopyPasteSupport implements CopyProvider, CutProvider, Pas
     }
 
     @Override
-    public boolean isPastePossible(@Nonnull final DataContext dataContext) {
+    public boolean isPastePossible(@Nonnull DataContext dataContext) {
         return isPasteEnabled(dataContext);
     }
 
     @Override
-    public boolean isPasteEnabled(@Nonnull final DataContext dataContext) {
+    public boolean isPasteEnabled(@Nonnull DataContext dataContext) {
         return getSerializedComponents() != null && !myEditor.getInplaceEditingLayer().isEditing();
     }
 
     @Override
-    public void performPaste(@Nonnull final DataContext dataContext) {
-        final String serializedComponents = getSerializedComponents();
+    public void performPaste(@Nonnull DataContext dataContext) {
+        String serializedComponents = getSerializedComponents();
         if (serializedComponents == null) {
             return;
         }
 
-        final ArrayList<RadComponent> componentsToPaste = new ArrayList<RadComponent>();
-        final IntList xs = IntLists.newArrayList();
-        final IntList ys = IntLists.newArrayList();
+        ArrayList<RadComponent> componentsToPaste = new ArrayList<>();
+        IntList xs = IntLists.newArrayList();
+        IntList ys = IntLists.newArrayList();
         loadComponentsToPaste(myEditor, serializedComponents, xs, ys, componentsToPaste);
 
         myEditor.getMainProcessor().startPasteProcessor(componentsToPaste, xs, ys);
     }
 
     @Nullable
-    private static ArrayList<RadComponent> deserializeComponents(final GuiEditor editor, final String serializedComponents) {
-        ArrayList<RadComponent> components = new ArrayList<RadComponent>();
+    private static ArrayList<RadComponent> deserializeComponents(GuiEditor editor, String serializedComponents) {
+        ArrayList<RadComponent> components = new ArrayList<>();
         IntList xs = IntLists.newArrayList();
         IntList ys = IntLists.newArrayList();
         if (!loadComponentsToPaste(editor, serializedComponents, xs, ys, components)) {
@@ -156,41 +156,41 @@ public final class CutCopyPasteSupport implements CopyProvider, CutProvider, Pas
 
     private static boolean loadComponentsToPaste(
         final GuiEditor editor,
-        final String serializedComponents,
-        final IntList xs,
-        final IntList ys,
-        final ArrayList<RadComponent> componentsToPaste) {
-        final PsiPropertiesProvider provider = new PsiPropertiesProvider(editor.getModule());
+        String serializedComponents,
+        IntList xs,
+        IntList ys,
+        ArrayList<RadComponent> componentsToPaste) {
+        PsiPropertiesProvider provider = new PsiPropertiesProvider(editor.getModule());
 
         try {
             //noinspection HardCodedStringLiteral
-            final Document document = SAX_BUILDER.build(new StringReader(serializedComponents), "UTF-8");
+            Document document = SAX_BUILDER.build(new StringReader(serializedComponents), "UTF-8");
 
-            final Element rootElement = document.getRootElement();
+            Element rootElement = document.getRootElement();
             if (!rootElement.getName().equals(ELEMENT_SERIALIZED)) {
                 return false;
             }
 
-            final List children = rootElement.getChildren();
-            for (final Object aChildren : children) {
-                final Element e = (Element) aChildren;
+            List children = rootElement.getChildren();
+            for (Object aChildren : children) {
+                Element e = (Element) aChildren;
 
                 // we need to add component to a container in order to read them
-                final LwContainer container = new LwContainer(JPanel.class.getName());
+                LwContainer container = new LwContainer(JPanel.class.getName());
 
-                final String parentLayout = e.getAttributeValue(ATTRIBUTE_PARENT_LAYOUT);
+                String parentLayout = e.getAttributeValue(ATTRIBUTE_PARENT_LAYOUT);
                 if (parentLayout != null) {
                     container.setLayoutManager(parentLayout);
                 }
 
-                final int x = Integer.parseInt(e.getAttributeValue(ATTRIBUTE_X));
-                final int y = Integer.parseInt(e.getAttributeValue(ATTRIBUTE_Y));
+                int x = Integer.parseInt(e.getAttributeValue(ATTRIBUTE_X));
+                int y = Integer.parseInt(e.getAttributeValue(ATTRIBUTE_Y));
 
                 xs.add(x);
                 ys.add(y);
 
-                final Element componentElement = (Element) e.getChildren().get(0);
-                final LwComponent lwComponent = LwContainer.createComponentFromTag(componentElement);
+                Element componentElement = (Element) e.getChildren().get(0);
+                LwComponent lwComponent = LwContainer.createComponentFromTag(componentElement);
 
                 container.addComponent(lwComponent);
 
@@ -199,7 +199,7 @@ public final class CutCopyPasteSupport implements CopyProvider, CutProvider, Pas
                 // pasted components should have no bindings
                 FormEditingUtil.iterate(lwComponent, new FormEditingUtil.ComponentVisitor<LwComponent>() {
                     @Override
-                    public boolean visit(final LwComponent c) {
+                    public boolean visit(LwComponent c) {
                         if (c.getBinding() != null && FormEditingUtil.findComponentWithBinding(editor.getRootContainer(), c.getBinding()) != null) {
                             c.setBinding(null);
                         }
@@ -208,8 +208,8 @@ public final class CutCopyPasteSupport implements CopyProvider, CutProvider, Pas
                     }
                 });
 
-                final ClassLoader loader = LoaderFactory.getInstance(editor.getProject()).getLoader(editor.getFile());
-                final RadComponent radComponent = XmlReader.createComponent(editor, lwComponent, loader, editor.getStringDescriptorLocale());
+                ClassLoader loader = LoaderFactory.getInstance(editor.getProject()).getLoader(editor.getFile());
+                RadComponent radComponent = XmlReader.createComponent(editor, lwComponent, loader, editor.getStringDescriptorLocale());
                 componentsToPaste.add(radComponent);
             }
         }
@@ -222,12 +222,12 @@ public final class CutCopyPasteSupport implements CopyProvider, CutProvider, Pas
     @Nullable
     private static String getSerializedComponents() {
         try {
-            final Object transferData = CopyPasteManager.getInstance().getContents(ourDataFlavor);
+            Object transferData = CopyPasteManager.getInstance().getContents(ourDataFlavor);
             if (!(transferData instanceof SerializedComponentData)) {
                 return null;
             }
 
-            final SerializedComponentData dataProxy = (SerializedComponentData) transferData;
+            SerializedComponentData dataProxy = (SerializedComponentData) transferData;
             return dataProxy.getSerializedComponents();
         }
         catch (Exception e) {
@@ -242,13 +242,13 @@ public final class CutCopyPasteSupport implements CopyProvider, CutProvider, Pas
         return deserializeComponents(editor, serializeForCopy(editor, components));
     }
 
-    private static String serializeForCopy(final GuiEditor editor, final List<RadComponent> components) {
-        final XmlWriter writer = new XmlWriter();
+    private static String serializeForCopy(GuiEditor editor, List<RadComponent> components) {
+        XmlWriter writer = new XmlWriter();
 
         writer.startElement(ELEMENT_SERIALIZED, Utils.FORM_NAMESPACE);
 
-        for (final RadComponent component : components) {
-            final Point shift;
+        for (RadComponent component : components) {
+            Point shift;
             if (component.getParent() != null) {
                 shift = SwingUtilities.convertPoint(component.getParent().getDelegee(), component.getX(), component.getY(),
                     editor.getRootContainer().getDelegee());
@@ -263,7 +263,7 @@ public final class CutCopyPasteSupport implements CopyProvider, CutProvider, Pas
             writer.addAttribute(ATTRIBUTE_X, shift.x);
             writer.addAttribute(ATTRIBUTE_Y, shift.y);
             if (component.getParent() != null) {
-                final String parentLayout = component.getParent().getLayoutManager().getName();
+                String parentLayout = component.getParent().getLayoutManager().getName();
                 if (parentLayout != null) {
                     writer.addAttribute(ATTRIBUTE_PARENT_LAYOUT, parentLayout);
                 }

@@ -46,7 +46,7 @@ public class DuplicateComponentsAction extends AbstractGuiEditorAction {
   }
 
   @Override
-  protected void actionPerformed(final GuiEditor editor, final List<RadComponent> selection, final AnActionEvent e) {
+  protected void actionPerformed(GuiEditor editor, List<RadComponent> selection, AnActionEvent e) {
     FormEditingUtil.remapToActionTargets(selection);
     RadContainer parent = FormEditingUtil.getSelectionParent(selection);
     assert parent != null;
@@ -58,7 +58,7 @@ public class DuplicateComponentsAction extends AbstractGuiEditorAction {
       incrementRow = false;
     }
     for(RadComponent c: selection) {
-      final int row = c.getConstraints().getCell(incrementRow);
+      int row = c.getConstraints().getCell(incrementRow);
       int rowSpan = c.getConstraints().getSpan(incrementRow);
       int insertIndex = parent.indexOfComponent(c);
       if (parent.getLayoutManager().isGrid()) {
@@ -84,19 +84,19 @@ public class DuplicateComponentsAction extends AbstractGuiEditorAction {
     FormEditingUtil.selectComponents(editor, duplicates);
   }
 
-  private static void fillDuplicateMap(Map<RadComponent, RadComponent> duplicates, final RadComponent c, final RadComponent copy) {
+  private static void fillDuplicateMap(Map<RadComponent, RadComponent> duplicates, RadComponent c, RadComponent copy) {
     duplicates.put(c, copy);
     if (c instanceof RadContainer) {
       LOG.assertTrue(copy instanceof RadContainer);
-      final RadContainer container = (RadContainer)c;
-      final RadContainer containerCopy = (RadContainer)copy;
+      RadContainer container = (RadContainer)c;
+      RadContainer containerCopy = (RadContainer)copy;
       for(int i=0; i<container.getComponentCount(); i++) {
         fillDuplicateMap(duplicates, container.getComponent(i), containerCopy.getComponent(i));
       }
     }
   }
 
-  private static void adjustDuplicates(final Map<RadComponent, RadComponent> duplicates) {
+  private static void adjustDuplicates(Map<RadComponent, RadComponent> duplicates) {
     for(RadComponent c: duplicates.keySet()) {
       RadComponent copy = duplicates.get(c);
       if (c.getBinding() != null) {
@@ -106,7 +106,7 @@ public class DuplicateComponentsAction extends AbstractGuiEditorAction {
       }
       for(IProperty prop: copy.getModifiedProperties()) {
         if (prop instanceof IntroComponentProperty) {
-          final IntroComponentProperty componentProperty = (IntroComponentProperty)prop;
+          IntroComponentProperty componentProperty = (IntroComponentProperty)prop;
           String copyValue = componentProperty.getValue(copy);
           for(RadComponent original: duplicates.keySet()) {
             if (original.getId().equals(copyValue)) {
@@ -118,8 +118,8 @@ public class DuplicateComponentsAction extends AbstractGuiEditorAction {
     }
   }
 
-  private static boolean isSpaceBelowEmpty(final RadComponent component, boolean incrementRow) {
-    final GridConstraints constraints = component.getConstraints();
+  private static boolean isSpaceBelowEmpty(RadComponent component, boolean incrementRow) {
+    GridConstraints constraints = component.getConstraints();
     int startRow = constraints.getCell(incrementRow) + constraints.getSpan(incrementRow);
     int endRow = constraints.getCell(incrementRow) + constraints.getSpan(incrementRow)*2 +
                  component.getParent().getGridLayoutManager().getGapCellCount();
@@ -138,9 +138,9 @@ public class DuplicateComponentsAction extends AbstractGuiEditorAction {
 
   @Override
   @RequiredUIAccess
-  protected void update(@Nonnull GuiEditor editor, List<RadComponent> selection, final AnActionEvent e) {
+  protected void update(@Nonnull GuiEditor editor, List<RadComponent> selection, AnActionEvent e) {
     FormEditingUtil.remapToActionTargets(selection);
-    final RadContainer parent = FormEditingUtil.getSelectionParent(selection);
+    RadContainer parent = FormEditingUtil.getSelectionParent(selection);
     e.getPresentation().setEnabled(parent != null && (parent.getLayoutManager().isGrid() || parent.getLayoutManager().isIndexed()));
     // The action is enabled in any of the following cases:
     // 1) a single component is selected;
@@ -151,11 +151,11 @@ public class DuplicateComponentsAction extends AbstractGuiEditorAction {
     }
   }
 
-  private static boolean canDuplicate(final List<RadComponent> selection, final boolean incrementRow) {
+  private static boolean canDuplicate(List<RadComponent> selection, boolean incrementRow) {
     int aRow = selection.get(0).getConstraints().getCell(incrementRow);
     int aRowSpan = selection.get(0).getConstraints().getSpan(incrementRow);
     for(int i=1; i<selection.size(); i++) {
-      final RadComponent c = selection.get(i);
+      RadComponent c = selection.get(i);
       if (c.getConstraints().getSpan(incrementRow) > 1 || aRowSpan > 1) {
         if (c.getConstraints().getCell(incrementRow) != aRow || c.getConstraints().getSpan(incrementRow) != aRowSpan) {
           return false;

@@ -52,8 +52,8 @@ public class RadGridLayoutManager extends RadAbstractGridLayoutManager
 	}
 
 	@Override
-	protected void changeLayoutFromGrid(final RadContainer container, final List<RadComponent> contents, final List<Boolean> canRowsGrow,
-										final List<Boolean> canColumnsGrow)
+	protected void changeLayoutFromGrid(RadContainer container, List<RadComponent> contents, List<Boolean> canRowsGrow,
+                                        List<Boolean> canColumnsGrow)
 	{
 		int rowCount = Math.max(1, canRowsGrow.size());
 		int columnCount = Math.max(1, canColumnsGrow.size());
@@ -61,12 +61,12 @@ public class RadGridLayoutManager extends RadAbstractGridLayoutManager
 	}
 
 	@Override
-	protected void changeLayoutFromIndexed(final RadContainer container, final List<RadComponent> components)
+	protected void changeLayoutFromIndexed(RadContainer container, List<RadComponent> components)
 	{
 		container.setLayoutManager(this, new GridLayoutManager(1, Math.max(1, components.size())));
 	}
 
-	public void writeLayout(final XmlWriter writer, final RadContainer radContainer)
+	public void writeLayout(XmlWriter writer, RadContainer radContainer)
 	{
 		GridLayoutManager layout = (GridLayoutManager) radContainer.getLayout();
 
@@ -79,7 +79,7 @@ public class RadGridLayoutManager extends RadAbstractGridLayoutManager
 		RadXYLayoutManager.INSTANCE.writeLayout(writer, radContainer);
 	}
 
-	public void addComponentToContainer(final RadContainer container, final RadComponent component, final int index)
+	public void addComponentToContainer(RadContainer container, RadComponent component, int index)
 	{
 		super.addComponentToContainer(container, component, index);
 		container.getDelegee().add(component.getDelegee(), component.getConstraints());
@@ -89,8 +89,8 @@ public class RadGridLayoutManager extends RadAbstractGridLayoutManager
 	protected void updateConstraints(RadComponent component)
 	{
 		GridLayoutManager layout = (GridLayoutManager) component.getParent().getLayout();
-		final GridConstraints radConstraints = component.getConstraints();
-		final GridConstraints delegeeConstraints = layout.getConstraintsForComponent(component.getDelegee());
+		GridConstraints radConstraints = component.getConstraints();
+		GridConstraints delegeeConstraints = layout.getConstraintsForComponent(component.getDelegee());
 		if(radConstraints != delegeeConstraints)
 		{
 			delegeeConstraints.restore(radConstraints);
@@ -98,13 +98,13 @@ public class RadGridLayoutManager extends RadAbstractGridLayoutManager
 		super.updateConstraints(component);
 	}
 
-	public void writeChildConstraints(final XmlWriter writer, final RadComponent child)
+	public void writeChildConstraints(XmlWriter writer, RadComponent child)
 	{
 		writeGridConstraints(writer, child);
 	}
 
 	@Override
-	public Property[] getContainerProperties(final Project project)
+	public Property[] getContainerProperties(Project project)
 	{
 		return new Property[]{
 				MarginProperty.getInstance(project),
@@ -116,7 +116,7 @@ public class RadGridLayoutManager extends RadAbstractGridLayoutManager
 	}
 
 	@Override
-	public Property[] getComponentProperties(final Project project, final RadComponent component)
+	public Property[] getComponentProperties(Project project, RadComponent component)
 	{
 		return new Property[]{
 				HSizePolicyProperty.getInstance(project),
@@ -194,7 +194,7 @@ public class RadGridLayoutManager extends RadAbstractGridLayoutManager
 	@Override
 	public boolean canCellGrow(RadContainer container, boolean isRow, int cellIndex)
 	{
-		final GridLayoutManager gridLayoutManager = ((GridLayoutManager) container.getLayout());
+		GridLayoutManager gridLayoutManager = ((GridLayoutManager) container.getLayout());
 		int maxSizePolicy = 0;
 		for(int i = 0; i < gridLayoutManager.getCellCount(isRow); i++)
 		{
@@ -203,7 +203,7 @@ public class RadGridLayoutManager extends RadAbstractGridLayoutManager
 		return gridLayoutManager.getCellSizePolicy(isRow, cellIndex) == maxSizePolicy;
 	}
 
-	public void processCellResized(RadContainer container, final boolean isRow, final int cell, final int newSize)
+	public void processCellResized(RadContainer container, boolean isRow, int cell, int newSize)
 	{
 		int cellCount = isRow ? container.getGridRowCount() : container.getGridColumnCount();
 		if(container.getParent().isXY() && cell == cellCount - 1)
@@ -240,9 +240,9 @@ public class RadGridLayoutManager extends RadAbstractGridLayoutManager
 		}
 	}
 
-	private static void processRootContainerResize(final RadContainer container, final boolean isRow, final int newSize)
+	private static void processRootContainerResize(RadContainer container, boolean isRow, int newSize)
 	{
-		final JComponent parentDelegee = container.getDelegee();
+		JComponent parentDelegee = container.getDelegee();
 		Dimension containerSize = parentDelegee.getSize();
 		if(isRow)
 		{
@@ -256,7 +256,7 @@ public class RadGridLayoutManager extends RadAbstractGridLayoutManager
 		parentDelegee.revalidate();
 	}
 
-	public void copyGridSection(final RadContainer source, final RadContainer destination, final Rectangle rc)
+	public void copyGridSection(RadContainer source, RadContainer destination, Rectangle rc)
 	{
 		destination.setLayout(new GridLayoutManager(rc.height, rc.width));
 	}
@@ -265,7 +265,7 @@ public class RadGridLayoutManager extends RadAbstractGridLayoutManager
 	public LayoutManager copyLayout(LayoutManager layout, int rowDelta, int columnDelta)
 	{
 		GridLayoutManager oldLayout = (GridLayoutManager) layout;
-		final GridLayoutManager newLayout = new GridLayoutManager(oldLayout.getRowCount() + rowDelta, oldLayout.getColumnCount() + columnDelta);
+		GridLayoutManager newLayout = new GridLayoutManager(oldLayout.getRowCount() + rowDelta, oldLayout.getColumnCount() + columnDelta);
 		newLayout.setMargin(oldLayout.getMargin());
 		newLayout.setHGap(oldLayout.getHGap());
 		newLayout.setVGap(oldLayout.getVGap());

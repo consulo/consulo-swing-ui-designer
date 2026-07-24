@@ -46,10 +46,10 @@ public final class DataBindingWizardAction extends AnAction implements AnActionW
 {
 	private static final Logger LOG = Logger.getInstance(DataBindingWizardAction.class);
 
-	public void actionPerformed(final AnActionEvent e)
+	public void actionPerformed(AnActionEvent e)
 	{
-		final Project project;
-		final VirtualFile formFile;
+		Project project;
+		VirtualFile formFile;
 		GuiEditor editor = FormEditingUtil.getActiveEditor(e.getDataContext());
 		assert editor != null;
 		project = editor.getProject();
@@ -57,15 +57,15 @@ public final class DataBindingWizardAction extends AnAction implements AnActionW
 
 		try
 		{
-			final WizardData wizardData = new WizardData(project, formFile);
+			WizardData wizardData = new WizardData(project, formFile);
 
 
-			final Module module = ModuleUtilCore.findModuleForFile(formFile, wizardData.myProject);
+			Module module = ModuleUtilCore.findModuleForFile(formFile, wizardData.myProject);
 			LOG.assertTrue(module != null);
 
-			final LwRootContainer[] rootContainer = new LwRootContainer[1];
+			LwRootContainer[] rootContainer = new LwRootContainer[1];
 			Generator.exposeForm(wizardData.myProject, formFile, rootContainer);
-			final String classToBind = rootContainer[0].getClassToBind();
+			String classToBind = rootContainer[0].getClassToBind();
 			if(classToBind == null)
 			{
 				Messages.showInfoMessage(
@@ -76,7 +76,7 @@ public final class DataBindingWizardAction extends AnAction implements AnActionW
 				return;
 			}
 
-			final PsiClass boundClass = FormEditingUtil.findClassToBind(module, classToBind);
+			PsiClass boundClass = FormEditingUtil.findClassToBind(module, classToBind);
 			if(boundClass == null)
 			{
 				Messages.showErrorDialog(
@@ -101,12 +101,12 @@ public final class DataBindingWizardAction extends AnAction implements AnActionW
 
 			if(!wizardData.myBindToNewBean)
 			{
-				final String[] variants = new String[]{
+				String[] variants = new String[]{
 						UIDesignerBundle.message("action.alter.data.binding"),
 						UIDesignerBundle.message("action.bind.to.another.bean"),
 						CommonBundle.getCancelButtonText()
 				};
-				final int result = Messages.showYesNoCancelDialog(
+				int result = Messages.showYesNoCancelDialog(
 						project,
 						MessageFormat.format(UIDesignerBundle.message("info.data.binding.regenerate"),
 								wizardData.myBeanClass.getQualifiedName()),
@@ -128,7 +128,7 @@ public final class DataBindingWizardAction extends AnAction implements AnActionW
 				}
 			}
 
-			final DataBindingWizard wizard = new DataBindingWizard(project, formFile, wizardData);
+			DataBindingWizard wizard = new DataBindingWizard(project, formFile, wizardData);
 			wizard.show();
 		}
 		catch(Generator.MyException exc)
@@ -142,13 +142,13 @@ public final class DataBindingWizardAction extends AnAction implements AnActionW
 	}
 
 	@Override
-	public void update(final AnActionEvent e)
+	public void update(AnActionEvent e)
 	{
 		e.getPresentation().setVisible(FormEditingUtil.getActiveEditor(e.getDataContext()) != null);
 	}
 
 
-	private static boolean hasBinding(final LwComponent component)
+	private static boolean hasBinding(LwComponent component)
 	{
 		if(component.getBinding() != null)
 		{
@@ -157,7 +157,7 @@ public final class DataBindingWizardAction extends AnAction implements AnActionW
 
 		if(component instanceof LwContainer)
 		{
-			final LwContainer container = (LwContainer) component;
+			LwContainer container = (LwContainer) component;
 			for(int i = 0; i < container.getComponentCount(); i++)
 			{
 				if(hasBinding((LwComponent) container.getComponent(i)))

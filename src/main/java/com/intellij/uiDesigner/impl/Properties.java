@@ -68,11 +68,11 @@ public final class Properties implements PersistentStateComponent<Element>
 	/**
 	 * @return it is possible that properties do not exist in class; returned values are ones specified in config. Never null
 	 */
-	public boolean isExpertProperty(final Module module, @Nonnull final Class aClass, final String propertyName)
+	public boolean isExpertProperty(Module module, @Nonnull Class aClass, String propertyName)
 	{
 		for(Class c = aClass; c != null; c = c.getSuperclass())
 		{
-			final HashSet<String> properties = myClass2ExpertProperties.get(c.getName());
+			HashSet<String> properties = myClass2ExpertProperties.get(c.getName());
 			if(properties != null && properties.contains(propertyName))
 			{
 				return true;
@@ -81,7 +81,7 @@ public final class Properties implements PersistentStateComponent<Element>
 		return isPropertyDeprecated(module, aClass, propertyName);
 	}
 
-	public boolean isPropertyDeprecated(final Module module, final Class aClass, final String propertyName)
+	public boolean isPropertyDeprecated(Module module, Class aClass, String propertyName)
 	{
 		// TODO[yole]: correct module-dependent caching
 		Set<String> deprecated = myClass2DeprecatedProperties.get(aClass.getName());
@@ -110,11 +110,11 @@ public final class Properties implements PersistentStateComponent<Element>
 	 * @return it is possible that property does not exist in class; returned value is one specified in config
 	 */
 	@Nullable
-	public String getInplaceProperty(final Class aClass)
+	public String getInplaceProperty(Class aClass)
 	{
 		for(Class c = aClass; c != null; c = c.getSuperclass())
 		{
-			final String property = myClass2InplaceProperty.get(c.getName());
+			String property = myClass2InplaceProperty.get(c.getName());
 			if(property != null)
 			{
 				return property;
@@ -124,11 +124,11 @@ public final class Properties implements PersistentStateComponent<Element>
 	}
 
 	@Nullable
-	public IntEnumEditor.Pair[] getEnumPairs(final Class aClass, final String name)
+	public IntEnumEditor.Pair[] getEnumPairs(Class aClass, String name)
 	{
 		for(Class c = aClass; c != null; c = c.getSuperclass())
 		{
-			final Map<String, IntEnumEditor.Pair[]> map = myClass2EnumProperties.get(c.getName());
+			Map<String, IntEnumEditor.Pair[]> map = myClass2EnumProperties.get(c.getName());
 			if(map != null)
 			{
 				return map.get(name);
@@ -140,20 +140,20 @@ public final class Properties implements PersistentStateComponent<Element>
 	@Override
 	public void loadState(@Nonnull Element element)
 	{
-		for(final Element classElement : element.getChildren("class"))
+		for(Element classElement : element.getChildren("class"))
 		{
-			final String className = LwXmlReader.getRequiredString(classElement, "name");
+			String className = LwXmlReader.getRequiredString(classElement, "name");
 
 			// Read "expert" properties
-			final Element expertPropertiesElement = classElement.getChild("expert-properties");
+			Element expertPropertiesElement = classElement.getChild("expert-properties");
 			if(expertPropertiesElement != null)
 			{
-				final HashSet<String> expertProperties = new HashSet<>();
+				HashSet<String> expertProperties = new HashSet<>();
 
-				for(final Object o : expertPropertiesElement.getChildren("property"))
+				for(Object o : expertPropertiesElement.getChildren("property"))
 				{
-					final Element e = (Element) o;
-					final String name = LwXmlReader.getRequiredString(e, "name");
+					Element e = (Element) o;
+					String name = LwXmlReader.getRequiredString(e, "name");
 					expertProperties.add(name);
 				}
 
@@ -161,13 +161,13 @@ public final class Properties implements PersistentStateComponent<Element>
 			}
 
 			// Read "inplace" property. This property is optional
-			final Element inplacePropertyElement = classElement.getChild("inplace-property");
+			Element inplacePropertyElement = classElement.getChild("inplace-property");
 			if(inplacePropertyElement != null)
 			{
 				myClass2InplaceProperty.put(className, LwXmlReader.getRequiredString(inplacePropertyElement, "name"));
 			}
 
-			final Element enumPropertyElement = classElement.getChild("enum-properties");
+			Element enumPropertyElement = classElement.getChild("enum-properties");
 			if(enumPropertyElement != null)
 			{
 				loadEnumProperties(className, enumPropertyElement);
@@ -176,14 +176,14 @@ public final class Properties implements PersistentStateComponent<Element>
 	}
 
 	@SuppressWarnings({"HardCodedStringLiteral"})
-	private void loadEnumProperties(final String className, final Element enumPropertyElement)
+	private void loadEnumProperties(String className, Element enumPropertyElement)
 	{
 		Map<String, IntEnumEditor.Pair[]> map = new HashMap<>();
-		for(final Object o : enumPropertyElement.getChildren("property"))
+		for(Object o : enumPropertyElement.getChildren("property"))
 		{
-			final Element e = (Element) o;
-			final String name = LwXmlReader.getRequiredString(e, "name");
-			final List list = e.getChildren("constant");
+			Element e = (Element) o;
+			String name = LwXmlReader.getRequiredString(e, "name");
+			List list = e.getChildren("constant");
 			IntEnumEditor.Pair[] pairs = new IntEnumEditor.Pair[list.size()];
 			for(int i = 0; i < list.size(); i++)
 			{

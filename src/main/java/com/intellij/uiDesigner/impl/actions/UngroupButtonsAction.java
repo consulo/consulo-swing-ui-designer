@@ -35,9 +35,9 @@ public class UngroupButtonsAction extends AbstractGuiEditorAction {
     super(true);
   }
 
-  protected void actionPerformed(final GuiEditor editor, final List<RadComponent> selection, final AnActionEvent e) {
+  protected void actionPerformed(GuiEditor editor, List<RadComponent> selection, AnActionEvent e) {
     if (selection.size() == 1) {
-      final RadComponent component = selection.get(0);
+      RadComponent component = selection.get(0);
       IButtonGroup group = FormEditingUtil.findGroupForComponent(editor.getRootContainer(), component);
       editor.getRootContainer().deleteGroup((RadButtonGroup) group);
     }
@@ -48,21 +48,21 @@ public class UngroupButtonsAction extends AbstractGuiEditorAction {
     }
   }
 
-  protected void update(@Nonnull final GuiEditor editor, final ArrayList<RadComponent> selection, final AnActionEvent e) {
+  protected void update(@Nonnull GuiEditor editor, ArrayList<RadComponent> selection, AnActionEvent e) {
     boolean visible = GroupButtonsAction.allButtons(selection);
     e.getPresentation().setVisible(visible);
     e.getPresentation().setEnabled(visible && canUngroup(editor, selection));
   }
 
-  private static boolean canUngroup(final GuiEditor editor, final ArrayList<RadComponent> selectedComponents) {
+  private static boolean canUngroup(GuiEditor editor, ArrayList<RadComponent> selectedComponents) {
     if (selectedComponents.size() < 2) {
       return selectedComponents.size() == 1;
     }
     return isSameGroup(editor, selectedComponents);
   }
 
-  public static boolean isSameGroup(final GuiEditor editor, final ArrayList<RadComponent> selectedComponents) {
-    final RadRootContainer rootContainer = editor.getRootContainer();
+  public static boolean isSameGroup(GuiEditor editor, ArrayList<RadComponent> selectedComponents) {
+    RadRootContainer rootContainer = editor.getRootContainer();
     IButtonGroup group = FormEditingUtil.findGroupForComponent(rootContainer, selectedComponents.get(0));
     if (group == null) {
       return false;

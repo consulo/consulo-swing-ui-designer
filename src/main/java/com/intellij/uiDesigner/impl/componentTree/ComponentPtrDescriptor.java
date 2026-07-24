@@ -36,7 +36,7 @@ final class ComponentPtrDescriptor extends NodeDescriptor<ComponentPtr>
 	private String myBinding;
 	private String myTitle;
 
-	public ComponentPtrDescriptor(@Nonnull final NodeDescriptor parentDescriptor, @Nonnull final ComponentPtr ptr)
+	public ComponentPtrDescriptor(@Nonnull NodeDescriptor parentDescriptor, @Nonnull ComponentPtr ptr)
 	{
 		super(parentDescriptor);
 
@@ -52,9 +52,9 @@ final class ComponentPtrDescriptor extends NodeDescriptor<ComponentPtr>
 			return true;
 		}
 
-		final String oldBinding = myBinding;
-		final String oldTitle = myTitle;
-		final RadComponent component = myPtr.getComponent();
+		String oldBinding = myBinding;
+		String oldTitle = myTitle;
+		RadComponent component = myPtr.getComponent();
 		if(component.getModule().isDisposed())
 		{
 			return false;

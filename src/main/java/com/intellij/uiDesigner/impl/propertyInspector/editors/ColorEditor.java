@@ -144,7 +144,7 @@ public class ColorEditor extends PropertyEditor<ColorDescriptor>
 			return myColorChooser;
 		}
 
-		private void selectTabForColor(@Nullable final ColorDescriptor value)
+		private void selectTabForColor(@Nullable ColorDescriptor value)
 		{
 			String tabName;
 
@@ -165,10 +165,10 @@ public class ColorEditor extends PropertyEditor<ColorDescriptor>
 				return;
 			}
 
-			final ColorChooserUI ui = myColorChooser.getUI();
+			ColorChooserUI ui = myColorChooser.getUI();
 			try
 			{
-				final Field field = ui.getClass().getDeclaredField("tabbedPane");
+				Field field = ui.getClass().getDeclaredField("tabbedPane");
 				field.setAccessible(true);
 				JTabbedPane tabbedPane = (JTabbedPane) field.get(ui);
 				for(int i = 0; i < tabbedPane.getTabCount(); i++)
@@ -203,7 +203,7 @@ public class ColorEditor extends PropertyEditor<ColorDescriptor>
 			return result;
 		}
 
-		private List<ColorDescriptor> collectColorFields(final Class aClass, final boolean isSystem)
+		private List<ColorDescriptor> collectColorFields(Class aClass, boolean isSystem)
 		{
 			List<ColorDescriptor> result = new ArrayList<>();
 			Field[] colorFields = aClass.getDeclaredFields();
@@ -213,7 +213,7 @@ public class ColorEditor extends PropertyEditor<ColorDescriptor>
 						Color.class.isAssignableFrom(field.getType()) &&
 						Character.isLowerCase(field.getName().charAt(0)))
 				{
-					final ColorDescriptor color = isSystem
+					ColorDescriptor color = isSystem
 							? ColorDescriptor.fromSystemColor(field.getName())
 							: ColorDescriptor.fromAWTColor(field.getName());
 					result.add(color);
@@ -222,7 +222,7 @@ public class ColorEditor extends PropertyEditor<ColorDescriptor>
 			return result;
 		}
 
-		public void setSelectedValue(@Nonnull final ColorDescriptor value)
+		public void setSelectedValue(@Nonnull ColorDescriptor value)
 		{
 			myColorChooser.setColor(new ColorDescriptorWrapper(value));
 			selectTabForColor(value);
@@ -230,7 +230,7 @@ public class ColorEditor extends PropertyEditor<ColorDescriptor>
 
 		public ColorDescriptor getSelectedValue()
 		{
-			final Color color = myColorChooser.getColor();
+			Color color = myColorChooser.getColor();
 			if(color instanceof ColorDescriptorWrapper)
 			{
 				return ((ColorDescriptorWrapper) color).getDescriptor();
@@ -245,7 +245,7 @@ public class ColorEditor extends PropertyEditor<ColorDescriptor>
 		private final ColorDescriptor[] myColorDescriptors;
 		private JList myDescriptorList;
 
-		public MyDescriptorChooserPanel(final String displayName, List<ColorDescriptor> colorDescriptorList)
+		public MyDescriptorChooserPanel(String displayName, List<ColorDescriptor> colorDescriptorList)
 		{
 			myDisplayName = displayName;
 

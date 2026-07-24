@@ -33,10 +33,10 @@ public class RadSwingGridLayoutManager extends RadGridLayoutManager {
   private int myLastColumn = 0;
 
   @Override
-  public void createSnapshotLayout(final SnapshotContext context,
-                                   final JComponent parent,
-                                   final RadContainer container,
-                                   final LayoutManager layout) {
+  public void createSnapshotLayout(SnapshotContext context,
+                                   JComponent parent,
+                                   RadContainer container,
+                                   LayoutManager layout) {
     GridLayout gridLayout = (GridLayout) layout;
 
     int ncomponents = parent.getComponentCount();
@@ -57,10 +57,10 @@ public class RadSwingGridLayoutManager extends RadGridLayoutManager {
 
 
   @Override
-  public void addSnapshotComponent(final JComponent parent,
-                                   final JComponent child,
-                                   final RadContainer container,
-                                   final RadComponent component) {
+  public void addSnapshotComponent(JComponent parent,
+                                   JComponent child,
+                                   RadContainer container,
+                                   RadComponent component) {
     GridLayoutManager grid = (GridLayoutManager) container.getLayout();
     component.getConstraints().setRow(myLastRow);
     component.getConstraints().setColumn(myLastColumn);

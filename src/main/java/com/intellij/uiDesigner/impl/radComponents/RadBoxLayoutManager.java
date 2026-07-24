@@ -33,10 +33,10 @@ public class RadBoxLayoutManager extends RadGridLayoutManager {
   private int myComponentIndex = 0;
 
   @Override
-  public void createSnapshotLayout(final SnapshotContext context,
-                                   final JComponent parent,
-                                   final RadContainer container,
-                                   final LayoutManager layout) {
+  public void createSnapshotLayout(SnapshotContext context,
+                                   JComponent parent,
+                                   RadContainer container,
+                                   LayoutManager layout) {
     int rowCount = 1;
     int colCount = 1;
 
@@ -74,10 +74,10 @@ public class RadBoxLayoutManager extends RadGridLayoutManager {
 
 
   @Override
-  public void addSnapshotComponent(final JComponent parent,
-                                   final JComponent child,
-                                   final RadContainer container,
-                                   final RadComponent component) {
+  public void addSnapshotComponent(JComponent parent,
+                                   JComponent child,
+                                   RadContainer container,
+                                   RadComponent component) {
     if (myHorizontal) {
       component.getConstraints().setColumn(myComponentIndex);
     }

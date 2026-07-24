@@ -63,7 +63,7 @@ public class ChangeBoundFieldTypeFix implements SyntheticIntentionAction {
             @Override
             public void run() {
                 try {
-                    final PsiManager manager = myField.getManager();
+                    PsiManager manager = myField.getManager();
                     myField.getTypeElement().replace(JavaPsiFacade.getInstance(manager.getProject()).getElementFactory().createTypeElement(myTypeToSet));
                 }
                 catch (final consulo.language.util.IncorrectOperationException e) {

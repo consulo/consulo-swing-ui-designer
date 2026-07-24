@@ -34,7 +34,7 @@ import com.intellij.uiDesigner.impl.radComponents.RadComponent;
  */
 public class QuickFixManagerImpl extends QuickFixManager<GlassLayer>
 {
-	public QuickFixManagerImpl(final GuiEditor editor, final GlassLayer component, final JViewport viewPort)
+	public QuickFixManagerImpl(GuiEditor editor, GlassLayer component, JViewport viewPort)
 	{
 		super(editor, component, viewPort);
 		editor.addComponentSelectionListener(new ComponentSelectionListener()
@@ -52,7 +52,7 @@ public class QuickFixManagerImpl extends QuickFixManager<GlassLayer>
 	@Nonnull
 	protected ErrorInfo[] getErrorInfos()
 	{
-		final ArrayList<RadComponent> list = FormEditingUtil.getSelectedComponents(getEditor());
+		ArrayList<RadComponent> list = FormEditingUtil.getSelectedComponents(getEditor());
 		if(list.size() != 1)
 		{
 			return ErrorInfo.EMPTY_ARRAY;
@@ -63,7 +63,7 @@ public class QuickFixManagerImpl extends QuickFixManager<GlassLayer>
 	@Override
 	protected Rectangle getErrorBounds()
 	{
-		final ArrayList<RadComponent> list = FormEditingUtil.getSelectedComponents(getEditor());
+		ArrayList<RadComponent> list = FormEditingUtil.getSelectedComponents(getEditor());
 		if(list.size() != 1)
 		{
 			return null;
@@ -73,7 +73,7 @@ public class QuickFixManagerImpl extends QuickFixManager<GlassLayer>
 	}
 
 	@Override
-	protected Rectangle getHintClipRect(final JViewport viewPort)
+	protected Rectangle getHintClipRect(JViewport viewPort)
 	{
 		// allow some overlap with editor bounds
 		Rectangle rc = viewPort.getViewRect();

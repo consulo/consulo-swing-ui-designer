@@ -37,7 +37,7 @@ public class ForceFormSourceGenerateAction extends AnAction implements DumbAware
         }
         Project project = e.getRequiredData(Project.KEY);
 
-        final FormSourceCodeGenerator generator = new FormSourceCodeGenerator(project);
+        FormSourceCodeGenerator generator = new FormSourceCodeGenerator(project);
 
         Application application = project.getApplication();
         application.invokeLater(() -> {

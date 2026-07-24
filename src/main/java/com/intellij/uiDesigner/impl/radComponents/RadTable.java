@@ -32,17 +32,17 @@ public class RadTable extends RadAtomicComponent {
       return new RadTable(module, aClass, id);
     }
 
-    public RadComponent newInstance(final Class componentClass, final String id, final Palette palette) {
+    public RadComponent newInstance(Class componentClass, String id, Palette palette) {
       return new RadTable(componentClass, id, palette);
     }
   }
 
-  public RadTable(final ModuleProvider module, final Class componentClass, final String id) {
+  public RadTable(ModuleProvider module, Class componentClass, String id) {
     super(module, componentClass, id);
     initDefaultModel();
   }
 
-  public RadTable(final Class componentClass, final String id, final Palette palette) {
+  public RadTable(Class componentClass, String id, Palette palette) {
     super(componentClass, id, palette);
     initDefaultModel();
   }

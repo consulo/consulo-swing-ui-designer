@@ -30,17 +30,17 @@ import java.awt.event.FocusEvent;
 final class FocusListenerImpl extends FocusAdapter{
   private final QuickFixManager myManager;
 
-  public FocusListenerImpl(@Nonnull final QuickFixManager manager) {
+  public FocusListenerImpl(@Nonnull QuickFixManager manager) {
     myManager = manager;
   }
 
-  public void focusGained(final FocusEvent e) {
+  public void focusGained(FocusEvent e) {
     if(!e.isTemporary()){
       myManager.updateIntentionHintVisibility();
     }
   }
 
-  public void focusLost(final FocusEvent e) {
+  public void focusLost(FocusEvent e) {
     if(!(e.isTemporary())){
       myManager.hideIntentionHint();
     }

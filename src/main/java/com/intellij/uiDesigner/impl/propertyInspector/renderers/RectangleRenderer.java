@@ -28,7 +28,7 @@ public final class RectangleRenderer extends LabelPropertyRenderer<Rectangle> {
     myBuffer=new StringBuffer();
   }
 
-  protected void customize(final Rectangle value){
+  protected void customize(Rectangle value){
     myBuffer.setLength(0);
     myBuffer.append('[').append(value.x).append(", ");
     myBuffer.append(value.y).append(", ");

@@ -42,14 +42,14 @@ public abstract class AbstractGuiEditorAction extends AnAction implements DumbAw
     myModifying = false;
   }
 
-  protected AbstractGuiEditorAction(final boolean modifying) {
+  protected AbstractGuiEditorAction(boolean modifying) {
     myModifying = modifying;
   }
 
   @Override
   @RequiredUIAccess
-  public final void actionPerformed(final AnActionEvent e) {
-    final GuiEditor editor = FormEditingUtil.getEditorFromContext(e.getDataContext());
+  public final void actionPerformed(AnActionEvent e) {
+    GuiEditor editor = FormEditingUtil.getEditorFromContext(e.getDataContext());
     if (editor != null) {
       List<RadComponent> selection = FormEditingUtil.getSelectedComponents(editor);
       if (myModifying) {
@@ -73,7 +73,7 @@ public abstract class AbstractGuiEditorAction extends AnAction implements DumbAw
     }
   }
 
-  protected abstract void actionPerformed(final GuiEditor editor, final List<RadComponent> selection, final AnActionEvent e);
+  protected abstract void actionPerformed(GuiEditor editor, List<RadComponent> selection, AnActionEvent e);
 
   @Override
   public final Coroutine<?, ?> updateAsync(AnActionEvent e) {

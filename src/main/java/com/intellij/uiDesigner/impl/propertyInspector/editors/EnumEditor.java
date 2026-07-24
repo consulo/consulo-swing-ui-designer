@@ -28,7 +28,7 @@ import javax.swing.*;
 public class EnumEditor extends PropertyEditor<Enum> {
   private final JComboBox myCbx;
 
-  public EnumEditor(final Class enumClass) {
+  public EnumEditor(Class enumClass) {
     myCbx = new JComboBox(enumClass.getEnumConstants());
     myCbx.setBorder(BorderFactory.createEmptyBorder());
   }
@@ -37,11 +37,11 @@ public class EnumEditor extends PropertyEditor<Enum> {
     return (Enum) myCbx.getSelectedItem();
   }
 
-  public JComponent getComponent(final RadComponent component, final Enum value, final InplaceContext inplaceContext) {
+  public JComponent getComponent(RadComponent component, Enum value, InplaceContext inplaceContext) {
     if (value == null) {
       return myCbx;
     }
-    final ComboBoxModel model = myCbx.getModel();
+    ComboBoxModel model = myCbx.getModel();
     for (int i = model.getSize() - 1; i >= 0; i--) {
       if (model.getElementAt(i) == value) {
         myCbx.setSelectedIndex(i);

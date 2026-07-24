@@ -25,7 +25,7 @@ import com.intellij.uiDesigner.lw.IComponent;
  * @author yole
  */
 public abstract class FormErrorCollector {
-  public abstract void addError(final String inspectionId, final IComponent component, @Nullable IProperty prop,
+  public abstract void addError(String inspectionId, IComponent component, @Nullable IProperty prop,
                                 @Nonnull String errorMessage,
                                 EditorQuickFixProvider... editorQuickFixProvider);
 }

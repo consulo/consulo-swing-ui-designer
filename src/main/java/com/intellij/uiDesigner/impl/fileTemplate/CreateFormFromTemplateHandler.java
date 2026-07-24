@@ -30,13 +30,13 @@ import consulo.virtualFileSystem.fileType.FileType;
 @ExtensionImpl
 public class CreateFormFromTemplateHandler implements CreateFromTemplateHandler
 {
-	public boolean handlesTemplate(final FileTemplate template)
+	public boolean handlesTemplate(FileTemplate template)
 	{
 		FileType fileType = FileTypeManager.getInstance().getFileTypeByExtension(template.getExtension());
 		return fileType.equals(GuiFormFileType.INSTANCE);
 	}
 
-	public boolean canCreate(final PsiDirectory[] dirs)
+	public boolean canCreate(PsiDirectory[] dirs)
 	{
 		for(PsiDirectory dir : dirs)
 		{

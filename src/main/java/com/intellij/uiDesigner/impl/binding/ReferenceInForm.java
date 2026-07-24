@@ -37,9 +37,9 @@ public abstract class ReferenceInForm implements PsiReference
   protected final PsiPlainTextFile myFile;
   private final RangeMarker myRangeMarker;
 
-  protected ReferenceInForm(final PsiPlainTextFile file, TextRange range) {
+  protected ReferenceInForm(PsiPlainTextFile file, TextRange range) {
     myFile = file;
-    final Document document = FileDocumentManager.getInstance().getDocument(myFile.getVirtualFile());
+    Document document = FileDocumentManager.getInstance().getDocument(myFile.getVirtualFile());
     myRangeMarker = document.createRangeMarker(range);
   }
 
@@ -47,11 +47,11 @@ public abstract class ReferenceInForm implements PsiReference
     return myFile;
   }
 
-  public PsiElement handleElementRename(final String newElementName){
+  public PsiElement handleElementRename(String newElementName){
     return handleElementRenameBase(newElementName);
   }
 
-  private PsiElement handleElementRenameBase(final String newElementName) {
+  private PsiElement handleElementRenameBase(String newElementName) {
     updateRangeText(newElementName);
     return myFile;
   }
@@ -65,8 +65,8 @@ public abstract class ReferenceInForm implements PsiReference
     return getRangeText();
   }
 
-  protected void updateRangeText(final String text) {
-    final Document document = myRangeMarker.getDocument();
+  protected void updateRangeText(String text) {
+    Document document = myRangeMarker.getDocument();
     document.replaceString(myRangeMarker.getStartOffset(), myRangeMarker.getEndOffset(), text);
     PsiDocumentManager.getInstance(myFile.getProject()).commitDocument(document);
   }
@@ -75,7 +75,7 @@ public abstract class ReferenceInForm implements PsiReference
     return myRangeMarker.getDocument().getCharsSequence().subSequence(myRangeMarker.getStartOffset(), myRangeMarker.getEndOffset()).toString();
   }
 
-  public boolean isReferenceTo(final PsiElement element) {
+  public boolean isReferenceTo(PsiElement element) {
     return resolve() == element;
   }
 
@@ -88,16 +88,16 @@ public abstract class ReferenceInForm implements PsiReference
     return true;
   }
 
-  protected PsiElement handleFileRename(final String newElementName, @NonNls final String extension,
-                                        final boolean includeExtensionInReference) {
-    final String currentName = getRangeText();
-    final String baseName = newElementName.endsWith(extension)?
+  protected PsiElement handleFileRename(String newElementName, @NonNls String extension,
+                                        boolean includeExtensionInReference) {
+    String currentName = getRangeText();
+    String baseName = newElementName.endsWith(extension)?
                             newElementName.substring(0, newElementName.length() - extension.length()) :
                             newElementName;
-    final int slashIndex = currentName.lastIndexOf('/');
-    final String extensionInReference = includeExtensionInReference ? extension : "";
+    int slashIndex = currentName.lastIndexOf('/');
+    String extensionInReference = includeExtensionInReference ? extension : "";
     if (slashIndex >= 0) {
-      final String prefix = currentName.substring(0, slashIndex);
+      String prefix = currentName.substring(0, slashIndex);
       return handleElementRenameBase(prefix + "/" + baseName + extensionInReference);
     }
     else {

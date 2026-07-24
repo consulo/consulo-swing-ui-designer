@@ -29,7 +29,7 @@ import java.util.List;
  * @author yole
  */
 public class PackAction extends AbstractGuiEditorAction {
-  protected void actionPerformed(final GuiEditor editor, final List<RadComponent> selection, final AnActionEvent e) {
+  protected void actionPerformed(GuiEditor editor, List<RadComponent> selection, AnActionEvent e) {
     RadContainer container = getContainerToPack(selection);
     if (container != null) {
       container.getDelegee().setSize(container.getMinimumSize());
@@ -37,11 +37,11 @@ public class PackAction extends AbstractGuiEditorAction {
     }
   }
 
-  protected void update(@Nonnull GuiEditor editor, final ArrayList<RadComponent> selection, final AnActionEvent e) {
+  protected void update(@Nonnull GuiEditor editor, ArrayList<RadComponent> selection, AnActionEvent e) {
     e.getPresentation().setEnabled(getContainerToPack(selection) != null);
   }
 
-  private static RadContainer getContainerToPack(final List<RadComponent> selection) {
+  private static RadContainer getContainerToPack(List<RadComponent> selection) {
     if (selection.size() != 1 || !(selection.get(0) instanceof RadContainer)) {
       return null;
     }

@@ -39,7 +39,7 @@ import java.util.List;
  * @author yole
  */
 public class AssignMnemonicFix extends QuickFix {
-  public AssignMnemonicFix(final GuiEditor editor, final RadComponent component, final String name) {
+  public AssignMnemonicFix(GuiEditor editor, RadComponent component, String name) {
     super(editor, name, component);
   }
 
@@ -66,8 +66,8 @@ public class AssignMnemonicFix extends QuickFix {
     }
   }
 
-  private String[] fillMnemonicVariants(final String value) {
-    final StringBuffer usedMnemonics = new StringBuffer();
+  private String[] fillMnemonicVariants(String value) {
+    StringBuffer usedMnemonics = new StringBuffer();
     RadContainer container = myComponent.getParent();
     if (container != null) {
       while (container.getParent() != null) {
@@ -85,7 +85,7 @@ public class AssignMnemonicFix extends QuickFix {
     List<String> variants = new ArrayList<>();
     // try upper-case and word start characters
     for(int i=0; i<value.length(); i++) {
-      final char ch = value.charAt(i);
+      char ch = value.charAt(i);
       if (i == 0 || Character.isUpperCase(ch) || (i > 0 && value.charAt(i-1) == ' ')) {
         if (Character.isLetter(ch) && usedMnemonics.indexOf(String.valueOf(ch).toUpperCase()) < 0) {
           variants.add(value.substring(0, i) + "&" + value.substring(i));
@@ -96,7 +96,7 @@ public class AssignMnemonicFix extends QuickFix {
     if (variants.size() == 0) {
       // try any unused characters
       for(int i=0; i<value.length(); i++) {
-        final char ch = value.charAt(i);
+        char ch = value.charAt(i);
         if (Character.isLetter(ch) && usedMnemonics.indexOf(String.valueOf(ch).toUpperCase()) < 0) {
           variants.add(value.substring(0, i) + "&" + value.substring(i));
         }

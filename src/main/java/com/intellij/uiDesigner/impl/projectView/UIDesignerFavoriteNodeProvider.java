@@ -48,7 +48,7 @@ public class UIDesignerFavoriteNodeProvider implements BookmarkNodeProvider
 {
 	@Override
 	@Nullable
-	public Collection<AbstractTreeNode> getFavoriteNodes(DataContext context, final ViewSettings viewSettings)
+	public Collection<AbstractTreeNode> getFavoriteNodes(DataContext context, ViewSettings viewSettings)
 	{
 		Project project = context.getData(Project.KEY);
 		if(project == null)
@@ -62,7 +62,7 @@ public class UIDesignerFavoriteNodeProvider implements BookmarkNodeProvider
 			Set<PsiClass> bindClasses = new HashSet<>();
 			for(Form form : forms)
 			{
-				final PsiClass classToBind = form.getClassToBind();
+				PsiClass classToBind = form.getClassToBind();
 				if(classToBind != null)
 				{
 					if(bindClasses.contains(classToBind))
@@ -82,10 +82,10 @@ public class UIDesignerFavoriteNodeProvider implements BookmarkNodeProvider
 		VirtualFile vFile = context.getData(PlatformDataKeys.VIRTUAL_FILE);
 		if(vFile != null)
 		{
-			final FileType fileType = vFile.getFileType();
+			FileType fileType = vFile.getFileType();
 			if(fileType.equals(GuiFormFileType.INSTANCE))
 			{
-				final PsiFile formFile = PsiManager.getInstance(project).findFile(vFile);
+				PsiFile formFile = PsiManager.getInstance(project).findFile(vFile);
 				if(formFile == null)
 				{
 					return null;
@@ -104,11 +104,11 @@ public class UIDesignerFavoriteNodeProvider implements BookmarkNodeProvider
 				{
 					return null;
 				}
-				final PsiClass classToBind = JavaPsiFacade.getInstance(project).findClass(className, GlobalSearchScope.allScope(project));
+				PsiClass classToBind = JavaPsiFacade.getInstance(project).findClass(className, GlobalSearchScope.allScope(project));
 				if(classToBind != null)
 				{
 					Form form = new Form(classToBind);
-					final AbstractTreeNode node = new FormNode(project, form, viewSettings);
+					AbstractTreeNode node = new FormNode(project, form, viewSettings);
 					return Collections.singletonList(node);
 				}
 			}
@@ -117,7 +117,7 @@ public class UIDesignerFavoriteNodeProvider implements BookmarkNodeProvider
 		return null;
 	}
 
-	public boolean elementContainsFile(final Object element, final VirtualFile vFile)
+	public boolean elementContainsFile(Object element, VirtualFile vFile)
 	{
 		if(element instanceof Form)
 		{
@@ -127,7 +127,7 @@ public class UIDesignerFavoriteNodeProvider implements BookmarkNodeProvider
 		return false;
 	}
 
-	public int getElementWeight(final Object element, final boolean isSortByType)
+	public int getElementWeight(Object element, boolean isSortByType)
 	{
 		if(element instanceof Form)
 		{
@@ -137,11 +137,11 @@ public class UIDesignerFavoriteNodeProvider implements BookmarkNodeProvider
 	}
 
 	@Nullable
-	public String getElementLocation(final Object element)
+	public String getElementLocation(Object element)
 	{
 		if(element instanceof Form)
 		{
-			final PsiFile[] psiFiles = ((Form) element).getFormFiles();
+			PsiFile[] psiFiles = ((Form) element).getFormFiles();
 			VirtualFile vFile = null;
 			if(psiFiles.length > 0)
 			{
@@ -183,21 +183,21 @@ public class UIDesignerFavoriteNodeProvider implements BookmarkNodeProvider
 		return null;
 	}
 
-	public String getElementModuleName(final Object element)
+	public String getElementModuleName(Object element)
 	{
 		if(element instanceof Form)
 		{
 			Form form = (Form) element;
-			final Module module = ModuleUtilCore.findModuleForPsiElement(form.getClassToBind());
+			Module module = ModuleUtilCore.findModuleForPsiElement(form.getClassToBind());
 			return module != null ? module.getName() : null;
 		}
 		return null;
 	}
 
-	public Object[] createPathFromUrl(final Project project, final String url, final String moduleName)
+	public Object[] createPathFromUrl(Project project, String url, String moduleName)
 	{
-		final PsiManager psiManager = PsiManager.getInstance(project);
-		final PsiClass classToBind = JavaPsiFacade.getInstance(psiManager.getProject()).findClass(url, GlobalSearchScope.allScope(project));
+		PsiManager psiManager = PsiManager.getInstance(project);
+		PsiClass classToBind = JavaPsiFacade.getInstance(psiManager.getProject()).findClass(url, GlobalSearchScope.allScope(project));
 		if(classToBind == null)
 		{
 			return null;

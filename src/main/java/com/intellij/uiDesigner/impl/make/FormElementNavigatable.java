@@ -39,7 +39,7 @@ public class FormElementNavigatable implements Navigatable
 	@Nullable
 	final String myComponentId;
 
-	public FormElementNavigatable(final Project project, final VirtualFile virtualFile, @Nullable final String componentId)
+	public FormElementNavigatable(Project project, VirtualFile virtualFile, @Nullable String componentId)
 	{
 		myProject = project;
 		myVirtualFile = virtualFile;
@@ -53,7 +53,7 @@ public class FormElementNavigatable implements Navigatable
 			return;
 		}
 		OpenFileDescriptor descriptor = OpenFileDescriptorFactory.getInstance(myProject).builder(myVirtualFile).build();
-		final List<FileEditor> fileEditors = FileEditorManager.getInstance(myProject).openEditor(descriptor, requestFocus);
+		List<FileEditor> fileEditors = FileEditorManager.getInstance(myProject).openEditor(descriptor, requestFocus);
 		if(myComponentId != null)
 		{
 			for(FileEditor editor : fileEditors)

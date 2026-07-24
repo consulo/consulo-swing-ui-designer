@@ -32,7 +32,7 @@ import java.awt.*;
  * @author yole
  */
 public class FormFirstComponentInsertLocation extends FirstComponentInsertLocation {
-  public FormFirstComponentInsertLocation(final RadContainer container, final Point targetPoint, final Rectangle cellRect) {
+  public FormFirstComponentInsertLocation(RadContainer container, Point targetPoint, Rectangle cellRect) {
     super(container, targetPoint, cellRect);
   }
 
@@ -42,13 +42,13 @@ public class FormFirstComponentInsertLocation extends FirstComponentInsertLocati
   }
 
   @Override
-  protected FirstComponentInsertLocation createAdjacentLocation(final int xPart, final int yPart) {
+  protected FirstComponentInsertLocation createAdjacentLocation(int xPart, int yPart) {
     return new FormFirstComponentInsertLocation(myContainer, myCellRect, xPart, yPart);
   }
 
   @Override
-  public void processDrop(final GuiEditor editor, final RadComponent[] components, final GridConstraints[] constraintsToAdjust,
-                          final ComponentDragObject dragObject) {
+  public void processDrop(GuiEditor editor, RadComponent[] components, GridConstraints[] constraintsToAdjust,
+                          ComponentDragObject dragObject) {
     RadAbstractGridLayoutManager gridLayout = myContainer.getGridLayoutManager();
     if (myContainer.getGridRowCount() == 0) {
       gridLayout.insertGridCells(myContainer, 0, true, true, true);

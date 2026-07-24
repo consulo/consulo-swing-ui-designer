@@ -38,7 +38,7 @@ public class AddGroupAction extends AnAction
     Project project = e.getData(Project.KEY);
     if (project == null) return;
     // Ask group name
-    final String groupName = Messages.showInputDialog(
+    String groupName = Messages.showInputDialog(
       project,
       UIDesignerLocalize.messageEnterGroupName().get(),
       UIDesignerLocalize.titleAddGroup().get(),
@@ -62,7 +62,7 @@ public class AddGroupAction extends AnAction
       }
     }
 
-    final GroupItem groupToBeAdded = new GroupItem(groupName);
+    GroupItem groupToBeAdded = new GroupItem(groupName);
     List<GroupItem> newGroups = new ArrayList<>(groups);
     newGroups.add(groupToBeAdded);
     palette.setGroups(newGroups);

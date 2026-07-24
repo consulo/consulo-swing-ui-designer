@@ -38,7 +38,7 @@ public class GridDropLocation implements ComponentDropLocation {
   protected int myRow;
   protected int myColumn;
 
-  public GridDropLocation(@Nonnull final RadContainer container, final int row, final int column) {
+  public GridDropLocation(@Nonnull RadContainer container, int row, int column) {
     myContainer = container;
     myRow = row;
     myColumn = column;
@@ -56,7 +56,7 @@ public class GridDropLocation implements ComponentDropLocation {
     return myContainer;
   }
 
-  public boolean canDrop(final ComponentDragObject dragObject) {
+  public boolean canDrop(ComponentDragObject dragObject) {
     // If target point doesn't belong to any cell and column then do not allow drop.
     if (myRow == -1 || myColumn == -1) {
       LOG.debug("RadContainer.canDrop=false because no cell at mouse position");
@@ -81,7 +81,7 @@ public class GridDropLocation implements ComponentDropLocation {
         return false;
       }
 
-      final RadComponent componentInRect = findOverlappingComponent(myRow + relativeRow, myColumn + relativeCol, rowSpan, colSpan);
+      RadComponent componentInRect = findOverlappingComponent(myRow + relativeRow, myColumn + relativeCol, rowSpan, colSpan);
       if (componentInRect != null) {
         LOG.debug("GridDropLocation.canDrop=false because found component " + componentInRect.getId() +
                   " in rect (row=" + (myRow +relativeRow) + ", col=" + (myColumn +relativeCol) +
@@ -93,7 +93,7 @@ public class GridDropLocation implements ComponentDropLocation {
     return true;
   }
 
-  protected RadComponent findOverlappingComponent(final int startRow, final int startCol, final int rowSpan, final int colSpan) {
+  protected RadComponent findOverlappingComponent(int startRow, int startCol, int rowSpan, int colSpan) {
     return myContainer.findComponentInRect(startRow, startCol, rowSpan, colSpan);
   }
 
@@ -103,7 +103,7 @@ public class GridDropLocation implements ComponentDropLocation {
       feedbackRect = getGridFeedbackRect(dragObject, false, false, true);
     }
     if (feedbackRect != null) {
-      final JComponent component = getContainer().getDelegee();
+      JComponent component = getContainer().getDelegee();
       StringBuilder feedbackBuilder = new StringBuilder(getContainer().getDisplayName());
       feedbackBuilder.append(" (").append(myRow + getContainer().getGridLayoutManager().getCellIndexBase());
       feedbackBuilder.append(", ").append(myColumn + getContainer().getGridLayoutManager().getCellIndexBase());
@@ -179,10 +179,10 @@ public class GridDropLocation implements ComponentDropLocation {
                                                                       cellRect.y+h, cellRect.x+w);
   }
 
-  public void processDrop(final GuiEditor editor,
-                          final RadComponent[] components,
-                          final GridConstraints[] constraintsToAdjust,
-                          final ComponentDragObject dragObject) {
+  public void processDrop(GuiEditor editor,
+                          RadComponent[] components,
+                          GridConstraints[] constraintsToAdjust,
+                          ComponentDragObject dragObject) {
     dropIntoGrid(myContainer, components, myRow, myColumn, dragObject);
   }
 
@@ -201,13 +201,13 @@ public class GridDropLocation implements ComponentDropLocation {
     return "GridDropLocation(row=" + myRow + ",col=" + myColumn + ")";
   }
 
-  protected static void dropIntoGrid(final RadContainer container, final RadComponent[] components, int row, int column, final ComponentDragObject dragObject) {
+  protected static void dropIntoGrid(RadContainer container, RadComponent[] components, int row, int column, ComponentDragObject dragObject) {
     assert components.length > 0;
 
     for(int i=0; i<components.length; i++) {
       RadComponent c = components [i];
       if (c instanceof RadContainer) {
-        final LayoutManager layout = ((RadContainer)c).getLayout();
+        LayoutManager layout = ((RadContainer)c).getLayout();
         if (layout instanceof XYLayoutManager) {
           ((XYLayoutManager)layout).setPreferredSize(c.getSize());
         }
@@ -242,7 +242,7 @@ public class GridDropLocation implements ComponentDropLocation {
                   "), component ID=" + old.getId());
       }
 
-      final GridConstraints constraints = c.getConstraints();
+      GridConstraints constraints = c.getConstraints();
       constraints.setRow(row + relativeRow);
       constraints.setColumn(column + relativeCol);
       constraints.setRowSpan(rowSpan);

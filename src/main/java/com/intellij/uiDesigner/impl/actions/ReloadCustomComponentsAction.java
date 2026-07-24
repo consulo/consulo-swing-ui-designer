@@ -45,7 +45,7 @@ public class ReloadCustomComponentsAction extends AnAction implements AnActionWi
             return;
         }
         LoaderFactory.getInstance(project).clearClassLoaderCache();
-        final FileEditor[] fileEditors = FileEditorManager.getInstance(project).getAllEditors();
+        FileEditor[] fileEditors = FileEditorManager.getInstance(project).getAllEditors();
         for (FileEditor editor : fileEditors) {
             if (editor instanceof UIFormEditor) {
                 ((UIFormEditor) editor).getEditor().readFromFile(true);
@@ -55,18 +55,18 @@ public class ReloadCustomComponentsAction extends AnAction implements AnActionWi
 
     @Override
     public void update(AnActionEvent e) {
-        final GuiEditor editor = FormEditingUtil.getActiveEditor(e.getDataContext());
+        GuiEditor editor = FormEditingUtil.getActiveEditor(e.getDataContext());
         e.getPresentation().setVisible(editor != null && haveCustomComponents(editor));
     }
 
-    private static boolean haveCustomComponents(final GuiEditor editor) {
+    private static boolean haveCustomComponents(GuiEditor editor) {
         // quick & dirty check
         if (editor.isFormInvalid()) {
             return true;
         }
-        final Ref<Boolean> result = new Ref<Boolean>();
+        final Ref<Boolean> result = new Ref<>();
         FormEditingUtil.iterate(editor.getRootContainer(), new FormEditingUtil.ComponentVisitor() {
-            public boolean visit(final IComponent component) {
+            public boolean visit(IComponent component) {
                 if (component instanceof RadErrorComponent || !component.getComponentClassName().startsWith("javax.swing")) {
                     result.set(Boolean.TRUE);
                     return false;

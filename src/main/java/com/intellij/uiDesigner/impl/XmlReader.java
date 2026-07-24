@@ -49,21 +49,21 @@ public final class XmlReader
 	}
 
 	@Nonnull
-	public static RadRootContainer createRoot(final ModuleProvider module, final LwRootContainer lwRootContainer, final ClassLoader loader,
-											  final Locale stringDescriptorLocale) throws Exception
+	public static RadRootContainer createRoot(ModuleProvider module, LwRootContainer lwRootContainer, ClassLoader loader,
+                                              Locale stringDescriptorLocale) throws Exception
 	{
 		return (RadRootContainer) createComponent(module, lwRootContainer, loader, stringDescriptorLocale);
 	}
 
 	@Nonnull
-	public static RadComponent createComponent(@Nonnull final ModuleProvider module,
-											   @Nonnull final LwComponent lwComponent,
-											   @Nonnull final ClassLoader loader,
-											   final Locale stringDescriptorLocale) throws Exception
+	public static RadComponent createComponent(@Nonnull ModuleProvider module,
+											   @Nonnull LwComponent lwComponent,
+											   @Nonnull ClassLoader loader,
+											   Locale stringDescriptorLocale) throws Exception
 	{
 		// Id
-		final String id = lwComponent.getId();
-		final RadComponent component;
+		String id = lwComponent.getId();
+		RadComponent component;
 		Class componentClass = null;
 
 		if(lwComponent instanceof LwNestedForm)
@@ -126,10 +126,10 @@ public final class XmlReader
 							component1 = new RadAtomicComponent(module, componentClass, id);
 						}
 					}
-					catch(final Exception exc)
+					catch(Exception exc)
 					{
 						String errorDescription = MessageFormat.format(UIDesignerBundle.message("error.class.cannot.be.instantiated"), lwComponent.getComponentClassName());
-						final String message = FormEditingUtil.getExceptionMessage(exc);
+						String message = FormEditingUtil.getExceptionMessage(exc);
 						if(message != null)
 						{
 							errorDescription += ": " + message;
@@ -163,12 +163,12 @@ public final class XmlReader
 			}
 			else if(lwComponent instanceof LwContainer)
 			{
-				final LwContainer lwContainer = (LwContainer) lwComponent;
+				LwContainer lwContainer = (LwContainer) lwComponent;
 				LayoutManager layout = lwContainer.getLayout();
 				if(layout instanceof XYLayoutManager)
 				{
 					// replace stub layout with the real one
-					final XYLayoutManagerImpl xyLayoutManager = new XYLayoutManagerImpl();
+					XYLayoutManagerImpl xyLayoutManager = new XYLayoutManagerImpl();
 					layout = xyLayoutManager;
 					xyLayoutManager.setPreferredSize(lwComponent.getBounds().getSize());
 				}
@@ -230,13 +230,13 @@ public final class XmlReader
 		{
 			component.putClientProperty(RadComponent.CLIENT_PROP_LOAD_TIME_LOCALE, stringDescriptorLocale);
 		}
-		final LwIntrospectedProperty[] properties = lwComponent.getAssignedIntrospectedProperties();
+		LwIntrospectedProperty[] properties = lwComponent.getAssignedIntrospectedProperties();
 		if(componentClass != null)
 		{
-			final Palette palette = Palette.getInstance(module.getProject());
-			for(final LwIntrospectedProperty lwProperty : properties)
+			Palette palette = Palette.getInstance(module.getProject());
+			for(LwIntrospectedProperty lwProperty : properties)
 			{
-				final IntrospectedProperty property = palette.getIntrospectedProperty(component, lwProperty.getName());
+				IntrospectedProperty property = palette.getIntrospectedProperty(component, lwProperty.getName());
 				if(property == null)
 				{
 					continue;
@@ -264,9 +264,9 @@ public final class XmlReader
 
 		if(component instanceof RadContainer)
 		{
-			final RadContainer container = (RadContainer) component;
+			RadContainer container = (RadContainer) component;
 			//noinspection ConstantConditions
-			final LwContainer lwContainer = (LwContainer) lwComponent;
+			LwContainer lwContainer = (LwContainer) lwComponent;
 
 			copyBorder(container, lwContainer);
 
@@ -279,9 +279,9 @@ public final class XmlReader
 
 		if(component instanceof RadRootContainer)
 		{
-			final RadRootContainer radRootContainer = (RadRootContainer) component;
+			RadRootContainer radRootContainer = (RadRootContainer) component;
 			//noinspection ConstantConditions
-			final LwRootContainer lwRootContainer = (LwRootContainer) lwComponent;
+			LwRootContainer lwRootContainer = (LwRootContainer) lwComponent;
 			radRootContainer.setClassToBind(lwRootContainer.getClassToBind());
 			radRootContainer.setMainComponentBinding(lwRootContainer.getMainComponentBinding());
 			radRootContainer.setButtonGroups(lwRootContainer.getButtonGroups());
@@ -294,7 +294,7 @@ public final class XmlReader
 		return component;
 	}
 
-	private static void copyBorder(final RadContainer container, final LwContainer lwContainer)
+	private static void copyBorder(RadContainer container, LwContainer lwContainer)
 	{
 		container.setBorderType(lwContainer.getBorderType());
 		container.setBorderTitle(lwContainer.getBorderTitle());
@@ -306,10 +306,10 @@ public final class XmlReader
 		container.setBorderColor(lwContainer.getBorderColor());
 	}
 
-	private static RadErrorComponent createErrorComponent(final ModuleProvider module, final String id, final LwComponent lwComponent, final ClassLoader loader)
+	private static RadErrorComponent createErrorComponent(ModuleProvider module, String id, LwComponent lwComponent, ClassLoader loader)
 	{
-		final String componentClassName = lwComponent.getComponentClassName();
-		final String errorDescription = Utils.validateJComponentClass(loader, componentClassName, true);
+		String componentClassName = lwComponent.getComponentClassName();
+		String errorDescription = Utils.validateJComponentClass(loader, componentClassName, true);
 		return RadErrorComponent.create(
 				module,
 				id,

@@ -44,7 +44,7 @@ public class PasteProcessor extends EventProcessor {
   private final int myMinRow;
   private final int myMinCol;
 
-  public PasteProcessor(GuiEditor editor, final ArrayList<RadComponent> componentsToPaste, final IntList xs, final IntList ys) {
+  public PasteProcessor(GuiEditor editor, ArrayList<RadComponent> componentsToPaste, IntList xs, IntList ys) {
     myEditor = editor;
     myComponentsToPaste = componentsToPaste;
     myGridInsertProcessor = new GridInsertProcessor(editor);
@@ -111,7 +111,7 @@ public class PasteProcessor extends EventProcessor {
     }
   }
 
-  private void processMousePressed(final MouseEvent e) {
+  private void processMousePressed(MouseEvent e) {
     ComponentDropLocation location = GridInsertProcessor.getDropLocation(myEditor.getRootContainer(), e.getPoint());
     doPaste(location);
   }
@@ -126,7 +126,7 @@ public class PasteProcessor extends EventProcessor {
             location.processDrop(myEditor, componentsToPaste, null, myPastedComponentList);
             for(RadComponent c: componentsToPaste) {
               FormEditingUtil.iterate(c, new FormEditingUtil.ComponentVisitor() {
-                public boolean visit(final IComponent component) {
+                public boolean visit(IComponent component) {
                   if (component.getBinding() != null) {
                     InsertComponentProcessor.createBindingField(myEditor, (RadComponent) component);
                   }
@@ -189,7 +189,7 @@ public class PasteProcessor extends EventProcessor {
     }
 
     @Nonnull
-    public Dimension getInitialSize(final RadContainer targetContainer) {
+    public Dimension getInitialSize(RadContainer targetContainer) {
       if (myComponentsToPaste.size() == 1) {
         return myComponentsToPaste.get(0).getSize();
       }

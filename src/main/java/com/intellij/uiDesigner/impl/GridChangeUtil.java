@@ -31,19 +31,19 @@ public final class GridChangeUtil {
   private GridChangeUtil() {
   }
 
-  public static void splitColumn(final RadContainer grid, final int columnIndex) {
+  public static void splitColumn(RadContainer grid, int columnIndex) {
     splitCell(grid, columnIndex, false);
   }
 
-  public static void splitRow(final RadContainer grid, final int rowIndex) {
+  public static void splitRow(RadContainer grid, int rowIndex) {
     splitCell(grid, rowIndex, true);
   }
 
-  public static boolean isColumnEmpty(final RadContainer grid, final int columnIndex) {
+  public static boolean isColumnEmpty(RadContainer grid, int columnIndex) {
     return canDeleteCell(grid, columnIndex, false) == CellStatus.Empty;
   }
 
-  public static boolean isRowEmpty(final RadContainer grid, final int rowIndex) {
+  public static boolean isRowEmpty(RadContainer grid, int rowIndex) {
     return canDeleteCell(grid, rowIndex, true) == CellStatus.Empty;
   }
 
@@ -52,10 +52,10 @@ public final class GridChangeUtil {
    * @param isRow if true, row inserted, otherwise column
    * @param isBefore if true, row/column will be inserted before row/column with given index, otherwise after
    */
-  public static void insertRowOrColumn(final RadContainer grid, final int cellIndex, final boolean isRow, final boolean isBefore) {
+  public static void insertRowOrColumn(RadContainer grid, int cellIndex, boolean isRow, boolean isBefore) {
     check(grid, isRow, cellIndex);
 
-    final RadAbstractGridLayoutManager oldLayout = grid.getGridLayoutManager();
+    RadAbstractGridLayoutManager oldLayout = grid.getGridLayoutManager();
 
     int beforeIndex = cellIndex;
     if (!isBefore) {
@@ -63,11 +63,11 @@ public final class GridChangeUtil {
       beforeIndex++;
     }
 
-    final LayoutManager newLayout = oldLayout.copyLayout(grid.getLayout(), isRow ? 1 : 0, isRow ? 0 : 1);
+    LayoutManager newLayout = oldLayout.copyLayout(grid.getLayout(), isRow ? 1 : 0, isRow ? 0 : 1);
     GridConstraints[] oldConstraints = copyConstraints(grid);
 
     for (int i=grid.getComponentCount() - 1; i >= 0; i--){
-      final GridConstraints constraints = grid.getComponent(i).getConstraints();
+      GridConstraints constraints = grid.getComponent(i).getConstraints();
       adjustConstraintsOnInsert(constraints, isRow, beforeIndex, 1);
     }
 
@@ -76,7 +76,7 @@ public final class GridChangeUtil {
   }
 
   private static GridConstraints[] copyConstraints(RadContainer grid) {
-    final GridConstraints[] gridConstraints = new GridConstraints[grid.getComponentCount()];
+    GridConstraints[] gridConstraints = new GridConstraints[grid.getComponentCount()];
     for (int i = 0; i < grid.getComponentCount(); i++) {
       gridConstraints [i] = (GridConstraints) grid.getComponent(i).getConstraints().clone();
     }
@@ -89,8 +89,8 @@ public final class GridChangeUtil {
     }
   }
 
-  public static void adjustConstraintsOnInsert(final GridConstraints constraints, final boolean isRow, final int beforeIndex,
-                                               final int count) {
+  public static void adjustConstraintsOnInsert(GridConstraints constraints, boolean isRow, int beforeIndex,
+                                               int count) {
     if (constraints.getCell(isRow) >= beforeIndex) {
       addToCell(constraints, isRow, count);
     }
@@ -104,14 +104,14 @@ public final class GridChangeUtil {
    * @param cellIndex column or row index, depending on isRow parameter; must be in the range 0..grid.get{Row|Column}Count()-1
    * @param isRow if true, row is splitted, otherwise column
    */
-  public static void splitCell(final RadContainer grid, final int cellIndex, final boolean isRow) {
+  public static void splitCell(RadContainer grid, int cellIndex, boolean isRow) {
     check(grid, isRow, cellIndex);
 
     int insertedCells = grid.getGridLayoutManager().insertGridCells(grid, cellIndex, isRow, false, false);
 
     for (int i=grid.getComponentCount() - 1; i >= 0; i--){
-      final RadComponent component = grid.getComponent(i);
-      final GridConstraints constraints = component.getConstraints();
+      RadComponent component = grid.getComponent(i);
+      GridConstraints constraints = component.getConstraints();
 
       if (constraints.getCell(isRow) + constraints.getSpan(isRow) - 1 == cellIndex) {
         // component belongs to the cell being resized - increment component's span
@@ -131,7 +131,7 @@ public final class GridChangeUtil {
    * @param isRow if true, row is deleted, otherwise column
    * @return whether the specified column can be deleted
    */
- public static CellStatus canDeleteCell(@Nonnull final RadContainer grid, final int cellIndex, final boolean isRow) {
+ public static CellStatus canDeleteCell(@Nonnull RadContainer grid, int cellIndex, boolean isRow) {
     check(grid, isRow, cellIndex);
 
     // Do not allow to delete the single row/column
@@ -146,9 +146,9 @@ public final class GridChangeUtil {
     boolean haveOrigins = false;
     boolean haveSingleSpan = false;
     for (int i = 0; i < grid.getComponentCount(); i++) {
-      final GridConstraints constraints = grid.getComponent(i).getConstraints();
-      final int cell = constraints.getCell(isRow);
-      final int span = constraints.getSpan(isRow);
+      GridConstraints constraints = grid.getComponent(i).getConstraints();
+      int cell = constraints.getCell(isRow);
+      int span = constraints.getSpan(isRow);
 
       if (cellIndex >= cell && cellIndex < cell+span) {
         haveComponents = true;
@@ -169,7 +169,7 @@ public final class GridChangeUtil {
     return CellStatus.Empty;
   }
 
-  public static boolean canDeleteCells(final RadContainer grid, final int[] cells, final boolean row) {
+  public static boolean canDeleteCells(RadContainer grid, int[] cells, boolean row) {
     // for multiple cells, we can't determine if deleting all cells will have a correct result
     for(int cell: cells) {
       CellStatus status = canDeleteCell(grid, cell, row);
@@ -187,19 +187,19 @@ public final class GridChangeUtil {
    * @param cellIndex column or row index, depending on isRow parameter; must be in the range 0..grid.get{Row|Column}Count()-1
    * @param isRow if true, row is deleted, otherwise column
    */
-  public static void deleteCell(final RadContainer grid, final int cellIndex, final boolean isRow) {
+  public static void deleteCell(RadContainer grid, int cellIndex, boolean isRow) {
     check(grid, isRow, cellIndex);
     if (canDeleteCell(grid, cellIndex, isRow) == CellStatus.Required) {
       throw new IllegalArgumentException("cell cannot be deleted");
     }
 
-    final RadAbstractGridLayoutManager oldLayout = grid.getGridLayoutManager();
+    RadAbstractGridLayoutManager oldLayout = grid.getGridLayoutManager();
 
-    final LayoutManager newLayout = oldLayout.copyLayout(grid.getLayout(), isRow ? -1 : 0, isRow ? 0 : -1);
+    LayoutManager newLayout = oldLayout.copyLayout(grid.getLayout(), isRow ? -1 : 0, isRow ? 0 : -1);
     GridConstraints[] oldConstraints = copyConstraints(grid);
 
     for (int i=grid.getComponentCount() - 1; i >= 0; i--){
-      final GridConstraints constraints = grid.getComponent(i).getConstraints();
+      GridConstraints constraints = grid.getComponent(i).getConstraints();
 
       if (constraints.getCell(isRow) > cellIndex) {
         // component starts after the cell being deleted - move it
@@ -216,28 +216,28 @@ public final class GridChangeUtil {
   }
 
 
-  private static boolean isCellInsideComponent(final GridConstraints constraints, final boolean isRow, final int cellIndex) {
-    final int cell = constraints.getCell(isRow);
-    final int span = constraints.getSpan(isRow);
+  private static boolean isCellInsideComponent(GridConstraints constraints, boolean isRow, int cellIndex) {
+    int cell = constraints.getCell(isRow);
+    int span = constraints.getSpan(isRow);
     return cell <= cellIndex && cellIndex <= cell + span - 1;
   }
 
   /**
    * check whether passed container is grid and cellIndex is in proper range
    */
-  private static void check(@Nonnull RadContainer grid, final boolean isRow, final int cellIndex){
+  private static void check(@Nonnull RadContainer grid, boolean isRow, int cellIndex){
     if (!grid.getLayoutManager().isGrid()){
       throw new IllegalArgumentException("container must be grid");
     }
 
-    final int cellCount = isRow ? grid.getGridRowCount() : grid.getGridColumnCount();
+    int cellCount = isRow ? grid.getGridRowCount() : grid.getGridColumnCount();
     if (cellIndex == 0 && cellCount == 0) return;
     if (cellIndex < 0 || cellIndex >= cellCount) {
       throw new IllegalArgumentException("invalid index: " + cellIndex);
     }
   }
 
-  private static void addToCell(final GridConstraints constraints, final boolean isRow, final int delta){
+  private static void addToCell(GridConstraints constraints, boolean isRow, int delta){
     if (isRow) {
       constraints.setRow(constraints.getRow() + delta);
     }
@@ -246,7 +246,7 @@ public final class GridChangeUtil {
     }
   }
 
-  private static void addToSpan(final GridConstraints constraints, final boolean isRow, final int delta){
+  private static void addToSpan(GridConstraints constraints, boolean isRow, int delta){
     if (isRow) {
       constraints.setRowSpan(constraints.getRowSpan() + delta);
     }
@@ -255,9 +255,9 @@ public final class GridChangeUtil {
     }
   }
 
-  public static void moveCells(final RadContainer container, final boolean isRow, final int[] cellsToMove, int targetCell) {
+  public static void moveCells(RadContainer container, boolean isRow, int[] cellsToMove, int targetCell) {
     for(int i=0; i<cellsToMove.length; i++) {
-      final int sourceCell = cellsToMove[i];
+      int sourceCell = cellsToMove[i];
       moveCell(container, isRow, sourceCell, targetCell);
       if (sourceCell < targetCell) {
         for(int j=i+1; j<cellsToMove.length; j++) {
@@ -270,7 +270,7 @@ public final class GridChangeUtil {
     }
   }
 
-  public static void moveCell(final RadContainer container, final boolean isRow, final int sourceCell, int targetCell) {
+  public static void moveCell(RadContainer container, boolean isRow, int sourceCell, int targetCell) {
     if (targetCell == sourceCell || targetCell == sourceCell+1) return;
     // if column moved to left - components inbetween move to right, and vice versa
     int delta = (sourceCell > targetCell) ? 1 : -1;
@@ -280,7 +280,7 @@ public final class GridChangeUtil {
     for(RadComponent c: container.getComponents()) {
       GridConstraints constraints = c.getConstraints();
       GridConstraints oldConstraints = (GridConstraints) constraints.clone();
-      final int aCell = constraints.getCell(isRow);
+      int aCell = constraints.getCell(isRow);
       if (aCell == sourceCell) {
         constraints.setCell(isRow, targetCell);
       }

@@ -33,22 +33,22 @@ import java.util.*;
 public class SnapshotContext {
   private final Palette myPalette;
   private final RadRootContainer myRootContainer;
-  private final Set<ButtonGroup> myButtonGroups = new HashSet<ButtonGroup>();
-  private final Map<JComponent, RadComponent> myImportMap = new HashMap<JComponent, RadComponent>();
+  private final Set<ButtonGroup> myButtonGroups = new HashSet<>();
+  private final Map<JComponent, RadComponent> myImportMap = new HashMap<>();
 
   private static class ComponentProperty {
     public JComponent owner;
     public String name;
     public JComponent value;
 
-    public ComponentProperty(final JComponent owner, final String name, final JComponent value) {
+    public ComponentProperty(JComponent owner, String name, JComponent value) {
       this.owner = owner;
       this.name = name;
       this.value = value;
     }
   }
 
-  private final List<ComponentProperty> myComponentProperties = new ArrayList<ComponentProperty>();
+  private final List<ComponentProperty> myComponentProperties = new ArrayList<>();
 
   public SnapshotContext() {
     myPalette = new Palette(null);
@@ -67,11 +67,11 @@ public class SnapshotContext {
     return FormEditingUtil.generateId(myRootContainer);
   }
 
-  public void registerComponent(final JComponent component, final RadComponent radComponent) {
+  public void registerComponent(JComponent component, RadComponent radComponent) {
     myImportMap.put(component, radComponent);
   }
 
-  public void registerButtonGroup(final ButtonGroup group) {
+  public void registerButtonGroup(ButtonGroup group) {
     myButtonGroups.add(group);
   }
 
@@ -91,7 +91,7 @@ public class SnapshotContext {
       RadComponent radOwner = myImportMap.get(prop.owner);
       RadComponent radValue = myImportMap.get(prop.value);
       if (radOwner != null && radValue != null) {
-        final IntrospectedProperty property = radOwner.getPalette().getIntrospectedProperty(radOwner, prop.name);
+        IntrospectedProperty property = radOwner.getPalette().getIntrospectedProperty(radOwner, prop.name);
         assert property != null;
         //noinspection unchecked
         IntroComponentProperty icp = (IntroComponentProperty) property;
@@ -105,7 +105,7 @@ public class SnapshotContext {
     }
   }
 
-  public void registerComponentProperty(final JComponent component, final String name, final JComponent value) {
+  public void registerComponentProperty(JComponent component, String name, JComponent value) {
     myComponentProperties.add(new ComponentProperty(component, name, value));
   }
 }

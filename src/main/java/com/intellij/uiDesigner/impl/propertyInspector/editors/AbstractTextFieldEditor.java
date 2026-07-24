@@ -46,7 +46,7 @@ public abstract class AbstractTextFieldEditor<V> extends PropertyEditor<V> {
   }
 
   @Override
-  public JComponent getComponent(final RadComponent ignored, final V value, final InplaceContext inplaceContext) {
+  public JComponent getComponent(RadComponent ignored, V value, InplaceContext inplaceContext) {
     setValueFromComponent(ignored, value);
 
     if(inplaceContext != null) {
@@ -64,7 +64,7 @@ public abstract class AbstractTextFieldEditor<V> extends PropertyEditor<V> {
 
   protected final class MyActionListener implements ActionListener {
     @Override
-    public void actionPerformed(final ActionEvent e){
+    public void actionPerformed(ActionEvent e){
       fireValueCommitted(true, false);
     }
   }

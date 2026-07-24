@@ -55,7 +55,7 @@ final class BeanStep extends StepAdapter
 	private JLabel myExistClassLabel;
 	private final WizardData myData;
 
-    public BeanStep(@Nonnull final WizardData data)
+    public BeanStep(@Nonnull WizardData data)
 	{
 		myData = data;
 
@@ -74,7 +74,7 @@ final class BeanStep extends StepAdapter
 		myRbBindToExistingBean.addItemListener(itemListener);
 
 		{
-			final ButtonGroup buttonGroup = new ButtonGroup();
+			ButtonGroup buttonGroup = new ButtonGroup();
 			buttonGroup.add(myRbBindToNewBean);
 			buttonGroup.add(myRbBindToExistingBean);
 		}
@@ -88,22 +88,22 @@ final class BeanStep extends StepAdapter
                     null
                 );
                 chooser.showDialog();
-                final PsiClass aClass = chooser.getSelected();
+                PsiClass aClass = chooser.getSelected();
                 if(aClass == null)
                 {
                     return;
                 }
-                final String fqName = aClass.getQualifiedName();
+                String fqName = aClass.getQualifiedName();
                 myTfWitgBtnChooseClass.setText(fqName);
             }
         );
 
 		myTfWithBtnChoosePackage.addActionListener(e -> {
-            final PackageChooser dialog = myData.myProject.getInstance(PackageChooserFactory.class).create();
+            PackageChooser dialog = myData.myProject.getInstance(PackageChooserFactory.class).create();
             dialog.selectPackage(myTfWithBtnChoosePackage.getText());
 
             List<PsiJavaPackage> psiJavaPackages = dialog.showAndSelect();
-            final PsiJavaPackage aPackage = psiJavaPackages == null || psiJavaPackages.isEmpty() ? null : psiJavaPackages.getFirst();
+            PsiJavaPackage aPackage = psiJavaPackages == null || psiJavaPackages.isEmpty() ? null : psiJavaPackages.getFirst();
             if(aPackage != null)
             {
                 myTfWithBtnChoosePackage.setText(aPackage.getQualifiedName());
@@ -145,7 +145,7 @@ final class BeanStep extends StepAdapter
 	@Override
     public void _commit(boolean finishChosen) throws CommitStepException
 	{
-		final boolean newBindToNewBean = myRbBindToNewBean.isSelected();
+		boolean newBindToNewBean = myRbBindToNewBean.isSelected();
 		if(myData.myBindToNewBean != newBindToNewBean)
 		{
 			resetBindings();
@@ -155,21 +155,21 @@ final class BeanStep extends StepAdapter
 
 		if(myData.myBindToNewBean)
 		{ // new bean
-			final String oldShortClassName = myData.myShortClassName;
-			final String oldPackageName = myData.myPackageName;
+			String oldShortClassName = myData.myShortClassName;
+			String oldPackageName = myData.myPackageName;
 
-			final String shortClassName = myTfShortClassName.getText().trim();
+			String shortClassName = myTfShortClassName.getText().trim();
 			if(shortClassName.length() == 0)
 			{
 				throw new CommitStepException(UIDesignerLocalize.errorPleaseSpecifyClassNameOfTheBeanToBeCreated().get());
 			}
-			final PsiManager psiManager = PsiManager.getInstance(myData.myProject);
+			PsiManager psiManager = PsiManager.getInstance(myData.myProject);
 			if(!JavaPsiFacade.getInstance(psiManager.getProject()).getNameHelper().isIdentifier(shortClassName))
 			{
 				throw new CommitStepException(UIDesignerLocalize.errorXIsNotAValidClassName(shortClassName).get());
 			}
 
-			final String packageName = myTfWithBtnChoosePackage.getText().trim();
+			String packageName = myTfWithBtnChoosePackage.getText().trim();
 			if(packageName.length() != 0 && JavaPsiFacade.getInstance(psiManager.getProject()).findPackage(packageName) == null)
 			{
 				throw new CommitStepException(UIDesignerLocalize.errorPackageWithNameXDoesNotExist(packageName).get());
@@ -180,8 +180,8 @@ final class BeanStep extends StepAdapter
 
 			// check whether new class already exists
 			{
-				final String fullClassName = packageName.length() != 0 ? packageName + "." + shortClassName : shortClassName;
-				final Module module = ModuleUtilCore.findModuleForFile(myData.myFormFile, myData.myProject);
+				String fullClassName = packageName.length() != 0 ? packageName + "." + shortClassName : shortClassName;
+				Module module = ModuleUtilCore.findModuleForFile(myData.myFormFile, myData.myProject);
 				if(JavaPsiFacade.getInstance(psiManager.getProject())
 						.findClass(fullClassName, GlobalSearchScope.moduleWithDependenciesAndLibrariesScope(module)) != null)
 				{
@@ -197,13 +197,13 @@ final class BeanStep extends StepAdapter
 		}
 		else
 		{ // existing bean
-			final String oldFqClassName = myData.myBeanClass != null ? myData.myBeanClass.getQualifiedName() : null;
-			final String newFqClassName = myTfWitgBtnChooseClass.getText().trim();
+			String oldFqClassName = myData.myBeanClass != null ? myData.myBeanClass.getQualifiedName() : null;
+			String newFqClassName = myTfWitgBtnChooseClass.getText().trim();
 			if(newFqClassName.length() == 0)
 			{
 				throw new CommitStepException(UIDesignerLocalize.errorPleaseSpecifyFullyQualifiedNameOfBeanClass().get());
 			}
-			final PsiClass aClass =
+			PsiClass aClass =
 					JavaPsiFacade.getInstance(myData.myProject).findClass(newFqClassName, GlobalSearchScope.allScope(myData.myProject));
 			if(aClass == null)
 			{

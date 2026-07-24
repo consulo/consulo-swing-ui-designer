@@ -43,9 +43,9 @@ import java.util.Set;
 public class PreviewNestedFormLoader extends PsiNestedFormLoader {
   private final String myTempPath;
   private final InstrumentationClassFinder myFinder;
-  private final Set<String> myGeneratedClasses = new HashSet<String>();
+  private final Set<String> myGeneratedClasses = new HashSet<>();
 
-  public PreviewNestedFormLoader(final Module module, final String tempPath, final InstrumentationClassFinder finder) {
+  public PreviewNestedFormLoader(Module module, String tempPath, InstrumentationClassFinder finder) {
     super(module);
     myTempPath = tempPath;
     myFinder = finder;
@@ -62,7 +62,7 @@ public class PreviewNestedFormLoader extends PsiNestedFormLoader {
     return rootContainer;
   }
 
-  private void generateStubClass(final LwRootContainer rootContainer, final String generatedClassName) throws IOException,
+  private void generateStubClass(LwRootContainer rootContainer, String generatedClassName) throws IOException,
                                                                                                               CodeGenerationException {
     @NonNls ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
     cw.visit(Opcodes.V1_1, Opcodes.ACC_PUBLIC, generatedClassName, null, "java/lang/Object", ArrayUtil.EMPTY_STRING_ARRAY);

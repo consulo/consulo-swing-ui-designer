@@ -37,21 +37,21 @@ public final class RadErrorComponent extends RadAtomicComponent {
   private final String myErrorDescription;
 
   public static RadErrorComponent create(
-    final ModuleProvider module,
-    final String id,
-    final String componentClassName,
-    final Element properties,
-    @Nonnull final String errorDescription
+    ModuleProvider module,
+    String id,
+    String componentClassName,
+    Element properties,
+    @Nonnull String errorDescription
   ) {
     return new RadErrorComponent(module, id, componentClassName, properties, errorDescription);
   }
 
   private RadErrorComponent(
-    final ModuleProvider module,
-    final String id,
-    @Nonnull final String componentClassName,
-    @Nullable final Element properties,
-    @Nonnull final String errorDescription
+    ModuleProvider module,
+    String id,
+    @Nonnull String componentClassName,
+    @Nullable Element properties,
+    @Nonnull String errorDescription
   ) {
     super(module, MyComponent.class, id);
 
@@ -69,7 +69,7 @@ public final class RadErrorComponent extends RadAtomicComponent {
     return myErrorDescription;
   }
 
-  public void write(final XmlWriter writer) {
+  public void write(XmlWriter writer) {
     writer.startElement("component");
     try {
       writeId(writer);
@@ -95,7 +95,7 @@ public final class RadErrorComponent extends RadAtomicComponent {
       setMinimumSize(new Dimension(20, 20));
     }
 
-    public void paint(final Graphics g) {
+    public void paint(Graphics g) {
       g.setColor(Color.red);
       g.fillRect(0, 0, getWidth(), getHeight());
     }

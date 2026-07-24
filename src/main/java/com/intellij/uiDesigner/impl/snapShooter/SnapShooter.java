@@ -38,13 +38,13 @@ public class SnapShooter {
 
       URL[] oldURLs = ucl.getURLs();
       URL[] newURLs = new URL[origClassPathSize];
-      final int startIndex = oldURLs.length - origClassPathSize;
+      int startIndex = oldURLs.length - origClassPathSize;
       System.arraycopy(oldURLs, startIndex, newURLs, 0, origClassPathSize);
       loader = new URLClassLoader(newURLs, null);
       Thread.currentThread().setContextClassLoader(loader);
     }
 
-    final Thread thread = new Thread(new SnapShooterDaemon(port));
+    Thread thread = new Thread(new SnapShooterDaemon(port));
     thread.setDaemon(true);
     thread.start();
 
@@ -65,9 +65,9 @@ public class SnapShooter {
   private static void ensureAccess(Object reflectionObject) {
     // need to call setAccessible here in order to be able to launch package-local classes
     // calling setAccessible() via reflection because the method is missing from java version 1.1.x
-    final Class aClass = reflectionObject.getClass();
+    Class aClass = reflectionObject.getClass();
     try {
-      final Method setAccessibleMethod = aClass.getMethod("setAccessible", boolean.class);
+      Method setAccessibleMethod = aClass.getMethod("setAccessible", boolean.class);
       setAccessibleMethod.invoke(reflectionObject, Boolean.TRUE);
     }
     catch (Exception e) {

@@ -64,9 +64,9 @@ public class CreateFormAction extends AbstractCreateFormAction {
     @Override
     @RequiredUIAccess
     protected void invokeDialog(Project project, PsiDirectory directory, @Nonnull Consumer<PsiElement[]> consumer) {
-        final MyInputValidator validator = new MyInputValidator(project, directory);
+        MyInputValidator validator = new MyInputValidator(project, directory);
 
-        final DialogWrapper dialog = new MyDialog(project, validator);
+        DialogWrapper dialog = new MyDialog(project, validator);
 
         dialog.showAsync().doWhenDone(() -> consumer.accept(validator.getCreatedElements()));
     }
@@ -78,18 +78,18 @@ public class CreateFormAction extends AbstractCreateFormAction {
         PsiElement createdFile;
         PsiClass newClass = null;
         try {
-            final PsiJavaPackage aPackage = JavaDirectoryService.getInstance().getPackage(directory);
+            PsiJavaPackage aPackage = JavaDirectoryService.getInstance().getPackage(directory);
             assert aPackage != null;
-            final String packageName = aPackage.getQualifiedName();
+            String packageName = aPackage.getQualifiedName();
             String fqClassName = null;
             if (myLastClassName != null) {
                 fqClassName = packageName.length() == 0 ? myLastClassName : packageName + "." + myLastClassName;
             }
 
-            final String formBody = createFormBody(fqClassName, "/com/intellij/uiDesigner/impl/NewForm.xml",
+            String formBody = createFormBody(fqClassName, "/com/intellij/uiDesigner/impl/NewForm.xml",
                 myLastLayoutManager);
-            final String fileName = newName + ".form";
-            final PsiFile formFile = PsiFileFactory.getInstance(directory.getProject())
+            String fileName = newName + ".form";
+            PsiFile formFile = PsiFileFactory.getInstance(directory.getProject())
                 .createFileFromText(fileName, GuiFormFileType.INSTANCE, formBody);
             createdFile = WriteAction.compute(() -> directory.add(formFile));
 
@@ -137,8 +137,8 @@ public class CreateFormAction extends AbstractCreateFormAction {
         private final Project myProject;
         private final MyInputValidator myValidator;
 
-        public MyDialog(final Project project,
-                        final MyInputValidator validator) {
+        public MyDialog(Project project,
+                        MyInputValidator validator) {
             super(project, true);
             myProject = project;
             myValidator = validator;
@@ -198,7 +198,7 @@ public class CreateFormAction extends AbstractCreateFormAction {
             }
             myLastLayoutManager = myBaseLayoutManagerCombo.getSelectedName();
             GuiDesignerConfiguration.getInstance(myProject).DEFAULT_LAYOUT_MANAGER = myLastLayoutManager;
-            final String inputString = myFormNameTextField.getText().trim();
+            String inputString = myFormNameTextField.getText().trim();
             if (myValidator.checkInput(inputString) && myValidator.canClose(inputString)) {
                 close(OK_EXIT_CODE);
             }

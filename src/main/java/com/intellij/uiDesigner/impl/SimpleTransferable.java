@@ -29,26 +29,26 @@ import java.io.IOException;
  */
 public final class SimpleTransferable<T> implements Transferable {
   private static final Logger LOG = Logger.getInstance(SimpleTransferable.class);
-  private static final Map<String, DataFlavor> ourDataFlavorMap = new HashMap<String, DataFlavor>();
+  private static final Map<String, DataFlavor> ourDataFlavorMap = new HashMap<>();
 
   private final T myDataProxy;
   private final Class<T> myDataClass;
   private final DataFlavor myDataFlavor;
 
-  public SimpleTransferable(final T data, final Class<T> dataClass) {
+  public SimpleTransferable(T data, Class<T> dataClass) {
     myDataProxy = data;
     myDataClass = dataClass;
     myDataFlavor = getDataFlavor(myDataClass);
   }
 
-  public SimpleTransferable(final T data, final Class<T> dataClass, DataFlavor flavor) {
+  public SimpleTransferable(T data, Class<T> dataClass, DataFlavor flavor) {
     myDataProxy = data;
     myDataClass = dataClass;
     myDataFlavor = flavor;
   }
 
   @Nullable
-  public Object getTransferData(final DataFlavor flavor) {
+  public Object getTransferData(DataFlavor flavor) {
     try {
       if (!myDataFlavor.equals(flavor)) {
         return null;
@@ -61,7 +61,7 @@ public final class SimpleTransferable<T> implements Transferable {
     }
   }
 
-  private static <T> DataFlavor getDataFlavor(final Class<T> dataClass) {
+  private static <T> DataFlavor getDataFlavor(Class<T> dataClass) {
     DataFlavor result = ourDataFlavorMap.get(dataClass.getName());
     if (result == null) {
       try {
@@ -85,7 +85,7 @@ public final class SimpleTransferable<T> implements Transferable {
     }
   }
 
-  public boolean isDataFlavorSupported(final DataFlavor flavor) {
+  public boolean isDataFlavorSupported(DataFlavor flavor) {
     try {
       return flavor.equals(myDataFlavor);
     }
@@ -97,11 +97,11 @@ public final class SimpleTransferable<T> implements Transferable {
 
   @Nullable public static <T> T getData(Transferable transferable, Class<T> dataClass) {
     try {
-      final DataFlavor dataFlavor = getDataFlavor(dataClass);
+      DataFlavor dataFlavor = getDataFlavor(dataClass);
       if (!transferable.isDataFlavorSupported(dataFlavor)) {
         return null;
       }
-      final Object transferData = transferable.getTransferData(dataFlavor);
+      Object transferData = transferable.getTransferData(dataFlavor);
       if (!dataClass.isInstance(transferData)) {
         return null;
       }

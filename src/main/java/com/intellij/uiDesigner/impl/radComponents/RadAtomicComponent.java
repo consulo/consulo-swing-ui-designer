@@ -26,15 +26,15 @@ import com.intellij.uiDesigner.impl.palette.Palette;
  * @author Vladimir Kondratyev
  */
 public class RadAtomicComponent extends RadComponent {
-  public RadAtomicComponent(final ModuleProvider module, final Class aClass, final String id){
+  public RadAtomicComponent(ModuleProvider module, Class aClass, String id){
     super(module, aClass, id);
   }
 
-  public RadAtomicComponent(@Nonnull final Class aClass, @Nonnull final String id, final Palette palette) {
+  public RadAtomicComponent(@Nonnull Class aClass, @Nonnull String id, Palette palette) {
     super(null, aClass, id, palette);
   }
 
-  public void write(final XmlWriter writer) {
+  public void write(XmlWriter writer) {
     writer.startElement("component");
     try{
       writeId(writer);

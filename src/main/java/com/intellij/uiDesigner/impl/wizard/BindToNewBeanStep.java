@@ -46,7 +46,7 @@ final class BindToNewBeanStep extends StepAdapter
 	private JCheckBox myChkGetData;
 	private JPanel myPanel;
 
-	BindToNewBeanStep(@Nonnull final WizardData data)
+	BindToNewBeanStep(@Nonnull WizardData data)
 	{
 		myData = data;
 		myTableModel = new MyTableModel();
@@ -57,17 +57,17 @@ final class BindToNewBeanStep extends StepAdapter
 
 		// Customize "Form Property" column
 		{
-			final TableColumn column = myTable.getColumnModel().getColumn(0/*Form Property*/);
+			TableColumn column = myTable.getColumnModel().getColumn(0/*Form Property*/);
 			column.setCellRenderer(new FormPropertyTableCellRenderer(myData.myProject));
 		}
 
 		// Customize "Bean Property" column
 		{
-			final TableColumn column = myTable.getColumnModel().getColumn(1/*Bean Property*/);
+			TableColumn column = myTable.getColumnModel().getColumn(1/*Bean Property*/);
 			column.setCellRenderer(new BeanPropertyTableCellRenderer());
 			column.setCellEditor(new BeanPropertyTableCellEditor());
 
-			final DefaultCellEditor editor = (DefaultCellEditor) myTable.getDefaultEditor(Object.class);
+			DefaultCellEditor editor = (DefaultCellEditor) myTable.getDefaultEditor(Object.class);
 			editor.setClickCountToStart(1);
 		}
 
@@ -96,17 +96,17 @@ final class BindToNewBeanStep extends StepAdapter
     public void _commit(boolean finishChosen) throws CommitStepException
 	{
 		// Stop editing if any
-		final TableCellEditor cellEditor = myTable.getCellEditor();
+		TableCellEditor cellEditor = myTable.getCellEditor();
 		if(cellEditor != null)
 		{
 			cellEditor.stopCellEditing();
 		}
 
 		// Check that all included fields are bound to valid bean properties
-		final PsiNameHelper nameHelper = JavaPsiFacade.getInstance(myData.myProject).getNameHelper();
+		PsiNameHelper nameHelper = JavaPsiFacade.getInstance(myData.myProject).getNameHelper();
 		for(int i = 0; i < myData.myBindings.length; i++)
 		{
-			final FormProperty2BeanProperty binding = myData.myBindings[i];
+			FormProperty2BeanProperty binding = myData.myBindings[i];
 			if(binding.myBeanProperty == null)
 			{
 				continue;
@@ -141,13 +141,13 @@ final class BindToNewBeanStep extends StepAdapter
 		}
 
 		@Override
-        public String getColumnName(final int column)
+        public String getColumnName(int column)
 		{
 			return myColumnNames[column].get();
 		}
 
 		@Override
-        public Class getColumnClass(final int column)
+        public Class getColumnClass(int column)
 		{
 			return myColumnClasses[column];
 		}
@@ -159,15 +159,15 @@ final class BindToNewBeanStep extends StepAdapter
 		}
 
 		@Override
-        public boolean isCellEditable(final int row, final int column)
+        public boolean isCellEditable(int row, int column)
 		{
 			return column == 1/*Bean Property*/;
 		}
 
 		@Override
-        public Object getValueAt(final int row, final int column)
+        public Object getValueAt(int row, int column)
 		{
-			final FormProperty2BeanProperty binding = myData.myBindings[row];
+			FormProperty2BeanProperty binding = myData.myBindings[row];
 			if(column == 0/*Form Property*/)
 			{
 				return binding.myFormProperty;
@@ -183,9 +183,9 @@ final class BindToNewBeanStep extends StepAdapter
 		}
 
 		@Override
-        public void setValueAt(final Object value, final int row, final int column)
+        public void setValueAt(Object value, int row, int column)
 		{
-			final FormProperty2BeanProperty binding = myData.myBindings[row];
+			FormProperty2BeanProperty binding = myData.myBindings[row];
 			if(column == 1/*Bean Property*/)
 			{
 				binding.myBeanProperty = (BeanProperty) value;

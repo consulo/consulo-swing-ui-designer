@@ -52,7 +52,7 @@ final class BindToExistingBeanStep extends StepAdapter
 	private JCheckBox myChkSetData;
 	private JPanel myPanel;
 
-	BindToExistingBeanStep(@Nonnull final WizardData data)
+	BindToExistingBeanStep(@Nonnull WizardData data)
 	{
 		myData = data;
 		myTableModel = new MyTableModel();
@@ -64,18 +64,18 @@ final class BindToExistingBeanStep extends StepAdapter
 
 		// Customize "Form Property" column
 		{
-			final TableColumn column = myTable.getColumnModel().getColumn(0/*Form Property*/);
+			TableColumn column = myTable.getColumnModel().getColumn(0/*Form Property*/);
 			column.setCellRenderer(new FormPropertyTableCellRenderer(myData.myProject));
 		}
 
 		// Customize "Bean Property" column
 		{
-			final TableColumn column = myTable.getColumnModel().getColumn(1/*Bean Property*/);
+			TableColumn column = myTable.getColumnModel().getColumn(1/*Bean Property*/);
 			column.setCellRenderer(new BeanPropertyTableCellRenderer());
-			final MyTableCellEditor cellEditor = new MyTableCellEditor();
+			MyTableCellEditor cellEditor = new MyTableCellEditor();
 			column.setCellEditor(cellEditor);
 
-			final DefaultCellEditor editor = (DefaultCellEditor) myTable.getDefaultEditor(Object.class);
+			DefaultCellEditor editor = (DefaultCellEditor) myTable.getDefaultEditor(Object.class);
 			editor.setClickCountToStart(1);
 
 			myTable.setRowHeight(cellEditor.myCbx.getPreferredSize().height);
@@ -107,7 +107,7 @@ final class BindToExistingBeanStep extends StepAdapter
     public void _commit(boolean finishChosen)
 	{
 		// Stop editing if any
-		final TableCellEditor cellEditor = myTable.getCellEditor();
+		TableCellEditor cellEditor = myTable.getCellEditor();
 		if(cellEditor != null)
 		{
 			cellEditor.stopCellEditing();
@@ -132,7 +132,7 @@ final class BindToExistingBeanStep extends StepAdapter
 		}
 
 		@Override
-        public String getColumnName(final int column)
+        public String getColumnName(int column)
 		{
 			return myColumnNames[column].get();
 		}
@@ -144,13 +144,13 @@ final class BindToExistingBeanStep extends StepAdapter
 		}
 
 		@Override
-        public boolean isCellEditable(final int row, final int column)
+        public boolean isCellEditable(int row, int column)
 		{
 			return column == 1/*Bean Property*/;
 		}
 
 		@Override
-        public Object getValueAt(final int row, final int column)
+        public Object getValueAt(int row, int column)
 		{
 			if(column == 0/*Form Property*/)
 			{
@@ -167,10 +167,10 @@ final class BindToExistingBeanStep extends StepAdapter
 		}
 
 		@Override
-        public void setValueAt(final Object value, final int row, final int column)
+        public void setValueAt(Object value, int row, int column)
 		{
 			LOG.assertTrue(column == 1/*Bean Property*/);
-			final FormProperty2BeanProperty binding = myData.myBindings[row];
+			FormProperty2BeanProperty binding = myData.myBindings[row];
 			binding.myBeanProperty = (BeanProperty) value;
 		}
 	}
@@ -189,7 +189,7 @@ final class BindToExistingBeanStep extends StepAdapter
 			myCbx.putClientProperty("tableCellEditor", this);
 			myCbx.putClientProperty("JComboBox.isTableCellEditor", Boolean.TRUE);
 
-			final JComponent editorComponent = (JComponent) myCbx.getEditor().getEditorComponent();
+			JComponent editorComponent = (JComponent) myCbx.getEditor().getEditorComponent();
 			editorComponent.setBorder(null);
 
 			myEditingRow = -1;
@@ -199,7 +199,7 @@ final class BindToExistingBeanStep extends StepAdapter
 		 * @return whether it's possible to convert <code>type1</code> into <code>type2</code>
 		 * and vice versa.
 		 */
-		private boolean canConvert(final String type1, final String type2)
+		private boolean canConvert(String type1, String type2)
 		{
 			if("boolean".equals(type1) || "boolean".equals(type2))
 			{
@@ -213,42 +213,42 @@ final class BindToExistingBeanStep extends StepAdapter
 
 		@Override
         public Component getTableCellEditorComponent(
-            final JTable table,
-            final Object value,
-            final boolean isSelected,
-            final int row,
-            final int column
+            JTable table,
+            Object value,
+            boolean isSelected,
+            int row,
+            int column
 		)
         {
 			myEditingRow = row;
-			final DefaultComboBoxModel model = (DefaultComboBoxModel) myCbx.getModel();
+			DefaultComboBoxModel model = (DefaultComboBoxModel) myCbx.getModel();
 			model.removeAllElements();
 			model.addElement(null/*<not defined>*/);
 
 			// Fill combobox with available bean's properties
-			final String[] rProps = PropertyUtil.getReadableProperties(myData.myBeanClass, true);
-			final String[] wProps = PropertyUtil.getWritableProperties(myData.myBeanClass, true);
+			String[] rProps = PropertyUtil.getReadableProperties(myData.myBeanClass, true);
+			String[] wProps = PropertyUtil.getWritableProperties(myData.myBeanClass, true);
 			List<BeanProperty> rwProps = new ArrayList<>();
 
 			outer:
 			for(int i = rProps.length - 1; i >= 0; i--)
 			{
-				final String propName = rProps[i];
+				String propName = rProps[i];
 				if(ArrayUtil.find(wProps, propName) != -1)
 				{
 					LOG.assertTrue(!rwProps.contains(propName));
-					final PsiMethod getter = PropertyUtil.findPropertyGetter(myData.myBeanClass, propName, false, true);
+					PsiMethod getter = PropertyUtil.findPropertyGetter(myData.myBeanClass, propName, false, true);
 					if(getter == null)
 					{
 						// possible if the getter is static: getReadableProperties() does not filter out static methods, and
 						// findPropertyGetter() checks for static/non-static
 						continue;
 					}
-					final PsiType returnType = getter.getReturnType();
+					PsiType returnType = getter.getReturnType();
 					LOG.assertTrue(returnType != null);
 
 					// There are two possible types: boolean and java.lang.String
-					final String typeName = returnType.getCanonicalText();
+					String typeName = returnType.getCanonicalText();
 					LOG.assertTrue(typeName != null);
 					if(!"boolean".equals(typeName) && !"java.lang.String".equals(typeName))
 					{
@@ -258,7 +258,7 @@ final class BindToExistingBeanStep extends StepAdapter
 					// Check that the property is not in use yet
 					for(int j = myData.myBindings.length - 1; j >= 0; j--)
 					{
-						final BeanProperty _property = myData.myBindings[j].myBeanProperty;
+						BeanProperty _property = myData.myBindings[j].myBeanProperty;
 						if(j != row && _property != null && propName.equals(_property.myName))
 						{
 							continue outer;
@@ -310,21 +310,21 @@ final class BindToExistingBeanStep extends StepAdapter
 				// 1) BeanProperty object (it user just selected something from ComboBox)
 				// 2) java.lang.String if user type something into ComboBox
 
-				final Object selectedItem = myCbx.getEditor().getItem();
+				Object selectedItem = myCbx.getEditor().getItem();
 				if(selectedItem instanceof BeanProperty)
 				{
 					return selectedItem;
 				}
 				else if(selectedItem instanceof String)
 				{
-					final String fieldName = ((String) selectedItem).trim();
+					String fieldName = ((String) selectedItem).trim();
 
 					if(fieldName.length() == 0)
 					{
 						return null; // binding is not defined
 					}
 
-					final String fieldType = myData.myBindings[myEditingRow].myFormProperty.getComponentPropertyClassName();
+					String fieldType = myData.myBindings[myEditingRow].myFormProperty.getComponentPropertyClassName();
 					return new BeanProperty(fieldName, fieldType);
 				}
 				else

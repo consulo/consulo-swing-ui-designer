@@ -43,7 +43,7 @@ public class FormEditorErrorCollector extends FormErrorCollector {
   private final InspectionProfile myProfile;
   private final PsiFile myFormPsiFile;
 
-  public FormEditorErrorCollector(final GuiEditor editor, final RadComponent component) {
+  public FormEditorErrorCollector(GuiEditor editor, RadComponent component) {
     myEditor = editor;
     myComponent = component;
 
@@ -56,20 +56,20 @@ public class FormEditorErrorCollector extends FormErrorCollector {
     return myResults == null ? null : myResults.toArray(new ErrorInfo[myResults.size()]);
   }
 
-  public void addError(@Nonnull final String inspectionId, final IComponent component, @Nullable IProperty prop,
+  public void addError(@Nonnull String inspectionId, IComponent component, @Nullable IProperty prop,
                        @Nonnull String errorMessage,
                        EditorQuickFixProvider... editorQuickFixProviders) {
     if (myResults == null) {
-      myResults = new ArrayList<ErrorInfo>();
+      myResults = new ArrayList<>();
     }
-    List<QuickFix> quickFixes = new ArrayList<QuickFix>();
+    List<QuickFix> quickFixes = new ArrayList<>();
     for (EditorQuickFixProvider provider : editorQuickFixProviders) {
       if (provider != null) {
         quickFixes.add(provider.createQuickFix(myEditor, myComponent));
       }
     }
 
-    final ErrorInfo errorInfo = new ErrorInfo(myComponent, prop == null ? null : prop.getName(), errorMessage,
+    ErrorInfo errorInfo = new ErrorInfo(myComponent, prop == null ? null : prop.getName(), errorMessage,
                                               myProfile.getErrorLevel(HighlightDisplayKey.find(inspectionId), myFormPsiFile),
                                               quickFixes.toArray(new QuickFix[quickFixes.size()]));
     errorInfo.setInspectionId(inspectionId);

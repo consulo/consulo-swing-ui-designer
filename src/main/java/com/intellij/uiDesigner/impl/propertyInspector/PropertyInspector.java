@@ -58,7 +58,7 @@ public final class PropertyInspector extends JPanel
 	private final ChangeListener myCustomPropertiesChangeListener;
 	private RadContainer myPropertiesPanelContainer;
 
-	public PropertyInspector(Project project, @Nonnull final ComponentTree componentTree)
+	public PropertyInspector(Project project, @Nonnull ComponentTree componentTree)
 	{
 		super(new CardLayout());
 
@@ -66,8 +66,8 @@ public final class PropertyInspector extends JPanel
 		myComponentTree = componentTree;
 
 		// Card with property inspector
-		final JPanel inspectorCard = new JPanel(new GridBagLayout());
-		final JScrollPane inspectorScrollPane = ScrollPaneFactory.createScrollPane(myInspectorTable);
+		JPanel inspectorCard = new JPanel(new GridBagLayout());
+		JScrollPane inspectorScrollPane = ScrollPaneFactory.createScrollPane(myInspectorTable);
 		inspectorScrollPane.setBorder(IdeBorderFactory.createBorder(SideBorder.BOTTOM));
 		inspectorCard.add(inspectorScrollPane,
 				new GridBagConstraints(0, 0, 0, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0)
@@ -80,7 +80,7 @@ public final class PropertyInspector extends JPanel
 		chkShowExpertProperties.addActionListener(
 				new ActionListener()
 				{
-					public void actionPerformed(final ActionEvent e)
+					public void actionPerformed(ActionEvent e)
 					{
 						myInspectorTable.setShowExpertProperties(chkShowExpertProperties.isSelected());
 					}
@@ -89,7 +89,7 @@ public final class PropertyInspector extends JPanel
 		add(inspectorCard, INSPECTOR_CARD);
 
 		// Empty card
-		final MultiLineLabel label = new MultiLineLabel(UIDesignerBundle.message("label.select.single.component.to.edit.its.properties"))
+		MultiLineLabel label = new MultiLineLabel(UIDesignerBundle.message("label.select.single.component.to.edit.its.properties"))
 		{
 			public void updateUI()
 			{
@@ -124,7 +124,7 @@ public final class PropertyInspector extends JPanel
 		};
 	}
 
-	public void setEditor(final GuiEditor editor)
+	public void setEditor(GuiEditor editor)
 	{
 		if(myEditor != editor)
 		{
@@ -154,12 +154,12 @@ public final class PropertyInspector extends JPanel
 		myQuickFixManager.refreshIntentionHint();
 	}
 
-	public void synchWithTree(final boolean forceSynch)
+	public void synchWithTree(boolean forceSynch)
 	{
-		final CardLayout cardLayout = (CardLayout) getLayout();
+		CardLayout cardLayout = (CardLayout) getLayout();
 		if(!showSelectedColumnProperties())
 		{
-			final RadComponent[] selectedComponents = myComponentTree.getSelectedComponents();
+			RadComponent[] selectedComponents = myComponentTree.getSelectedComponents();
 			if(selectedComponents.length >= 1)
 			{
 				cardLayout.show(this, INSPECTOR_CARD);
@@ -180,7 +180,7 @@ public final class PropertyInspector extends JPanel
 		}
 	}
 
-	private void showButtonGroupProperties(final RadButtonGroup group)
+	private void showButtonGroupProperties(RadButtonGroup group)
 	{
 		ButtonGroupPropertiesPanel props = new ButtonGroupPropertiesPanel(myEditor.getRootContainer(), group);
 		myPropertiesPanelContainer = null;
@@ -208,9 +208,9 @@ public final class PropertyInspector extends JPanel
 		{
 			return false;
 		}
-		final int[] selection = panel.getSelectedCells(null);
+		int[] selection = panel.getSelectedCells(null);
 		myPropertiesPanelContainer = container;
-		final CustomPropertiesPanel propertiesPanel = container.getGridLayoutManager().getRowColumnPropertiesPanel(container, panel.isRow(), selection);
+		CustomPropertiesPanel propertiesPanel = container.getGridLayoutManager().getRowColumnPropertiesPanel(container, panel.isRow(), selection);
 		if(propertiesPanel == null)
 		{
 			return false;
@@ -219,7 +219,7 @@ public final class PropertyInspector extends JPanel
 		return true;
 	}
 
-	private void showCustomPropertiesPanel(final CustomPropertiesPanel propertiesPanel)
+	private void showCustomPropertiesPanel(CustomPropertiesPanel propertiesPanel)
 	{
 		if(!Comparing.equal(propertiesPanel, myCustomPropertiesPanel))
 		{
@@ -231,7 +231,7 @@ public final class PropertyInspector extends JPanel
 			myCustomPropertiesPanel.addChangeListener(myCustomPropertiesChangeListener);
 			myCustomPropertiesScrollPane.getViewport().setView(myCustomPropertiesPanel.getComponent());
 		}
-		final CardLayout cardLayout = (CardLayout) getLayout();
+		CardLayout cardLayout = (CardLayout) getLayout();
 		cardLayout.show(this, CUSTOM_CARD);
 	}
 
@@ -255,7 +255,7 @@ public final class PropertyInspector extends JPanel
 	 */
 	private final class MyComponentSelectionListener implements ComponentSelectionListener
 	{
-		public void selectedComponentChanged(final GuiEditor source)
+		public void selectedComponentChanged(GuiEditor source)
 		{
 			synchWithTree(false);
 		}

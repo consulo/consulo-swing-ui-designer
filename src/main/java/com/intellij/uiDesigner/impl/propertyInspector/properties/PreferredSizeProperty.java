@@ -45,12 +45,12 @@ public final class PreferredSizeProperty extends AbstractDimensionProperty<RadCo
 		super("Preferred Size");
 	}
 
-	protected Dimension getValueImpl(final GridConstraints constraints)
+	protected Dimension getValueImpl(GridConstraints constraints)
 	{
 		return constraints.myPreferredSize;
 	}
 
-	protected void setValueImpl(final RadComponent component, final Dimension value) throws Exception
+	protected void setValueImpl(RadComponent component, Dimension value) throws Exception
 	{
 		component.getConstraints().myPreferredSize.setSize(value);
 	}

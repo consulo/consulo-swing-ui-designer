@@ -48,10 +48,10 @@ public final class CreateFieldFix extends QuickFix{
   private final String myFieldName;
 
   public CreateFieldFix(
-    final GuiEditor editor,
-    @Nonnull final PsiClass aClass,
-    @Nonnull final String fieldClass,
-    @Nonnull final String fieldName
+    GuiEditor editor,
+    @Nonnull PsiClass aClass,
+    @Nonnull String fieldClass,
+    @Nonnull String fieldName
   ) {
     super(editor, UIDesignerBundle.message("action.create.field", fieldName), null);
     myClass = aClass;
@@ -66,10 +66,10 @@ public final class CreateFieldFix extends QuickFix{
   public static void runImpl(@Nonnull final Project project,
                              @Nonnull final RadContainer rootContainer,
                              @Nonnull final PsiClass boundClass,
-                             @Nonnull final String fieldClassName,
+                             @Nonnull String fieldClassName,
                              @Nonnull final String fieldName,
                              final boolean showErrors,
-                             @Nullable final Object undoGroupId) {
+                             @Nullable Object undoGroupId) {
     ApplicationManager.getApplication().assertReadAccessAllowed();
 
     PsiDocumentManager.getInstance(project).commitAllDocuments();
@@ -120,18 +120,18 @@ public final class CreateFieldFix extends QuickFix{
   }
 
   private static void createField(final Project project,
-                                  final PsiClass fieldClass,
+                                  PsiClass fieldClass,
                                   final String fieldName,
-                                  final PsiClass boundClass,
-                                  final boolean showErrors,
-                                  final IContainer rootContainer) {
+                                  PsiClass boundClass,
+                                  boolean showErrors,
+                                  IContainer rootContainer) {
     // 1. Create field
-    final PsiElementFactory factory = JavaPsiFacade.getInstance(project).getElementFactory();
-    final PsiType type = factory.createType(fieldClass);
+    PsiElementFactory factory = JavaPsiFacade.getInstance(project).getElementFactory();
+    PsiType type = factory.createType(fieldClass);
     try {
-      final PsiField field = factory.createField(fieldName, type);
-      final String accessibility = GuiDesignerConfiguration.getInstance(project).DEFAULT_FIELD_ACCESSIBILITY;
-      final PsiModifierList modifierList = field.getModifierList();
+      PsiField field = factory.createField(fieldName, type);
+      String accessibility = GuiDesignerConfiguration.getInstance(project).DEFAULT_FIELD_ACCESSIBILITY;
+      PsiModifierList modifierList = field.getModifierList();
       assert modifierList != null;
       String[] modifiers = {PsiModifier.PRIVATE, PsiModifier.PROTECTED, PsiModifier.PUBLIC};
       for(@PsiModifier.ModifierConstant String modifier: modifiers) {

@@ -44,18 +44,18 @@ public final class VSizePolicyProperty extends SizePolicyProperty
 		super("Vertical Size Policy");
 	}
 
-	protected int getValueImpl(final GridConstraints constraints)
+	protected int getValueImpl(GridConstraints constraints)
 	{
 		return constraints.getVSizePolicy();
 	}
 
-	protected void setValueImpl(final GridConstraints constraints, final int policy)
+	protected void setValueImpl(GridConstraints constraints, int policy)
 	{
 		constraints.setVSizePolicy(policy);
 	}
 
 	@Override
-	public boolean appliesTo(final RadComponent component)
+	public boolean appliesTo(RadComponent component)
 	{
 		return !(component instanceof RadHSpacer);
 	}

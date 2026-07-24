@@ -93,7 +93,7 @@ public class FormClassIndex extends ScalarIndexExtension<String>
 	{
 		@Override
 		@Nonnull
-		public Map<String, Void> map(final FileContent inputData)
+		public Map<String, Void> map(FileContent inputData)
 		{
 			String className = null;
 			try
@@ -115,7 +115,7 @@ public class FormClassIndex extends ScalarIndexExtension<String>
 	private static class MyInputFilter implements FileBasedIndex.InputFilter
 	{
 		@Override
-		public boolean acceptInput(Project project, final VirtualFile file)
+		public boolean acceptInput(Project project, VirtualFile file)
 		{
 			return file.getFileType() == GuiFormFileType.INSTANCE;
 		}
@@ -126,11 +126,11 @@ public class FormClassIndex extends ScalarIndexExtension<String>
 		return findFormsBoundToClass(project, className, (GlobalSearchScope) ProjectScopes.getAllScope(project));
 	}
 
-	public static List<PsiFile> findFormsBoundToClass(final Project project, final String className, final GlobalSearchScope scope)
+	public static List<PsiFile> findFormsBoundToClass(Project project, String className, GlobalSearchScope scope)
 	{
 		return ReadAction.compute(() ->
 		{
-			final Collection<VirtualFile> files;
+			Collection<VirtualFile> files;
 			try
 			{
 				files = FileBasedIndex.getInstance().getContainingFiles(NAME, className, GlobalSearchScope.projectScope(project).intersectWith(scope));
@@ -143,7 +143,7 @@ public class FormClassIndex extends ScalarIndexExtension<String>
 			{
 				return Collections.emptyList();
 			}
-			List<PsiFile> result = new ArrayList<PsiFile>();
+			List<PsiFile> result = new ArrayList<>();
 			for(VirtualFile file : files)
 			{
 				if(!file.isValid())

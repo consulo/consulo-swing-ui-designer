@@ -45,12 +45,12 @@ public final class MinimumSizeProperty extends AbstractDimensionProperty<RadComp
 		super("Minimum Size");
 	}
 
-	protected Dimension getValueImpl(final GridConstraints constraints)
+	protected Dimension getValueImpl(GridConstraints constraints)
 	{
 		return constraints.myMinimumSize;
 	}
 
-	protected void setValueImpl(final RadComponent component, final Dimension value) throws Exception
+	protected void setValueImpl(RadComponent component, Dimension value) throws Exception
 	{
 		component.getConstraints().myMinimumSize.setSize(value);
 	}

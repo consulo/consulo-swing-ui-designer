@@ -46,7 +46,7 @@ public class IntroFontProperty extends IntrospectedProperty<FontDescriptor> {
   private FontEditor myFontEditor;
   @NonNls private static final String CLIENT_PROPERTY_KEY_PREFIX = "IntroFontProperty_";
 
-  public IntroFontProperty(final String name, final Method readMethod, final Method writeMethod, final boolean storeAsClient) {
+  public IntroFontProperty(String name, Method readMethod, Method writeMethod, boolean storeAsClient) {
     super(name, readMethod, writeMethod, storeAsClient);
   }
 
@@ -67,22 +67,22 @@ public class IntroFontProperty extends IntrospectedProperty<FontDescriptor> {
     return myFontEditor;
   }
 
-  @Override public FontDescriptor getValue(final RadComponent component) {
-    final FontDescriptor fontDescriptor = (FontDescriptor) component.getDelegee().getClientProperty(CLIENT_PROPERTY_KEY_PREFIX + getName());
+  @Override public FontDescriptor getValue(RadComponent component) {
+    FontDescriptor fontDescriptor = (FontDescriptor) component.getDelegee().getClientProperty(CLIENT_PROPERTY_KEY_PREFIX + getName());
     if (fontDescriptor == null) {
       return new FontDescriptor(null, -1, -1);
     }
     return fontDescriptor;
   }
 
-  @Override protected void setValueImpl(final RadComponent component, final FontDescriptor value) throws Exception {
+  @Override protected void setValueImpl(RadComponent component, FontDescriptor value) throws Exception {
     component.getDelegee().putClientProperty(CLIENT_PROPERTY_KEY_PREFIX + getName(), value);
     if (value != null) {
       if (!component.isLoadingProperties()) {
         invokeSetter(component, getDefaultValue(component.getDelegee()));
       }
       Font defaultFont = (Font) invokeGetter(component);
-      final Font resolvedFont = value.getResolvedFont(defaultFont);
+      Font resolvedFont = value.getResolvedFont(defaultFont);
       invokeSetter(component, resolvedFont);
     }
   }
@@ -92,7 +92,7 @@ public class IntroFontProperty extends IntrospectedProperty<FontDescriptor> {
     component.getDelegee().putClientProperty(CLIENT_PROPERTY_KEY_PREFIX + getName(), null);
   }
   
-  public static String descriptorToString(final FontDescriptor value) {
+  public static String descriptorToString(FontDescriptor value) {
     if (value == null) {
       return "";
     }
@@ -127,12 +127,12 @@ public class IntroFontProperty extends IntrospectedProperty<FontDescriptor> {
     return UIDesignerBundle.message("font.default");
   }
 
-  @Override public void importSnapshotValue(final SnapshotContext context, final JComponent component, final RadComponent radComponent) {
+  @Override public void importSnapshotValue(SnapshotContext context, JComponent component, RadComponent radComponent) {
     try {
       if (component.getParent() != null) {
         Font componentFont = (Font) myReadMethod.invoke(component, EMPTY_OBJECT_ARRAY);
         if (componentFont instanceof FontUIResource) {
-          final Constructor constructor = component.getClass().getConstructor(ArrayUtil.EMPTY_CLASS_ARRAY);
+          Constructor constructor = component.getClass().getConstructor(ArrayUtil.EMPTY_CLASS_ARRAY);
           constructor.setAccessible(true);
           JComponent newComponent = (JComponent)constructor.newInstance(ArrayUtil.EMPTY_OBJECT_ARRAY);
           Font defaultFont = (Font) myReadMethod.invoke(newComponent, EMPTY_OBJECT_ARRAY);

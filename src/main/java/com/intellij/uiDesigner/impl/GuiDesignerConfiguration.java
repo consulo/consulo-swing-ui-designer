@@ -38,7 +38,7 @@ import jakarta.inject.Singleton;
 @ServiceImpl
 public final class GuiDesignerConfiguration implements PersistentStateComponent<GuiDesignerConfiguration>
 {
-	public static GuiDesignerConfiguration getInstance(final Project project)
+	public static GuiDesignerConfiguration getInstance(Project project)
 	{
 		return ServiceManager.getService(project, GuiDesignerConfiguration.class);
 	}

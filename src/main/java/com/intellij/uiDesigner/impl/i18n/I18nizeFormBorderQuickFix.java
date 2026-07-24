@@ -25,7 +25,7 @@ import com.intellij.uiDesigner.lw.StringDescriptor;
 public class I18nizeFormBorderQuickFix extends I18nizeFormQuickFix {
   private final RadContainer myContainer;
 
-  public I18nizeFormBorderQuickFix(final GuiEditor editor, final String name, final RadContainer container) {
+  public I18nizeFormBorderQuickFix(GuiEditor editor, String name, RadContainer container) {
     super(editor, name, container);
     myContainer = container;
   }
@@ -34,7 +34,7 @@ public class I18nizeFormBorderQuickFix extends I18nizeFormQuickFix {
     return myContainer.getBorderTitle();
   }
 
-  protected void setStringDescriptorValue(final StringDescriptor descriptor) throws Exception {
+  protected void setStringDescriptorValue(StringDescriptor descriptor) throws Exception {
     myContainer.setBorderTitle(descriptor);
   }
 }

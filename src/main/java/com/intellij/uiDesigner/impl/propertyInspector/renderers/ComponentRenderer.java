@@ -34,7 +34,7 @@ import javax.swing.*;
  * @author yole
  */
 public class ComponentRenderer extends ColoredListCellRenderer implements PropertyRenderer<String> {
-  public JComponent getComponent(final RadRootContainer rootContainer, String value, boolean selected, boolean hasFocus) {
+  public JComponent getComponent(RadRootContainer rootContainer, String value, boolean selected, boolean hasFocus) {
     clear();
     setBackground(selected ? UIUtil.getTableSelectionBackground() : UIUtil.getTableBackground());
     if (value != null && value.length() > 0) {
@@ -50,9 +50,9 @@ public class ComponentRenderer extends ColoredListCellRenderer implements Proper
     return this;
   }
 
-  private void renderComponent(@Nullable final RadComponent target, boolean selected) {
+  private void renderComponent(@Nullable RadComponent target, boolean selected) {
     clear();
-    final SimpleTextAttributes baseAttributes =
+    SimpleTextAttributes baseAttributes =
       selected ? SimpleTextAttributes.SELECTED_SIMPLE_CELL_ATTRIBUTES : SimpleTextAttributes.SIMPLE_CELL_ATTRIBUTES;
     if (target == null) {
       append(UIDesignerLocalize.componentNone(), baseAttributes);
@@ -64,7 +64,7 @@ public class ComponentRenderer extends ColoredListCellRenderer implements Proper
       append(binding, baseAttributes);
     }
     else {
-      final String componentTitle = target.getComponentTitle();
+      String componentTitle = target.getComponentTitle();
       if (componentTitle != null && componentTitle.length() > "\"\"".length()) {
         append(componentTitle, baseAttributes);
       }

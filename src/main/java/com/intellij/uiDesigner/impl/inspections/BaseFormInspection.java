@@ -76,7 +76,7 @@ public abstract class BaseFormInspection extends BaseJavaLocalInspectionTool imp
 
   @Override
   public boolean isActive(PsiElement psiRoot) {
-    final InspectionProfile profile = InspectionProjectProfileManager.getInstance(psiRoot.getProject()).getInspectionProfile();
+    InspectionProfile profile = InspectionProjectProfileManager.getInstance(psiRoot.getProject()).getInspectionProfile();
     HighlightDisplayKey key = HighlightDisplayKey.find(myInspectionKey);
     return key != null && profile.isToolEnabled(key, psiRoot);
   }
@@ -86,16 +86,16 @@ public abstract class BaseFormInspection extends BaseJavaLocalInspectionTool imp
   @RequiredReadAction
   public ProblemDescriptor[] checkFile(@Nonnull PsiFile file, @Nonnull InspectionManager manager, boolean isOnTheFly, Object state) {
     if (file.getFileType().equals(GuiFormFileType.INSTANCE)) {
-      final VirtualFile virtualFile = file.getVirtualFile();
+      VirtualFile virtualFile = file.getVirtualFile();
       if (virtualFile == null) {
         return null;
       }
-      final Module module = ModuleUtilCore.findModuleForFile(virtualFile, file.getProject());
+      Module module = ModuleUtilCore.findModuleForFile(virtualFile, file.getProject());
       if (module == null) {
         return null;
       }
 
-      final LwRootContainer rootContainer;
+      LwRootContainer rootContainer;
       try {
         rootContainer = Utils.getRootContainer(file.getText(), new PsiPropertiesProvider(module));
       }
@@ -106,7 +106,7 @@ public abstract class BaseFormInspection extends BaseJavaLocalInspectionTool imp
       if (rootContainer.isInspectionSuppressed(getShortName(), null)) {
         return null;
       }
-      final FormFileErrorCollector collector = new FormFileErrorCollector(file, manager, isOnTheFly);
+      FormFileErrorCollector collector = new FormFileErrorCollector(file, manager, isOnTheFly);
       startCheckForm(rootContainer);
       FormEditingUtil.iterate(rootContainer, component -> {
         if (!rootContainer.isInspectionSuppressed(getShortName(), component.getId())) {

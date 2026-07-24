@@ -42,10 +42,10 @@ import java.util.List;
  */
 @ExtensionImpl
 public class DuplicateMnemonicInspection extends BaseFormInspection {
-  private static final ThreadLocal<HashMap<IRootContainer, MnemonicMap>> myContainerMnemonicMap = new ThreadLocal<HashMap<IRootContainer, MnemonicMap>>() {
+  private static final ThreadLocal<HashMap<IRootContainer, MnemonicMap>> myContainerMnemonicMap = new ThreadLocal<>() {
     @Override
     protected HashMap<IRootContainer, MnemonicMap> initialValue() {
-      return new HashMap<IRootContainer, MnemonicMap>();
+      return new HashMap<>();
     }
   };
 
@@ -75,7 +75,7 @@ public class DuplicateMnemonicInspection extends BaseFormInspection {
   }
 
   @Nullable
-  public static SupportCode.TextWithMnemonic getTextWithMnemonic(final Module module, final IComponent component) {
+  public static SupportCode.TextWithMnemonic getTextWithMnemonic(Module module, IComponent component) {
     if (module.isDisposed()) return null;
     IProperty prop = FormInspectionUtil.findProperty(component, SwingProperties.TEXT);
     if (prop != null) {
@@ -99,10 +99,10 @@ public class DuplicateMnemonicInspection extends BaseFormInspection {
     return null;
   }
 
-  private void checkTextWithMnemonic(final consulo.module.Module module,
-                                     final IComponent component,
-                                     final SupportCode.TextWithMnemonic twm,
-                                     final FormErrorCollector collector) {
+  private void checkTextWithMnemonic(consulo.module.Module module,
+                                     IComponent component,
+                                     SupportCode.TextWithMnemonic twm,
+                                     FormErrorCollector collector) {
     IRootContainer root = FormEditingUtil.getRoot(component);
     MnemonicMap map = myContainerMnemonicMap.get().get(root);
     MnemonicKey key = buildMnemonicKey(twm, component);
@@ -125,8 +125,8 @@ public class DuplicateMnemonicInspection extends BaseFormInspection {
     }
   }
 
-  private static MnemonicKey buildMnemonicKey(final SupportCode.TextWithMnemonic twm, final IComponent component) {
-    List<Integer> exclusiveContainerStack = new ArrayList<Integer>();
+  private static MnemonicKey buildMnemonicKey(SupportCode.TextWithMnemonic twm, IComponent component) {
+    List<Integer> exclusiveContainerStack = new ArrayList<>();
     IContainer parent = component.getParentContainer();
     IComponent child = component;
     while(parent != null) {
@@ -143,16 +143,16 @@ public class DuplicateMnemonicInspection extends BaseFormInspection {
     private final char myMnemonicChar;
     private final List<Integer> myExclusiveContainerStack;
 
-    public MnemonicKey(final char mnemonicChar, final List<Integer> exclusiveContainerStack) {
+    public MnemonicKey(char mnemonicChar, List<Integer> exclusiveContainerStack) {
       myMnemonicChar = mnemonicChar;
       myExclusiveContainerStack = exclusiveContainerStack;
     }
 
-    public boolean equals(final Object o) {
+    public boolean equals(Object o) {
       if (this == o) return true;
       if (o == null || getClass() != o.getClass()) return false;
 
-      final MnemonicKey that = (MnemonicKey)o;
+      MnemonicKey that = (MnemonicKey)o;
 
       if (myMnemonicChar != that.myMnemonicChar) return false;
       if (!myExclusiveContainerStack.equals(that.myExclusiveContainerStack)) return false;

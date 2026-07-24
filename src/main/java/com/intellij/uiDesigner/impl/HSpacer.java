@@ -28,18 +28,18 @@ public final class HSpacer extends DesignSpacer{
     setSize(50,getHandleHeight());
   }
 
-  protected void paintComponent(final Graphics g){
-    final int handleHeight=getHandleHeight();
-    final int handleWidth=getHandleWidth();
+  protected void paintComponent(Graphics g){
+    int handleHeight=getHandleHeight();
+    int handleWidth=getHandleWidth();
 
     // Paint left handle
-    final int y=(getHeight()-handleHeight)/2;
+    int y=(getHeight()-handleHeight)/2;
     drawHandle(g,0,y);
     g.setColor(ourColor1);
     UIUtil.drawLine(g, handleWidth, y + handleHeight / 2, handleWidth + 1, y + handleHeight / 2);
 
     // Paint right handle
-    final int x=getWidth()-handleWidth-1;
+    int x=getWidth()-handleWidth-1;
     drawHandle(g,x,y);
     UIUtil.drawLine(g, x, y + handleHeight / 2, x - 2, y + handleHeight / 2);
     g.setColor(ourColor1);
@@ -60,7 +60,7 @@ public final class HSpacer extends DesignSpacer{
    * Paints small spacer's haldle. <code>(x,y)</code> is a top
    * left point of a handle.
    */
-  private static void drawHandle(final Graphics g,final int x,int y){
+  private static void drawHandle(Graphics g, int x, int y){
     g.setColor(ourColor1);
 
     g.drawRect(x,y,HANDLE_ATOM_WIDTH-1,HANDLE_ATOM_HEIGHT-1);
@@ -78,13 +78,13 @@ public final class HSpacer extends DesignSpacer{
     g.drawRect(x,y,HANDLE_ATOM_WIDTH-1,HANDLE_ATOM_HEIGHT-1);
   }
 
-  private static void drawSpring(final Graphics g,final int x,final int y,final int width){
+  private static void drawSpring(Graphics g, int x, int y, int width){
     for(int _x=x;_x<x+width-1;_x+=SPRING_PRERIOD){
       drawSpringPeriod(g,_x,y);
     }
   }
 
-  private static void drawSpringPeriod(final Graphics g,final int x,final int y){
+  private static void drawSpringPeriod(Graphics g, int x, int y){
     g.setColor(ourColor2);
     UIUtil.drawLine(g, x, y - 1, x, y - 2);
     UIUtil.drawLine(g, x + 1, y, x + 1, y);

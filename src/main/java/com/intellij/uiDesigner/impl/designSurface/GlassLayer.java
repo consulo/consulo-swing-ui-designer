@@ -50,7 +50,7 @@ public final class GlassLayer extends JComponent implements DataProvider, PopupO
 	private static final Logger LOG = Logger.getInstance(GlassLayer.class);
 	private Point myLastMousePosition;
 
-	public GlassLayer(final GuiEditor editor)
+	public GlassLayer(GuiEditor editor)
 	{
 		myEditor = editor;
 		enableEvents(AWTEvent.KEY_EVENT_MASK | AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
@@ -88,17 +88,17 @@ public final class GlassLayer extends JComponent implements DataProvider, PopupO
 		registerKeyboardAction(new SelectAllComponentsAction(), "$SelectAll");
 
 		// F2 should start inplace editing
-		final StartInplaceEditingAction startInplaceEditingAction = new StartInplaceEditingAction(editor);
+		StartInplaceEditingAction startInplaceEditingAction = new StartInplaceEditingAction(editor);
 		startInplaceEditingAction.registerCustomShortcutSet(new CustomShortcutSet(KeyStroke.getKeyStroke(KeyEvent.VK_F2, 0)), this);
 	}
 
-	private void registerKeyboardAction(final AnAction action, @NonNls final String actionId)
+	private void registerKeyboardAction(AnAction action, @NonNls String actionId)
 	{
 		action.registerCustomShortcutSet(ActionManager.getInstance().getAction(actionId).getShortcutSet(), this);
 	}
 
 	@Override
-	protected void processKeyEvent(final KeyEvent e)
+	protected void processKeyEvent(KeyEvent e)
 	{
 		myEditor.myProcessor.processKeyEvent(e);
 		if(!e.isConsumed())
@@ -108,7 +108,7 @@ public final class GlassLayer extends JComponent implements DataProvider, PopupO
 	}
 
 	@Override
-	protected void processMouseEvent(final MouseEvent e)
+	protected void processMouseEvent(MouseEvent e)
 	{
 		if(e.getID() == MouseEvent.MOUSE_PRESSED)
 		{
@@ -125,7 +125,7 @@ public final class GlassLayer extends JComponent implements DataProvider, PopupO
 	}
 
 	@Override
-	protected void processMouseMotionEvent(final MouseEvent e)
+	protected void processMouseMotionEvent(MouseEvent e)
 	{
 		myLastMousePosition = e.getPoint();
 		try
@@ -157,7 +157,7 @@ public final class GlassLayer extends JComponent implements DataProvider, PopupO
 	{
 		if(CommonDataKeys.NAVIGATABLE == dataId)
 		{
-			final ComponentTree componentTree = DesignerToolWindowManager.getInstance(myEditor).getComponentTree();
+			ComponentTree componentTree = DesignerToolWindowManager.getInstance(myEditor).getComponentTree();
 			if(componentTree != null)
 			{
 				return componentTree.getData(dataId);
@@ -170,11 +170,11 @@ public final class GlassLayer extends JComponent implements DataProvider, PopupO
 	@Nullable
 	public Point getBestPopupPosition()
 	{
-		final ArrayList<RadComponent> selection = FormEditingUtil.getSelectedComponents(myEditor);
+		ArrayList<RadComponent> selection = FormEditingUtil.getSelectedComponents(myEditor);
 		if(selection.size() > 0)
 		{
-			final RadComponent component = selection.get(0);
-			final Rectangle bounds = component.getBounds();
+			RadComponent component = selection.get(0);
+			Rectangle bounds = component.getBounds();
 			int bottom = bounds.height > 4 ? bounds.y + bounds.height - 4 : bounds.y;
 			int left = bounds.width > 4 ? bounds.x + 4 : bounds.x;
 			Point pnt = new Point(left, bottom);  // the location needs to be within the component

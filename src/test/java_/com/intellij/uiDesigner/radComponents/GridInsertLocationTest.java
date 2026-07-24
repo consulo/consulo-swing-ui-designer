@@ -60,7 +60,7 @@ public abstract class GridInsertLocationTest extends TestCase {
   public void testInsertRowBefore() {
     setGridSize(2, 1);
     insertComponent(0, 0, 1, 1);
-    final RadComponent c = insertComponent(1, 0, 1, 1);
+    RadComponent c = insertComponent(1, 0, 1, 1);
 
     GridInsertLocation location = new GridInsertLocation(myContainer, 1, 0, GridInsertMode.RowBefore);
     DraggedComponentList dcl = DraggedComponentList.withComponents(myDropComponent);
@@ -178,7 +178,7 @@ public abstract class GridInsertLocationTest extends TestCase {
     assertTrue(location.canDrop(dcl));
     doDrop(location);
     assertEquals(3, myManager.getGridRowCount(myContainer));
-    final RadComponent addedComponent = myContainer.getComponents()[2];
+    RadComponent addedComponent = myContainer.getComponents()[2];
     assertEquals(1, addedComponent.getConstraints().getRowSpan());
     assertEquals(1, addedComponent.getConstraints().getColSpan());
 
@@ -201,7 +201,7 @@ public abstract class GridInsertLocationTest extends TestCase {
     assertTrue(location.canDrop(dcl));
     doDrop(location);
     assertEquals(6, myManager.getGridRowCount(myContainer));
-    final RadComponent addedComponent = myContainer.getComponents()[2];
+    RadComponent addedComponent = myContainer.getComponents()[2];
     assertEquals(2, addedComponent.getConstraints().getRowSpan());
     assertEquals(2, addedComponent.getConstraints().getColSpan());
 
@@ -228,27 +228,27 @@ public abstract class GridInsertLocationTest extends TestCase {
     return c;
   }
 
-  private RadComponent createComponent(final int row, final int column, final int rowSpan, final int colSpan) {
-    final RadAtomicComponent c = new RadAtomicComponent(null, JLabel.class, "1");
+  private RadComponent createComponent(int row, int column, int rowSpan, int colSpan) {
+    RadAtomicComponent c = new RadAtomicComponent(null, JLabel.class, "1");
     setComponentDimensions(c, row, column, rowSpan, colSpan);
     return c;
   }
 
-  private void setGridSize(final int rowCount, final int columnCount) {
+  private void setGridSize(int rowCount, int columnCount) {
     myContainer.setLayout(new GridLayoutManager(rowCount, columnCount));
   }
 
-  private static void setComponentDimensions(final RadComponent c,
-                                             final int row,
-                                             final int column,
-                                             final int rowSpan,
-                                             final int colSpan) {
+  private static void setComponentDimensions(RadComponent c,
+                                             int row,
+                                             int column,
+                                             int rowSpan,
+                                             int colSpan) {
     c.getConstraints().restore(new GridConstraints(row, column, rowSpan, colSpan, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
                                                    GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_GROW,
                                                    null, null, null));
   }
 
-  private void doDrop(final GridInsertLocation location) {
+  private void doDrop(GridInsertLocation location) {
     location.processDrop(null, new RadComponent[] {myDropComponent}, null, DraggedComponentList.withComponents(myDropComponent));
   }
 }

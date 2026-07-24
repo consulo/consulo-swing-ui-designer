@@ -32,7 +32,7 @@ public final class IntEnumEditor extends PropertyEditor<Integer> {
   private JComboBox myCbx;
   private final Pair[] myPairs;
 
-  public IntEnumEditor(@Nonnull final Pair[] pairs) {
+  public IntEnumEditor(@Nonnull Pair[] pairs) {
     myPairs = pairs;
   }
 
@@ -42,20 +42,20 @@ public final class IntEnumEditor extends PropertyEditor<Integer> {
   }
 
   public final Integer getValue() throws Exception {
-    final Object selectedItem = getCbx().getSelectedItem();
-    final Pair pair = (Pair)selectedItem;
+    Object selectedItem = getCbx().getSelectedItem();
+    Pair pair = (Pair)selectedItem;
     return pair.myValue;
   }
 
-  public JComponent getComponent(final RadComponent ignored, final Integer value, final InplaceContext inplaceContext) {
+  public JComponent getComponent(RadComponent ignored, Integer value, InplaceContext inplaceContext) {
     // Find pair
     if (value == null) {
       getCbx().setSelectedItem(null);
       return getCbx();
     }
-    final ComboBoxModel model = getCbx().getModel();
+    ComboBoxModel model = getCbx().getModel();
     for (int i = model.getSize() - 1; i >= 0; i--) {
-      final Pair pair = (Pair)model.getElementAt(i);
+      Pair pair = (Pair)model.getElementAt(i);
       if (pair.myValue == value.intValue()) {
         getCbx().setSelectedIndex(i);
         return getCbx();
@@ -76,17 +76,17 @@ public final class IntEnumEditor extends PropertyEditor<Integer> {
   private final class MyPopupMenuListener implements PopupMenuListener {
     private boolean myCancelled;
 
-    public void popupMenuWillBecomeVisible(final PopupMenuEvent e) {
+    public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
       myCancelled = false;
     }
 
-    public void popupMenuWillBecomeInvisible(final PopupMenuEvent e) {
+    public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
       if (!myCancelled) {
         fireValueCommitted(true, false);
       }
     }
 
-    public void popupMenuCanceled(final PopupMenuEvent e) {
+    public void popupMenuCanceled(PopupMenuEvent e) {
       myCancelled = true;
     }
   }
@@ -98,7 +98,7 @@ public final class IntEnumEditor extends PropertyEditor<Integer> {
      */
     public final String myText;
 
-    public Pair(final int value, @Nonnull final String text) {
+    public Pair(int value, @Nonnull String text) {
       myValue = value;
       myText = text;
     }

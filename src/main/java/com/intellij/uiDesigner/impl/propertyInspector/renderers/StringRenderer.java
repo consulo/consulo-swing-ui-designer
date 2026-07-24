@@ -26,7 +26,7 @@ import consulo.util.lang.StringUtil;
  */
 public final class StringRenderer extends LabelPropertyRenderer<StringDescriptor> {
 
-  protected void customize(@Nonnull final StringDescriptor value) {
+  protected void customize(@Nonnull StringDescriptor value) {
     String resolvedValue = value.getResolvedValue();
     if (resolvedValue == null) {
       resolvedValue = value.getValue();

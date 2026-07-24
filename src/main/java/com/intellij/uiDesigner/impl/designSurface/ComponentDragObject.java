@@ -36,5 +36,5 @@ public interface ComponentDragObject {
   @Nullable
   Point getDelta(int componentIndex);
   @Nonnull
-  Dimension getInitialSize(final RadContainer targetContainer);
+  Dimension getInitialSize(RadContainer targetContainer);
 }

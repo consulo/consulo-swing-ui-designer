@@ -37,18 +37,18 @@ public final class IntFieldProperty extends Property<RadComponent, Integer> {
   private final Object myTemplateValue;
   @NonNls private static final String METHOD_CLONE = "clone";
 
-  public IntFieldProperty(@Nonnull final Property parent, @NonNls final String fieldName, final int lowBoundary, final Object templateValue) {
+  public IntFieldProperty(@Nonnull Property parent, @NonNls String fieldName, int lowBoundary, Object templateValue) {
     super(parent, fieldName);
     myParent = parent;
     myFieldName = fieldName;
     myTemplateValue = templateValue;
-    myRenderer = new LabelPropertyRenderer<Integer>();
+    myRenderer = new LabelPropertyRenderer<>();
     myEditor = new IntEditor(lowBoundary);
   }
 
-  public Integer getValue(final RadComponent component) {
+  public Integer getValue(RadComponent component) {
     //noinspection unchecked
-    final Object parentValue = myParent.getValue(component);
+    Object parentValue = myParent.getValue(component);
     if (parentValue == null) return 0;
     try {
       return parentValue.getClass().getField(myFieldName).getInt(parentValue);
@@ -58,14 +58,14 @@ public final class IntFieldProperty extends Property<RadComponent, Integer> {
     }
   }
 
-  protected void setValueImpl(final RadComponent component,final Integer value) throws Exception{
+  protected void setValueImpl(RadComponent component, Integer value) throws Exception{
     //noinspection unchecked
     Object parentValue = myParent.getValue(component);
     if (parentValue == null) {
       parentValue = myTemplateValue;
     }
     else {
-      final Method method = parentValue.getClass().getMethod(METHOD_CLONE, ArrayUtil.EMPTY_CLASS_ARRAY);
+      Method method = parentValue.getClass().getMethod(METHOD_CLONE, ArrayUtil.EMPTY_CLASS_ARRAY);
       parentValue = method.invoke(parentValue);
     }
     parentValue.getClass().getField(myFieldName).setInt(parentValue, value.intValue());

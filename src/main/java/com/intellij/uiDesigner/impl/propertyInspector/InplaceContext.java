@@ -14,7 +14,7 @@ public class InplaceContext {
     myKeepInitialValue = keepInitialValue;
   }
 
-  public InplaceContext(boolean keepInitialValue, final char startChar) {
+  public InplaceContext(boolean keepInitialValue, char startChar) {
     myKeepInitialValue = keepInitialValue;
     myStartedByTyping = true;
     myStartChar = startChar;

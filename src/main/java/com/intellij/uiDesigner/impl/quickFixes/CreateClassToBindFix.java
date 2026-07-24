@@ -49,14 +49,14 @@ public final class CreateClassToBindFix extends QuickFix{
 
   private final String myClassName;
 
-  public CreateClassToBindFix(final GuiEditor editor, @Nonnull final String className) {
+  public CreateClassToBindFix(GuiEditor editor, @Nonnull String className) {
     super(editor, UIDesignerBundle.message("action.create.class", className), null);
     myClassName = className;
   }
 
   public void run() {
     final Project project = myEditor.getProject();
-    final ProjectFileIndex fileIndex = ProjectRootManager.getInstance(project).getFileIndex();
+    ProjectFileIndex fileIndex = ProjectRootManager.getInstance(project).getFileIndex();
     final VirtualFile sourceRoot = fileIndex.getSourceRootForFile(myEditor.getFile());
     if(sourceRoot == null){
       Messages.showErrorDialog(
@@ -75,11 +75,11 @@ public final class CreateClassToBindFix extends QuickFix{
             new Runnable() {
               public void run() {
                 // 1. Create all necessary packages
-                final int indexOfLastDot = myClassName.lastIndexOf('.');
+                int indexOfLastDot = myClassName.lastIndexOf('.');
                 final String packageName = myClassName.substring(0, indexOfLastDot != -1 ? indexOfLastDot : 0);
-                final PsiDirectory psiDirectory;
+                PsiDirectory psiDirectory;
                 if(packageName.length() > 0){
-                  final PackageWrapper packageWrapper = new PackageWrapper(PsiManager.getInstance(project), packageName);
+                  PackageWrapper packageWrapper = new PackageWrapper(PsiManager.getInstance(project), packageName);
                   try {
                     psiDirectory = RefactoringUtil.createPackageDirectoryInSourceRoot(packageWrapper, sourceRoot);
                     LOG.assertTrue(psiDirectory != null);
@@ -104,8 +104,8 @@ public final class CreateClassToBindFix extends QuickFix{
 
                 // 2. Create class in the package
                 try {
-                  final String name = myClassName.substring(indexOfLastDot != -1 ? indexOfLastDot + 1 : 0);
-                  final PsiClass aClass = JavaDirectoryService.getInstance().createClass(psiDirectory, name);
+                  String name = myClassName.substring(indexOfLastDot != -1 ? indexOfLastDot + 1 : 0);
+                  PsiClass aClass = JavaDirectoryService.getInstance().createClass(psiDirectory, name);
                   createBoundFields(aClass);
                 }
                 catch (final IncorrectOperationException e) {
@@ -130,15 +130,15 @@ public final class CreateClassToBindFix extends QuickFix{
   }
 
   private void createBoundFields(final PsiClass formClass) throws IncorrectOperationException {
-    final Module module = myEditor.getRootContainer().getModule();
+    Module module = myEditor.getRootContainer().getModule();
     final GlobalSearchScope scope = GlobalSearchScope.moduleWithDependenciesAndLibrariesScope(module);
     final PsiManager psiManager = PsiManager.getInstance(myEditor.getProject());
 
-    final Ref<IncorrectOperationException> exception = new Ref<IncorrectOperationException>();
+    final Ref<IncorrectOperationException> exception = new Ref<>();
     FormEditingUtil.iterate(myEditor.getRootContainer(), new FormEditingUtil.ComponentVisitor() {
-      public boolean visit(final IComponent component) {
+      public boolean visit(IComponent component) {
         if (component.getBinding() != null) {
-          final PsiClass fieldClass = JavaPsiFacade.getInstance(psiManager.getProject()).findClass(component.getComponentClassName(), scope);
+          PsiClass fieldClass = JavaPsiFacade.getInstance(psiManager.getProject()).findClass(component.getComponentClassName(), scope);
           if (fieldClass != null) {
             PsiType fieldType = JavaPsiFacade.getInstance(psiManager.getProject()).getElementFactory().createType(fieldClass);
             try {

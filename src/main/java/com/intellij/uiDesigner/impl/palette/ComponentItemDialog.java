@@ -101,7 +101,7 @@ public final class ComponentItemDialog extends DialogWrapper
 	 * @param itemToBeEdited item to be edited. If user closes dialog by "OK" button then
 	 * @param oneOff
 	 */
-	public ComponentItemDialog(final Project project, final Component parent, @Nonnull ComponentItem itemToBeEdited, final boolean oneOff)
+	public ComponentItemDialog(Project project, Component parent, @Nonnull ComponentItem itemToBeEdited, boolean oneOff)
 	{
 		super(parent, false);
 		myProject = project;
@@ -163,11 +163,11 @@ public final class ComponentItemDialog extends DialogWrapper
 			}
 		});
 
-		final GridConstraints defaultConstraints = myItemToBeEdited.getDefaultConstraints();
+		GridConstraints defaultConstraints = myItemToBeEdited.getDefaultConstraints();
 
 		// Horizontal size policy
 		{
-			final int hSizePolicy = defaultConstraints.getHSizePolicy();
+			int hSizePolicy = defaultConstraints.getHSizePolicy();
 			myChkHorCanShrink.setSelected((hSizePolicy & GridConstraints.SIZEPOLICY_CAN_SHRINK) != 0);
 			myChkHorCanGrow.setSelected((hSizePolicy & GridConstraints.SIZEPOLICY_CAN_GROW) != 0);
 			myChkHorWantGrow.setSelected((hSizePolicy & GridConstraints.SIZEPOLICY_WANT_GROW) != 0);
@@ -175,7 +175,7 @@ public final class ComponentItemDialog extends DialogWrapper
 
 		// Vertical size policy
 		{
-			final int vSizePolicy = defaultConstraints.getVSizePolicy();
+			int vSizePolicy = defaultConstraints.getVSizePolicy();
 			myChkVerCanShrink.setSelected((vSizePolicy & GridConstraints.SIZEPOLICY_CAN_SHRINK) != 0);
 			myChkVerCanGrow.setSelected((vSizePolicy & GridConstraints.SIZEPOLICY_CAN_GROW) != 0);
 			myChkVerWantGrow.setSelected((vSizePolicy & GridConstraints.SIZEPOLICY_WANT_GROW) != 0);
@@ -219,11 +219,11 @@ public final class ComponentItemDialog extends DialogWrapper
 		return (GroupItem) myGroupComboBox.getSelectedItem();
 	}
 
-	private void setEditorText(final String className)
+	private void setEditorText(String className)
 	{
-		final JavaCodeFragmentFactory factory = JavaCodeFragmentFactory.getInstance(myProject);
+		JavaCodeFragmentFactory factory = JavaCodeFragmentFactory.getInstance(myProject);
 		PsiJavaPackage defaultPackage = JavaPsiFacade.getInstance(myProject).findPackage("");
-		final PsiCodeFragment fragment = factory.createReferenceCodeFragment(className, defaultPackage, true, true);
+		PsiCodeFragment fragment = factory.createReferenceCodeFragment(className, defaultPackage, true, true);
 		myDocument = PsiDocumentManager.getInstance(myProject).getDocument(fragment);
 		myEditorTextField.setDocument(myDocument);
 		updateOKAction();
@@ -253,7 +253,7 @@ public final class ComponentItemDialog extends DialogWrapper
 		// TODO[vova] implement validation
 		if(myClassRadioButton.isSelected())
 		{
-			final String className = myDocument.getText().trim();
+			String className = myDocument.getText().trim();
 			PsiClass psiClass = JavaPsiFacade.getInstance(myProject).findClass(className, GlobalSearchScope.allScope(myProject));
 			if(psiClass != null)
 			{
@@ -271,7 +271,7 @@ public final class ComponentItemDialog extends DialogWrapper
 		myItemToBeEdited.setIconPath(myTfIconPath.getText().trim());
 
 		{
-			final GridConstraints defaultConstraints = myItemToBeEdited.getDefaultConstraints();
+			GridConstraints defaultConstraints = myItemToBeEdited.getDefaultConstraints();
 			// Horizontal size policy
 			defaultConstraints.setHSizePolicy(
 					(myChkHorCanShrink.isSelected() ? GridConstraints.SIZEPOLICY_CAN_SHRINK : 0) |
@@ -388,7 +388,7 @@ public final class ComponentItemDialog extends DialogWrapper
 			{  // why?
 				return false;
 			}
-			final JavaPsiFacade javaPsiFacade = JavaPsiFacade.getInstance(myProject);
+			JavaPsiFacade javaPsiFacade = JavaPsiFacade.getInstance(myProject);
 			if(!javaPsiFacade.getNameHelper().isQualifiedName(myDocument.getText()))
 			{
 				if(myDocument.getTextLength() > 0)
@@ -415,7 +415,7 @@ public final class ComponentItemDialog extends DialogWrapper
         return !myGroupComboBox.isVisible() || myGroupComboBox.getSelectedItem() != null;
     }
 
-	private static String getClassOrInnerName(final PsiClass aClass)
+	private static String getClassOrInnerName(PsiClass aClass)
 	{
 		PsiClass parentClass = PsiTreeUtil.getParentOfType(aClass, PsiClass.class, true);
 		if(parentClass != null)
@@ -429,16 +429,16 @@ public final class ComponentItemDialog extends DialogWrapper
 	{
 		private final Project myProject;
 
-		public MyChooseClassActionListener(final Project project)
+		public MyChooseClassActionListener(Project project)
 		{
 			myProject = project;
 		}
 
         @Override
         @RequiredUIAccess
-        public void actionPerformed(final ActionEvent e)
+        public void actionPerformed(ActionEvent e)
 		{
-			final TreeClassChooserFactory factory = TreeClassChooserFactory.getInstance(myProject);
+			TreeClassChooserFactory factory = TreeClassChooserFactory.getInstance(myProject);
 			TreeClassChooser chooser = factory.createInheritanceClassChooser(
                 UIDesignerLocalize.titleChooseComponentClass().get(),
 				GlobalSearchScope.allScope(myProject),
@@ -448,7 +448,7 @@ public final class ComponentItemDialog extends DialogWrapper
                 null
             );
 			chooser.showDialog();
-			final PsiClass result = chooser.getSelected();
+			PsiClass result = chooser.getSelected();
 			if(result != null)
 			{
 				setEditorText(result.getQualifiedName());
@@ -463,10 +463,10 @@ public final class ComponentItemDialog extends DialogWrapper
 		private final TextFieldWithBrowseButton myTextField;
 		private final String myTitle;
 
-		public MyChooseFileActionListener(final Project project,
-										  final Predicate<PsiFile> filter,
-										  final TextFieldWithBrowseButton textField,
-										  final String title)
+		public MyChooseFileActionListener(Project project,
+                                          Predicate<PsiFile> filter,
+                                          TextFieldWithBrowseButton textField,
+                                          String title)
 		{
 			myProject = project;
 			myFilter = filter;
@@ -478,7 +478,7 @@ public final class ComponentItemDialog extends DialogWrapper
         @RequiredReadAction
         public void actionPerformed(ActionEvent e)
 		{
-			final TreeClassChooserFactory factory = TreeClassChooserFactory.getInstance(myProject);
+			TreeClassChooserFactory factory = TreeClassChooserFactory.getInstance(myProject);
 			PsiFile formFile = null;
 			if(myTextField.getText().length() > 0)
 			{

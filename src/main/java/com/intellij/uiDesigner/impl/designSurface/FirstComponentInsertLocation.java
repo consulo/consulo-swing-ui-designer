@@ -40,9 +40,9 @@ public class FirstComponentInsertLocation extends GridDropLocation {
   protected final int myXPart;
   protected final int myYPart;
 
-  public FirstComponentInsertLocation(@Nonnull final RadContainer container,
-                                      final Point targetPoint,
-                                      @Nonnull final Rectangle cellRect) {
+  public FirstComponentInsertLocation(@Nonnull RadContainer container,
+                                      Point targetPoint,
+                                      @Nonnull Rectangle cellRect) {
     super(container, 0, 0);
     myCellRect = cellRect;
     int midX1 = myCellRect.x + myCellRect.width / 3;
@@ -69,10 +69,10 @@ public class FirstComponentInsertLocation extends GridDropLocation {
     }
   }
 
-  public FirstComponentInsertLocation(@Nonnull final RadContainer container,
-                                      final Rectangle cellRect,
-                                      final int xPart,
-                                      final int yPart) {
+  public FirstComponentInsertLocation(@Nonnull RadContainer container,
+                                      Rectangle cellRect,
+                                      int xPart,
+                                      int yPart) {
     super(container, 0, 0);
     myCellRect = cellRect;
     myXPart = xPart;
@@ -159,17 +159,17 @@ public class FirstComponentInsertLocation extends GridDropLocation {
   }
 
   @Override
-  public boolean canDrop(final ComponentDragObject dragObject) {
+  public boolean canDrop(ComponentDragObject dragObject) {
     if (dragObject.getComponentCount() == 1 && (myContainer.getGridRowCount() == 0 || myContainer.getGridColumnCount() == 0)) {
       return true;
     }
     return super.canDrop(dragObject);
   }
 
-  @Override public void processDrop(final GuiEditor editor,
-                                    final RadComponent[] components,
-                                    final GridConstraints[] constraintsToAdjust,
-                                    final ComponentDragObject dragObject) {
+  @Override public void processDrop(GuiEditor editor,
+                                    RadComponent[] components,
+                                    GridConstraints[] constraintsToAdjust,
+                                    ComponentDragObject dragObject) {
     RadAbstractGridLayoutManager gridLayout = myContainer.getGridLayoutManager();
     if (myContainer.getGridRowCount() == 0 && myContainer.getGridColumnCount() == 0) {
       gridLayout.insertGridCells(myContainer, 0, false, true, true);
@@ -216,7 +216,7 @@ public class FirstComponentInsertLocation extends GridDropLocation {
     return null;
   }
 
-  protected FirstComponentInsertLocation createAdjacentLocation(final int xPart, final int yPart) {
+  protected FirstComponentInsertLocation createAdjacentLocation(int xPart, int yPart) {
     return new FirstComponentInsertLocation(myContainer, myCellRect, xPart, yPart);
   }
 

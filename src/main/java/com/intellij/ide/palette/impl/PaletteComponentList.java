@@ -174,14 +174,14 @@ public class PaletteComponentList extends JBList
 		setLayoutOrientation(HORIZONTAL_WRAP);
 		setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-		final DnDManager dndManager = DnDManager.getInstance();
+		DnDManager dndManager = DnDManager.getInstance();
 		dndManager.registerSource(new MyDnDSource(), this);
 		dndManager.registerTarget(new MyDnDTarget(), this);
 
 		initActions();
 	}
 
-	private void setHoverIndex(final int index)
+	private void setHoverIndex(int index)
 	{
 		if(index != myHoverIndex)
 		{
@@ -197,7 +197,7 @@ public class PaletteComponentList extends JBList
 		}
 	}
 
-	private void setDropTargetIndex(final int index)
+	private void setDropTargetIndex(int index)
 	{
 		if(index != myDropTargetIndex)
 		{
@@ -230,7 +230,7 @@ public class PaletteComponentList extends JBList
 		return (myTempWidth == null) ? super.getWidth() : myTempWidth.intValue();
 	}
 
-	public int getPreferredHeight(final int width)
+	public int getPreferredHeight(int width)
 	{
 		myTempWidth = width;
 		try
@@ -529,7 +529,7 @@ public class PaletteComponentList extends JBList
 		}
 
 		@Override
-		public void dropActionChanged(final int gestureModifiers)
+		public void dropActionChanged(int gestureModifiers)
 		{
 			myPalette.notifyDropActionChanged(gestureModifiers);
 		}

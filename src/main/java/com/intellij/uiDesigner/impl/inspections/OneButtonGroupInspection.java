@@ -42,15 +42,15 @@ public class OneButtonGroupInspection extends BaseFormInspection {
 
     @Override
     protected void checkComponentProperties(Module module, IComponent component, FormErrorCollector collector) {
-        final IRootContainer root = FormEditingUtil.getRoot(component);
+        IRootContainer root = FormEditingUtil.getRoot(component);
         if (root == null) {
             return;
         }
         String groupName = root.getButtonGroupName(component);
         if (groupName != null) {
-            final String[] sameGroupComponents = root.getButtonGroupComponentIds(groupName);
+            String[] sameGroupComponents = root.getButtonGroupComponentIds(groupName);
             for (String id : sameGroupComponents) {
-                final IComponent otherComponent = FormEditingUtil.findComponent(root, id);
+                IComponent otherComponent = FormEditingUtil.findComponent(root, id);
                 if (otherComponent != null && otherComponent != component) {
                     return;
                 }

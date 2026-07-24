@@ -33,7 +33,7 @@ final class BeanPropertyTableCellEditor extends AbstractCellEditor implements Ta
 
   @Override
   public Object getCellEditorValue() {
-    final String propertyName = myEditorComponent.getText().trim();
+    String propertyName = myEditorComponent.getText().trim();
     if(propertyName.length() != 0){
       return new BeanProperty(propertyName, "java.lang.String"/*TODO[vova] provide real implementation*/);
     }
@@ -44,13 +44,13 @@ final class BeanPropertyTableCellEditor extends AbstractCellEditor implements Ta
 
   @Override
   public Component getTableCellEditorComponent(
-    final JTable table,
-    final Object value,
-    final boolean isSelected,
-    final int row,
-    final int column
+    JTable table,
+    Object value,
+    boolean isSelected,
+    int row,
+    int column
   ) {
-    final BeanProperty property = (BeanProperty)value;
+    BeanProperty property = (BeanProperty)value;
 
     if(property != null){
       myEditorComponent.setText(property.myName);

@@ -29,7 +29,7 @@ public interface PropertyEditorListener extends EventListener {
    * is cancelled. PropertyInspector, for example, applies
    * new value and continue editing.
    */
-  void valueCommitted(PropertyEditor source, final boolean continueEditing, final boolean closeEditorOnError);
+  void valueCommitted(PropertyEditor source, boolean continueEditing, boolean closeEditorOnError);
 
   /**
    * This method is invoked when user cancelled editing.

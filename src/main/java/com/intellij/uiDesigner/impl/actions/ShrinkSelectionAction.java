@@ -36,16 +36,16 @@ import java.util.Stack;
 public final class ShrinkSelectionAction extends AnAction implements AnActionWithSyncUpdate {
     @RequiredUIAccess
     @Override
-    public void actionPerformed(final AnActionEvent e) {
-        final GuiEditor editor = FormEditingUtil.getEditorFromContext(e.getDataContext());
+    public void actionPerformed(AnActionEvent e) {
+        GuiEditor editor = FormEditingUtil.getEditorFromContext(e.getDataContext());
         assert editor != null;
-        final SelectionState selectionState = editor.getSelectionState();
+        SelectionState selectionState = editor.getSelectionState();
         selectionState.setInsideChange(true);
         ComponentTreeBuilder builder = DesignerToolWindowManager.getInstance(editor).getComponentTreeBuilder();
         builder.beginUpdateSelection();
 
         try {
-            final Stack<ComponentPtr[]> history = selectionState.getSelectionHistory();
+            Stack<ComponentPtr[]> history = selectionState.getSelectionHistory();
             history.pop();
             SelectionState.restoreSelection(editor, history.peek());
         }
@@ -56,15 +56,15 @@ public final class ShrinkSelectionAction extends AnAction implements AnActionWit
     }
 
     @Override
-    public void update(final AnActionEvent e) {
-        final Presentation presentation = e.getPresentation();
-        final GuiEditor editor = FormEditingUtil.getEditorFromContext(e.getDataContext());
+    public void update(AnActionEvent e) {
+        Presentation presentation = e.getPresentation();
+        GuiEditor editor = FormEditingUtil.getEditorFromContext(e.getDataContext());
         if (editor == null) {
             presentation.setEnabled(false);
             return;
         }
 
-        final Stack<ComponentPtr[]> history = editor.getSelectionState().getSelectionHistory();
+        Stack<ComponentPtr[]> history = editor.getSelectionState().getSelectionHistory();
         presentation.setEnabled(history.size() > 1);
     }
 }

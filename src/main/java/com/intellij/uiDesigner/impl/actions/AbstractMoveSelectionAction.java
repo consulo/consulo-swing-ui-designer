@@ -45,7 +45,7 @@ abstract class AbstractMoveSelectionAction extends AnAction implements DumbAware
     private final boolean myExtend;
     private final boolean myMoveToLast;
 
-    public AbstractMoveSelectionAction(@Nonnull final GuiEditor editor, boolean extend, final boolean moveToLast) {
+    public AbstractMoveSelectionAction(@Nonnull GuiEditor editor, boolean extend, boolean moveToLast) {
         myEditor = editor;
         myExtend = extend;
         myMoveToLast = moveToLast;
@@ -53,7 +53,7 @@ abstract class AbstractMoveSelectionAction extends AnAction implements DumbAware
 
     @Override
     @RequiredUIAccess
-    public final void actionPerformed(final AnActionEvent e) {
+    public final void actionPerformed(AnActionEvent e) {
         List<RadComponent> selectedComponents = FormEditingUtil.getSelectedComponents(myEditor);
         final JComponent rootContainerDelegee = myEditor.getRootContainer().getDelegee();
         if (selectedComponents.size() == 0) {
@@ -79,7 +79,7 @@ abstract class AbstractMoveSelectionAction extends AnAction implements DumbAware
             myEditor.getRootContainer(),
             new FormEditingUtil.ComponentVisitor<RadComponent>() {
                 @Override
-                public boolean visit(final RadComponent component) {
+                public boolean visit(RadComponent component) {
                     if (component instanceof RadAtomicComponent) {
                         if (selectedComponent1.equals(component)) {
                             return true;
@@ -88,8 +88,8 @@ abstract class AbstractMoveSelectionAction extends AnAction implements DumbAware
                             return true;
                         }
                         components.add(component);
-                        final JComponent _delegee = component.getDelegee();
-                        final Point p = SwingUtilities.convertPoint(
+                        JComponent _delegee = component.getDelegee();
+                        Point p = SwingUtilities.convertPoint(
                             _delegee,
                             new Point(0, 0),
                             rootContainerDelegee
@@ -107,7 +107,7 @@ abstract class AbstractMoveSelectionAction extends AnAction implements DumbAware
         }
 
         // 2.
-        final Point source = SwingUtilities.convertPoint(
+        Point source = SwingUtilities.convertPoint(
             selectedComponent.getDelegee(),
             new Point(0, 0),
             rootContainerDelegee
@@ -117,7 +117,7 @@ abstract class AbstractMoveSelectionAction extends AnAction implements DumbAware
         int min = Integer.MAX_VALUE;
         int nextSelectedIndex = -1;
         for (int i = points.size() - 1; i >= 0; i--) {
-            final int distance = calcDistance(source, points.get(i));
+            int distance = calcDistance(source, points.get(i));
             if (distance < min) {
                 min = distance;
                 nextSelectedIndex = i;
@@ -128,11 +128,11 @@ abstract class AbstractMoveSelectionAction extends AnAction implements DumbAware
         }
 
         LOG.assertTrue(nextSelectedIndex != -1);
-        final RadComponent component = components.get(nextSelectedIndex);
+        RadComponent component = components.get(nextSelectedIndex);
         selectOrExtend(component);
     }
 
-    private void selectOrExtend(final RadComponent component) {
+    private void selectOrExtend(RadComponent component) {
         if (myExtend) {
             FormEditingUtil.selectComponent(myEditor, component);
         }
@@ -149,10 +149,10 @@ abstract class AbstractMoveSelectionAction extends AnAction implements DumbAware
             myEditor.getRootContainer(),
             new FormEditingUtil.ComponentVisitor<RadComponent>() {
                 @Override
-                public boolean visit(final RadComponent component) {
+                public boolean visit(RadComponent component) {
                     if (component instanceof RadAtomicComponent) {
-                        final JComponent _delegee = component.getDelegee();
-                        final Point p = SwingUtilities.convertPoint(
+                        JComponent _delegee = component.getDelegee();
+                        Point p = SwingUtilities.convertPoint(
                             _delegee,
                             new Point(0, 0),
                             rootContainerDelegee
@@ -177,8 +177,8 @@ abstract class AbstractMoveSelectionAction extends AnAction implements DumbAware
         e.getPresentation().setEnabled(!myEditor.getMainProcessor().isProcessorActive());
     }
 
-    private boolean moveSelectionByGrid(final RadComponent selectedComponent) {
-        final RadContainer parent = selectedComponent.getParent();
+    private boolean moveSelectionByGrid(RadComponent selectedComponent) {
+        RadContainer parent = selectedComponent.getParent();
         if (parent == null || !parent.getLayoutManager().isGrid()) {
             return false;
         }
@@ -197,7 +197,7 @@ abstract class AbstractMoveSelectionAction extends AnAction implements DumbAware
                 return false;
             }
 
-            final RadComponent component = parent.getComponentAtGrid(row, column);
+            RadComponent component = parent.getComponentAtGrid(row, column);
             if (component != null && component != selectedComponent) {
                 if (myMoveToLast) {
                     if (myExtend) {

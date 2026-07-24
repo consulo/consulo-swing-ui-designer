@@ -63,7 +63,7 @@ public abstract class AsmCodeGeneratorTest extends TestCase
 		super.setUp();
 		myNestedFormLoader = new MyNestedFormLoader();
 
-		final String swingPath = PathUtil.getJarPathForClass(AbstractButton.class);
+		String swingPath = PathUtil.getJarPathForClass(AbstractButton.class);
 
 		List<URL> cp = new ArrayList<>();
 		appendPath(cp, JBTabbedPane.class);
@@ -82,7 +82,7 @@ public abstract class AsmCodeGeneratorTest extends TestCase
 
 	private static void appendPath(Collection<URL> container, Class cls) throws MalformedURLException
 	{
-		final String path = PathUtil.getJarPathForClass(cls);
+		String path = PathUtil.getJarPathForClass(cls);
 		appendPath(container, path);
 	}
 
@@ -95,7 +95,7 @@ public abstract class AsmCodeGeneratorTest extends TestCase
 	protected void tearDown() throws Exception
 	{
 		myNestedFormLoader = null;
-		final MyClassFinder classFinder = myClassFinder;
+		MyClassFinder classFinder = myClassFinder;
 		if(classFinder != null)
 		{
 			classFinder.releaseResources();
@@ -104,13 +104,13 @@ public abstract class AsmCodeGeneratorTest extends TestCase
 		super.tearDown();
 	}
 
-	private AsmCodeGenerator initCodeGenerator(final String formFileName, final String className) throws Exception
+	private AsmCodeGenerator initCodeGenerator(String formFileName, String className) throws Exception
 	{
-		final String testDataPath = "/testData/";
+		String testDataPath = "/testData/";
 		return initCodeGenerator(formFileName, className, testDataPath);
 	}
 
-	private AsmCodeGenerator initCodeGenerator(final String formFileName, final String className, final String testDataPath) throws Exception
+	private AsmCodeGenerator initCodeGenerator(String formFileName, final String className, String testDataPath) throws Exception
 	{
 		String tmpPath = FileUtil.getTempDirectory();
 		String formPath = testDataPath + formFileName;
@@ -132,10 +132,10 @@ public abstract class AsmCodeGeneratorTest extends TestCase
 		}
 
 		String classPath = tmpPath + "/" + className + ".class";
-		final LwRootContainer rootContainer = loadFormData(formPath);
-		final AsmCodeGenerator codeGenerator = new AsmCodeGenerator(rootContainer, myClassFinder, myNestedFormLoader, false,
+		LwRootContainer rootContainer = loadFormData(formPath);
+		AsmCodeGenerator codeGenerator = new AsmCodeGenerator(rootContainer, myClassFinder, myNestedFormLoader, false,
 				new ClassWriter(ClassWriter.COMPUTE_FRAMES));
-		final FileInputStream classStream = new FileInputStream(classPath);
+		FileInputStream classStream = new FileInputStream(classPath);
 		try
 		{
 			codeGenerator.patchClass(classStream);
@@ -144,7 +144,7 @@ public abstract class AsmCodeGeneratorTest extends TestCase
 		{
 			classStream.close();
 			FileUtil.delete(new File(classPath));
-			final File[] inners = new File(tmpPath).listFiles(new FilenameFilter()
+			File[] inners = new File(tmpPath).listFiles(new FilenameFilter()
 			{
 				@Override
 				public boolean accept(File dir, String name)
@@ -163,16 +163,16 @@ public abstract class AsmCodeGeneratorTest extends TestCase
 		return codeGenerator;
 	}
 
-	private LwRootContainer loadFormData(final String formPath) throws Exception
+	private LwRootContainer loadFormData(String formPath) throws Exception
 	{
 		String formData = FileUtil.loadFile(new File(formPath));
-		final CompiledClassPropertiesProvider provider = new CompiledClassPropertiesProvider(getClass().getClassLoader());
+		CompiledClassPropertiesProvider provider = new CompiledClassPropertiesProvider(getClass().getClassLoader());
 		return Utils.getRootContainer(formData, provider);
 	}
 
-	private Class loadAndPatchClass(final String formFileName, final String className) throws Exception
+	private Class loadAndPatchClass(String formFileName, String className) throws Exception
 	{
-		final AsmCodeGenerator codeGenerator = initCodeGenerator(formFileName, className);
+		AsmCodeGenerator codeGenerator = initCodeGenerator(formFileName, className);
 
 		byte[] patchedData = getVerifiedPatchedData(codeGenerator);
 
@@ -186,7 +186,7 @@ public abstract class AsmCodeGeneratorTest extends TestCase
 		return myClassFinder.getLoader().loadClass(className);
 	}
 
-	private static byte[] getVerifiedPatchedData(final AsmCodeGenerator codeGenerator)
+	private static byte[] getVerifiedPatchedData(AsmCodeGenerator codeGenerator)
 	{
 		byte[] patchedData = codeGenerator.getPatchedData();
 		FormErrorInfo[] errors = codeGenerator.getErrors();
@@ -206,7 +206,7 @@ public abstract class AsmCodeGeneratorTest extends TestCase
 		return patchedData;
 	}
 
-	private JComponent getInstrumentedRootComponent(final String formFileName, final String className) throws Exception
+	private JComponent getInstrumentedRootComponent(String formFileName, String className) throws Exception
 	{
 		Class cls = loadAndPatchClass(formFileName, className);
 		Field rootComponentField = cls.getField("myRootComponent");
@@ -254,7 +254,7 @@ public abstract class AsmCodeGeneratorTest extends TestCase
 	public void testGridLayout() throws Exception
 	{
 		JComponent rootComponent = getInstrumentedRootComponent("TestGridConstraints.form", "BindingTest");
-		final LayoutManager layout = rootComponent.getLayout();
+		LayoutManager layout = rootComponent.getLayout();
 		assertTrue(isInstanceOf(layout, GridLayoutManager.class.getName()));
 
 
@@ -262,9 +262,9 @@ public abstract class AsmCodeGeneratorTest extends TestCase
 		assertEquals(1, invokeMethod(layout, "getColumnCount"));
 	}
 
-	private static boolean isInstanceOf(Object object, final String className) throws ClassNotFoundException
+	private static boolean isInstanceOf(Object object, String className) throws ClassNotFoundException
 	{
-		final Class<?> ethalon = object.getClass().getClassLoader().loadClass(className);
+		Class<?> ethalon = object.getClass().getClassLoader().loadClass(className);
 		return ethalon.isAssignableFrom(object.getClass());
 	}
 
@@ -275,7 +275,7 @@ public abstract class AsmCodeGeneratorTest extends TestCase
 
 	private static Object invokeMethod(Object obj, String methodName, Class[] params, Object[] args) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException
 	{
-		final Method method = findMethod(obj.getClass(), methodName, params);
+		Method method = findMethod(obj.getClass(), methodName, params);
 		return method.invoke(obj, args);
 	}
 
@@ -283,14 +283,14 @@ public abstract class AsmCodeGeneratorTest extends TestCase
 	{
 		try
 		{
-			final Method method = aClass.getDeclaredMethod(methodName, params);
+			Method method = aClass.getDeclaredMethod(methodName, params);
 			method.setAccessible(true);
 			return method;
 		}
 		catch(NoSuchMethodException ignored)
 		{
 		}
-		final Class<?> parent = aClass.getSuperclass();
+		Class<?> parent = aClass.getSuperclass();
 		if(parent == null)
 		{
 			return null;
@@ -320,10 +320,10 @@ public abstract class AsmCodeGeneratorTest extends TestCase
 	{
 		JComponent rootComponent = getInstrumentedRootComponent("TestGridConstraints.form", "BindingTest");
 		assertEquals(1, rootComponent.getComponentCount());
-		final LayoutManager layout = rootComponent.getLayout();
+		LayoutManager layout = rootComponent.getLayout();
 		assertTrue(isInstanceOf(layout, GridLayoutManager.class.getName()));
 
-		final Object constraints = invokeMethod(layout, "getConstraints", new Class[]{int.class}, new Object[]{0});
+		Object constraints = invokeMethod(layout, "getConstraints", new Class[]{int.class}, new Object[]{0});
 		assertTrue(isInstanceOf(constraints, GridConstraints.class.getName()));
 
 		assertEquals(1, invokeMethod(constraints, "getColSpan"));
@@ -487,7 +487,7 @@ public abstract class AsmCodeGeneratorTest extends TestCase
 	{
 		// NOTE: That doesn't really reproduce the bug as it's dependent on a particular instrumentation sequence used during form preview
 		// (the nested form is instrumented with a new AsmCodeGenerator instance directly in the middle of instrumentation of the current form)
-		final String testDataPath = "testData" + File.separatorChar +
+		String testDataPath = "testData" + File.separatorChar +
 				File.separatorChar + "formEmbedding" + File.separatorChar + "Ideadev14081" + File.separatorChar;
 		AsmCodeGenerator embeddedClassGenerator = initCodeGenerator("Embedded.form", "Embedded", testDataPath);
 		byte[] embeddedPatchedData = getVerifiedPatchedData(embeddedClassGenerator);
@@ -503,7 +503,7 @@ public abstract class AsmCodeGeneratorTest extends TestCase
     */
 
 		myClassFinder.addClassDefinition("Main", mainPatchedData);
-		final Class mainClass = myClassFinder.getLoader().loadClass("Main");
+		Class mainClass = myClassFinder.getLoader().loadClass("Main");
 		Object instance = mainClass.newInstance();
 		assert instance != null : mainClass;
 	}
@@ -512,7 +512,7 @@ public abstract class AsmCodeGeneratorTest extends TestCase
 	{
 		private static final String TEST_PROPERTY_CONTENT = "test=Test Value\nmnemonic=Mne&monic";
 		private final byte[] myTestProperties = Charset.defaultCharset().encode(TEST_PROPERTY_CONTENT).array();
-		private final Map<String, byte[]> myClassData = new HashMap<String, byte[]>();
+		private final Map<String, byte[]> myClassData = new HashMap<>();
 
 		private MyClassFinder(URL[] platformUrls, URL[] classpathUrls)
 		{
@@ -527,7 +527,7 @@ public abstract class AsmCodeGeneratorTest extends TestCase
 		@Override
         protected InputStream lookupClassBeforeClasspath(String internalClassName)
 		{
-			final byte[] bytes = myClassData.get(internalClassName);
+			byte[] bytes = myClassData.get(internalClassName);
 			if(bytes != null)
 			{
 				return new ByteArrayInputStream(bytes);
@@ -548,7 +548,7 @@ public abstract class AsmCodeGeneratorTest extends TestCase
 
 	private class MyNestedFormLoader implements NestedFormLoader
 	{
-		private final Map<String, String> myFormMap = new HashMap<String, String>();
+		private final Map<String, String> myFormMap = new HashMap<>();
 
 		public void registerNestedForm(String formName, String fileName)
 		{
@@ -558,7 +558,7 @@ public abstract class AsmCodeGeneratorTest extends TestCase
 		@Override
 		public LwRootContainer loadForm(String formFileName) throws Exception
 		{
-			final String fileName = myFormMap.get(formFileName);
+			String fileName = myFormMap.get(formFileName);
 			if(fileName != null)
 			{
 				return loadFormData(fileName);

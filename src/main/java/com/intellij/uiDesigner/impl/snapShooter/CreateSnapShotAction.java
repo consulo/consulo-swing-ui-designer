@@ -92,12 +92,12 @@ public class CreateSnapShotAction extends AnAction implements AnActionWithSyncUp
 
     @Override
     public void update(AnActionEvent e) {
-        final Project project = e.getData(Project.KEY);
-        final IdeView view = e.getData(IdeView.KEY);
+        Project project = e.getData(Project.KEY);
+        IdeView view = e.getData(IdeView.KEY);
         e.getPresentation().setVisible(project != null && view != null && hasDirectoryInPackage(project, view));
     }
 
-    private static boolean hasDirectoryInPackage(final Project project, final IdeView view) {
+    private static boolean hasDirectoryInPackage(Project project, IdeView view) {
         ProjectFileIndex projectFileIndex = ProjectRootManager.getInstance(project).getFileIndex();
         PsiDirectory[] dirs = view.getDirectories();
         for (PsiDirectory dir : dirs) {
@@ -123,7 +123,7 @@ public class CreateSnapShotAction extends AnAction implements AnActionWithSyncUp
         }
 
         final SnapShotClient client = new SnapShotClient();
-        List<RunnerAndConfigurationSettings> appConfigurations = new ArrayList<RunnerAndConfigurationSettings>();
+        List<RunnerAndConfigurationSettings> appConfigurations = new ArrayList<>();
         RunnerAndConfigurationSettings snapshotConfiguration = null;
         boolean connected = false;
 
@@ -166,7 +166,7 @@ public class CreateSnapShotAction extends AnAction implements AnActionWithSyncUp
             if (rc == 1) {
                 return;
             }
-            final ApplicationConfiguration appConfig = (ApplicationConfiguration) snapshotConfiguration.getConfiguration();
+            ApplicationConfiguration appConfig = (ApplicationConfiguration) snapshotConfiguration.getConfiguration();
             final SnapShooterConfigurationSettings settings = SnapShooterConfigurationSettings.get(appConfig);
             settings.setNotifyRunnable(new Runnable() {
                 public void run() {
@@ -189,7 +189,7 @@ public class CreateSnapShotAction extends AnAction implements AnActionWithSyncUp
             });
 
             try {
-                final ProgramRunner runner = RunnerRegistry.getInstance().getRunner(DefaultRunExecutor.EXECUTOR_ID, appConfig);
+                ProgramRunner runner = RunnerRegistry.getInstance().getRunner(DefaultRunExecutor.EXECUTOR_ID, appConfig);
                 LOG.assertTrue(runner != null, "Runner MUST not be null!");
                 Executor executor = DefaultRunExecutor.getRunExecutorInstance();
                 runner.execute(
@@ -219,7 +219,7 @@ public class CreateSnapShotAction extends AnAction implements AnActionWithSyncUp
         dlg.show();
         if (dlg.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
             final int id = dlg.getSelectedComponentId();
-            final Ref<Object> result = new Ref<Object>();
+            final Ref<Object> result = new Ref<>();
             ProgressManager.getInstance().runProcessWithProgressSynchronously(new Runnable() {
                 public void run() {
                     try {
@@ -278,8 +278,8 @@ public class CreateSnapShotAction extends AnAction implements AnActionWithSyncUp
     }
 
     @Nullable
-    private static RunnerAndConfigurationSettings promptForSnapshotConfiguration(final Project project,
-                                                                                 final List<RunnerAndConfigurationSettings> configurations) {
+    private static RunnerAndConfigurationSettings promptForSnapshotConfiguration(Project project,
+                                                                                 List<RunnerAndConfigurationSettings> configurations) {
         if (configurations.isEmpty()) {
             Messages.showMessageDialog(project, UIDesignerBundle.message("snapshot.no.configuration.error"),
                 UIDesignerBundle.message("snapshot.title"), Messages.getInformationIcon());
@@ -287,8 +287,8 @@ public class CreateSnapShotAction extends AnAction implements AnActionWithSyncUp
         }
 
         for (int i = configurations.size() - 1; i >= 0; i--) {
-            final JreVersionDetector detector = new JreVersionDetector();
-            final ApplicationConfiguration configuration = (ApplicationConfiguration) configurations.get(i).getConfiguration();
+            JreVersionDetector detector = new JreVersionDetector();
+            ApplicationConfiguration configuration = (ApplicationConfiguration) configurations.get(i).getConfiguration();
             if (!detector.isJre50Configured(configuration) && !detector.isModuleJre50Configured(configuration)) {
                 configurations.remove(i);
             }
@@ -300,9 +300,9 @@ public class CreateSnapShotAction extends AnAction implements AnActionWithSyncUp
             return null;
         }
 
-        final RunnerAndConfigurationSettings snapshotConfiguration;
+        RunnerAndConfigurationSettings snapshotConfiguration;
         if (configurations.size() == 1) {
-            final int rc = Messages.showYesNoDialog(
+            int rc = Messages.showYesNoDialog(
                 project,
                 UIDesignerBundle.message("snapshot.confirm.configuration.prompt", configurations.get(0).getConfiguration().getName()),
                 UIDesignerBundle.message("snapshot.title"),
@@ -345,7 +345,7 @@ public class CreateSnapShotAction extends AnAction implements AnActionWithSyncUp
         @NonNls
         private static final String SWING_PACKAGE = "javax.swing.";
 
-        private MyDialog(Project project, final SnapShotClient client, final PsiDirectory dir) {
+        private MyDialog(Project project, SnapShotClient client, PsiDirectory dir) {
             super(project, true);
             myProject = project;
             myClient = client;
@@ -353,7 +353,7 @@ public class CreateSnapShotAction extends AnAction implements AnActionWithSyncUp
             init();
             setTitle(UIDesignerBundle.message("snapshot.title"));
             setOKButtonText(UIDesignerBundle.message("create.snapshot.button"));
-            final SnapShotTreeModel model = new SnapShotTreeModel(client);
+            SnapShotTreeModel model = new SnapShotTreeModel(client);
             myComponentTree.setModel(model);
             myComponentTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
             myComponentTree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
@@ -369,8 +369,8 @@ public class CreateSnapShotAction extends AnAction implements AnActionWithSyncUp
             myComponentTree.getSelectionModel().setSelectionPath(myComponentTree.getPathForRow(0));
             myFormNameTextField.setText(suggestFormName());
 
-            final EditorColorsScheme globalScheme = EditorColorsManager.getInstance().getGlobalScheme();
-            final TextAttributes attributes = globalScheme.getAttributes(JavaHighlightingColors.STRING);
+            EditorColorsScheme globalScheme = EditorColorsManager.getInstance().getGlobalScheme();
+            TextAttributes attributes = globalScheme.getAttributes(JavaHighlightingColors.STRING);
             final SimpleTextAttributes titleAttributes =
                 new SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, TargetAWT.to(attributes.getForegroundColor()));
 
@@ -397,8 +397,8 @@ public class CreateSnapShotAction extends AnAction implements AnActionWithSyncUp
                         setIcon(AllIcons.FileTypes.UiForm);
                     }
                     else {
-                        final Palette palette = Palette.getInstance(myProject);
-                        final ComponentItem item = palette.getItem(rc.getClassName());
+                        Palette palette = Palette.getInstance(myProject);
+                        ComponentItem item = palette.getItem(rc.getClassName());
                         if (item != null) {
                             setIcon(item.getSmallIcon());
                         }
@@ -427,7 +427,7 @@ public class CreateSnapShotAction extends AnAction implements AnActionWithSyncUp
         }
 
         private void updateOKAction() {
-            final boolean selectedComponentValid = isSelectedComponentValid();
+            boolean selectedComponentValid = isSelectedComponentValid();
             setOKActionEnabled(isFormNameValid() && selectedComponentValid);
             if (myComponentTree.getSelectionPath() != null && !selectedComponentValid) {
                 myErrorLabel.setText(UIDesignerBundle.message("snapshooter.invalid.container"));
@@ -438,7 +438,7 @@ public class CreateSnapShotAction extends AnAction implements AnActionWithSyncUp
         }
 
         private boolean isSelectedComponentValid() {
-            final TreePath selectionPath = myComponentTree.getSelectionPath();
+            TreePath selectionPath = myComponentTree.getSelectionPath();
             if (selectionPath == null) {
                 return false;
             }
@@ -448,13 +448,13 @@ public class CreateSnapShotAction extends AnAction implements AnActionWithSyncUp
             }
             if (selectionPath.getPathCount() == 2) {
                 // capture frame/dialog root pane when a frame or dialog itself is selected
-                final SnapShotRemoteComponent[] children = rc.getChildren();
+                SnapShotRemoteComponent[] children = rc.getChildren();
                 return children != null && children.length > 0 && isValidComponent(children[0]);
             }
             return false;
         }
 
-        private boolean isValidComponent(final SnapShotRemoteComponent rc) {
+        private boolean isValidComponent(SnapShotRemoteComponent rc) {
             PsiClass componentClass =
                 JavaPsiFacade.getInstance(myProject).findClass(rc.getClassName().replace('$', '.'), GlobalSearchScope.allScope(myProject));
             while (componentClass != null) {
@@ -503,10 +503,10 @@ public class CreateSnapShotAction extends AnAction implements AnActionWithSyncUp
         }
 
         private boolean checkUnknownLayoutManagers(final Project project) {
-            final Set<String> layoutManagerClasses = new TreeSet<String>();
+            final Set<String> layoutManagerClasses = new TreeSet<>();
             final SnapShotRemoteComponent rc = (SnapShotRemoteComponent) myComponentTree.getSelectionPath().getLastPathComponent();
             assert rc != null;
-            final Ref<Exception> err = new Ref<Exception>();
+            final Ref<Exception> err = new Ref<>();
             Runnable runnable = new Runnable() {
                 public void run() {
                     try {
@@ -538,8 +538,8 @@ public class CreateSnapShotAction extends AnAction implements AnActionWithSyncUp
             return true;
         }
 
-        private void collectUnknownLayoutManagerClasses(final Project project, final SnapShotRemoteComponent rc,
-                                                        final Set<String> layoutManagerClasses) throws IOException {
+        private void collectUnknownLayoutManagerClasses(Project project, SnapShotRemoteComponent rc,
+                                                        Set<String> layoutManagerClasses) throws IOException {
             RadComponentFactory factory = InsertComponentProcessor.getRadComponentFactory(project, rc.getClassName());
             if (factory instanceof RadContainer.Factory && rc.getLayoutManager().length() > 0 &&
                 !LayoutManagerRegistry.isKnownLayoutClass(rc.getLayoutManager())) {
@@ -562,11 +562,11 @@ public class CreateSnapShotAction extends AnAction implements AnActionWithSyncUp
         }
 
         public int getSelectedComponentId() {
-            final TreePath selectionPath = myComponentTree.getSelectionPath();
+            TreePath selectionPath = myComponentTree.getSelectionPath();
             SnapShotRemoteComponent rc = (SnapShotRemoteComponent) selectionPath.getLastPathComponent();
             if (!isValidComponent(rc) && selectionPath.getPathCount() == 2) {
                 // capture frame/dialog root pane when a frame or dialog itself is selected
-                final SnapShotRemoteComponent[] children = rc.getChildren();
+                SnapShotRemoteComponent[] children = rc.getChildren();
                 if (children != null && children.length > 0 && isValidComponent(children[0])) {
                     return children[0].getId();
                 }

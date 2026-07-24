@@ -38,7 +38,7 @@ public class FormUsageTypeProvider implements UsageTypeProvider
 	@Nullable
 	public UsageType getUsageType(PsiElement element)
 	{
-		final PsiFile psiFile = element.getContainingFile();
+		PsiFile psiFile = element.getContainingFile();
 		if(psiFile.getFileType() == GuiFormFileType.INSTANCE)
 		{
 			return FORM_USAGE_TYPE;

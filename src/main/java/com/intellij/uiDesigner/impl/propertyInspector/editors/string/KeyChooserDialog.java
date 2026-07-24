@@ -86,11 +86,11 @@ public final class KeyChooserDialog extends DialogWrapper
 	 * @param parent         the parent component for the dialog.
 	 */
 	public KeyChooserDialog(
-			final Component parent,
-			@Nonnull final PropertiesFile bundle,
-			@Nonnull final String bundleName,
-			final String keyToPreselect,
-			final GuiEditor editor
+			Component parent,
+			@Nonnull PropertiesFile bundle,
+			@Nonnull String bundleName,
+			String keyToPreselect,
+			GuiEditor editor
 	)
 	{
 		super(parent, true);
@@ -121,9 +121,9 @@ public final class KeyChooserDialog extends DialogWrapper
 		});
 
 		// Calculate width for "Key" columns
-		final Project projectGuess = DataManager.getInstance().getDataContext(parent).getData(CommonDataKeys.PROJECT);
-		final Size2D size = DimensionService.getInstance().getSize(getDimensionServiceKey(), projectGuess);
-		final FontMetrics metrics = myTable.getFontMetrics(myTable.getFont());
+		Project projectGuess = DataManager.getInstance().getDataContext(parent).getData(CommonDataKeys.PROJECT);
+		Size2D size = DimensionService.getInstance().getSize(getDimensionServiceKey(), projectGuess);
+		FontMetrics metrics = myTable.getFontMetrics(myTable.getFont());
 		int minWidth = 200;
 		int maxWidth = size != null ? size.width() / 2 : Integer.MAX_VALUE;
 		if(minWidth > maxWidth)
@@ -133,21 +133,21 @@ public final class KeyChooserDialog extends DialogWrapper
 		int width = minWidth;
 		for(int i = myPairs.size() - 1; i >= 0; i--)
 		{
-			final Pair<String, String> pair = myPairs.get(i);
+			Pair<String, String> pair = myPairs.get(i);
 			width = Math.max(width, metrics.stringWidth(pair.getFirst()));
 		}
 		width += 20;
 		width = Math.max(width, metrics.stringWidth(myModel.getColumnName(0)));
 		width = Math.max(width, minWidth);
 		width = Math.min(width, maxWidth);
-		final TableColumnModel columnModel = myTable.getColumnModel();
-		final TableColumn keyColumn = columnModel.getColumn(0);
+		TableColumnModel columnModel = myTable.getColumnModel();
+		TableColumn keyColumn = columnModel.getColumn(0);
 		keyColumn.setMaxWidth(width);
 		keyColumn.setMinWidth(width);
-		final TableCellRenderer defaultRenderer = myTable.getDefaultRenderer(String.class);
+		TableCellRenderer defaultRenderer = myTable.getDefaultRenderer(String.class);
 		if(defaultRenderer instanceof JComponent)
 		{
-			final JComponent component = (JComponent) defaultRenderer;
+			JComponent component = (JComponent) defaultRenderer;
 			component.putClientProperty("html.disable", Boolean.TRUE);
 		}
 		selectKey(keyToPreselect);
@@ -166,28 +166,28 @@ public final class KeyChooserDialog extends DialogWrapper
 
 	private void fillPropertyList()
 	{
-		myPairs = new ArrayList<Pair<String, String>>();
+		myPairs = new ArrayList<>();
 
-		final List<IProperty> properties = myBundle.getProperties();
+		List<IProperty> properties = myBundle.getProperties();
 		for(IProperty property : properties)
 		{
-			final String key = property.getUnescapedKey();
-			final String value = property.getValue();
+			String key = property.getUnescapedKey();
+			String value = property.getValue();
 			if(key != null)
 			{
-				myPairs.add(new Pair<String, String>(key, value != null ? value : NULL));
+				myPairs.add(new Pair<>(key, value != null ? value : NULL));
 			}
 		}
 		Collections.sort(myPairs, new MyPairComparator());
 	}
 
-	private void selectKey(final String keyToPreselect)
+	private void selectKey(String keyToPreselect)
 	{
 		// Preselect proper row
 		int indexToPreselect = -1;
 		for(int i = myPairs.size() - 1; i >= 0; i--)
 		{
-			final Pair<String, String> pair = myPairs.get(i);
+			Pair<String, String> pair = myPairs.get(i);
 			if(pair.getFirst().equals(keyToPreselect))
 			{
 				indexToPreselect = i;
@@ -207,7 +207,7 @@ public final class KeyChooserDialog extends DialogWrapper
 		return new Action[]{new NewKeyValueAction()};
 	}
 
-	private void selectElementAt(final int index)
+	private void selectElementAt(int index)
 	{
 		myTable.getSelectionModel().setSelectionInterval(index, index);
 		myTable.scrollRectToVisible(myTable.getCellRect(index, 0, true));
@@ -231,15 +231,15 @@ public final class KeyChooserDialog extends DialogWrapper
 	@Nullable
 	StringDescriptor getDescriptor()
 	{
-		final int selectedRow = myTable.getSelectedRow();
+		int selectedRow = myTable.getSelectedRow();
 		if(selectedRow < 0 || selectedRow >= myTable.getRowCount())
 		{
 			return null;
 		}
 		else
 		{
-			final Pair<String, String> pair = myPairs.get(selectedRow);
-			final StringDescriptor descriptor = new StringDescriptor(myBundleName, pair.getFirst());
+			Pair<String, String> pair = myPairs.get(selectedRow);
+			StringDescriptor descriptor = new StringDescriptor(myBundleName, pair.getFirst());
 			descriptor.setResolvedValue(pair.getSecond());
 			return descriptor;
 		}
@@ -252,7 +252,7 @@ public final class KeyChooserDialog extends DialogWrapper
 
 	private static final class MyPairComparator implements Comparator<Pair<String, String>>
 	{
-		public int compare(final Pair<String, String> p1, final Pair<String, String> p2)
+		public int compare(Pair<String, String> p1, Pair<String, String> p2)
 		{
 			return p1.getFirst().compareToIgnoreCase(p2.getFirst());
 		}
@@ -265,7 +265,7 @@ public final class KeyChooserDialog extends DialogWrapper
 			return 2;
 		}
 
-		public String getColumnName(final int column)
+		public String getColumnName(int column)
 		{
 			if(column == 0)
 			{
@@ -281,7 +281,7 @@ public final class KeyChooserDialog extends DialogWrapper
 			}
 		}
 
-		public Class getColumnClass(final int column)
+		public Class getColumnClass(int column)
 		{
 			if(column == 0)
 			{
@@ -297,7 +297,7 @@ public final class KeyChooserDialog extends DialogWrapper
 			}
 		}
 
-		public Object getValueAt(final int row, final int column)
+		public Object getValueAt(int row, int column)
 		{
 			if(column == 0)
 			{
@@ -329,7 +329,7 @@ public final class KeyChooserDialog extends DialogWrapper
 		private ObjectIntMap<Object> myElements;
 		private Object[] myElementsArray;
 
-		public MySpeedSearch(final JTable component)
+		public MySpeedSearch(JTable component)
 		{
 			super(component);
 		}
@@ -360,15 +360,15 @@ public final class KeyChooserDialog extends DialogWrapper
 			return myElementsArray;
 		}
 
-		public String getElementText(final Object element)
+		public String getElementText(Object element)
 		{
 			//noinspection unchecked
 			return ((Pair<String, String>) element).getFirst();
 		}
 
-		public void selectElement(final Object element, final String selectedText)
+		public void selectElement(Object element, String selectedText)
 		{
-			final int index = myElements.getInt(element);
+			int index = myElements.getInt(element);
 			selectElementAt(getComponent().convertRowIndexToView(index));
 		}
 	}

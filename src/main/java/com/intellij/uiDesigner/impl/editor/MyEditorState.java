@@ -26,7 +26,7 @@ final class MyEditorState implements FileEditorState
   private final transient long myDocumentModificationStamp; // should not be serialized
   private final String[] mySelectedComponentIds;
 
-  public MyEditorState(final long modificationStamp, @Nonnull final String[] selectedComponents){
+  public MyEditorState(long modificationStamp, @Nonnull String[] selectedComponents){
     myDocumentModificationStamp = modificationStamp;
     mySelectedComponentIds = selectedComponents;
   }
@@ -35,11 +35,11 @@ final class MyEditorState implements FileEditorState
     return mySelectedComponentIds;
   }
 
-  public boolean equals(final Object o){
+  public boolean equals(Object o){
     if (this == o) return true;
     if (!(o instanceof MyEditorState)) return false;
 
-    final MyEditorState state = (MyEditorState)o;
+    MyEditorState state = (MyEditorState)o;
 
     if (myDocumentModificationStamp != state.myDocumentModificationStamp) return false;
     if (!Arrays.equals(mySelectedComponentIds, state.mySelectedComponentIds)) return false;

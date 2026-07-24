@@ -37,7 +37,7 @@ public class ClientPropertyProperty extends Property
 	private final PropertyRenderer myRenderer;
 	private PropertyEditor myEditor;
 
-	public ClientPropertyProperty(final Property parent, final String name, final String valueClass)
+	public ClientPropertyProperty(Property parent, String name, String valueClass)
 	{
 		super(parent, name);
 		if(valueClass.equals(Boolean.class.getName()))
@@ -70,24 +70,24 @@ public class ClientPropertyProperty extends Property
 		}
 	}
 
-	public Object getValue(final RadComponent component)
+	public Object getValue(RadComponent component)
 	{
 		return component.getDelegee().getClientProperty(getName());
 	}
 
-	protected void setValueImpl(final RadComponent component, final Object value) throws Exception
+	protected void setValueImpl(RadComponent component, Object value) throws Exception
 	{
 		component.getDelegee().putClientProperty(getName(), value);
 	}
 
 	@Override
-	public boolean isModified(final RadComponent component)
+	public boolean isModified(RadComponent component)
 	{
 		return getValue(component) != null;
 	}
 
 	@Override
-	public void resetValue(final RadComponent component) throws Exception
+	public void resetValue(RadComponent component) throws Exception
 	{
 		component.getDelegee().putClientProperty(getName(), null);
 	}

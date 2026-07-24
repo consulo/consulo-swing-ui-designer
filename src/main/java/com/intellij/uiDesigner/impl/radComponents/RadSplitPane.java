@@ -45,18 +45,18 @@ public final class RadSplitPane extends RadContainer
 			return new RadSplitPane(module, aClass, id);
 		}
 
-		public RadComponent newInstance(final Class componentClass, final String id, final Palette palette)
+		public RadComponent newInstance(Class componentClass, String id, Palette palette)
 		{
 			return new RadSplitPane(componentClass, id, palette);
 		}
 	}
 
-	public RadSplitPane(final ModuleProvider module, final Class componentClass, final String id)
+	public RadSplitPane(ModuleProvider module, Class componentClass, String id)
 	{
 		super(module, componentClass, id);
 	}
 
-	public RadSplitPane(Class componentClass, @Nonnull final String id, final Palette palette)
+	public RadSplitPane(Class componentClass, @Nonnull String id, Palette palette)
 	{
 		super(componentClass, id, palette);
 	}
@@ -67,7 +67,7 @@ public final class RadSplitPane extends RadContainer
 		return new RadSplitPaneLayoutManager();
 	}
 
-	private static boolean isEmptySplitComponent(final Component component)
+	private static boolean isEmptySplitComponent(Component component)
 	{
 		return component == null || ((JComponent) component).getClientProperty(CLIENT_PROP_RAD_COMPONENT) == null;
 	}
@@ -86,7 +86,7 @@ public final class RadSplitPane extends RadContainer
 
 	private int getDividerPos()
 	{
-		final JSplitPane splitPane = getSplitPane();
+		JSplitPane splitPane = getSplitPane();
 		int size = splitPane.getOrientation() == JSplitPane.VERTICAL_SPLIT ? splitPane.getHeight() : splitPane.getWidth();
 		if(splitPane.getDividerLocation() > splitPane.getDividerSize() &&
 				splitPane.getDividerLocation() < size - splitPane.getDividerSize())
@@ -106,9 +106,9 @@ public final class RadSplitPane extends RadContainer
 
 	@Override
 	@Nullable
-	public EventProcessor getEventProcessor(final MouseEvent event)
+	public EventProcessor getEventProcessor(MouseEvent event)
 	{
-		final JSplitPane splitPane = getSplitPane();
+		JSplitPane splitPane = getSplitPane();
 		Point pnt = SwingUtilities.convertPoint(event.getComponent(), event.getPoint(), splitPane);
 		int pos = (splitPane.getOrientation() == JSplitPane.VERTICAL_SPLIT) ? pnt.y : pnt.x;
 		if(event.getID() == MouseEvent.MOUSE_PRESSED &&
@@ -120,7 +120,7 @@ public final class RadSplitPane extends RadContainer
 		return null;
 	}
 
-	public void write(final XmlWriter writer)
+	public void write(XmlWriter writer)
 	{
 		writer.startElement(UIFormXmlConstants.ELEMENT_SPLITPANE);
 		try
@@ -145,16 +145,16 @@ public final class RadSplitPane extends RadContainer
 
 
 	@Override
-	protected void importSnapshotComponent(final SnapshotContext context, final JComponent component)
+	protected void importSnapshotComponent(SnapshotContext context, JComponent component)
 	{
 		JSplitPane splitPane = (JSplitPane) component;
 		importSideComponent(splitPane.getLeftComponent(), context, LwSplitPane.POSITION_LEFT);
 		importSideComponent(splitPane.getRightComponent(), context, LwSplitPane.POSITION_RIGHT);
 	}
 
-	private void importSideComponent(final Component sideComponent,
-									 final SnapshotContext context,
-									 final String position)
+	private void importSideComponent(Component sideComponent,
+                                     SnapshotContext context,
+                                     String position)
 	{
 		if(sideComponent instanceof JComponent)
 		{
@@ -176,12 +176,12 @@ public final class RadSplitPane extends RadContainer
 			return null;
 		}
 
-		public void writeChildConstraints(final XmlWriter writer, final RadComponent child)
+		public void writeChildConstraints(XmlWriter writer, RadComponent child)
 		{
 			writer.startElement("splitpane");
 			try
 			{
-				final String position = (String) child.getCustomLayoutConstraints();
+				String position = (String) child.getCustomLayoutConstraints();
 				if(!LwSplitPane.POSITION_LEFT.equals(position) && !LwSplitPane.POSITION_RIGHT.equals(position))
 				{
 					throw new IllegalStateException("invalid position: " + position);
@@ -194,10 +194,10 @@ public final class RadSplitPane extends RadContainer
 			}
 		}
 
-		public void addComponentToContainer(final RadContainer container, final RadComponent component, final int index)
+		public void addComponentToContainer(RadContainer container, RadComponent component, int index)
 		{
-			final JSplitPane splitPane = (JSplitPane) container.getDelegee();
-			final JComponent delegee = component.getDelegee();
+			JSplitPane splitPane = (JSplitPane) container.getDelegee();
+			JComponent delegee = component.getDelegee();
 			if(LwSplitPane.POSITION_LEFT.equals(component.getCustomLayoutConstraints()))
 			{
 				splitPane.setLeftComponent(delegee);
@@ -214,7 +214,7 @@ public final class RadSplitPane extends RadContainer
 
 		@Override
 		@Nonnull
-		public ComponentDropLocation getDropLocation(RadContainer container, @Nullable final Point location)
+		public ComponentDropLocation getDropLocation(RadContainer container, @Nullable Point location)
 		{
 			if(location == null)
 			{
@@ -228,7 +228,7 @@ public final class RadSplitPane extends RadContainer
 	{
 		private final boolean myLeft;
 
-		public MyDropLocation(final boolean left)
+		public MyDropLocation(boolean left)
 		{
 			myLeft = left;
 		}
@@ -253,7 +253,7 @@ public final class RadSplitPane extends RadContainer
 
 		public void placeFeedback(FeedbackLayer feedbackLayer, ComponentDragObject dragObject)
 		{
-			final JSplitPane splitPane = getSplitPane();
+			JSplitPane splitPane = getSplitPane();
 			int dividerPos = getDividerPos();
 			int dividerStartPos = dividerPos - splitPane.getDividerSize() / 2;
 			int dividerEndPos = dividerPos + splitPane.getDividerSize() - splitPane.getDividerSize() / 2;

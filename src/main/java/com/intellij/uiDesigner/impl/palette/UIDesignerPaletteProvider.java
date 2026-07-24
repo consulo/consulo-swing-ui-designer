@@ -39,7 +39,7 @@ public class UIDesignerPaletteProvider implements PaletteItemProvider
 	private static final String PROPERTY_GROUPS = "groups";
 
 	@Inject
-	public UIDesignerPaletteProvider(final Palette palette)
+	public UIDesignerPaletteProvider(Palette palette)
 	{
 		myPalette = palette;
 		myPalette.addListener(new Palette.Listener()

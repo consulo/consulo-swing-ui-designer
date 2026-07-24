@@ -37,12 +37,12 @@ public final class FieldFormReference extends ReferenceInForm
 	private final TextRange myComponentClassNameRange;
 	private final boolean myCustomCreate;
 
-	public FieldFormReference(final PsiPlainTextFile file,
-							  final PsiReference aClass,
-							  final TextRange fieldNameRange,
-							  @Nullable String componentClassName,
-							  @Nullable TextRange componentClassNameRange,
-							  final boolean customCreate)
+	public FieldFormReference(PsiPlainTextFile file,
+                              PsiReference aClass,
+                              TextRange fieldNameRange,
+                              @Nullable String componentClassName,
+                              @Nullable TextRange componentClassNameRange,
+                              boolean customCreate)
 	{
 		super(file, fieldNameRange);
 		myClassReference = aClass;
@@ -53,7 +53,7 @@ public final class FieldFormReference extends ReferenceInForm
 
 	public PsiElement resolve()
 	{
-		final PsiElement element = myClassReference.resolve();
+		PsiElement element = myClassReference.resolve();
 		if(element instanceof PsiClass)
 		{
 			return ((PsiClass) element).findFieldByName(getRangeText(), true);
@@ -78,19 +78,19 @@ public final class FieldFormReference extends ReferenceInForm
 		return myCustomCreate;
 	}
 
-	public PsiElement bindToElement(@Nonnull final PsiElement element) throws IncorrectOperationException
+	public PsiElement bindToElement(@Nonnull PsiElement element) throws IncorrectOperationException
 	{
 		if(!(element instanceof PsiField))
 		{
 			throw new IncorrectOperationException();
 		}
 
-		final PsiField field = (PsiField) element;
+		PsiField field = (PsiField) element;
 		if(!myClassReference.equals(field.getContainingClass()))
 		{
 			throw new consulo.language.util.IncorrectOperationException();
 		}
-		final String text = field.getName();
+		String text = field.getName();
 		updateRangeText(text);
 
 		return myFile;

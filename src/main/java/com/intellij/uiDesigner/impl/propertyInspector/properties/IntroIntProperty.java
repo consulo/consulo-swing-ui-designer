@@ -36,16 +36,16 @@ public final class IntroIntProperty extends IntrospectedProperty<Integer> {
   private PropertyRenderer<Integer> myRenderer;
   private PropertyEditor<Integer> myEditor;
 
-  public IntroIntProperty(final String name, final Method readMethod, final Method writeMethod, final boolean storeAsClient) {
+  public IntroIntProperty(String name, Method readMethod, Method writeMethod, boolean storeAsClient) {
     this(name, readMethod, writeMethod, null, null, storeAsClient);
   }
 
-  public IntroIntProperty(final String name,
-                          final Method readMethod,
-                          final Method writeMethod,
-                          final PropertyRenderer<Integer> renderer,
-                          final PropertyEditor<Integer> editor,
-                          final boolean storeAsClient){
+  public IntroIntProperty(String name,
+                          Method readMethod,
+                          Method writeMethod,
+                          PropertyRenderer<Integer> renderer,
+                          PropertyEditor<Integer> editor,
+                          boolean storeAsClient){
     super(name, readMethod, writeMethod, storeAsClient);
     myRenderer = renderer;
     myEditor = editor;
@@ -54,7 +54,7 @@ public final class IntroIntProperty extends IntrospectedProperty<Integer> {
   @Nonnull
   public PropertyRenderer<Integer> getRenderer() {
     if (myRenderer == null) {
-      myRenderer = new LabelPropertyRenderer<Integer>();
+      myRenderer = new LabelPropertyRenderer<>();
     }
     return myRenderer;
   }
@@ -67,7 +67,7 @@ public final class IntroIntProperty extends IntrospectedProperty<Integer> {
   }
 
   @Override
-  public void importSnapshotValue(final SnapshotContext context, final JComponent component, final RadComponent radComponent) {
+  public void importSnapshotValue(SnapshotContext context, JComponent component, RadComponent radComponent) {
     // exclude property from snapshot import to avoid exceptions because of not imported model 
     if (!getName().equals(SwingProperties.SELECTED_INDEX)) {
       super.importSnapshotValue(context, component, radComponent);

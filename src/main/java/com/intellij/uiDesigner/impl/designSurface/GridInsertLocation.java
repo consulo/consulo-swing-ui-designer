@@ -43,17 +43,17 @@ public class GridInsertLocation extends GridDropLocation {
 
   private boolean mySpanInsertMode;
 
-  public GridInsertLocation(@Nonnull final RadContainer container,
-                            final int row,
-                            final int column,
-                            final GridInsertMode mode) {
+  public GridInsertLocation(@Nonnull RadContainer container,
+                            int row,
+                            int column,
+                            GridInsertMode mode) {
     super(container, row, column);
     myMode = mode;
     assert container.getLayoutManager().isGrid();
   }
 
   public GridInsertLocation normalize() {
-    final RadAbstractGridLayoutManager gridManager = myContainer.getGridLayoutManager();
+    RadAbstractGridLayoutManager gridManager = myContainer.getGridLayoutManager();
 
     if (myMode == GridInsertMode.RowBefore && myRow > 0) {
       myMode = GridInsertMode.RowAfter;
@@ -125,7 +125,7 @@ public class GridInsertLocation extends GridDropLocation {
     return true;
   }
 
-  private static boolean isSameCell(final ComponentDragObject dragObject, boolean isRow) {
+  private static boolean isSameCell(ComponentDragObject dragObject, boolean isRow) {
     if (dragObject.getComponentCount() == 0) {
       return true;
     }
@@ -139,7 +139,7 @@ public class GridInsertLocation extends GridDropLocation {
     return true;
   }
 
-  private boolean isInsertInsideComponent(final int size) {
+  private boolean isInsertInsideComponent(int size) {
     int endColumn = getInsertCell();
     if (isInsertAfter()) endColumn++;
     int row = getOppositeCell();
@@ -156,7 +156,7 @@ public class GridInsertLocation extends GridDropLocation {
 
         if (component != null) {
           GridConstraints constraints = component.getConstraints();
-          final boolean isRow = !isColumnInsert();
+          boolean isRow = !isColumnInsert();
           if (constraints.getCell(isRow) + constraints.getSpan(isRow) > endColumn &&
               constraints.getSpan(isRow) > 1) {
             return true;
@@ -168,8 +168,8 @@ public class GridInsertLocation extends GridDropLocation {
   }
 
   @Override public void placeFeedback(FeedbackLayer feedbackLayer, ComponentDragObject dragObject) {
-    final int insertCol = getColumn();
-    final int insertRow = getRow();
+    int insertCol = getColumn();
+    int insertRow = getRow();
 
     Rectangle feedbackRect = getGridFeedbackRect(dragObject, isColumnInsert(), isRowInsert(), false);
     if (feedbackRect == null) {
@@ -179,7 +179,7 @@ public class GridInsertLocation extends GridDropLocation {
     Rectangle cellRect = getGridFeedbackCellRect(dragObject, isColumnInsert(), isRowInsert(), false);
     assert cellRect != null;
 
-    final RadAbstractGridLayoutManager layoutManager = getContainer().getGridLayoutManager();
+    RadAbstractGridLayoutManager layoutManager = getContainer().getGridLayoutManager();
     int[] vGridLines = layoutManager.getVerticalGridLines(getContainer());
     int[] hGridLines = layoutManager.getHorizontalGridLines(getContainer());
 
@@ -256,7 +256,7 @@ public class GridInsertLocation extends GridDropLocation {
 
       if (rcFeedback == null) {
         if (insertCol == layoutManager.getGridColumnCount(getContainer())-1 && myMode == GridInsertMode.ColumnAfter) {
-          final Dimension initialSize = dragObject.getInitialSize(getContainer());
+          Dimension initialSize = dragObject.getInitialSize(getContainer());
           int feedbackX = vGridLines [vGridLines.length-1] + layoutManager.getGapCellSize(myContainer, false);
           int remainingSize = getContainer().getDelegee().getWidth() - feedbackX;
           if (!dragObject.isHGrow() && remainingSize > initialSize.width) {
@@ -273,7 +273,7 @@ public class GridInsertLocation extends GridDropLocation {
           }
         }
         else if (insertRow == layoutManager.getGridRowCount(getContainer())-1 && myMode == GridInsertMode.RowAfter) {
-          final Dimension initialSize = dragObject.getInitialSize(getContainer());
+          Dimension initialSize = dragObject.getInitialSize(getContainer());
           int feedbackY = hGridLines [hGridLines.length-1] + layoutManager.getGapCellSize(myContainer, true);
           int remainingSize = getContainer().getDelegee().getHeight() - feedbackY;
           if (!dragObject.isVGrow() && remainingSize > initialSize.height) {
@@ -308,9 +308,9 @@ public class GridInsertLocation extends GridDropLocation {
     return null;
   }
 
-  public static Rectangle getInsertFeedbackPosition(final GridInsertMode mode, final RadContainer container, final Rectangle cellRect,
-                                                    final Rectangle feedbackRect) {
-    final RadAbstractGridLayoutManager manager = container.getGridLayoutManager();
+  public static Rectangle getInsertFeedbackPosition(GridInsertMode mode, RadContainer container, Rectangle cellRect,
+                                                    Rectangle feedbackRect) {
+    RadAbstractGridLayoutManager manager = container.getGridLayoutManager();
     int[] vGridLines = manager.getVerticalGridLines(container);
     int[] hGridLines = manager.getHorizontalGridLines(container);
 
@@ -355,10 +355,10 @@ public class GridInsertLocation extends GridDropLocation {
 
 
   @Override
-  public void processDrop(final GuiEditor editor,
-                          final RadComponent[] components,
-                          @Nullable final GridConstraints[] constraintsToAdjust,
-                          final ComponentDragObject dragObject) {
+  public void processDrop(GuiEditor editor,
+                          RadComponent[] components,
+                          @Nullable GridConstraints[] constraintsToAdjust,
+                          ComponentDragObject dragObject) {
     int row = getRow();
     int col = getColumn();
     RadContainer container = getContainer();
@@ -414,9 +414,9 @@ public class GridInsertLocation extends GridDropLocation {
     return cell;
   }
 
-  private static void checkAdjustConstraints(@Nullable final GridConstraints[] constraintsToAdjust,
-                                             final boolean isRow,
-                                             final int index, final int count) {
+  private static void checkAdjustConstraints(@Nullable GridConstraints[] constraintsToAdjust,
+                                             boolean isRow,
+                                             int index, int count) {
     if (constraintsToAdjust != null) {
       for(GridConstraints constraints: constraintsToAdjust) {
         GridChangeUtil.adjustConstraintsOnInsert(constraints, isRow, index, count);
@@ -482,10 +482,10 @@ public class GridInsertLocation extends GridDropLocation {
     return null;
   }
 
-  private ComponentDropLocation getLocationAtParent(final Direction direction) {
-    final RadContainer parent = myContainer.getParent();
+  private ComponentDropLocation getLocationAtParent(Direction direction) {
+    RadContainer parent = myContainer.getParent();
     if (parent.getLayoutManager().isGrid()) {
-      final GridConstraints c = myContainer.getConstraints();
+      GridConstraints c = myContainer.getConstraints();
       switch(direction) {
         case LEFT: return new GridInsertLocation(parent, c.getRow(), c.getColumn(), GridInsertMode.ColumnBefore);
         case RIGHT: return new GridInsertLocation(parent, c.getRow(), c.getColumn()+c.getColSpan()-1, GridInsertMode.ColumnAfter);

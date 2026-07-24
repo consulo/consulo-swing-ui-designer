@@ -51,7 +51,7 @@ public class IntroComponentProperty extends IntrospectedProperty<String> {
                                 Method writeMethod,
                                 Class propertyType,
                                 Condition<RadComponent> filter,
-                                final boolean storeAsClient) {
+                                boolean storeAsClient) {
     super(name, readMethod, writeMethod, storeAsClient);
     myPropertyType = propertyType;
     myFilter = filter;
@@ -69,18 +69,18 @@ public class IntroComponentProperty extends IntrospectedProperty<String> {
     return myEditor;
   }
 
-  @Override public String getValue(final RadComponent component) {
+  @Override public String getValue(RadComponent component) {
     return (String) component.getDelegee().getClientProperty(CLIENT_PROPERTY_KEY_PREFIX + getName());
   }
 
-  @Override protected void setValueImpl(final RadComponent component, final String value) throws Exception {
+  @Override protected void setValueImpl(RadComponent component, String value) throws Exception {
     component.getDelegee().putClientProperty(CLIENT_PROPERTY_KEY_PREFIX + getName(), value);
     if (getName().equals(SwingProperties.LABEL_FOR) && !component.isLoadingProperties() && component.getModule() != null) {
       updateLabelForBinding(component);
     }
   }
 
-  void updateLabelForBinding(final RadComponent component) {
+  void updateLabelForBinding(RadComponent component) {
     String value = getValue(component);
     String text = FormInspectionUtil.getText(component.getModule(), component);
     if (text != null && value != null) {
@@ -102,7 +102,7 @@ public class IntroComponentProperty extends IntrospectedProperty<String> {
     markTopmostModified(component, false);
   }
 
-  @Override public void importSnapshotValue(final SnapshotContext context, final JComponent component, final RadComponent radComponent) {
+  @Override public void importSnapshotValue(SnapshotContext context, JComponent component, RadComponent radComponent) {
     Component value;
     try {
       value = (Component) myReadMethod.invoke(component, EMPTY_OBJECT_ARRAY);

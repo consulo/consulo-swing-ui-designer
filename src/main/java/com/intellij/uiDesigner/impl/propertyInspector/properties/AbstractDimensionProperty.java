@@ -40,7 +40,7 @@ public abstract class AbstractDimensionProperty<T extends RadComponent> extends 
   private final DimensionRenderer myRenderer;
   private final IntRegexEditor<Dimension> myEditor;
 
-  public AbstractDimensionProperty(@NonNls final String name){
+  public AbstractDimensionProperty(@NonNls String name){
     super(null, name);
     myChildren=new Property[]{
       new IntFieldProperty(this, "width", -1, new Dimension(0, 0)),
@@ -72,10 +72,10 @@ public abstract class AbstractDimensionProperty<T extends RadComponent> extends 
     return getValueImpl(component.getConstraints());
   }
 
-  protected abstract Dimension getValueImpl(final GridConstraints constraints);
+  protected abstract Dimension getValueImpl(GridConstraints constraints);
 
-  @Override public boolean isModified(final T component) {
-    final Dimension defaultValue = getValueImpl(FormEditingUtil.getDefaultConstraints(component));
+  @Override public boolean isModified(T component) {
+    Dimension defaultValue = getValueImpl(FormEditingUtil.getDefaultConstraints(component));
     return !getValueImpl(component.getConstraints()).equals(defaultValue);
   }
 

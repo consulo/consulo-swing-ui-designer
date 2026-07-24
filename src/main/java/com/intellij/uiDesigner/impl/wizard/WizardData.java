@@ -65,28 +65,28 @@ public final class WizardData {
 
   public boolean myGenerateIsModified;
 
-  public WizardData(@Nonnull final Project project, @Nonnull final VirtualFile formFile) throws Generator.MyException {
+  public WizardData(@Nonnull Project project, @Nonnull VirtualFile formFile) throws Generator.MyException {
     myProject = project;
     myFormFile = formFile;
     myBindToNewBean = true;
     myGenerateIsModified = true;
 
-    final LwRootContainer[] rootContainer = new LwRootContainer[1];
+    LwRootContainer[] rootContainer = new LwRootContainer[1];
 
     // Create initial bingings between form fields and bean's properties.
     // TODO[vova] ask Anton to not throw exception if form-field doesn't have corresponded field in the Java class
-    final FormProperty[] formProperties = Generator.exposeForm(myProject, myFormFile, rootContainer);
+    FormProperty[] formProperties = Generator.exposeForm(myProject, myFormFile, rootContainer);
     myBindings = new FormProperty2BeanProperty[formProperties.length];
     for(int i = formProperties.length - 1; i >= 0; i--){
       myBindings[i] = new FormProperty2BeanProperty(formProperties[i]);
     }
 
-    final PsiManager manager = PsiManager.getInstance(myProject);
-    final VirtualFile directory = formFile.getParent();
+    PsiManager manager = PsiManager.getInstance(myProject);
+    VirtualFile directory = formFile.getParent();
     LOG.assertTrue(directory.isDirectory());
-    final PsiDirectory psiDirectory = manager.findDirectory(directory);
+    PsiDirectory psiDirectory = manager.findDirectory(directory);
     LOG.assertTrue(psiDirectory != null);
-    final PsiJavaPackage aPackage = JavaDirectoryService.getInstance().getPackage(psiDirectory);
+    PsiJavaPackage aPackage = JavaDirectoryService.getInstance().getPackage(psiDirectory);
     if(aPackage != null){
       myPackageName = aPackage.getQualifiedName();
     }

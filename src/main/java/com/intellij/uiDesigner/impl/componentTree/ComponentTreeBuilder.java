@@ -56,7 +56,7 @@ public final class ComponentTreeBuilder extends AbstractTreeBuilder
 	private final MyHierarchyChangeListener myHierarchyChangeListener;
 	private MyTreeSelectionListener myTreeSelectionListener;
 
-	public ComponentTreeBuilder(final ComponentTree tree, @Nonnull final GuiEditor editor)
+	public ComponentTreeBuilder(ComponentTree tree, @Nonnull GuiEditor editor)
 	{
 		super(tree, (DefaultTreeModel) tree.getModel(), new ComponentTreeStructure(editor), MyComparator.ourComparator);
 
@@ -90,12 +90,12 @@ public final class ComponentTreeBuilder extends AbstractTreeBuilder
 		return (ComponentTreeStructure) getTreeStructure();
 	}
 
-	protected boolean isAlwaysShowPlus(final NodeDescriptor descriptor)
+	protected boolean isAlwaysShowPlus(NodeDescriptor descriptor)
 	{
 		return false;
 	}
 
-	protected boolean isAutoExpandNode(final NodeDescriptor descriptor)
+	protected boolean isAutoExpandNode(NodeDescriptor descriptor)
 	{
 		return getComponentTreeStructure().isAutoExpandNode(descriptor);
 	}
@@ -118,11 +118,11 @@ public final class ComponentTreeBuilder extends AbstractTreeBuilder
 	private void syncSelection()
 	{
 		// Found selected components
-		final RadContainer rootContainer = myEditor.getRootContainer();
-		final ArrayList<RadComponent> selection = new ArrayList<RadComponent>();
+		RadContainer rootContainer = myEditor.getRootContainer();
+		final ArrayList<RadComponent> selection = new ArrayList<>();
 		FormEditingUtil.iterate(rootContainer, new FormEditingUtil.ComponentVisitor<RadComponent>()
 		{
-			public boolean visit(final RadComponent component)
+			public boolean visit(RadComponent component)
 			{
 				if(component.isSelected())
 				{
@@ -138,7 +138,7 @@ public final class ComponentTreeBuilder extends AbstractTreeBuilder
 			selection.add(rootContainer);
 		}
 
-		final ComponentPtr[] componentPtrs = new ComponentPtr[selection.size()];
+		ComponentPtr[] componentPtrs = new ComponentPtr[selection.size()];
 		for(int i = 0; i < selection.size(); i++)
 		{
 			componentPtrs[i] = new ComponentPtr(myEditor, selection.get(i));
@@ -158,7 +158,7 @@ public final class ComponentTreeBuilder extends AbstractTreeBuilder
 	{
 		public static final MyComparator ourComparator = new MyComparator();
 
-		private static int indexOf(final RadContainer container, final RadComponent component)
+		private static int indexOf(RadContainer container, RadComponent component)
 		{
 			if(container != null)
 			{
@@ -173,18 +173,18 @@ public final class ComponentTreeBuilder extends AbstractTreeBuilder
 			return -1;
 		}
 
-		public int compare(final NodeDescriptor descriptor1, final NodeDescriptor descriptor2)
+		public int compare(NodeDescriptor descriptor1, NodeDescriptor descriptor2)
 		{
 			if(descriptor1 instanceof ComponentPtrDescriptor && descriptor2 instanceof ComponentPtrDescriptor)
 			{
-				final RadComponent component1 = ((ComponentPtrDescriptor) descriptor1).getComponent();
-				final RadComponent component2 = ((ComponentPtrDescriptor) descriptor2).getComponent();
+				RadComponent component1 = ((ComponentPtrDescriptor) descriptor1).getComponent();
+				RadComponent component2 = ((ComponentPtrDescriptor) descriptor2).getComponent();
 				if(component1 == null || component2 == null)
 				{
 					return 0;
 				}
-				final RadContainer container1 = component1.getParent();
-				final RadContainer container2 = component2.getParent();
+				RadContainer container1 = component1.getParent();
+				RadContainer container2 = component2.getParent();
 				if(Comparing.equal(container1, container2))
 				{
 					return indexOf(container1, component1) - indexOf(container2, component2);
@@ -239,12 +239,12 @@ public final class ComponentTreeBuilder extends AbstractTreeBuilder
 	 */
 	private final class MySelectionWatcher extends SelectionWatcher
 	{
-		public MySelectionWatcher(final GuiEditor editor)
+		public MySelectionWatcher(GuiEditor editor)
 		{
 			super(editor);
 		}
 
-		protected void selectionChanged(final RadComponent component, final boolean ignored)
+		protected void selectionChanged(RadComponent component, boolean ignored)
 		{
 			updateSelection();
 		}
@@ -252,7 +252,7 @@ public final class ComponentTreeBuilder extends AbstractTreeBuilder
 
 	private void updateSelection()
 	{
-		final PropertyInspector propertyInspector = DesignerToolWindowManager.getInstance(myEditor).getPropertyInspector();
+		PropertyInspector propertyInspector = DesignerToolWindowManager.getInstance(myEditor).getPropertyInspector();
 		if(propertyInspector.isEditing())
 		{
 			propertyInspector.stopEditing();
@@ -279,14 +279,14 @@ public final class ComponentTreeBuilder extends AbstractTreeBuilder
 	 */
 	private final class MyTreeSelectionListener implements TreeSelectionListener
 	{
-		public void valueChanged(final TreeSelectionEvent e)
+		public void valueChanged(TreeSelectionEvent e)
 		{
 			if(myInsideChange > 0)
 			{
 				return;
 			}
 
-			final Set<ComponentPtr> selectedElements = getSelectedElements(ComponentPtr.class);
+			Set<ComponentPtr> selectedElements = getSelectedElements(ComponentPtr.class);
 			myInsideChange++;
 			try
 			{
@@ -298,7 +298,7 @@ public final class ComponentTreeBuilder extends AbstractTreeBuilder
 					ptr.validate();
 					if(ptr.isValid())
 					{
-						final RadComponent component = ptr.getComponent();
+						RadComponent component = ptr.getComponent();
 						LOG.assertTrue(component != null);
 						if(!hasComponentInTab)
 						{

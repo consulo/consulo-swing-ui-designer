@@ -53,7 +53,7 @@ public final class BindingEditor extends ComboBoxPropertyEditor<String>
 	public BindingEditor(final Project project)
 	{
 		myCbx.setEditable(true);
-		final JComponent editorComponent = (JComponent) myCbx.getEditor().getEditorComponent();
+		JComponent editorComponent = (JComponent) myCbx.getEditor().getEditorComponent();
 		editorComponent.setBorder(null);
 
 		myCbx.addActionListener(e -> fireValueCommitted(true, false));
@@ -62,7 +62,7 @@ public final class BindingEditor extends ComboBoxPropertyEditor<String>
 		{
 			@Override
             @RequiredUIAccess
-			public void actionPerformed(final AnActionEvent e)
+			public void actionPerformed(AnActionEvent e)
 			{
 				if(!myCbx.isPopupVisible())
 				{
@@ -76,7 +76,7 @@ public final class BindingEditor extends ComboBoxPropertyEditor<String>
 		}.registerCustomShortcutSet(CommonShortcuts.ESCAPE, myCbx);
 	}
 
-	private static String[] getFieldNames(final RadComponent component, final String currentName)
+	private static String[] getFieldNames(RadComponent component, String currentName)
 	{
 		List<String> result = new ArrayList<>();
 		if(currentName != null)
@@ -84,29 +84,29 @@ public final class BindingEditor extends ComboBoxPropertyEditor<String>
 			result.add(currentName);
 		}
 
-		final IRootContainer root = FormEditingUtil.getRoot(component);
-		final String className = root.getClassToBind();
+		IRootContainer root = FormEditingUtil.getRoot(component);
+		String className = root.getClassToBind();
 		if(className == null)
 		{
 			return ArrayUtil.toStringArray(result);
 		}
 
-		final PsiClass aClass = FormEditingUtil.findClassToBind(component.getModule(), className);
+		PsiClass aClass = FormEditingUtil.findClassToBind(component.getModule(), className);
 		if(aClass == null)
 		{
 			return ArrayUtil.toStringArray(result);
 		}
 
-		final PsiField[] fields = aClass.getFields();
+		PsiField[] fields = aClass.getFields();
 
-		for(final PsiField field : fields)
+		for(PsiField field : fields)
 		{
 			if(field.isStatic())
 			{
 				continue;
 			}
 
-			final String fieldName = field.getName();
+			String fieldName = field.getName();
 
 			if(Comparing.equal(currentName, fieldName))
 			{
@@ -118,7 +118,7 @@ public final class BindingEditor extends ComboBoxPropertyEditor<String>
 				continue;
 			}
 
-			final String componentClassName;
+			String componentClassName;
 			if(component instanceof RadErrorComponent)
 			{
 				componentClassName = component.getComponentClassName();
@@ -132,7 +132,7 @@ public final class BindingEditor extends ComboBoxPropertyEditor<String>
 				componentClassName = component.getComponentClass().getName();
 			}
 
-			final PsiType componentType;
+			PsiType componentType;
 			try
 			{
 				componentType = JavaPsiFacade.getInstance(component.getProject()).getElementFactory().createTypeFromText(componentClassName, null);
@@ -142,7 +142,7 @@ public final class BindingEditor extends ComboBoxPropertyEditor<String>
 				continue;
 			}
 
-			final PsiType fieldType = field.getType();
+			PsiType fieldType = field.getType();
 			if(!fieldType.isAssignableFrom(componentType))
 			{
 				continue;
@@ -161,7 +161,7 @@ public final class BindingEditor extends ComboBoxPropertyEditor<String>
 			}
 		}
 
-		final String[] names = ArrayUtil.toStringArray(result);
+		String[] names = ArrayUtil.toStringArray(result);
 		Arrays.sort(names);
 		return names;
 	}
@@ -169,14 +169,14 @@ public final class BindingEditor extends ComboBoxPropertyEditor<String>
 	@Override
 	public String getValue() throws Exception
 	{
-		final String value = super.getValue();
+		String value = super.getValue();
 		return value != null ? value.replace('$', '.') : null; // PSI works only with dots
 	}
 
 	@Override
-	public JComponent getComponent(final RadComponent component, final String value, final InplaceContext inplaceContext)
+	public JComponent getComponent(RadComponent component, String value, InplaceContext inplaceContext)
 	{
-		final String[] fieldNames = getFieldNames(component, value);
+		String[] fieldNames = getFieldNames(component, value);
 		myCbx.setModel(new DefaultComboBoxModel<>(fieldNames));
 		myCbx.setSelectedItem(value);
 		return myCbx;

@@ -66,12 +66,12 @@ public class CreateListenerAction extends AbstractGuiEditorAction {
   private static final Logger LOG = Logger.getInstance(CreateListenerAction.class);
 
   @Override
-  protected void actionPerformed(final GuiEditor editor, final List<RadComponent> selection, final AnActionEvent e) {
-    final DefaultActionGroup actionGroup = prepareActionGroup(selection);
-    final JComponent selectedComponent = selection.get(0).getDelegee();
-    final DataContext context = DataManager.getInstance().getDataContext(selectedComponent);
-    final JBPopupFactory factory = JBPopupFactory.getInstance();
-    final ListPopup popup = factory.createActionGroupPopup(
+  protected void actionPerformed(GuiEditor editor, List<RadComponent> selection, AnActionEvent e) {
+    DefaultActionGroup actionGroup = prepareActionGroup(selection);
+    JComponent selectedComponent = selection.get(0).getDelegee();
+    DataContext context = DataManager.getInstance().getDataContext(selectedComponent);
+    JBPopupFactory factory = JBPopupFactory.getInstance();
+    ListPopup popup = factory.createActionGroupPopup(
       UIDesignerLocalize.createListenerTitle().get(),
       actionGroup,
       context,
@@ -82,9 +82,9 @@ public class CreateListenerAction extends AbstractGuiEditorAction {
     FormEditingUtil.showPopupUnderComponent(popup, selection.get(0));
   }
 
-  private DefaultActionGroup prepareActionGroup(final List<RadComponent> selection) {
-    final DefaultActionGroup actionGroup = new DefaultActionGroup();
-    final EventSetDescriptor[] eventSetDescriptors;
+  private DefaultActionGroup prepareActionGroup(List<RadComponent> selection) {
+    DefaultActionGroup actionGroup = new DefaultActionGroup();
+    EventSetDescriptor[] eventSetDescriptors;
     try {
       BeanInfo beanInfo = Introspector.getBeanInfo(selection.get(0).getComponentClass());
       eventSetDescriptors = beanInfo.getEventSetDescriptors();
@@ -104,13 +104,13 @@ public class CreateListenerAction extends AbstractGuiEditorAction {
 
   @Override
   @RequiredUIAccess
-  protected void update(@Nonnull GuiEditor editor, List<RadComponent> selection, final AnActionEvent e) {
+  protected void update(@Nonnull GuiEditor editor, List<RadComponent> selection, AnActionEvent e) {
     e.getPresentation().setEnabled(canCreateListener(selection));
   }
 
   private static boolean canCreateListener(List<RadComponent> selection) {
     if (selection.size() == 0) return false;
-    final RadRootContainer root = (RadRootContainer)FormEditingUtil.getRoot(selection.get(0));
+    RadRootContainer root = (RadRootContainer)FormEditingUtil.getRoot(selection.get(0));
     if (root.getClassToBind() == null) return false;
     String componentClass = selection.get(0).getComponentClassName();
     for(RadComponent c: selection) {
@@ -127,7 +127,7 @@ public class CreateListenerAction extends AbstractGuiEditorAction {
     private static final String LISTENER_SUFFIX = "Listener";
     private static final String ADAPTER_SUFFIX = "Adapter";
 
-    public MyCreateListenerAction(final List<RadComponent> selection, EventSetDescriptor descriptor) {
+    public MyCreateListenerAction(List<RadComponent> selection, EventSetDescriptor descriptor) {
       super(descriptor.getListenerType().getSimpleName());
       mySelection = selection;
       myDescriptor = descriptor;
@@ -146,7 +146,7 @@ public class CreateListenerAction extends AbstractGuiEditorAction {
     @RequiredWriteAction
     private void createListener() {
       RadRootContainer root = (RadRootContainer)FormEditingUtil.getRoot(mySelection.get(0));
-      final PsiField[] boundFields = new PsiField[mySelection.size()];
+      PsiField[] boundFields = new PsiField[mySelection.size()];
       for (int i = 0; i < mySelection.size(); i++) {
         boundFields[i] = BindingProperty.findBoundField(root, mySelection.get(i).getBinding());
       }
@@ -158,7 +158,7 @@ public class CreateListenerAction extends AbstractGuiEditorAction {
         PsiMethod constructor = findConstructorToInsert(myClass);
         Module module = myClass.getModule();
         PsiClass listenerClass = null;
-        final String listenerClassName = myDescriptor.getListenerType().getName();
+        String listenerClassName = myDescriptor.getListenerType().getName();
         if (listenerClassName.endsWith(LISTENER_SUFFIX)) {
           String adapterClassName = listenerClassName.substring(0, listenerClassName.length() - LISTENER_SUFFIX.length()) + ADAPTER_SUFFIX;
           listenerClass = JavaPsiFacade.getInstance(myClass.getProject())
@@ -178,7 +178,7 @@ public class CreateListenerAction extends AbstractGuiEditorAction {
         }
 
         PsiElementFactory factory = JavaPsiFacade.getInstance(myClass.getProject()).getElementFactory();
-        final PsiCodeBlock body = constructor.getBody();
+        PsiCodeBlock body = constructor.getBody();
         LOG.assertTrue(body != null);
 
         StringBuilder builder = new StringBuilder();
@@ -195,7 +195,7 @@ public class CreateListenerAction extends AbstractGuiEditorAction {
             variableName = "listener";
           }
           else {
-            final JavaCodeStyleManager codeStyleManager = JavaCodeStyleManager.getInstance(myClass.getProject());
+            JavaCodeStyleManager codeStyleManager = JavaCodeStyleManager.getInstance(myClass.getProject());
             variableName = codeStyleManager.suggestUniqueVariableName("listener", body.getLastBodyElement(), false);
           }
           builder.append(variableName).append("=");
@@ -225,20 +225,20 @@ public class CreateListenerAction extends AbstractGuiEditorAction {
           }
         }
 
-        final Ref<PsiClass> newClassRef = new Ref<PsiClass>();
+        final Ref<PsiClass> newClassRef = new Ref<>();
         stmt.accept(new JavaRecursiveElementWalkingVisitor() {
           @Override
           public void visitClass(PsiClass aClass) {
             newClassRef.set(aClass);
           }
         });
-        final PsiClass newClass = newClassRef.get();
+        PsiClass newClass = newClassRef.get();
         final SmartPsiElementPointer ptr = SmartPointerManager.getInstance(myClass.getProject()).createSmartPsiElementPointer(newClass);
         newClass.navigate(true);
         IdeFocusManager.findInstance().doWhenFocusSettlesDown(new Runnable() {
           public void run() {
-            final PsiClass newClass = (PsiClass)ptr.getElement();
-            final Editor editor = DataManager.getInstance().getDataContext().getData(PlatformDataKeys.EDITOR);
+            PsiClass newClass = (PsiClass)ptr.getElement();
+            Editor editor = DataManager.getInstance().getDataContext().getData(PlatformDataKeys.EDITOR);
             if (editor != null && newClass != null) {
               CommandProcessor.getInstance().newCommand()
                 .project(myClass.getProject())
@@ -260,12 +260,12 @@ public class CreateListenerAction extends AbstractGuiEditorAction {
     }
 
     @RequiredWriteAction
-    private PsiMethod findConstructorToInsert(final PsiClass aClass) throws IncorrectOperationException {
-      final PsiMethod[] constructors = aClass.getConstructors();
+    private PsiMethod findConstructorToInsert(PsiClass aClass) throws IncorrectOperationException {
+      PsiMethod[] constructors = aClass.getConstructors();
       if (constructors.length == 0) {
         PsiElementFactory factory = JavaPsiFacade.getInstance(aClass.getProject()).getElementFactory();
         PsiMethod newConstructor = factory.createMethodFromText("public " + aClass.getName() + "() { }", aClass);
-        final PsiMethod[] psiMethods = aClass.getMethods();
+        PsiMethod[] psiMethods = aClass.getMethods();
         PsiMethod firstMethod = (psiMethods.length == 0) ? null : psiMethods [0];
         return (PsiMethod) aClass.addBefore(newConstructor, firstMethod);
       }

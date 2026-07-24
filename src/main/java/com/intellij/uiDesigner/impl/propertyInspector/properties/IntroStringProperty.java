@@ -59,11 +59,11 @@ public final class IntroStringProperty extends IntrospectedProperty<StringDescri
   private StringEditor myEditor;
   private final Project myProject;
 
-  public IntroStringProperty(final String name,
-                             final Method readMethod,
-                             final Method writeMethod,
-                             final Project project,
-                             final boolean storeAsClient) {
+  public IntroStringProperty(String name,
+                             Method readMethod,
+                             Method writeMethod,
+                             Project project,
+                             boolean storeAsClient) {
     super(name, readMethod, writeMethod, storeAsClient);
     myProject = project;
     myRenderer = new StringRenderer();
@@ -85,11 +85,11 @@ public final class IntroStringProperty extends IntrospectedProperty<StringDescri
    * @return per RadComponent map between string property name and its StringDescriptor value.
    */
   @Nonnull
-  private static HashMap<String, StringDescriptor> getName2Descriptor(final RadComponent component){
+  private static HashMap<String, StringDescriptor> getName2Descriptor(RadComponent component){
     //noinspection unchecked
     HashMap<String, StringDescriptor> name2Descriptor = (HashMap<String, StringDescriptor>)component.getClientProperty(CLIENT_PROP_NAME_2_DESCRIPTOR);
     if(name2Descriptor == null){
-      name2Descriptor = new HashMap<String,StringDescriptor>();
+      name2Descriptor = new HashMap<>();
       component.putClientProperty(CLIENT_PROP_NAME_2_DESCRIPTOR, name2Descriptor);
     }
     return name2Descriptor;
@@ -98,11 +98,11 @@ public final class IntroStringProperty extends IntrospectedProperty<StringDescri
   /**
    * Utility method which merge together text and mnemonic at some position
    */
-  private static String mergeTextAndMnemonic(String text, final int mnemonic, final int mnemonicIndex){
+  private static String mergeTextAndMnemonic(String text, int mnemonic, int mnemonicIndex){
     if (text == null) {
       text = "";
     }
-    final int index;
+    int index;
     if(
       mnemonicIndex >= 0 &&
       mnemonicIndex < text.length() &&
@@ -116,7 +116,7 @@ public final class IntroStringProperty extends IntrospectedProperty<StringDescri
       index = -1;
     }
 
-    final StringBuffer buffer = new StringBuffer(text);
+    StringBuffer buffer = new StringBuffer(text);
     if(index != -1){
       buffer.insert(index, '&');
       // Quote all '&' except inserted one
@@ -134,31 +134,31 @@ public final class IntroStringProperty extends IntrospectedProperty<StringDescri
    *
    * @return instance of {@link StringDescriptor}
    */
-  public StringDescriptor getValue(final RadComponent component) {
+  public StringDescriptor getValue(RadComponent component) {
     // 1. resource bundle
     {
-      final StringDescriptor descriptor = getName2Descriptor(component).get(getName());
+      StringDescriptor descriptor = getName2Descriptor(component).get(getName());
       if(descriptor != null){
         return descriptor;
       }
     }
 
     // 2. plain value
-    final JComponent delegee = component.getDelegee();
+    JComponent delegee = component.getDelegee();
     return stringDescriptorFromValue(component, delegee);
   }
 
-  private StringDescriptor stringDescriptorFromValue(final RadComponent component, final JComponent delegee) {
-    final StringDescriptor result;
+  private StringDescriptor stringDescriptorFromValue(RadComponent component, JComponent delegee) {
+    StringDescriptor result;
     if(SwingProperties.TEXT.equals(getName()) && (delegee instanceof JLabel)){
-      final JLabel label = (JLabel)delegee;
+      JLabel label = (JLabel)delegee;
       result = StringDescriptor.create(
         mergeTextAndMnemonic(label.getText(), label.getDisplayedMnemonic(), label.getDisplayedMnemonicIndex())
       );
     }
     else
     if(SwingProperties.TEXT.equals(getName()) && (delegee instanceof AbstractButton)){
-      final AbstractButton button = (AbstractButton)delegee;
+      AbstractButton button = (AbstractButton)delegee;
       result = StringDescriptor.create(
         mergeTextAndMnemonic(button.getText(), button.getMnemonic(), button.getDisplayedMnemonicIndex())
       );
@@ -184,7 +184,7 @@ public final class IntroStringProperty extends IntrospectedProperty<StringDescri
     return result;
   }
 
-  protected void setValueImpl(final RadComponent component, final StringDescriptor value) throws Exception {
+  protected void setValueImpl(RadComponent component, StringDescriptor value) throws Exception {
     // 1. Put value into map
     if(value == null || (value.getBundleName() == null && !value.isNoI18n())) {
       getName2Descriptor(component).remove(getName());
@@ -194,7 +194,7 @@ public final class IntroStringProperty extends IntrospectedProperty<StringDescri
     }
 
     // 2. Apply real string value to JComponent peer
-    final JComponent delegee = component.getDelegee();
+    JComponent delegee = component.getDelegee();
 
     Locale locale = (Locale)component.getClientProperty(RadComponent.CLIENT_PROP_LOAD_TIME_LOCALE);
     if (locale == null) {
@@ -203,7 +203,7 @@ public final class IntroStringProperty extends IntrospectedProperty<StringDescri
         locale = root.getStringDescriptorLocale();
       }
     }
-    final String resolvedValue = (value != null && value.getValue() != null)
+    String resolvedValue = (value != null && value.getValue() != null)
                                  ? value.getValue()
                                  : StringDescriptorManager.getInstance(component.getModule()).resolve(value, locale);
 
@@ -212,9 +212,9 @@ public final class IntroStringProperty extends IntrospectedProperty<StringDescri
     }
 
     if(SwingProperties.TEXT.equals(getName())) {
-      final SupportCode.TextWithMnemonic textWithMnemonic = SupportCode.parseText(resolvedValue);
+      SupportCode.TextWithMnemonic textWithMnemonic = SupportCode.parseText(resolvedValue);
       if (delegee instanceof JLabel) {
-        final JLabel label = (JLabel)delegee;
+        JLabel label = (JLabel)delegee;
         label.setText(textWithMnemonic.myText);
         if(textWithMnemonic.myMnemonicIndex != -1){
           label.setDisplayedMnemonic(textWithMnemonic.getMnemonicChar());
@@ -225,7 +225,7 @@ public final class IntroStringProperty extends IntrospectedProperty<StringDescri
         }
       }
       else if (delegee instanceof AbstractButton) {
-        final AbstractButton button = (AbstractButton)delegee;
+        AbstractButton button = (AbstractButton)delegee;
         button.setText(textWithMnemonic.myText);
         if(textWithMnemonic.myMnemonicIndex != -1){
           button.setMnemonic(textWithMnemonic.getMnemonicChar());
@@ -245,7 +245,7 @@ public final class IntroStringProperty extends IntrospectedProperty<StringDescri
     }
   }
 
-  private static void checkUpdateBindingFromText(final RadComponent component, final StringDescriptor value, final SupportCode.TextWithMnemonic textWithMnemonic) {
+  private static void checkUpdateBindingFromText(RadComponent component, StringDescriptor value, SupportCode.TextWithMnemonic textWithMnemonic) {
     if (component.isLoadingProperties()) {
       return;
     }
@@ -283,14 +283,14 @@ public final class IntroStringProperty extends IntrospectedProperty<StringDescri
     }
   }
 
-  public void write(@Nonnull final StringDescriptor value, final XmlWriter writer) {
+  public void write(@Nonnull StringDescriptor value, XmlWriter writer) {
     writer.writeStringDescriptor(value,
                                  UIFormXmlConstants.ATTRIBUTE_VALUE,
                                  UIFormXmlConstants.ATTRIBUTE_RESOURCE_BUNDLE,
                                  UIFormXmlConstants.ATTRIBUTE_KEY);
   }
 
-  @Override public void importSnapshotValue(final SnapshotContext context, final JComponent component, final RadComponent radComponent) {
+  @Override public void importSnapshotValue(SnapshotContext context, JComponent component, RadComponent radComponent) {
     try {
       Object value = myReadMethod.invoke(component, EMPTY_OBJECT_ARRAY);
       if (value != null) {

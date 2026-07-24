@@ -46,7 +46,7 @@ public final class VGapProperty extends AbstractIntProperty<RadContainer>
 		super(null, "Vertical Gap", -1);
 	}
 
-	public Integer getValue(final RadContainer component)
+	public Integer getValue(RadContainer component)
 	{
 		if(component.getLayout() instanceof BorderLayout)
 		{
@@ -65,13 +65,13 @@ public final class VGapProperty extends AbstractIntProperty<RadContainer>
 		}
 		if(component.getLayout() instanceof AbstractLayout)
 		{
-			final AbstractLayout layoutManager = (AbstractLayout) component.getLayout();
+			AbstractLayout layoutManager = (AbstractLayout) component.getLayout();
 			return layoutManager.getVGap();
 		}
 		return null;
 	}
 
-	protected void setValueImpl(final RadContainer component, final Integer value) throws Exception
+	protected void setValueImpl(RadContainer component, Integer value) throws Exception
 	{
 		if(component.getLayout() instanceof BorderLayout)
 		{
@@ -90,13 +90,13 @@ public final class VGapProperty extends AbstractIntProperty<RadContainer>
 		}
 		else
 		{
-			final AbstractLayout layoutManager = (AbstractLayout) component.getLayout();
+			AbstractLayout layoutManager = (AbstractLayout) component.getLayout();
 			layoutManager.setVGap(value.intValue());
 		}
 	}
 
 	@Override
-	protected int getDefaultValue(final RadContainer radContainer)
+	protected int getDefaultValue(RadContainer radContainer)
 	{
 		return HGapProperty.getDefaultGap(radContainer.getLayout());
 	}

@@ -59,7 +59,7 @@ public class NoScrollPaneInspection extends BaseFormInspection {
     }
 
     private static class MyQuickFix extends QuickFix {
-        public MyQuickFix(final GuiEditor editor, RadComponent component) {
+        public MyQuickFix(GuiEditor editor, RadComponent component) {
             super(editor, UIDesignerLocalize.inspectionNoScrollPaneQuickfix().get(), component);
         }
 
@@ -69,7 +69,7 @@ public class NoScrollPaneInspection extends BaseFormInspection {
 
             SurroundAction action = new SurroundAction(item == null ? JBScrollPane.class.getName() : scrollPane);
 
-            ArrayList<RadComponent> targetList = new ArrayList<RadComponent>(Collections.singletonList(myComponent));
+            ArrayList<RadComponent> targetList = new ArrayList<>(Collections.singletonList(myComponent));
             action.actionPerformed(myEditor, targetList, null);
         }
     }

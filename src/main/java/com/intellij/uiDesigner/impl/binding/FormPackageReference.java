@@ -30,34 +30,34 @@ import jakarta.annotation.Nonnull;
  */
 public class FormPackageReference extends ReferenceInForm
 {
-	protected FormPackageReference(final PsiPlainTextFile file, TextRange range)
+	protected FormPackageReference(PsiPlainTextFile file, TextRange range)
 	{
 		super(file, range);
 	}
 
 	public PsiElement resolve()
 	{
-		final Project project = myFile.getProject();
+		Project project = myFile.getProject();
 		String text = getRangeText().replace('/', '.');
 		return JavaPsiFacade.getInstance(project).findPackage(text);
 	}
 
 	@Override
-	public boolean isReferenceTo(final PsiElement element)
+	public boolean isReferenceTo(PsiElement element)
 	{
 		if(!(element instanceof PsiJavaPackage))
 		{
 			return false;
 		}
-		final String qName = ((PsiJavaPackage) element).getQualifiedName().replace('.', '/');
-		final String rangeText = getRangeText();
+		String qName = ((PsiJavaPackage) element).getQualifiedName().replace('.', '/');
+		String rangeText = getRangeText();
 		return qName.equals(rangeText);
 	}
 
 	@Override
-	public PsiElement handleElementRename(final String newElementName)
+	public PsiElement handleElementRename(String newElementName)
 	{
-		final String s = getRangeText();
+		String s = getRangeText();
 		int pos = s.lastIndexOf("/");
 		if(pos < 0)
 		{
@@ -70,7 +70,7 @@ public class FormPackageReference extends ReferenceInForm
 		return myFile;
 	}
 
-	public PsiElement bindToElement(@Nonnull final PsiElement element) throws IncorrectOperationException
+	public PsiElement bindToElement(@Nonnull PsiElement element) throws IncorrectOperationException
 	{
 		return myFile;
 	}

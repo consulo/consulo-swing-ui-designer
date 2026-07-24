@@ -36,7 +36,7 @@ public class ListModelEditor extends PropertyEditor<String[]> {
   private String[] myLastValue;
   private final String myPropertyName;
 
-  public ListModelEditor(final String propertyName) {
+  public ListModelEditor(String propertyName) {
     myPropertyName = propertyName;
     myTextField.getTextField().setBorder(null);
     myTextField.getTextField().setEditable(false);
@@ -62,7 +62,7 @@ public class ListModelEditor extends PropertyEditor<String[]> {
     return myLastValue;
   }
 
-  public JComponent getComponent(final RadComponent component, final String[] value, final InplaceContext inplaceContext) {
+  public JComponent getComponent(RadComponent component, String[] value, InplaceContext inplaceContext) {
     myLastComponent = component;
     myLastValue = value;
     if (inplaceContext != null) {
@@ -84,7 +84,7 @@ public class ListModelEditor extends PropertyEditor<String[]> {
     SwingUtilities.updateComponentTreeUI(myTextField);
   }
 
-  public static String listValueToString(final String[] value) {
+  public static String listValueToString(String[] value) {
     if (value == null) return "";
     return StringUtil.join(value, ", ");
   }

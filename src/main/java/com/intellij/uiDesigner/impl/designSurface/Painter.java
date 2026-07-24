@@ -81,22 +81,22 @@ public final class Painter {
   private Painter() {
   }
 
-  public static void paintComponentDecoration(final GuiEditor editor, final RadComponent component, final Graphics g) {
+  public static void paintComponentDecoration(final GuiEditor editor, RadComponent component, final Graphics g) {
     // Collect selected components and paint decoration for non selected components
-    final ArrayList<RadComponent> selection = new ArrayList<RadComponent>();
+    final ArrayList<RadComponent> selection = new ArrayList<>();
     final Rectangle layeredPaneRect = editor.getLayeredPane().getVisibleRect();
     FormEditingUtil.iterate(
       component,
       new FormEditingUtil.ComponentVisitor<RadComponent>() {
-        public boolean visit(final RadComponent component) {
+        public boolean visit(RadComponent component) {
           if (!component.getDelegee().isShowing()) { // Skip invisible components
             return true;
           }
-          final Shape oldClip = g.getClip();
-          final RadContainer parent = component.getParent();
+          Shape oldClip = g.getClip();
+          RadContainer parent = component.getParent();
           if (parent != null) {
-            final Point p = SwingUtilities.convertPoint(component.getDelegee(), 0, 0, editor.getLayeredPane());
-            final Rectangle visibleRect = layeredPaneRect.intersection(new Rectangle(p.x, p.y, parent.getWidth(), parent.getHeight()));
+            Point p = SwingUtilities.convertPoint(component.getDelegee(), 0, 0, editor.getLayeredPane());
+            Rectangle visibleRect = layeredPaneRect.intersection(new Rectangle(p.x, p.y, parent.getWidth(), parent.getHeight()));
             g.setClip(visibleRect);
           }
           if (component.isSelected()) { // we will paint selection later
@@ -116,12 +116,12 @@ public final class Painter {
 
     // Let's paint decoration for selected components
     for (int i = selection.size() - 1; i >= 0; i--) {
-      final Shape oldClip = g.getClip();
-      final RadComponent c = selection.get(i);
-      final RadContainer parent = c.getParent();
+      Shape oldClip = g.getClip();
+      RadComponent c = selection.get(i);
+      RadContainer parent = c.getParent();
       if (parent != null) {
-        final Point p = SwingUtilities.convertPoint(c.getDelegee(), 0, 0, editor.getLayeredPane());
-        final Rectangle visibleRect = layeredPaneRect.intersection(new Rectangle(p.x, p.y, parent.getWidth(), parent.getHeight()));
+        Point p = SwingUtilities.convertPoint(c.getDelegee(), 0, 0, editor.getLayeredPane());
+        Rectangle visibleRect = layeredPaneRect.intersection(new Rectangle(p.x, p.y, parent.getWidth(), parent.getHeight()));
         g.setClip(visibleRect);
       }
       paintComponentBoundsImpl(editor, c, g);
@@ -137,7 +137,7 @@ public final class Painter {
    * Method does nothing if the <code>component</code> is not an instance
    * of <code>RadContainer</code>.
    */
-  private static void paintComponentBoundsImpl(final GuiEditor editor, @Nonnull final RadComponent component, final Graphics g) {
+  private static void paintComponentBoundsImpl(GuiEditor editor, @Nonnull RadComponent component, Graphics g) {
     if (!(component instanceof RadContainer) && !(component instanceof RadNestedForm) && !component.isDragBorder()) {
       return;
     }
@@ -150,7 +150,7 @@ public final class Painter {
         return;
       }
     }
-    final Point point = SwingUtilities.convertPoint(
+    Point point = SwingUtilities.convertPoint(
       component.getDelegee(),
       0,
       0,
@@ -197,14 +197,14 @@ public final class Painter {
   /**
    * This method paints grid bounds for "grid" containers
    */
-  public static void paintGridOutline(final GuiEditor editor, @Nonnull final RadComponent component, final Graphics g) {
+  public static void paintGridOutline(GuiEditor editor, @Nonnull RadComponent component, Graphics g) {
     if (!editor.isShowGrid()) {
       return;
     }
     if (!(component instanceof RadContainer)) {
       return;
     }
-    final RadContainer container = (RadContainer)component;
+    RadContainer container = (RadContainer)component;
     if (!container.getLayoutManager().isGrid()) {
       return;
     }
@@ -218,7 +218,7 @@ public final class Painter {
       parent = parent.getParent();
     }
 
-    final Point point = SwingUtilities.convertPoint(
+    Point point = SwingUtilities.convertPoint(
       component.getDelegee(),
       0,
       0,
@@ -249,8 +249,8 @@ public final class Painter {
       else {
         g.setColor(Color.GRAY);
       }
-      final Point[] points = getPoints(component.getWidth(), component.getHeight());
-      for (final Point point : points) {
+      Point[] points = getPoints(component.getWidth(), component.getHeight());
+      for (Point point : points) {
         g.fillRect(point.x - R, point.y - R, 2 * R + 1, 2 * R + 1);
       }
     }
@@ -276,7 +276,7 @@ public final class Painter {
    * @param x in component's coord system
    * @param y in component's coord system
    */
-  public static int getResizeMask(@Nonnull final RadComponent component, final int x, final int y) {
+  public static int getResizeMask(@Nonnull RadComponent component, int x, int y) {
     if (component.getParent() == null || !component.isSelected()) {
       return 0;
     }
@@ -288,10 +288,10 @@ public final class Painter {
     }
     */
 
-    final int width = component.getWidth();
-    final int height = component.getHeight();
+    int width = component.getWidth();
+    int height = component.getHeight();
 
-    final Point[] points = getPoints(width, height);
+    Point[] points = getPoints(width, height);
 
     if (isInside(x, y, points[SE])) {
       return EAST_MASK | SOUTH_MASK;
@@ -322,12 +322,12 @@ public final class Painter {
     }
   }
 
-  private static boolean isInside(final int x, final int y, final Point r) {
+  private static boolean isInside(int x, int y, Point r) {
     return x >= r.x - R && x <= r.x + R && y >= r.y - R && y <= r.y + R;
   }
 
   @JdkConstants.CursorType
-  public static int getResizeCursor(final int resizeMask) {
+  public static int getResizeCursor(int resizeMask) {
     if (resizeMask == (WEST_MASK | NORTH_MASK)) {
       return Cursor.NW_RESIZE_CURSOR;
     }
@@ -357,8 +357,8 @@ public final class Painter {
     }
   }
 
-  public static Point[] getPoints(final int width, final int height) {
-    final Point[] points = new Point[8];
+  public static Point[] getPoints(int width, int height) {
+    Point[] points = new Point[8];
 
     points[NW] = new Point(GAP, GAP); // NW
     points[N] = new Point(width / 2, GAP); // N
@@ -379,7 +379,7 @@ public final class Painter {
     int lastTop = -1;
     int minLeft = Integer.MAX_VALUE;
     for (int i = 0; i < components.size(); i++) {
-      final Rectangle rc = SwingUtilities.convertRectangle(
+      Rectangle rc = SwingUtilities.convertRectangle(
         components.get(i).getParent().getDelegee(),
         components.get(i).getBounds(),
         rootContainer.getDelegee()
@@ -404,7 +404,7 @@ public final class Painter {
       int left = Integer.MAX_VALUE;
       int right = Integer.MIN_VALUE;
       for (Rectangle rc : allBounds) {
-        final int midX = (int)rc.getCenterX();
+        int midX = (int)rc.getCenterX();
         left = Math.min(left, midX);
         right = Math.max(right, midX);
         g2d.drawLine(midX, lastTop - 8, midX, lastTop);
@@ -415,7 +415,7 @@ public final class Painter {
       int top = Integer.MAX_VALUE;
       int bottom = Integer.MIN_VALUE;
       for (Rectangle rc : allBounds) {
-        final int midY = (int)rc.getCenterY();
+        int midY = (int)rc.getCenterY();
         top = Math.min(top, midY);
         bottom = Math.max(bottom, midY);
         g2d.drawLine(minLeft - 8, midY, rc.x, midY);
@@ -425,11 +425,11 @@ public final class Painter {
     g2d.setStroke(oldStroke);
   }
 
-  public static void paintComponentTag(final RadComponent component, final Graphics g) {
+  public static void paintComponentTag(RadComponent component, Graphics g) {
     if (component instanceof RadContainer) return;
     for (IProperty prop : component.getModifiedProperties()) {
       if (prop.getName().equals(SwingProperties.TEXT)) {
-        final Object desc = prop.getPropertyValue(component);
+        Object desc = prop.getPropertyValue(component);
         if (!(desc instanceof StringDescriptor) || ((StringDescriptor)desc).getValue() == null ||
             ((StringDescriptor)desc).getValue().length() > 0) {
           return;
@@ -437,7 +437,7 @@ public final class Painter {
       }
       else if (prop.getName().equals(SwingProperties.MODEL)) {
         // don't paint tags on non-empty lists
-        final Object value = prop.getPropertyValue(component);
+        Object value = prop.getPropertyValue(component);
         if (value instanceof String[] && ((String[])value).length > 0) {
           return;
         }
@@ -458,7 +458,7 @@ public final class Painter {
       else {
         tagBuilder.append(className);
       }
-      final Rectangle2D stringBounds = g.getFontMetrics().getStringBounds(tagBuilder.toString(), g);
+      Rectangle2D stringBounds = g.getFontMetrics().getStringBounds(tagBuilder.toString(), g);
       Graphics2D g2d = (Graphics2D)g;
       g2d.setColor(JBColor.BLUE);
       g2d.fillRect(0, 0, (int)stringBounds.getWidth(), (int)stringBounds.getHeight());

@@ -49,9 +49,9 @@ public class IndentProperty extends AbstractIntProperty<RadComponent>
 
 	protected void setValueImpl(RadComponent component, Integer value) throws Exception
 	{
-		final int indent = value.intValue();
+		int indent = value.intValue();
 
-		final GridConstraints constraints = component.getConstraints();
+		GridConstraints constraints = component.getConstraints();
 		if(constraints.getIndent() != indent)
 		{
 			GridConstraints oldConstraints = (GridConstraints) constraints.clone();

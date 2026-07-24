@@ -64,7 +64,7 @@ public abstract class RenameUIRelatedTest extends MultiFileTestCase {
       public void performAction(VirtualFile rootDir, VirtualFile rootAfter) throws Exception {
         PsiClass aClass = myJavaFacade.findClass("UIClass", ProjectScope.getAllScope(myProject));
         Assert.assertNotNull(aClass);
-        final PsiField field = aClass.findFieldByName("UIField", false);
+        PsiField field = aClass.findFieldByName("UIField", false);
         Assert.assertNotNull(field);
 
         new RenameProcessor(myProject, field, "OtherName", true, true).run();

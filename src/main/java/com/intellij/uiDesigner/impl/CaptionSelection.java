@@ -30,7 +30,7 @@ public class CaptionSelection {
 
   public static final Key<CaptionSelection> DATA_KEY = Key.create(CaptionSelection.class.getName());
 
-  public CaptionSelection(final RadContainer container, final boolean isRow, final int[] selection, final int focusedIndex) {
+  public CaptionSelection(RadContainer container, boolean isRow, int[] selection, int focusedIndex) {
     myContainer = container;
     myIsRow = isRow;
     mySelection = selection;

@@ -42,32 +42,32 @@ public final class PsiPropertiesProvider implements PropertiesProvider
 	private final Module myModule;
 	private final HashMap<String, HashMap> myCache;
 
-	public PsiPropertiesProvider(@Nonnull final Module module)
+	public PsiPropertiesProvider(@Nonnull Module module)
 	{
 		myModule = module;
-		myCache = new HashMap<String, HashMap>();
+		myCache = new HashMap<>();
 	}
 
 	@Nullable
-	public HashMap getLwProperties(final String className)
+	public HashMap getLwProperties(String className)
 	{
 		if(myCache.containsKey(className))
 		{
 			return myCache.get(className);
 		}
 
-		final PsiManager psiManager = PsiManager.getInstance(myModule.getProject());
-		final GlobalSearchScope scope = GlobalSearchScope.moduleWithDependenciesAndLibrariesScope(myModule);
-		final PsiClass aClass = JavaPsiFacade.getInstance(psiManager.getProject()).findClass(className, scope);
+		PsiManager psiManager = PsiManager.getInstance(myModule.getProject());
+		GlobalSearchScope scope = GlobalSearchScope.moduleWithDependenciesAndLibrariesScope(myModule);
+		PsiClass aClass = JavaPsiFacade.getInstance(psiManager.getProject()).findClass(className, scope);
 		if(aClass == null)
 		{
 			return null;
 		}
 
-		final HashMap result = new HashMap();
+		HashMap result = new HashMap();
 
-		final PsiMethod[] methods = aClass.getAllMethods();
-		for(final PsiMethod method : methods)
+		PsiMethod[] methods = aClass.getAllMethods();
+		for(PsiMethod method : methods)
 		{
 			// it's a setter candidate.. try to find getter
 
@@ -75,19 +75,19 @@ public final class PsiPropertiesProvider implements PropertiesProvider
 			{
 				continue;
 			}
-			final String name = PropertyUtil.getPropertyName(method);
+			String name = PropertyUtil.getPropertyName(method);
 			if(name == null)
 			{
 				throw new IllegalStateException();
 			}
-			final PsiMethod getter = PropertyUtil.findPropertyGetter(aClass, name, false, true);
+			PsiMethod getter = PropertyUtil.findPropertyGetter(aClass, name, false, true);
 			if(getter == null)
 			{
 				continue;
 			}
 
-			final PsiType type = getter.getReturnType();
-			final String propertyClassName = type.getCanonicalText();
+			PsiType type = getter.getReturnType();
+			String propertyClassName = type.getCanonicalText();
 
 			LwIntrospectedProperty property = CompiledClassPropertiesProvider.propertyFromClassName(propertyClassName, name);
 			if(property == null)
@@ -99,8 +99,8 @@ public final class PsiPropertiesProvider implements PropertiesProvider
 				}
 				if(propClass.isEnum())
 				{
-					final String enumClassName = ClassUtil.getJVMClassName(propClass);
-					final ClassLoader loader = LoaderFactory.getInstance(myModule.getProject()).getLoader(myModule);
+					String enumClassName = ClassUtil.getJVMClassName(propClass);
+					ClassLoader loader = LoaderFactory.getInstance(myModule.getProject()).getLoader(myModule);
 					try
 					{
 						property = new LwIntroEnumProperty(name, loader.loadClass(enumClassName));

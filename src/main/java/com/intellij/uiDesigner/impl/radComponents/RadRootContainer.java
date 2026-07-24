@@ -49,10 +49,10 @@ public final class RadRootContainer extends RadContainer implements IRootContain
   private String myClassToBind;
   private String myMainComponentBinding;
   private Locale myStringDescriptorLocale;
-  private final List<RadButtonGroup> myButtonGroups = new ArrayList<RadButtonGroup>();
-  private final List<LwInspectionSuppression> myInspectionSuppressions = new ArrayList<LwInspectionSuppression>();
+  private final List<RadButtonGroup> myButtonGroups = new ArrayList<>();
+  private final List<LwInspectionSuppression> myInspectionSuppressions = new ArrayList<>();
 
-  public RadRootContainer(final ModuleProvider module, final String id) {
+  public RadRootContainer(ModuleProvider module, String id) {
     super(module, JPanel.class, id);
     getDelegee().setBackground(new JBColor(Color.WHITE, UIUtil.getListBackground()));
   }
@@ -67,7 +67,7 @@ public final class RadRootContainer extends RadContainer implements IRootContain
   /**
    * <code>RadRootContainer</code> is not selectable
    */
-  public void setSelected(final boolean ignored) { }
+  public void setSelected(boolean ignored) { }
 
   /**
    * @return full qualified name of the class. If there is no bound class
@@ -78,7 +78,7 @@ public final class RadRootContainer extends RadContainer implements IRootContain
     return myClassToBind;
   }
 
-  public void setClassToBind(final String classToBind){
+  public void setClassToBind(String classToBind){
     myClassToBind = classToBind;
   }
 
@@ -86,19 +86,19 @@ public final class RadRootContainer extends RadContainer implements IRootContain
     return myMainComponentBinding;
   }
 
-  public void setMainComponentBinding(final String mainComponentBinding){
+  public void setMainComponentBinding(String mainComponentBinding){
     myMainComponentBinding = mainComponentBinding;
   }
 
-  public void write(final XmlWriter writer) {
+  public void write(XmlWriter writer) {
     writer.startElement("form", Utils.FORM_NAMESPACE);
     try{
       writer.addAttribute("version", 1);
-      final String classToBind = getClassToBind();
+      String classToBind = getClassToBind();
       if (classToBind != null){
         writer.addAttribute("bind-to-class", classToBind);
       }
-      final String mainComponentBinding = getMainComponentBinding();
+      String mainComponentBinding = getMainComponentBinding();
       if (mainComponentBinding != null) {
         writer.addAttribute("stored-main-component-binding", mainComponentBinding);
       }
@@ -117,7 +117,7 @@ public final class RadRootContainer extends RadContainer implements IRootContain
     }
   }
 
-  private void writeInspectionSuppressions(final XmlWriter writer) {
+  private void writeInspectionSuppressions(XmlWriter writer) {
     if (myInspectionSuppressions.size() > 0) {
       writer.startElement(UIFormXmlConstants.ELEMENT_INSPECTION_SUPPRESSIONS);
       for(LwInspectionSuppression suppression: myInspectionSuppressions) {
@@ -132,7 +132,7 @@ public final class RadRootContainer extends RadContainer implements IRootContain
     }
   }
 
-  @Override public void writeConstraints(final XmlWriter writer) {
+  @Override public void writeConstraints(XmlWriter writer) {
     writer.startElement("constraints");
     try {
       myLayoutManager.writeChildConstraints(writer, this);
@@ -185,7 +185,7 @@ public final class RadRootContainer extends RadContainer implements IRootContain
     }
   }
 
-  public RadButtonGroup createGroup(final String groupName) {
+  public RadButtonGroup createGroup(String groupName) {
     RadButtonGroup group = new RadButtonGroup(groupName);
     myButtonGroups.add(group);
     return group;
@@ -195,10 +195,10 @@ public final class RadRootContainer extends RadContainer implements IRootContain
     myButtonGroups.remove(group);
   }
 
-  public void setButtonGroups(final IButtonGroup[] buttonGroups) {
+  public void setButtonGroups(IButtonGroup[] buttonGroups) {
     myButtonGroups.clear();
     for(IButtonGroup lwGroup: buttonGroups) {
-      final String[] componentIds = lwGroup.getComponentIds();
+      String[] componentIds = lwGroup.getComponentIds();
       if (componentIds.length > 0) {
         RadButtonGroup group = createGroup(lwGroup.getName());
         group.setBound(lwGroup.isBound());
@@ -207,8 +207,8 @@ public final class RadRootContainer extends RadContainer implements IRootContain
     }
   }
 
-  public List<RadComponent> getGroupContents(final RadButtonGroup group) {
-    ArrayList<RadComponent> result = new ArrayList<RadComponent>();
+  public List<RadComponent> getGroupContents(RadButtonGroup group) {
+    ArrayList<RadComponent> result = new ArrayList<>();
     for(String id: group.getComponentIds()) {
       RadComponent component = (RadComponent) FormEditingUtil.findComponent(this, id);
       if (component != null) {
@@ -240,7 +240,7 @@ public final class RadRootContainer extends RadContainer implements IRootContain
     return myStringDescriptorLocale;
   }
 
-  public void setStringDescriptorLocale(final Locale stringDescriptorLocale) {
+  public void setStringDescriptorLocale(Locale stringDescriptorLocale) {
     myStringDescriptorLocale = stringDescriptorLocale;
   }
 
@@ -259,7 +259,7 @@ public final class RadRootContainer extends RadContainer implements IRootContain
     myInspectionSuppressions.add(new LwInspectionSuppression(inspectionId, component == null ? null : component.getId()));
   }
 
-  public boolean isInspectionSuppressed(final String inspectionId, final String componentId) {
+  public boolean isInspectionSuppressed(String inspectionId, String componentId) {
     for(LwInspectionSuppression suppression: myInspectionSuppressions) {
       if ((suppression.getComponentId() == null || suppression.getComponentId().equals(componentId)) &&
           suppression.getInspectionId().equals(inspectionId)) {
@@ -273,12 +273,12 @@ public final class RadRootContainer extends RadContainer implements IRootContain
     return myInspectionSuppressions.toArray(new LwInspectionSuppression[myInspectionSuppressions.size()]);
   }
 
-  public void setInspectionSuppressions(final LwInspectionSuppression[] inspectionSuppressions) {
+  public void setInspectionSuppressions(LwInspectionSuppression[] inspectionSuppressions) {
     myInspectionSuppressions.clear();
     Collections.addAll(myInspectionSuppressions, inspectionSuppressions);
   }
 
-  public void removeInspectionSuppression(final LwInspectionSuppression suppression) {
+  public void removeInspectionSuppression(LwInspectionSuppression suppression) {
     for(LwInspectionSuppression existing: myInspectionSuppressions) {
       if (existing.getInspectionId().equals(suppression.getInspectionId()) &&
         Comparing.equal(existing.getComponentId(), suppression.getComponentId())) {

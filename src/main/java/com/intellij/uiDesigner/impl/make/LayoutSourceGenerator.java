@@ -25,24 +25,24 @@ import java.awt.LayoutManager;
  * @author yole
  */
 public abstract class LayoutSourceGenerator {
-  public void generateContainerLayout(final LwContainer component,
-                                      final FormSourceCodeGenerator generator,
-                                      final String variable) {
+  public void generateContainerLayout(LwContainer component,
+                                      FormSourceCodeGenerator generator,
+                                      String variable) {
   }
 
-  public abstract void generateComponentLayout(final LwComponent component,
-                                               final FormSourceCodeGenerator generator,
-                                               final String variable,
-                                               final String parentVariable);
+  public abstract void generateComponentLayout(LwComponent component,
+                                               FormSourceCodeGenerator generator,
+                                               String variable,
+                                               String parentVariable);
 
-  public String mapComponentClass(final String componentClassName) {
+  public String mapComponentClass(String componentClassName) {
     return componentClassName.replace("$", ".");
   }
 
-  protected void generateLayoutWithGaps(final LwContainer component,
-                                        final FormSourceCodeGenerator generator,
-                                        final String variable,
-                                        final Class<? extends LayoutManager> layoutClass) {
+  protected void generateLayoutWithGaps(LwContainer component,
+                                        FormSourceCodeGenerator generator,
+                                        String variable,
+                                        Class<? extends LayoutManager> layoutClass) {
     generator.startMethodCall(variable, "setLayout");
 
     generator.startConstructor(layoutClass.getName());

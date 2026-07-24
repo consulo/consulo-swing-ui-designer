@@ -88,12 +88,12 @@ public final class Form2ByteCodeCompiler implements ClassInstrumentingCompiler
 	}
 
 	@Nonnull
-	public static InstrumentationClassFinder createClassFinder(@Nonnull final String classPath)
+	public static InstrumentationClassFinder createClassFinder(@Nonnull String classPath)
 	{
-		final ArrayList<URL> urls = new ArrayList<>();
+		ArrayList<URL> urls = new ArrayList<>();
 		for(StringTokenizer tokenizer = new StringTokenizer(classPath, File.pathSeparator); tokenizer.hasMoreTokens(); )
 		{
-			final String s = tokenizer.nextToken();
+			String s = tokenizer.nextToken();
 			try
 			{
 				urls.add(new File(s).toURI().toURL());
@@ -107,7 +107,7 @@ public final class Form2ByteCodeCompiler implements ClassInstrumentingCompiler
 	}
 
 	@Nonnull
-	public static InstrumentationClassFinder createClassFinder(@Nonnull CompileContext context, @Nonnull final Module module)
+	public static InstrumentationClassFinder createClassFinder(@Nonnull CompileContext context, @Nonnull Module module)
 	{
 		ModuleChunk moduleChunk = new ModuleChunk((CompileContextEx) context, new Chunk<>(module), Collections.<Module, List<VirtualFile>>emptyMap());
 
@@ -166,34 +166,34 @@ public final class Form2ByteCodeCompiler implements ClassInstrumentingCompiler
 			@Override
 			public void run()
 			{
-				final CompileScope scope = context.getCompileScope();
-				final CompileScope projectScope = CompilerManager.getInstance(project).createProjectCompileScope();
+				CompileScope scope = context.getCompileScope();
+				CompileScope projectScope = CompilerManager.getInstance(project).createProjectCompileScope();
 
-				final VirtualFile[] formFiles = projectScope.getFiles(GuiFormFileType.INSTANCE);
+				VirtualFile[] formFiles = projectScope.getFiles(GuiFormFileType.INSTANCE);
 				if(formFiles.length == 0)
 				{
 					return;
 				}
-				final CompilerManager compilerManager = CompilerManager.getInstance(project);
-				final BindingsCache bindingsCache = new BindingsCache(project);
+				CompilerManager compilerManager = CompilerManager.getInstance(project);
+				BindingsCache bindingsCache = new BindingsCache(project);
 
-				final HashMap<Module, ArrayList<VirtualFile>> module2formFiles = sortByModules(project, formFiles);
+				HashMap<Module, ArrayList<VirtualFile>> module2formFiles = sortByModules(project, formFiles);
 
 				try
 				{
-					for(final consulo.module.Module module : module2formFiles.keySet())
+					for(consulo.module.Module module : module2formFiles.keySet())
 					{
-						final HashMap<String, VirtualFile> class2form = new HashMap<>();
+						HashMap<String, VirtualFile> class2form = new HashMap<>();
 
-						final ArrayList<VirtualFile> list = module2formFiles.get(module);
-						for(final VirtualFile formFile : list)
+						ArrayList<VirtualFile> list = module2formFiles.get(module);
+						for(VirtualFile formFile : list)
 						{
 							if(compilerManager.isExcludedFromCompilation(formFile))
 							{
 								continue;
 							}
 
-							final String classToBind;
+							String classToBind;
 							try
 							{
 								classToBind = bindingsCache.getBoundClassName(formFile);
@@ -214,7 +214,7 @@ public final class Form2ByteCodeCompiler implements ClassInstrumentingCompiler
 								continue;
 							}
 
-							final File classFile = findFile(context, classToBind, module);
+							File classFile = findFile(context, classToBind, module);
 							if(classFile == null)
 							{
 								if(scope.belongs(formFile.getUrl()))
@@ -224,7 +224,7 @@ public final class Form2ByteCodeCompiler implements ClassInstrumentingCompiler
 								continue;
 							}
 
-							final VirtualFile alreadyProcessedForm = class2form.get(classToBind);
+							VirtualFile alreadyProcessedForm = class2form.get(classToBind);
 							if(alreadyProcessedForm != null)
 							{
 								if(belongsToCompileScope(context, formFile, classToBind))
@@ -236,7 +236,7 @@ public final class Form2ByteCodeCompiler implements ClassInstrumentingCompiler
 							}
 							class2form.put(classToBind, formFile);
 
-							final ProcessingItem item = new MyInstrumentationItem(classFile, formFile, classToBind);
+							ProcessingItem item = new MyInstrumentationItem(classFile, formFile, classToBind);
 							items.add(item);
 						}
 					}
@@ -251,23 +251,23 @@ public final class Form2ByteCodeCompiler implements ClassInstrumentingCompiler
 		return items.toArray(new ProcessingItem[items.size()]);
 	}
 
-	private static boolean belongsToCompileScope(final CompileContext context, final VirtualFile formFile, final String classToBind)
+	private static boolean belongsToCompileScope(CompileContext context, VirtualFile formFile, String classToBind)
 	{
-		final CompileScope compileScope = context.getCompileScope();
+		CompileScope compileScope = context.getCompileScope();
 		if(compileScope.belongs(formFile.getUrl()))
 		{
 			return true;
 		}
-		final VirtualFile sourceFile = findSourceFile(context, formFile, classToBind);
+		VirtualFile sourceFile = findSourceFile(context, formFile, classToBind);
 		return sourceFile != null && compileScope.belongs(sourceFile.getUrl());
 	}
 
-	private static HashMap<Module, ArrayList<VirtualFile>> sortByModules(final Project project, final VirtualFile[] formFiles)
+	private static HashMap<Module, ArrayList<VirtualFile>> sortByModules(Project project, VirtualFile[] formFiles)
 	{
-		final HashMap<consulo.module.Module, ArrayList<VirtualFile>> module2formFiles = new HashMap<>();
-		for(final VirtualFile formFile : formFiles)
+		HashMap<consulo.module.Module, ArrayList<VirtualFile>> module2formFiles = new HashMap<>();
+		for(VirtualFile formFile : formFiles)
 		{
-			final consulo.module.Module module = ModuleUtilCore.findModuleForFile(formFile, project);
+			consulo.module.Module module = ModuleUtilCore.findModuleForFile(formFile, project);
 			if(module != null)
 			{
 				ArrayList<VirtualFile> list = module2formFiles.get(module);
@@ -282,15 +282,15 @@ public final class Form2ByteCodeCompiler implements ClassInstrumentingCompiler
 		return module2formFiles;
 	}
 
-	private static HashMap<Module, ArrayList<MyInstrumentationItem>> sortByModules(final Project project, final ProcessingItem[] items)
+	private static HashMap<Module, ArrayList<MyInstrumentationItem>> sortByModules(Project project, ProcessingItem[] items)
 	{
-		final HashMap<consulo.module.Module, ArrayList<MyInstrumentationItem>> module2formFiles = new HashMap<>();
+		HashMap<consulo.module.Module, ArrayList<MyInstrumentationItem>> module2formFiles = new HashMap<>();
 		for(ProcessingItem item1 : items)
 		{
-			final MyInstrumentationItem item = (MyInstrumentationItem) item1;
-			final VirtualFile formFile = item.getFormFile();
+			MyInstrumentationItem item = (MyInstrumentationItem) item1;
+			VirtualFile formFile = item.getFormFile();
 
-			final Module module = ModuleUtilCore.findModuleForFile(formFile, project);
+			Module module = ModuleUtilCore.findModuleForFile(formFile, project);
 			if(module != null)
 			{
 				ArrayList<MyInstrumentationItem> list = module2formFiles.get(module);
@@ -306,7 +306,7 @@ public final class Form2ByteCodeCompiler implements ClassInstrumentingCompiler
 	}
 
 	@Nullable
-	private static File findFile(final CompileContext context, final String className, final Module module)
+	private static File findFile(CompileContext context, String className, Module module)
 	{
 		String classPath = className.replace('.', '/');
 
@@ -346,14 +346,14 @@ public final class Form2ByteCodeCompiler implements ClassInstrumentingCompiler
 	}
 
 	@Nullable
-	private static File findFileByRelativePath(final CompileContext context, final Module module, final String relativePath)
+	private static File findFileByRelativePath(CompileContext context, Module module, String relativePath)
 	{
 		VirtualFile output = context.getOutputForFile(module, ProductionContentFolderTypeProvider.getInstance());
 
 		File file = output != null ? getFileByRelativeOrNull(output.getPath(), relativePath) : null;
 		if(file == null)
 		{
-			final VirtualFile testsOutput = context.getOutputForFile(module, TestContentFolderTypeProvider.getInstance());
+			VirtualFile testsOutput = context.getOutputForFile(module, TestContentFolderTypeProvider.getInstance());
 			if(testsOutput != null && !testsOutput.equals(output))
 			{
 				file = getFileByRelativeOrNull(testsOutput.getPath(), relativePath);
@@ -369,35 +369,35 @@ public final class Form2ByteCodeCompiler implements ClassInstrumentingCompiler
 	}
 
 	@Override
-	public ProcessingItem[] process(final CompileContext context, final ProcessingItem[] items)
+	public ProcessingItem[] process(final CompileContext context, ProcessingItem[] items)
 	{
-		final DirectoryIndex directoryIndex = DirectoryIndex.getInstance(context.getProject());
-		final List<ProcessingItem> compiledItems = new ArrayList<>();
+		DirectoryIndex directoryIndex = DirectoryIndex.getInstance(context.getProject());
+		List<ProcessingItem> compiledItems = new ArrayList<>();
 
 		context.getProgressIndicator().pushState();
 		context.getProgressIndicator().setText(UIDesignerBundle.message("progress.compiling.ui.forms"));
 
-		final Project project = context.getProject();
-		final HashMap<consulo.module.Module, ArrayList<MyInstrumentationItem>> module2itemsList = sortByModules(project, items);
+		Project project = context.getProject();
+		HashMap<consulo.module.Module, ArrayList<MyInstrumentationItem>> module2itemsList = sortByModules(project, items);
 
 		List<File> filesToRefresh = new ArrayList<>();
-		for(final consulo.module.Module module : module2itemsList.keySet())
+		for(consulo.module.Module module : module2itemsList.keySet())
 		{
-			final InstrumentationClassFinder finder = createClassFinder(context, module);
+			InstrumentationClassFinder finder = createClassFinder(context, module);
 
 			try
 			{
 				GuiDesignerConfiguration designerConfiguration = GuiDesignerConfiguration.getInstance(project);
 				if(designerConfiguration.COPY_FORMS_RUNTIME_TO_OUTPUT)
 				{
-					final String moduleOutputPath = CompilerPaths.getModuleOutputPath(module, ProductionContentFolderTypeProvider.getInstance());
+					String moduleOutputPath = CompilerPaths.getModuleOutputPath(module, ProductionContentFolderTypeProvider.getInstance());
 					try
 					{
 						if(moduleOutputPath != null)
 						{
 							filesToRefresh.addAll(CopyResourcesUtil.copyFormsRuntime(moduleOutputPath, false));
 						}
-						final String testsOutputPath = CompilerPaths.getModuleOutputPath(module, TestContentFolderTypeProvider.getInstance());
+						String testsOutputPath = CompilerPaths.getModuleOutputPath(module, TestContentFolderTypeProvider.getInstance());
 						if(testsOutputPath != null && !testsOutputPath.equals(moduleOutputPath))
 						{
 							filesToRefresh.addAll(CopyResourcesUtil.copyFormsRuntime(testsOutputPath, false));
@@ -410,7 +410,7 @@ public final class Form2ByteCodeCompiler implements ClassInstrumentingCompiler
 					}
 				}
 
-				final ArrayList<MyInstrumentationItem> list = module2itemsList.get(module);
+				ArrayList<MyInstrumentationItem> list = module2itemsList.get(module);
 
 				for(final MyInstrumentationItem item : list)
 				{
@@ -419,7 +419,7 @@ public final class Form2ByteCodeCompiler implements ClassInstrumentingCompiler
 					final VirtualFile formFile = item.getFormFile();
 					context.getProgressIndicator().setText2(formFile.getPresentableUrl());
 
-					final String text = ApplicationManager.getApplication().runReadAction(new Computable<String>()
+					String text = ApplicationManager.getApplication().runReadAction(new Computable<String>()
 					{
 						@Override
 						public String compute()
@@ -437,7 +437,7 @@ public final class Form2ByteCodeCompiler implements ClassInstrumentingCompiler
 						continue; // does not belong to current scope
 					}
 
-					final LwRootContainer rootContainer;
+					LwRootContainer rootContainer;
 					try
 					{
 						rootContainer = Utils.getRootContainer(text, new CompiledClassPropertiesProvider(finder.getLoader()));
@@ -478,14 +478,14 @@ public final class Form2ByteCodeCompiler implements ClassInstrumentingCompiler
 						}
 					}
 
-					final File classFile = item.getFile();
+					File classFile = item.getFile();
 					LOG.assertTrue(classFile.exists(), classFile.getPath());
 
-					final AsmCodeGenerator codeGenerator = new AsmCodeGenerator(rootContainer, finder, new PsiNestedFormLoader(module), false, new InstrumenterClassWriter(isJdk6(module) ?
+					AsmCodeGenerator codeGenerator = new AsmCodeGenerator(rootContainer, finder, new PsiNestedFormLoader(module), false, new InstrumenterClassWriter(isJdk6(module) ?
 							ClassWriter.COMPUTE_FRAMES : ClassWriter.COMPUTE_MAXS, finder), designerConfiguration.USE_JB_SCALING);
 					ApplicationManager.getApplication().runReadAction(() -> codeGenerator.patchFile(classFile));
-					final FormErrorInfo[] errors = codeGenerator.getErrors();
-					final FormErrorInfo[] warnings = codeGenerator.getWarnings();
+					FormErrorInfo[] errors = codeGenerator.getErrors();
+					FormErrorInfo[] warnings = codeGenerator.getWarnings();
 					for(FormErrorInfo warning : warnings)
 					{
 						addMessage(context, warning, formFile, CompilerMessageCategory.WARNING);
@@ -511,18 +511,18 @@ public final class Form2ByteCodeCompiler implements ClassInstrumentingCompiler
 		return compiledItems.toArray(new ProcessingItem[compiledItems.size()]);
 	}
 
-	private static boolean isJdk6(final Module module)
+	private static boolean isJdk6(Module module)
 	{
-		final Sdk sdk = ModuleUtilCore.getSdk(module, JavaModuleExtension.class);
+		Sdk sdk = ModuleUtilCore.getSdk(module, JavaModuleExtension.class);
 		return sdk != null && JavaSdkTypeUtil.isOfVersionOrHigher(sdk, JavaSdkVersion.JDK_1_6);
 	}
 
-	private static void addMessage(final CompileContext context, final String s, final VirtualFile formFile, final CompilerMessageCategory severity)
+	private static void addMessage(CompileContext context, String s, VirtualFile formFile, CompilerMessageCategory severity)
 	{
 		addMessage(context, new FormErrorInfo(null, s), formFile, severity);
 	}
 
-	private static void addMessage(final CompileContext context, final FormErrorInfo e, final VirtualFile formFile, final CompilerMessageCategory severity)
+	private static void addMessage(CompileContext context, FormErrorInfo e, VirtualFile formFile, CompilerMessageCategory severity)
 	{
 		if(formFile != null)
 		{
@@ -536,25 +536,25 @@ public final class Form2ByteCodeCompiler implements ClassInstrumentingCompiler
 	}
 
 	@Override
-	public ValidityState createValidityState(final DataInput in) throws IOException
+	public ValidityState createValidityState(DataInput in) throws IOException
 	{
 		return TimestampValidityState.load(in);
 	}
 
-	public static VirtualFile findSourceFile(final CompileContext context, final VirtualFile formFile, final String className)
+	public static VirtualFile findSourceFile(CompileContext context, VirtualFile formFile, String className)
 	{
-		final consulo.module.Module module = context.getModuleByFile(formFile);
+		consulo.module.Module module = context.getModuleByFile(formFile);
 		if(module == null)
 		{
 			return null;
 		}
-		final PsiClass aClass = FormEditingUtil.findClassToBind(module, className);
+		PsiClass aClass = FormEditingUtil.findClassToBind(module, className);
 		if(aClass == null)
 		{
 			return null;
 		}
 
-		final PsiFile containingFile = aClass.getContainingFile();
+		PsiFile containingFile = aClass.getContainingFile();
 		if(containingFile == null)
 		{
 			return null;
@@ -570,7 +570,7 @@ public final class Form2ByteCodeCompiler implements ClassInstrumentingCompiler
 		private final String myClassToBindFQname;
 		private final TimestampValidityState myState;
 
-		private MyInstrumentationItem(final File classFile, final VirtualFile formFile, final String classToBindFQname)
+		private MyInstrumentationItem(File classFile, VirtualFile formFile, String classToBindFQname)
 		{
 			myClassFile = classFile;
 			myFormFile = formFile;

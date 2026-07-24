@@ -52,7 +52,7 @@ public class BoundIconRenderer extends GutterIconRenderer
 	private Image myIcon;
 	private final String myQName;
 
-	public BoundIconRenderer(@Nonnull final PsiElement element)
+	public BoundIconRenderer(@Nonnull PsiElement element)
 	{
 		myElement = element;
 		if(myElement instanceof PsiField field)
@@ -65,7 +65,7 @@ public class BoundIconRenderer extends GutterIconRenderer
 					String qName = componentClass.getQualifiedName();
 					if(qName != null)
 					{
-						final ComponentItem item = Palette.getInstance(myElement.getProject()).getItem(qName);
+						ComponentItem item = Palette.getInstance(myElement.getProject()).getItem(qName);
 						if(item != null)
 						{
 							myIcon = item.getIcon();
@@ -111,7 +111,7 @@ public class BoundIconRenderer extends GutterIconRenderer
 				List<PsiFile> formFiles = getBoundFormFiles();
 				if(formFiles.size() > 0)
 				{
-					final VirtualFile virtualFile = formFiles.get(0).getVirtualFile();
+					VirtualFile virtualFile = formFiles.get(0).getVirtualFile();
 					if(virtualFile == null)
 					{
 						return;
@@ -167,7 +167,7 @@ public class BoundIconRenderer extends GutterIconRenderer
 	}
 
 	@RequiredReadAction
-    private static String composeText(final List<PsiFile> formFiles)
+    private static String composeText(List<PsiFile> formFiles)
 	{
 		StringBuilder result = new StringBuilder("<html><body>");
 		result.append(UIDesignerLocalize.uiIsBoundHeader().get());

@@ -59,7 +59,7 @@ public class NoButtonGroupInspection extends BaseFormInspection {
     @Override
     protected void checkComponentProperties(Module module, IComponent component, FormErrorCollector collector) {
         if (FormInspectionUtil.isComponentClass(module, component, JRadioButton.class)) {
-            final IRootContainer root = FormEditingUtil.getRoot(component);
+            IRootContainer root = FormEditingUtil.getRoot(component);
             if (root == null) {
                 return;
             }
@@ -97,9 +97,9 @@ public class NoButtonGroupInspection extends BaseFormInspection {
         }
     }
 
-    private static boolean areCellsAdjacent(final IContainer parent, final GridConstraints c1, final GridConstraints c2) {
+    private static boolean areCellsAdjacent(IContainer parent, GridConstraints c1, GridConstraints c2) {
         if (parent instanceof RadContainer) {
-            final RadContainer container = (RadContainer) parent;
+            RadContainer container = (RadContainer) parent;
             if (!container.getLayoutManager().isGrid()) {
                 return false;
             }
@@ -119,14 +119,14 @@ public class NoButtonGroupInspection extends BaseFormInspection {
     private static class CreateGroupQuickFix extends QuickFix {
         private final boolean myVerticalGroup;
 
-        public CreateGroupQuickFix(final GuiEditor editor, final RadComponent component, boolean verticalGroup) {
+        public CreateGroupQuickFix(GuiEditor editor, RadComponent component, boolean verticalGroup) {
             super(editor, UIDesignerLocalize.inspectionNoButtonGroupQuickfixCreate().get(), component);
             myVerticalGroup = verticalGroup;
         }
 
         public void run() {
             RadContainer parent = myComponent.getParent();
-            ArrayList<RadComponent> buttonsToGroup = new ArrayList<RadComponent>();
+            ArrayList<RadComponent> buttonsToGroup = new ArrayList<>();
             for (RadComponent component : parent.getComponents()) {
                 if (FormInspectionUtil.isComponentClass(myComponent.getModule(), component, JRadioButton.class)) {
                     if (component.getConstraints().getCell(!myVerticalGroup) == myComponent.getConstraints().getCell(!myVerticalGroup)) {
@@ -134,8 +134,8 @@ public class NoButtonGroupInspection extends BaseFormInspection {
                     }
                 }
             }
-            Collections.sort(buttonsToGroup, new Comparator<RadComponent>() {
-                public int compare(final RadComponent o1, final RadComponent o2) {
+            Collections.sort(buttonsToGroup, new Comparator<>() {
+                public int compare(RadComponent o1, RadComponent o2) {
                     if (myVerticalGroup) {
                         return o1.getConstraints().getRow() - o2.getConstraints().getRow();
                     }
@@ -168,7 +168,7 @@ public class NoButtonGroupInspection extends BaseFormInspection {
             GroupButtonsAction.groupButtons(myEditor, buttonsToGroup);
         }
 
-        private static void removeRange(final ArrayList<RadComponent> buttonsToGroup, final int minIndex, final int maxIndex) {
+        private static void removeRange(ArrayList<RadComponent> buttonsToGroup, int minIndex, int maxIndex) {
             for (int index = maxIndex; index >= minIndex; index--) {
                 buttonsToGroup.remove(index);
             }
@@ -178,7 +178,7 @@ public class NoButtonGroupInspection extends BaseFormInspection {
     private static class AddToGroupQuickFix extends QuickFix {
         private final String myGroupName;
 
-        public AddToGroupQuickFix(final GuiEditor editor, final RadComponent component, final String groupName) {
+        public AddToGroupQuickFix(GuiEditor editor, RadComponent component, String groupName) {
             super(editor, UIDesignerLocalize.inspectionNoButtonGroupQuickfixAdd(groupName).get(), component);
             myGroupName = groupName;
         }

@@ -39,27 +39,27 @@ public final class StartInplaceEditingAction extends AnAction implements AnActio
 
   private GuiEditor myEditor;
 
-  public StartInplaceEditingAction(@Nullable final GuiEditor editor) {
+  public StartInplaceEditingAction(@Nullable GuiEditor editor) {
     myEditor = editor;
   }
 
-  public void setEditor(final GuiEditor editor) {
+  public void setEditor(GuiEditor editor) {
     myEditor = editor;
   }
 
-  public void actionPerformed(final AnActionEvent e) {
-    final ArrayList<RadComponent> selection = FormEditingUtil.getAllSelectedComponents(myEditor);
-    final RadComponent component = selection.get(0);
-    final Property defaultInplaceProperty = component.getDefaultInplaceProperty();
+  public void actionPerformed(AnActionEvent e) {
+    ArrayList<RadComponent> selection = FormEditingUtil.getAllSelectedComponents(myEditor);
+    RadComponent component = selection.get(0);
+    Property defaultInplaceProperty = component.getDefaultInplaceProperty();
     myEditor.getInplaceEditingLayer().startInplaceEditing(component, defaultInplaceProperty,
                                                           component.getDefaultInplaceEditorBounds(), new InplaceContext(true));
   }
 
   @Override
-  public Coroutine<?, ?> updateAsync(final AnActionEvent e) {
+  public Coroutine<?, ?> updateAsync(AnActionEvent e) {
     return Coroutine.first(UIAction.apply(input -> {
-      final Presentation presentation = e.getPresentation();
-      final ArrayList<RadComponent> selection = FormEditingUtil.getAllSelectedComponents(myEditor);
+      Presentation presentation = e.getPresentation();
+      ArrayList<RadComponent> selection = FormEditingUtil.getAllSelectedComponents(myEditor);
 
       // Inplace editing can be started only if single component is selected
       if(selection.size() != 1){
@@ -68,7 +68,7 @@ public final class StartInplaceEditingAction extends AnAction implements AnActio
       }
 
       // Selected component should have "inplace" property
-      final RadComponent component = selection.get(0);
+      RadComponent component = selection.get(0);
       presentation.setEnabled(component.getDefaultInplaceProperty() != null);
       return input;
     }));

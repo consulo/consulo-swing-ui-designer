@@ -32,33 +32,33 @@ public final class XYLayoutManagerImpl extends XYLayoutManager {
     myPreferredSize = new Dimension();
   }
 
-  public void setPreferredSize(final Dimension size) {
+  public void setPreferredSize(Dimension size) {
     myPreferredSize.setSize(size);
   }
 
-  public Dimension maximumLayoutSize(final Container container){
+  public Dimension maximumLayoutSize(Container container){
     return new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE);
   }
 
-  public Dimension preferredLayoutSize(final Container container){
+  public Dimension preferredLayoutSize(Container container){
     return myPreferredSize;
   }
 
-  public void layoutContainer(final Container parent){
+  public void layoutContainer(Container parent){
   }
   
-  public Dimension minimumLayoutSize(final Container container){
-    final Container parent = container.getParent();
+  public Dimension minimumLayoutSize(Container container){
+    Container parent = container.getParent();
     if (!(parent instanceof JComponent)) {
       return MIN_SIZE;
     }
-    final RadComponent component = (RadComponent)((JComponent)parent).getClientProperty(RadComponent.CLIENT_PROP_RAD_COMPONENT);
+    RadComponent component = (RadComponent)((JComponent)parent).getClientProperty(RadComponent.CLIENT_PROP_RAD_COMPONENT);
     if (component == null) {
       return MIN_SIZE;
     }
 
     // the following code prevents XYs placed in Grid from being shrunk
-    final RadComponent radParent = component.getParent();
+    RadComponent radParent = component.getParent();
     if (radParent instanceof RadContainer && (((RadContainer)radParent).getLayoutManager().isGrid())) {
       return new Dimension(
         Math.max(myPreferredSize.width, MIN_SIZE.width),

@@ -54,7 +54,7 @@ public class RadContainer extends RadComponent implements IContainer {
       return new RadContainer(module, aClass, id);
     }
 
-    public RadComponent newInstance(final Class componentClass, final String id, final Palette palette) {
+    public RadComponent newInstance(Class componentClass, String id, Palette palette) {
       return new RadContainer(componentClass, id, palette);
     }
   }
@@ -89,28 +89,28 @@ public class RadContainer extends RadComponent implements IContainer {
   protected RadLayoutManager myLayoutManager;
   private LayoutManager myDelegeeLayout;
 
-  public RadContainer(final ModuleProvider module, final String id) {
+  public RadContainer(ModuleProvider module, String id) {
     this(module, JPanel.class, id);
   }
 
-  public RadContainer(final ModuleProvider module, final Class aClass, final String id) {
+  public RadContainer(ModuleProvider module, Class aClass, String id) {
     super(module, aClass, id);
 
-    myComponents = new ArrayList<RadComponent>();
+    myComponents = new ArrayList<>();
 
     // By default container doesn't have any special border
     setBorderType(BorderType.NONE);
 
     myLayoutManager = createInitialLayoutManager();
     if (myLayoutManager != null) {
-      final LayoutManager layoutManager = myLayoutManager.createLayout();
+      LayoutManager layoutManager = myLayoutManager.createLayout();
       if (layoutManager != null) {
         setLayout(layoutManager);
       }
     }
   }
 
-  public RadContainer(@Nonnull final Class aClass, @Nonnull final String id, final Palette palette) {
+  public RadContainer(@Nonnull Class aClass, @Nonnull String id, Palette palette) {
     this(null, aClass, id);
     setPalette(palette);
   }
@@ -119,7 +119,7 @@ public class RadContainer extends RadComponent implements IContainer {
   protected RadLayoutManager createInitialLayoutManager() {
     String defaultLayoutManager = UIFormXmlConstants.LAYOUT_INTELLIJ;
     if (getModule() != null) {
-      final GuiDesignerConfiguration configuration = GuiDesignerConfiguration.getInstance(getProject());
+      GuiDesignerConfiguration configuration = GuiDesignerConfiguration.getInstance(getProject());
       defaultLayoutManager = configuration.DEFAULT_LAYOUT_MANAGER;
     }
 
@@ -132,10 +132,10 @@ public class RadContainer extends RadComponent implements IContainer {
     }
   }
 
-  public Property getInplaceProperty(final int x, final int y) {
+  public Property getInplaceProperty(int x, int y) {
     // 1. We have to check whether user clicked inside border (if any) or not.
     // In this case we have return inplace editor for border text
-    final Insets insets = getDelegee().getInsets(); // border insets
+    Insets insets = getDelegee().getInsets(); // border insets
     if (
       x < insets.left || x > getWidth() - insets.right ||
       y < 0 || y > insets.top
@@ -159,16 +159,16 @@ public class RadContainer extends RadComponent implements IContainer {
     return getBorderInPlaceEditorBounds(new MyBorderTitleProperty());
   }
 
-  public Rectangle getInplaceEditorBounds(final Property property, final int x, final int y) {
+  public Rectangle getInplaceEditorBounds(Property property, int x, int y) {
     if (property instanceof MyBorderTitleProperty) { // If this is our property
       return getBorderInPlaceEditorBounds(property);
     }
     return super.getInplaceEditorBounds(property, x, y);
   }
 
-  private Rectangle getBorderInPlaceEditorBounds(final Property property) {
-    final MyBorderTitleProperty _property = (MyBorderTitleProperty)property;
-    final Insets insets = getDelegee().getInsets();
+  private Rectangle getBorderInPlaceEditorBounds(Property property) {
+    MyBorderTitleProperty _property = (MyBorderTitleProperty)property;
+    Insets insets = getDelegee().getInsets();
     return new Rectangle(
       insets.left,
       0,
@@ -184,7 +184,7 @@ public class RadContainer extends RadComponent implements IContainer {
     return getDelegee().getLayout();
   }
 
-  public final void setLayout(final LayoutManager layout) {
+  public final void setLayout(LayoutManager layout) {
     // some components (for example, JXCollapsiblePanel from SwingX) have asymmetrical getLayout/setLayout - a different
     // layout is returned compared to what was passed to setLayout(). to avoid crashes, we store the layout we passed to
     // the component.
@@ -194,7 +194,7 @@ public class RadContainer extends RadComponent implements IContainer {
     if (layout instanceof AbstractLayout) {
       AbstractLayout aLayout = (AbstractLayout)layout;
       for (int i = 0; i < getComponentCount(); i++) {
-        final RadComponent c = getComponent(i);
+        RadComponent c = getComponent(i);
         aLayout.addLayoutComponent(c.getDelegee(), c.getConstraints());
       }
     }
@@ -212,16 +212,16 @@ public class RadContainer extends RadComponent implements IContainer {
    *          if <code>component</code> already exist in the
    *          container
    */
-  public final void addComponent(@Nonnull final RadComponent component, int index) {
+  public final void addComponent(@Nonnull RadComponent component, int index) {
     if (myComponents.contains(component)) {
       //noinspection HardCodedStringLiteral
       throw new IllegalArgumentException("component is already added: " + component);
     }
 
-    final RadComponent[] oldChildren = myComponents.toArray(new RadComponent[myComponents.size()]);
+    RadComponent[] oldChildren = myComponents.toArray(new RadComponent[myComponents.size()]);
 
     // Remove from old parent
-    final RadContainer oldParent = component.getParent();
+    RadContainer oldParent = component.getParent();
     if (oldParent != null) {
       oldParent.removeComponent(component);
     }
@@ -231,11 +231,11 @@ public class RadContainer extends RadComponent implements IContainer {
     component.setParent(this);
     myLayoutManager.addComponentToContainer(this, component, index);
 
-    final RadComponent[] newChildren = myComponents.toArray(new RadComponent[myComponents.size()]);
+    RadComponent[] newChildren = myComponents.toArray(new RadComponent[myComponents.size()]);
     firePropertyChanged(PROP_CHILDREN, oldChildren, newChildren);
   }
 
-  public final void addComponent(@Nonnull final RadComponent component) {
+  public final void addComponent(@Nonnull RadComponent component) {
     addComponent(component, myComponents.size());
   }
 
@@ -253,24 +253,24 @@ public class RadContainer extends RadComponent implements IContainer {
    *          if <code>component</code>
    *          doesn't exist in the container
    */
-  public final void removeComponent(@Nonnull final RadComponent component) {
+  public final void removeComponent(@Nonnull RadComponent component) {
     if (!myComponents.contains(component)) {
       //noinspection HardCodedStringLiteral
       throw new IllegalArgumentException("component is not added: " + component);
     }
 
-    final RadComponent[] oldChildren = myComponents.toArray(new RadComponent[myComponents.size()]);
+    RadComponent[] oldChildren = myComponents.toArray(new RadComponent[myComponents.size()]);
 
     // Remove child
     component.setParent(null);
     myComponents.remove(component);
     myLayoutManager.removeComponentFromContainer(this, component);
 
-    final RadComponent[] newChildren = myComponents.toArray(new RadComponent[myComponents.size()]);
+    RadComponent[] newChildren = myComponents.toArray(new RadComponent[myComponents.size()]);
     firePropertyChanged(PROP_CHILDREN, oldChildren, newChildren);
   }
 
-  public final RadComponent getComponent(final int index) {
+  public final RadComponent getComponent(int index) {
     return myComponents.get(index);
   }
 
@@ -294,10 +294,10 @@ public class RadContainer extends RadComponent implements IContainer {
     return getLayoutManager().getDropLocation(this, location);
   }
 
-  public RadComponent findComponentInRect(final int startRow, final int startCol, final int rowSpan, final int colSpan) {
+  public RadComponent findComponentInRect(int startRow, int startCol, int rowSpan, int colSpan) {
     for (int r = startRow; r < startRow + rowSpan; r++) {
       for (int c = startCol; c < startCol + colSpan; c++) {
-        final RadComponent result = getComponentAtGrid(r, c);
+        RadComponent result = getComponentAtGrid(r, c);
         if (result != null) {
           return result;
         }
@@ -351,7 +351,7 @@ public class RadContainer extends RadComponent implements IContainer {
    *          is <code>null</code>
    * @see BorderType
    */
-  public final void setBorderType(@Nonnull final BorderType type) {
+  public final void setBorderType(@Nonnull BorderType type) {
     if (myBorderType == type) {
       return;
     }
@@ -372,7 +372,7 @@ public class RadContainer extends RadComponent implements IContainer {
    * @param title new border's title. <code>null</code> means that
    *              the containr doesn't have have titled border.
    */
-  public final void setBorderTitle(final StringDescriptor title) {
+  public final void setBorderTitle(StringDescriptor title) {
     if (Comparing.equal(title, myBorderTitle)) {
       return;
     }
@@ -384,7 +384,7 @@ public class RadContainer extends RadComponent implements IContainer {
     return myBorderTitleJustification;
   }
 
-  public void setBorderTitleJustification(final int borderTitleJustification) {
+  public void setBorderTitleJustification(int borderTitleJustification) {
     if (myBorderTitleJustification != borderTitleJustification) {
       myBorderTitleJustification = borderTitleJustification;
       updateBorder();
@@ -395,7 +395,7 @@ public class RadContainer extends RadComponent implements IContainer {
     return myBorderTitlePosition;
   }
 
-  public void setBorderTitlePosition(final int borderTitlePosition) {
+  public void setBorderTitlePosition(int borderTitlePosition) {
     if (myBorderTitlePosition != borderTitlePosition) {
       myBorderTitlePosition = borderTitlePosition;
       updateBorder();
@@ -406,7 +406,7 @@ public class RadContainer extends RadComponent implements IContainer {
     return myBorderTitleFont;
   }
 
-  public void setBorderTitleFont(final FontDescriptor borderTitleFont) {
+  public void setBorderTitleFont(FontDescriptor borderTitleFont) {
     if (!Comparing.equal(myBorderTitleFont, borderTitleFont)) {
       myBorderTitleFont = borderTitleFont;
       updateBorder();
@@ -417,7 +417,7 @@ public class RadContainer extends RadComponent implements IContainer {
     return myBorderTitleColor;
   }
 
-  public void setBorderTitleColor(final ColorDescriptor borderTitleColor) {
+  public void setBorderTitleColor(ColorDescriptor borderTitleColor) {
     if (!Comparing.equal(myBorderTitleColor, borderTitleColor)) {
       myBorderTitleColor = borderTitleColor;
       updateBorder();
@@ -428,7 +428,7 @@ public class RadContainer extends RadComponent implements IContainer {
     return myBorderSize;
   }
 
-  public void setBorderSize(final Insets borderSize) {
+  public void setBorderSize(Insets borderSize) {
     if (!Comparing.equal(myBorderSize, borderSize)) {
       myBorderSize = borderSize;
       updateBorder();
@@ -439,7 +439,7 @@ public class RadContainer extends RadComponent implements IContainer {
     return myBorderColor;
   }
 
-  public void setBorderColor(final ColorDescriptor borderColor) {
+  public void setBorderColor(ColorDescriptor borderColor) {
     if (!Comparing.equal(myBorderColor, borderColor)) {
       myBorderColor = borderColor;
       updateBorder();
@@ -482,7 +482,7 @@ public class RadContainer extends RadComponent implements IContainer {
     return null;
   }
 
-  public void setLayoutManager(final RadLayoutManager layoutManager) {
+  public void setLayoutManager(RadLayoutManager layoutManager) {
     myLayoutManager = layoutManager;
     setLayout(myLayoutManager.createLayout());
   }
@@ -512,12 +512,12 @@ public class RadContainer extends RadComponent implements IContainer {
   /**
    * Serializes container's border
    */
-  protected final void writeBorder(final XmlWriter writer) {
+  protected final void writeBorder(XmlWriter writer) {
     writer.startElement(UIFormXmlConstants.ELEMENT_BORDER);
     try {
       writer.addAttribute(UIFormXmlConstants.ATTRIBUTE_TYPE, getBorderType().getId());
       if (getBorderTitle() != null) {
-        final StringDescriptor descriptor = getBorderTitle();
+        StringDescriptor descriptor = getBorderTitle();
         writer.writeStringDescriptor(descriptor, UIFormXmlConstants.ATTRIBUTE_TITLE,
                                      UIFormXmlConstants.ATTRIBUTE_TITLE_RESOURCE_BUNDLE,
                                      UIFormXmlConstants.ATTRIBUTE_TITLE_KEY);
@@ -557,7 +557,7 @@ public class RadContainer extends RadComponent implements IContainer {
   /**
    * Serializes container's children
    */
-  protected final void writeChildren(final XmlWriter writer) {
+  protected final void writeChildren(XmlWriter writer) {
     // Children
     writer.startElement("children");
     try {
@@ -568,13 +568,13 @@ public class RadContainer extends RadComponent implements IContainer {
     }
   }
 
-  protected final void writeChildrenImpl(final XmlWriter writer) {
+  protected final void writeChildrenImpl(XmlWriter writer) {
     for (int i = 0; i < getComponentCount(); i++) {
       getComponent(i).write(writer);
     }
   }
 
-  public void write(final XmlWriter writer) {
+  public void write(XmlWriter writer) {
     if (isXY()) {
       writer.startElement("xy");
     }
@@ -613,7 +613,7 @@ public class RadContainer extends RadComponent implements IContainer {
     }
 
     for (int i = 0; i < getComponentCount(); i++) {
-      final IComponent c = getComponent(i);
+      IComponent c = getComponent(i);
       if (!c.accept(visitor)) {
         return false;
       }
@@ -622,7 +622,7 @@ public class RadContainer extends RadComponent implements IContainer {
     return true;
   }
 
-  protected void writeNoLayout(final XmlWriter writer, final String defaultClassName) {
+  protected void writeNoLayout(XmlWriter writer, String defaultClassName) {
     writeId(writer);
     writeClassIfDifferent(writer, defaultClassName);
     writeBinding(writer);
@@ -637,7 +637,7 @@ public class RadContainer extends RadComponent implements IContainer {
   }
 
   @Override
-  protected void importSnapshotComponent(final SnapshotContext context, final JComponent component) {
+  protected void importSnapshotComponent(SnapshotContext context, JComponent component) {
     getLayoutManager().createSnapshotLayout(context, component, this, component.getLayout());
     importSnapshotBorder(component);
     for (Component child : component.getComponents()) {
@@ -650,7 +650,7 @@ public class RadContainer extends RadComponent implements IContainer {
     }
   }
 
-  private void importSnapshotBorder(final JComponent component) {
+  private void importSnapshotBorder(JComponent component) {
     Border border = component.getBorder();
     if (border != null) {
       if (border instanceof TitledBorder) {
@@ -658,7 +658,7 @@ public class RadContainer extends RadComponent implements IContainer {
         setBorderTitle(StringDescriptor.create(titledBorder.getTitle()));
         setBorderTitleJustification(titledBorder.getTitleJustification());
         setBorderTitlePosition(titledBorder.getTitlePosition());
-        final Font titleFont = titledBorder.getTitleFont();
+        Font titleFont = titledBorder.getTitleFont();
         setBorderTitleFont(new FontDescriptor(titleFont.getName(), titleFont.getStyle(), titleFont.getSize()));
         setBorderTitleColor(new ColorDescriptor(titledBorder.getTitleColor()));
         border = titledBorder.getBorder();
@@ -692,7 +692,7 @@ public class RadContainer extends RadComponent implements IContainer {
   }
 
   @Nullable
-  public RadComponent findComponentWithConstraints(final Object constraints) {
+  public RadComponent findComponentWithConstraints(Object constraints) {
     for (RadComponent component : getComponents()) {
       if (constraints.equals(component.getCustomLayoutConstraints())) {
         return component;
@@ -713,11 +713,11 @@ public class RadContainer extends RadComponent implements IContainer {
       return myEditor.getPreferredSize();
     }
 
-    public StringDescriptor getValue(final RadContainer component) {
+    public StringDescriptor getValue(RadContainer component) {
       return myBorderTitle;
     }
 
-    protected void setValueImpl(final RadContainer container, final StringDescriptor value) throws Exception {
+    protected void setValueImpl(RadContainer container, StringDescriptor value) throws Exception {
       setBorderTitle(value);
     }
 

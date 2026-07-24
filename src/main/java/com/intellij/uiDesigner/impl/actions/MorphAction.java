@@ -60,7 +60,7 @@ public class MorphAction extends AbstractGuiEditorAction {
   }
 
   @Override
-  protected void actionPerformed(final GuiEditor editor, final List<RadComponent> selection, final AnActionEvent e) {
+  protected void actionPerformed(GuiEditor editor, List<RadComponent> selection, AnActionEvent e) {
     Predicate<ComponentItem> processor = selectedValue -> {
       SwingUtilities.invokeLater(() -> {
         CommandProcessor.getInstance().newCommand()
@@ -87,16 +87,16 @@ public class MorphAction extends AbstractGuiEditorAction {
     if (selection.size() == 1) {
       step.hideComponentClass(selection.get(0).getComponentClassName());
     }
-    final ListPopup listPopup = JBPopupFactory.getInstance().createListPopup(step);
+    ListPopup listPopup = JBPopupFactory.getInstance().createListPopup(step);
     FormEditingUtil.showPopupUnderComponent(listPopup, selection.get(0));
   }
 
-  private static boolean morphComponent(final GuiEditor editor, final RadComponent oldComponent, ComponentItem targetItem) {
+  private static boolean morphComponent(GuiEditor editor, RadComponent oldComponent, ComponentItem targetItem) {
     targetItem = InsertComponentProcessor.replaceAnyComponentItem(editor, targetItem, "Morph to Non-Palette Component");
     if (targetItem == null) {
       return false;
     }
-    final RadComponent newComponent = InsertComponentProcessor.createInsertedComponent(editor, targetItem);
+    RadComponent newComponent = InsertComponentProcessor.createInsertedComponent(editor, targetItem);
     if (newComponent == null) return false;
     newComponent.setBinding(oldComponent.getBinding());
     newComponent.setCustomLayoutConstraints(oldComponent.getCustomLayoutConstraints());
@@ -104,8 +104,8 @@ public class MorphAction extends AbstractGuiEditorAction {
 
     updateBoundFieldType(editor, oldComponent, targetItem);
 
-    final IProperty[] oldProperties = oldComponent.getModifiedProperties();
-    final Palette palette = Palette.getInstance(editor.getProject());
+    IProperty[] oldProperties = oldComponent.getModifiedProperties();
+    Palette palette = Palette.getInstance(editor.getProject());
     for(IProperty prop: oldProperties) {
       IntrospectedProperty newProp = palette.getIntrospectedProperty(newComponent, prop.getName());
       if (newProp == null || !prop.getClass().equals(newProp.getClass())) continue;
@@ -120,14 +120,14 @@ public class MorphAction extends AbstractGuiEditorAction {
     }
 
     retargetComponentProperties(editor, oldComponent, newComponent);
-    final RadContainer parent = oldComponent.getParent();
+    RadContainer parent = oldComponent.getParent();
     int index = parent.indexOfComponent(oldComponent);
     parent.removeComponent(oldComponent);
     parent.addComponent(newComponent, index);
     newComponent.setSelected(true);
 
     if (oldComponent.isDefaultBinding()) {
-      final String text = FormInspectionUtil.getText(newComponent.getModule(), newComponent);
+      String text = FormInspectionUtil.getText(newComponent.getModule(), newComponent);
       if (text != null) {
         String binding = BindingProperty.suggestBindingFromText(newComponent, text);
         if (binding != null) {
@@ -139,10 +139,10 @@ public class MorphAction extends AbstractGuiEditorAction {
     return true;
   }
 
-  private static void updateBoundFieldType(final GuiEditor editor, final RadComponent oldComponent, final ComponentItem targetItem) {
+  private static void updateBoundFieldType(GuiEditor editor, RadComponent oldComponent, ComponentItem targetItem) {
     PsiField oldBoundField = BindingProperty.findBoundField(editor.getRootContainer(), oldComponent.getBinding());
     if (oldBoundField != null) {
-      final PsiElementFactory factory = JavaPsiFacade.getInstance(editor.getProject()).getElementFactory();
+      PsiElementFactory factory = JavaPsiFacade.getInstance(editor.getProject()).getElementFactory();
       try {
         PsiType componentType = factory.createTypeFromText(targetItem.getClassName().replace('$', '.'), null);
         new ChangeFieldTypeFix(editor, oldBoundField, componentType).run();
@@ -153,7 +153,7 @@ public class MorphAction extends AbstractGuiEditorAction {
     }
   }
 
-  private static void retargetComponentProperties(final GuiEditor editor, final RadComponent c, final RadComponent newComponent) {
+  private static void retargetComponentProperties(GuiEditor editor, RadComponent c, RadComponent newComponent) {
     FormEditingUtil.iterate(editor.getRootContainer(), component -> {
       RadComponent rc = (RadComponent) component;
       for(IProperty p: component.getModifiedProperties()) {

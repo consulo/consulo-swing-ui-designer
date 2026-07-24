@@ -35,7 +35,7 @@ public class FormLayoutSourceGenerator extends LayoutSourceGenerator {
   private boolean myHaveCc = false;
 
   @Override
-  public void generateContainerLayout(final LwContainer component, final FormSourceCodeGenerator generator, final String variable) {
+  public void generateContainerLayout(LwContainer component, FormSourceCodeGenerator generator, String variable) {
     FormLayout layout = (FormLayout) component.getLayout();
     generator.startMethodCall(variable, "setLayout");
 
@@ -50,8 +50,8 @@ public class FormLayoutSourceGenerator extends LayoutSourceGenerator {
     generateGroups(generator, variable, "setColumnGroups", layout.getColumnGroups());
   }
 
-  private static void generateGroups(final FormSourceCodeGenerator generator, final String variable,
-                                     @NonNls final String methodName, final int[][] groups) {
+  private static void generateGroups(FormSourceCodeGenerator generator, String variable,
+                                     @NonNls String methodName, int[][] groups) {
     if (groups.length == 0) return;
     generator.startMethodCall("((com.jgoodies.forms.layout.FormLayout) " + variable + ".getLayout())",
                               methodName);
@@ -72,7 +72,7 @@ public class FormLayoutSourceGenerator extends LayoutSourceGenerator {
     generator.endMethod();
   }
 
-  public void generateComponentLayout(final LwComponent component, final FormSourceCodeGenerator generator, final String variable, final String parentVariable) {
+  public void generateComponentLayout(LwComponent component, FormSourceCodeGenerator generator, String variable, String parentVariable) {
     if (!myHaveCc) {
       generator.append("com.jgoodies.forms.layout.CellConstraints cc = new com.jgoodies.forms.layout.CellConstraints();\n");
       myHaveCc = true;
@@ -82,7 +82,7 @@ public class FormLayoutSourceGenerator extends LayoutSourceGenerator {
 
     CellConstraints cc = (CellConstraints) component.getCustomLayoutConstraints();
     GridConstraints constraints = component.getConstraints();
-    final boolean haveInsets = !cc.insets.equals(new Insets(0, 0, 0, 0));
+    boolean haveInsets = !cc.insets.equals(new Insets(0, 0, 0, 0));
     if (haveInsets) {
       generator.startConstructor(CellConstraints.class.getName());
     }

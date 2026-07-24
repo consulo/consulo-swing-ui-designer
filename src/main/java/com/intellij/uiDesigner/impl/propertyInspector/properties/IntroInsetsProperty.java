@@ -38,7 +38,7 @@ public final class IntroInsetsProperty extends IntrospectedProperty<Insets> {
   private final InsetsPropertyRenderer myRenderer;
   private final IntRegexEditor<Insets> myEditor;
 
-  public IntroInsetsProperty(final String name, final Method readMethod, final Method writeMethod, final boolean storeAsClient){
+  public IntroInsetsProperty(String name, Method readMethod, Method writeMethod, boolean storeAsClient){
     super(name, readMethod, writeMethod, storeAsClient);
     myChildren=new Property[]{
       new IntFieldProperty(this, "top", 0, new Insets(0, 0, 0, 0)),
@@ -50,12 +50,12 @@ public final class IntroInsetsProperty extends IntrospectedProperty<Insets> {
     myEditor = new InsetsEditor(myRenderer);
   }
 
-  public void write(final Insets value, final XmlWriter writer) {
+  public void write(Insets value, XmlWriter writer) {
     writer.writeInsets(value);
   }
 
   @Nonnull
-  public Property[] getChildren(final RadComponent component) {
+  public Property[] getChildren(RadComponent component) {
     return myChildren;
   }
 

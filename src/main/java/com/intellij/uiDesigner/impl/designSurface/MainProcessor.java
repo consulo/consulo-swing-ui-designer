@@ -52,13 +52,13 @@ public final class MainProcessor extends EventProcessor
 	private boolean myInsertFeedbackEnabled = true;
 	private Point myLastMousePosition = new Point(0, 0);
 
-	public MainProcessor(@Nonnull final GuiEditor editor)
+	public MainProcessor(@Nonnull GuiEditor editor)
 	{
 		myEditor = editor;
 		myInsertComponentProcessor = new InsertComponentProcessor(myEditor);
 	}
 
-	protected void processKeyEvent(final KeyEvent e)
+	protected void processKeyEvent(KeyEvent e)
 	{
 		if(e.getKeyCode() == KeyEvent.VK_SHIFT)
 		{
@@ -82,11 +82,11 @@ public final class MainProcessor extends EventProcessor
 		else if(e.getID() == KeyEvent.KEY_TYPED && Character.isLetterOrDigit(e.getKeyChar()) &&
 				(e.getModifiers() & (InputEvent.ALT_MASK | InputEvent.CTRL_MASK | InputEvent.META_MASK)) == 0)
 		{
-			final ArrayList<RadComponent> selection = FormEditingUtil.getAllSelectedComponents(myEditor);
+			ArrayList<RadComponent> selection = FormEditingUtil.getAllSelectedComponents(myEditor);
 			if(selection.size() > 0)
 			{
-				final RadComponent component = selection.get(0);
-				final InplaceEditingLayer inplaceLayer = myEditor.getInplaceEditingLayer();
+				RadComponent component = selection.get(0);
+				InplaceEditingLayer inplaceLayer = myEditor.getInplaceEditingLayer();
 				inplaceLayer.startInplaceEditing(component, component.getDefaultInplaceProperty(), component.getDefaultInplaceEditorBounds(),
 						new InplaceContext(false, e.getKeyChar()));
 				e.consume();
@@ -99,7 +99,7 @@ public final class MainProcessor extends EventProcessor
 		return myLastMousePosition;
 	}
 
-	protected void processMouseEvent(final MouseEvent e)
+	protected void processMouseEvent(MouseEvent e)
 	{
 		myLastMousePosition = e.getPoint();
 
@@ -118,14 +118,14 @@ public final class MainProcessor extends EventProcessor
 				FormEditingUtil.selectSingleComponent(myEditor, component);
 			}
 
-			final ActionManager actionManager = ActionManager.getInstance();
-			final ActionPopupMenu popupMenu = actionManager.createActionPopupMenu(ActionPlaces.GUI_DESIGNER_EDITOR_POPUP,
+			ActionManager actionManager = ActionManager.getInstance();
+			ActionPopupMenu popupMenu = actionManager.createActionPopupMenu(ActionPlaces.GUI_DESIGNER_EDITOR_POPUP,
 					(ActionGroup) actionManager.getAction(IdeActions.GROUP_GUI_DESIGNER_EDITOR_POPUP));
 			popupMenu.getComponent().show(e.getComponent(), e.getX(), e.getY());
 			return;
 		}
 
-		final int id = e.getID();
+		int id = e.getID();
 		if((MouseEvent.BUTTON2 == e.getButton() || MouseEvent.BUTTON3 == e.getButton()) && (MouseEvent.MOUSE_PRESSED == id ||
 				MouseEvent.MOUSE_RELEASED == id ||
 				MouseEvent.MOUSE_CLICKED == id))
@@ -134,12 +134,12 @@ public final class MainProcessor extends EventProcessor
 		}
 
 		// Handle all left mouse events and all motion events
-		final RadComponent componentAt = FormEditingUtil.getRadComponentAt(myEditor.getRootContainer(), e.getX(), e.getY());
+		RadComponent componentAt = FormEditingUtil.getRadComponentAt(myEditor.getRootContainer(), e.getX(), e.getY());
 		if(componentAt != null)
 		{
-			final Point p1 = SwingUtilities.convertPoint(e.getComponent(), e.getPoint(), componentAt.getDelegee());
-			final Component deepestComponentAt = SwingUtilities.getDeepestComponentAt(componentAt.getDelegee(), p1.x, p1.y);
-			final Point p2 = SwingUtilities.convertPoint(e.getComponent(), e.getPoint(), deepestComponentAt);
+			Point p1 = SwingUtilities.convertPoint(e.getComponent(), e.getPoint(), componentAt.getDelegee());
+			Component deepestComponentAt = SwingUtilities.getDeepestComponentAt(componentAt.getDelegee(), p1.x, p1.y);
+			Point p2 = SwingUtilities.convertPoint(e.getComponent(), e.getPoint(), deepestComponentAt);
 
 			EventProcessor processor = componentAt.getEventProcessor(e);
 			if(processor != null)
@@ -148,7 +148,7 @@ public final class MainProcessor extends EventProcessor
 			}
 			else
 			{
-				final Component source = deepestComponentAt != null ? deepestComponentAt : componentAt.getDelegee();
+				Component source = deepestComponentAt != null ? deepestComponentAt : componentAt.getDelegee();
 				componentAt.processMouseEvent(new MouseEvent(source, id, e.getWhen(), e.getModifiers(), p2.x, p2.y, e.getClickCount(),
 						e.isPopupTrigger(), e.getButton()));
 			}
@@ -170,11 +170,11 @@ public final class MainProcessor extends EventProcessor
 			}
 			else
 			{
-				final RadComponent component = FormEditingUtil.getRadComponentAt(myEditor.getRootContainer(), e.getX(), e.getY());
+				RadComponent component = FormEditingUtil.getRadComponentAt(myEditor.getRootContainer(), e.getX(), e.getY());
 				if(component != null)
 				{
-					final Point point = SwingUtilities.convertPoint(e.getComponent(), e.getPoint(), component.getDelegee());
-					final int resizeMask = Painter.getResizeMask(component, point.x, point.y);
+					Point point = SwingUtilities.convertPoint(e.getComponent(), e.getPoint(), component.getDelegee());
+					int resizeMask = Painter.getResizeMask(component, point.x, point.y);
 					if(resizeMask != 0)
 					{
 						cursor = Cursor.getPredefinedCursor(Painter.getResizeCursor(resizeMask));
@@ -224,14 +224,14 @@ public final class MainProcessor extends EventProcessor
 		}
 	}
 
-	private void updateDragger(final MouseEvent e)
+	private void updateDragger(MouseEvent e)
 	{
-		final RadComponent component = FormEditingUtil.getRadComponentAt(myEditor.getRootContainer(), e.getX(), e.getY());
+		RadComponent component = FormEditingUtil.getRadComponentAt(myEditor.getRootContainer(), e.getX(), e.getY());
 
 		LOG.assertTrue(component != null);
 
 		// Dragger
-		final RadComponent oldDraggerHost = FormEditingUtil.getDraggerHost(myEditor);
+		RadComponent oldDraggerHost = FormEditingUtil.getDraggerHost(myEditor);
 		RadComponent newDraggerHost = null;
 		for(RadComponent c = component; c != null && !(c instanceof RadRootContainer); c = c.getParent())
 		{
@@ -246,9 +246,9 @@ public final class MainProcessor extends EventProcessor
 
 		if(oldDraggerHost != null && oldDraggerHost.isSelected())
 		{
-			final Point p = SwingUtilities.convertPoint(oldDraggerHost.getDelegee(), 0, 0, e.getComponent());
-			final int deltaX = e.getX() - p.x;
-			final int deltaY = e.getY() - p.y;
+			Point p = SwingUtilities.convertPoint(oldDraggerHost.getDelegee(), 0, 0, e.getComponent());
+			int deltaX = e.getX() - p.x;
+			int deltaY = e.getY() - p.y;
 			if(deltaX > -DRAGGER_SIZE && deltaX < oldDraggerHost.getWidth() &&
 					deltaY > -DRAGGER_SIZE && deltaY < oldDraggerHost.getHeight())
 			{
@@ -279,7 +279,7 @@ public final class MainProcessor extends EventProcessor
 
 	private void removeDragger()
 	{
-		final RadComponent oldDraggerHost = FormEditingUtil.getDraggerHost(myEditor);
+		RadComponent oldDraggerHost = FormEditingUtil.getDraggerHost(myEditor);
 		if(oldDraggerHost != null)
 		{
 			oldDraggerHost.setDragger(false);
@@ -287,7 +287,7 @@ public final class MainProcessor extends EventProcessor
 		}
 	}
 
-	private void processMousePressed(final MouseEvent e)
+	private void processMousePressed(MouseEvent e)
 	{
 		if(myCurrentProcessor != null)
 		{
@@ -302,12 +302,12 @@ public final class MainProcessor extends EventProcessor
 		}
 
 		RadComponent component = null;
-		final RadComponent draggerHost = FormEditingUtil.getDraggerHost(myEditor);
+		RadComponent draggerHost = FormEditingUtil.getDraggerHost(myEditor);
 		// Try to understand whether we pressed inside dragger area
 		if(draggerHost != null)
 		{
-			final JComponent delegee = draggerHost.getDelegee();
-			final Point p = SwingUtilities.convertPoint(delegee, 0, 0, e.getComponent());
+			JComponent delegee = draggerHost.getDelegee();
+			Point p = SwingUtilities.convertPoint(delegee, 0, 0, e.getComponent());
 			if(p.x - MainProcessor.DRAGGER_SIZE <= e.getX() && e.getX() <= p.x &&
 					p.y - MainProcessor.DRAGGER_SIZE <= e.getY() && e.getY() <= p.y)
 			{
@@ -326,7 +326,7 @@ public final class MainProcessor extends EventProcessor
 			return;
 		}
 
-		final ComponentItem selectedItem = PaletteToolWindowManager.getInstance(myEditor).getActiveItem(ComponentItem.class);
+		ComponentItem selectedItem = PaletteToolWindowManager.getInstance(myEditor).getActiveItem(ComponentItem.class);
 		if(selectedItem != null)
 		{
 			myInsertComponentProcessor.setSticky(UIUtil.isControlKeyDown(e));
@@ -342,8 +342,8 @@ public final class MainProcessor extends EventProcessor
 			}
 		}
 
-		final Point point = SwingUtilities.convertPoint(e.getComponent(), e.getPoint(), component.getDelegee());
-		final int resizeMask = Painter.getResizeMask(component, point.x, point.y);
+		Point point = SwingUtilities.convertPoint(e.getComponent(), e.getPoint(), component.getDelegee());
+		int resizeMask = Painter.getResizeMask(component, point.x, point.y);
 		LOG.debug("MainProcessor.processMousePressed: resizeMask at (" + point.x + "," + point.y + ") is " + resizeMask);
 
 		if(resizeMask != 0)
@@ -366,7 +366,7 @@ public final class MainProcessor extends EventProcessor
 		updateDragger(e);
 	}
 
-	private void processMouseClicked(final MouseEvent e)
+	private void processMouseClicked(MouseEvent e)
 	{
 		if(e.getClickCount() != 2)
 		{ // inplace editing starts with double click
@@ -402,12 +402,12 @@ public final class MainProcessor extends EventProcessor
 		myEditor.getActiveDecorationLayer().removeFeedback();
 	}
 
-	public void setInsertFeedbackEnabled(final boolean enabled)
+	public void setInsertFeedbackEnabled(boolean enabled)
 	{
 		myInsertFeedbackEnabled = enabled;
 	}
 
-	public void startPasteProcessor(final ArrayList<RadComponent> componentsToPaste, final IntList xs, final IntList ys)
+	public void startPasteProcessor(ArrayList<RadComponent> componentsToPaste, IntList xs, IntList ys)
 	{
 		removeDragger();
 		myEditor.hideIntentionHint();
@@ -416,7 +416,7 @@ public final class MainProcessor extends EventProcessor
 				false));
 	}
 
-	public void startInsertProcessor(@Nonnull final ComponentItem componentToInsert, final ComponentDropLocation location)
+	public void startInsertProcessor(@Nonnull ComponentItem componentToInsert, ComponentDropLocation location)
 	{
 		removeDragger();
 		myEditor.hideIntentionHint();

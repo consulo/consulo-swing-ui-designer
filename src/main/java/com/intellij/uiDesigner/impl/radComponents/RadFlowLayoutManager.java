@@ -48,7 +48,7 @@ public class RadFlowLayoutManager extends RadAbstractIndexedLayoutManager {
     return new FlowLayout();
   }
 
-  public void writeLayout(final XmlWriter writer, final RadContainer radContainer) {
+  public void writeLayout(XmlWriter writer, RadContainer radContainer) {
     FlowLayout layout = (FlowLayout) radContainer.getLayout();
     writer.addAttribute(UIFormXmlConstants.ATTRIBUTE_HGAP, layout.getHgap());
     writer.addAttribute(UIFormXmlConstants.ATTRIBUTE_VGAP, layout.getVgap());
@@ -57,13 +57,13 @@ public class RadFlowLayoutManager extends RadAbstractIndexedLayoutManager {
 
   @Nonnull
   @Override
-  public ComponentDropLocation getDropLocation(RadContainer container, final Point location) {
+  public ComponentDropLocation getDropLocation(RadContainer container, Point location) {
     FlowLayout flowLayout = (FlowLayout) container.getLayout();
     return new FlowDropLocation(container, location, flowLayout.getAlignment(),
                                 (flowLayout.getHgap()+1)/2, (flowLayout.getVgap()+1)/2);
   }
 
-  @Override public Property[] getContainerProperties(final Project project) {
+  @Override public Property[] getContainerProperties(Project project) {
     return new Property[] {
       ALIGN_PROPERTY,
       HGapProperty.getInstance(project),
@@ -71,10 +71,10 @@ public class RadFlowLayoutManager extends RadAbstractIndexedLayoutManager {
   }
 
   @Override
-  public void createSnapshotLayout(final SnapshotContext context,
-                                   final JComponent parent,
-                                   final RadContainer container,
-                                   final LayoutManager layout) {
+  public void createSnapshotLayout(SnapshotContext context,
+                                   JComponent parent,
+                                   RadContainer container,
+                                   LayoutManager layout) {
     FlowLayout flowLayout = (FlowLayout) layout;
     container.setLayout(new FlowLayout(flowLayout.getAlignment(), flowLayout.getHgap(), flowLayout.getVgap()));
   }
@@ -100,14 +100,14 @@ public class RadFlowLayoutManager extends RadAbstractIndexedLayoutManager {
       }
     }
 
-    public Integer getValue(final RadContainer component) {
-      final LayoutManager layout = component.getLayout();
+    public Integer getValue(RadContainer component) {
+      LayoutManager layout = component.getLayout();
       if (!(layout instanceof FlowLayout)) return null;
       FlowLayout flowLayout = (FlowLayout)layout;
       return flowLayout.getAlignment();
     }
 
-    protected void setValueImpl(final RadContainer component, final Integer value) throws Exception {
+    protected void setValueImpl(RadContainer component, Integer value) throws Exception {
       FlowLayout flowLayout = (FlowLayout) component.getLayout();
       flowLayout.setAlignment(value.intValue());
     }
@@ -130,8 +130,8 @@ public class RadFlowLayoutManager extends RadAbstractIndexedLayoutManager {
       return myEditor;
     }
 
-    @Override public boolean isModified(final RadContainer component) {
-      final LayoutManager layout = component.getLayout();
+    @Override public boolean isModified(RadContainer component) {
+      LayoutManager layout = component.getLayout();
       if (!(layout instanceof FlowLayout)) return false;
       FlowLayout flowLayout = (FlowLayout)layout;
       return flowLayout.getAlignment() != FlowLayout.CENTER;

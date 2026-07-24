@@ -99,14 +99,14 @@ public abstract class FormSourceCodeGeneratorTest extends PsiTestCase {
       }
     }, "", null);
 
-    final PsiClass bindingTestClass = myJavaFacade.findClass("BindingTest", ProjectScope.getAllScope(myProject));
+    PsiClass bindingTestClass = myJavaFacade.findClass("BindingTest", ProjectScope.getAllScope(myProject));
     assertNotNull(bindingTestClass);
-    final VirtualFile testAfter = myTestProjectRoot.findChild("BindingTest.java.after");
+    VirtualFile testAfter = myTestProjectRoot.findChild("BindingTest.java.after");
     assertNotNull(testAfter);
     String expectedText = StringUtil.convertLineSeparators(VirtualFileUtil.loadText(testAfter));
-    final PsiFile psiFile = bindingTestClass.getContainingFile();
+    PsiFile psiFile = bindingTestClass.getContainingFile();
     assertNotNull(psiFile);
-    final String text = StringUtil.convertLineSeparators(psiFile.getText());
+    String text = StringUtil.convertLineSeparators(psiFile.getText());
     assertEquals(expectedText, text);
   }
 }

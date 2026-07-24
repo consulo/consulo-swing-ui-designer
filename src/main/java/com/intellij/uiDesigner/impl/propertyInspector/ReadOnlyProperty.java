@@ -23,15 +23,15 @@ import org.jetbrains.annotations.NonNls;
  * @author yole
  */
 public abstract class ReadOnlyProperty extends Property {
-  public ReadOnlyProperty(final Property parent, @NonNls final String name) {
+  public ReadOnlyProperty(Property parent, @NonNls String name) {
     super(parent, name);
   }
 
-  public Object getValue(final RadComponent component) {
+  public Object getValue(RadComponent component) {
     return null;
   }
 
-  protected void setValueImpl(final RadComponent component, final Object value) throws Exception {
+  protected void setValueImpl(RadComponent component, Object value) throws Exception {
   }
 
   public PropertyEditor getEditor() {

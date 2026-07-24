@@ -37,23 +37,23 @@ import jakarta.annotation.Nonnull;
 public final class ResourceBundleKeyReference extends ReferenceInForm {
   private final String myBundleName;
 
-  public ResourceBundleKeyReference(final PsiPlainTextFile file, String bundleName, TextRange keyNameRange) {
+  public ResourceBundleKeyReference(PsiPlainTextFile file, String bundleName, TextRange keyNameRange) {
     super(file, keyNameRange);
     myBundleName = bundleName;
   }
 
   public PsiElement resolve() {
-    final Project project = myFile.getProject();
-    final ProjectFileIndex fileIndex = ProjectRootManager.getInstance(project).getFileIndex();
-    final VirtualFile formVirtualFile = myFile.getVirtualFile();
+    Project project = myFile.getProject();
+    ProjectFileIndex fileIndex = ProjectRootManager.getInstance(project).getFileIndex();
+    VirtualFile formVirtualFile = myFile.getVirtualFile();
     if (formVirtualFile == null) {
       return null;
     }
-    final Module module = fileIndex.getModuleForFile(formVirtualFile);
+    Module module = fileIndex.getModuleForFile(formVirtualFile);
     if (module == null) {
       return null;
     }
-    final PropertiesFile propertiesFile = PropertiesUtil.getPropertiesFile(myBundleName, module, null);
+    PropertiesFile propertiesFile = PropertiesUtil.getPropertiesFile(myBundleName, module, null);
     if (propertiesFile == null) {
       return null;
     }
@@ -61,7 +61,7 @@ public final class ResourceBundleKeyReference extends ReferenceInForm {
     return property == null ? null : property.getPsiElement();
   }
 
-  public PsiElement bindToElement(@Nonnull final PsiElement element) throws consulo.language.util.IncorrectOperationException
+  public PsiElement bindToElement(@Nonnull PsiElement element) throws consulo.language.util.IncorrectOperationException
   {
     if (!(element instanceof IProperty)) {
       throw new IncorrectOperationException();
@@ -70,7 +70,7 @@ public final class ResourceBundleKeyReference extends ReferenceInForm {
     return myFile;
   }
 
-  public boolean isReferenceTo(final PsiElement element) {
+  public boolean isReferenceTo(PsiElement element) {
     if (!(element instanceof IProperty)) {
       return false;
     }

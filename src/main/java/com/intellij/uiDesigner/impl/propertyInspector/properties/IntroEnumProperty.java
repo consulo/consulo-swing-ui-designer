@@ -33,7 +33,7 @@ public class IntroEnumProperty extends IntrospectedProperty<Enum> {
   private LabelPropertyRenderer<Enum> myRenderer;
   private EnumEditor myEditor;
 
-  public IntroEnumProperty(final String name, final Method readMethod, final Method writeMethod, final boolean storeAsClient,
+  public IntroEnumProperty(String name, Method readMethod, Method writeMethod, boolean storeAsClient,
                            Class enumClass) {
     super(name, readMethod, writeMethod, storeAsClient);
     myEnumClass = enumClass;
@@ -42,7 +42,7 @@ public class IntroEnumProperty extends IntrospectedProperty<Enum> {
   @Nonnull
   public PropertyRenderer<Enum> getRenderer() {
     if (myRenderer == null) {
-      myRenderer = new LabelPropertyRenderer<Enum>();
+      myRenderer = new LabelPropertyRenderer<>();
     }
     return myRenderer;
   }

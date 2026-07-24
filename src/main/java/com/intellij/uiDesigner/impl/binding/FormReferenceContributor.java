@@ -32,7 +32,7 @@ import static consulo.language.pattern.PlatformPatterns.psiFile;
 @ExtensionImpl
 public class FormReferenceContributor extends PsiReferenceContributor
 {
-	public void registerReferenceProviders(final PsiReferenceRegistrar registrar)
+	public void registerReferenceProviders(PsiReferenceRegistrar registrar)
 	{
 		registrar.registerReferenceProvider(psiFile(PsiPlainTextFile.class), new FormReferenceProvider());
 	}

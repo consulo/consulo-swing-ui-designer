@@ -26,8 +26,8 @@ import com.intellij.uiDesigner.lw.StringDescriptor;
 public class I18nizeFormPropertyQuickFix extends I18nizeFormQuickFix {
   private final IntrospectedProperty myProperty;
 
-  public I18nizeFormPropertyQuickFix(final GuiEditor editor, final String name, final RadComponent component,
-                                     final IntrospectedProperty property) {
+  public I18nizeFormPropertyQuickFix(GuiEditor editor, String name, RadComponent component,
+                                     IntrospectedProperty property) {
     super(editor, name, component);
     myProperty = property;
   }
@@ -36,7 +36,7 @@ public class I18nizeFormPropertyQuickFix extends I18nizeFormQuickFix {
     return (StringDescriptor) myProperty.getValue(myComponent);
   }
 
-  protected void setStringDescriptorValue(final StringDescriptor descriptor) throws Exception {
+  protected void setStringDescriptorValue(StringDescriptor descriptor) throws Exception {
     myProperty.setValue(myComponent, descriptor);
   }
 }

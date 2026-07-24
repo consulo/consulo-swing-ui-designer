@@ -65,9 +65,9 @@ public class ChooseLocaleAction extends ComboBoxAction
 			Locale[] locales = FormEditingUtil.collectUsedLocales(editor.getModule(), editor.getRootContainer());
 			if(locales.length > 1 || (locales.length == 1 && locales[0].getDisplayName().length() > 0))
 			{
-				Arrays.sort(locales, new Comparator<Locale>()
+				Arrays.sort(locales, new Comparator<>()
 				{
-					public int compare(final Locale o1, final Locale o2)
+					public int compare(Locale o1, Locale o2)
 					{
 						return o1.getDisplayName().compareTo(o2.getDisplayName());
 					}
@@ -86,7 +86,7 @@ public class ChooseLocaleAction extends ComboBoxAction
 	}
 
 	@Nullable
-	private GuiEditor getEditor(final AnActionEvent e)
+	private GuiEditor getEditor(AnActionEvent e)
 	{
 		myLastEditor = FormEditingUtil.getActiveEditor(e.getDataContext());
 		return myLastEditor;
@@ -103,7 +103,7 @@ public class ChooseLocaleAction extends ComboBoxAction
 		private final Locale myLocale;
 		private final boolean myUpdateText;
 
-		public SetLocaleAction(final GuiEditor editor, final Locale locale, final boolean updateText)
+		public SetLocaleAction(GuiEditor editor, Locale locale, boolean updateText)
 		{
 			super(locale.getDisplayName().length() == 0
 					? UIDesignerBundle.message("choose.locale.default")

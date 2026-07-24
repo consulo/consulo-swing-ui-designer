@@ -46,7 +46,7 @@ class PassiveDecorationLayer extends JComponent
 	@Nonnull
 	private final GuiEditor myEditor;
 
-	public PassiveDecorationLayer(@Nonnull final GuiEditor editor)
+	public PassiveDecorationLayer(@Nonnull GuiEditor editor)
 	{
 		myEditor = editor;
 	}
@@ -54,14 +54,14 @@ class PassiveDecorationLayer extends JComponent
 	/**
 	 * Paints all necessary decoration for the specified <code>component</code>
 	 */
-	protected final void paintPassiveDecoration(final RadComponent component, final Graphics g)
+	protected final void paintPassiveDecoration(RadComponent component, final Graphics g)
 	{
 		// Paint component bounds and grid markers
 		Painter.paintComponentDecoration(myEditor, component, g);
 
-		final Set<RadButtonGroup> paintedGroups = new HashSet<RadButtonGroup>();
+		final Set<RadButtonGroup> paintedGroups = new HashSet<>();
 		final RadRootContainer rootContainer = myEditor.getRootContainer();
-		final ComponentTree componentTree = DesignerToolWindowManager.getInstance(myEditor).getComponentTree();
+		ComponentTree componentTree = DesignerToolWindowManager.getInstance(myEditor).getComponentTree();
 		final Collection<RadButtonGroup> selectedGroups = componentTree != null ? componentTree.getSelectedElements(RadButtonGroup.class) :
 				Collections.<RadButtonGroup>emptyList();
 
@@ -69,9 +69,9 @@ class PassiveDecorationLayer extends JComponent
 		FormEditingUtil.iterate(component, new FormEditingUtil.ComponentVisitor<RadComponent>()
 		{
 			@Override
-			public boolean visit(final RadComponent component)
+			public boolean visit(RadComponent component)
 			{
-				final Point point = SwingUtilities.convertPoint(component.getDelegee(), 0, 0, rootContainer.getDelegee());
+				Point point = SwingUtilities.convertPoint(component.getDelegee(), 0, 0, rootContainer.getDelegee());
 				RadButtonGroup group = (RadButtonGroup) FormEditingUtil.findGroupForComponent(rootContainer, component);
 				if(group != null && !paintedGroups.contains(group) && (component.isSelected() || selectedGroups.contains(group)))
 				{
@@ -89,7 +89,7 @@ class PassiveDecorationLayer extends JComponent
 					// Over selection we have to paint dragger
 					if(component.hasDragger())
 					{
-						final Icon icon = getDragIcon();
+						Icon icon = getDragIcon();
 						icon.paintIcon(PassiveDecorationLayer.this, g, -icon.getIconWidth(), -icon.getIconHeight());
 					}
 				}
@@ -108,13 +108,13 @@ class PassiveDecorationLayer extends JComponent
 	}
 
 	@Override
-	public void paint(final Graphics g)
+	public void paint(Graphics g)
 	{
 		// Passive decoration
-		final RadRootContainer root = myEditor.getRootContainer();
+		RadRootContainer root = myEditor.getRootContainer();
 		for(int i = root.getComponentCount() - 1; i >= 0; i--)
 		{
-			final RadComponent component = root.getComponent(i);
+			RadComponent component = root.getComponent(i);
 			paintPassiveDecoration(component, g);
 		}
 

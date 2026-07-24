@@ -38,7 +38,7 @@ public class UngroupRowsColumnsAction extends RowColumnAction
 
 	@RequiredUIAccess
 	@Override
-	public void update(@Nonnull final AnActionEvent e)
+	public void update(@Nonnull AnActionEvent e)
 	{
 		super.update(e);
 		CaptionSelection selection = e.getData(CaptionSelection.DATA_KEY);
@@ -53,7 +53,7 @@ public class UngroupRowsColumnsAction extends RowColumnAction
 	{
 		FormLayout layout = (FormLayout) selection.getContainer().getLayout();
 		int[][] oldGroups = selection.isRow() ? layout.getRowGroups() : layout.getColumnGroups();
-		List<int[]> newGroups = new ArrayList<int[]>();
+		List<int[]> newGroups = new ArrayList<>();
 		int[] selInts = selection.getSelection();
 		for(int[] group : oldGroups)
 		{

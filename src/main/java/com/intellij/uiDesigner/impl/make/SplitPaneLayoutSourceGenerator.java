@@ -23,11 +23,11 @@ import org.jetbrains.annotations.NonNls;
  * @author yole
  */
 public class SplitPaneLayoutSourceGenerator extends LayoutSourceGenerator {
-  public void generateComponentLayout(final LwComponent component,
-                                      final FormSourceCodeGenerator generator,
-                                      final String variable,
-                                      final String parentVariable) {
-    @NonNls final String methodName =
+  public void generateComponentLayout(LwComponent component,
+                                      FormSourceCodeGenerator generator,
+                                      String variable,
+                                      String parentVariable) {
+    @NonNls String methodName =
       LwSplitPane.POSITION_LEFT.equals(component.getCustomLayoutConstraints()) ?
       "setLeftComponent" :
       "setRightComponent";

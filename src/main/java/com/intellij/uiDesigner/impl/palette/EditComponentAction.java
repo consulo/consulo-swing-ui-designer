@@ -42,9 +42,9 @@ public class EditComponentAction extends AnAction implements AnActionWithSyncUpd
             return;
         }
 
-        final ComponentItem itemToBeEdited = selectedItem.clone(); /*"Cancel" should work, so we need edit copy*/
+        ComponentItem itemToBeEdited = selectedItem.clone(); /*"Cancel" should work, so we need edit copy*/
         Window parentWindow = TargetAWT.to(WindowManager.getInstance().suggestParentWindow(project));
-        final ComponentItemDialog dialog = new ComponentItemDialog(project, parentWindow, itemToBeEdited, false);
+        ComponentItemDialog dialog = new ComponentItemDialog(project, parentWindow, itemToBeEdited, false);
         dialog.setTitle(UIDesignerLocalize.titleEditComponent());
         dialog.show();
         if (!dialog.isOK()) {

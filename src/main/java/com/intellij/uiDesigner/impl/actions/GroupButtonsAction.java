@@ -34,11 +34,11 @@ import java.util.List;
  * @author yole
  */
 public class GroupButtonsAction extends AbstractGuiEditorAction {
-  protected void actionPerformed(final GuiEditor editor, final List<RadComponent> selection, final AnActionEvent e) {
+  protected void actionPerformed(GuiEditor editor, List<RadComponent> selection, AnActionEvent e) {
     groupButtons(editor, selection);
   }
 
-  public static void groupButtons(final GuiEditor editor, final List<RadComponent> selectedComponents) {
+  public static void groupButtons(GuiEditor editor, List<RadComponent> selectedComponents) {
     if (!editor.ensureEditable()) return;
     String groupName = Messages.showInputDialog(editor.getProject(),
                                                 UIDesignerBundle.message("group.buttons.name.prompt"),
@@ -55,13 +55,13 @@ public class GroupButtonsAction extends AbstractGuiEditorAction {
     editor.refreshAndSave(true);
   }
 
-  protected void update(@Nonnull GuiEditor editor, final ArrayList<RadComponent> selection, final AnActionEvent e) {
+  protected void update(@Nonnull GuiEditor editor, ArrayList<RadComponent> selection, AnActionEvent e) {
     e.getPresentation().setVisible(allButtons(selection));
     e.getPresentation().setEnabled(allButtons(selection) && selection.size() >= 2 &&
                                    !UngroupButtonsAction.isSameGroup(editor, selection));
   }
 
-  public static boolean allButtons(final ArrayList<RadComponent> selection) {
+  public static boolean allButtons(ArrayList<RadComponent> selection) {
     for(RadComponent component: selection) {
       if (!(component.getDelegee() instanceof AbstractButton) ||
           component.getDelegee() instanceof JButton) {

@@ -36,7 +36,7 @@ public class FormEnumConstantReference extends ReferenceInForm
 {
 	private final PsiClassType myEnumClass;
 
-	protected FormEnumConstantReference(final PsiPlainTextFile file, final TextRange range, final PsiClassType enumClass)
+	protected FormEnumConstantReference(PsiPlainTextFile file, TextRange range, PsiClassType enumClass)
 	{
 		super(file, range);
 		myEnumClass = enumClass;

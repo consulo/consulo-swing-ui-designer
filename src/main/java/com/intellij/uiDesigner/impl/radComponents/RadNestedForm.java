@@ -42,7 +42,7 @@ public class RadNestedForm extends RadComponent {
   private final String myFormFileName;
   private final RadRootContainer myRootContainer;
 
-  public RadNestedForm(final ModuleProvider module, final String formFileName, final String id) throws Exception {
+  public RadNestedForm(ModuleProvider module, String formFileName, String id) throws Exception {
     super(module, JPanel.class, id);
     myFormFileName = formFileName;
     LOG.debug("Loading nested form " + formFileName);
@@ -51,8 +51,8 @@ public class RadNestedForm extends RadComponent {
       throw new IllegalArgumentException("Couldn't find virtual file for nested form " + formFileName);
     }
     Document doc = FileDocumentManager.getInstance().getDocument(formFile);
-    final ClassLoader classLoader = LoaderFactory.getInstance(getProject()).getLoader(formFile);
-    final LwRootContainer rootContainer = Utils.getRootContainer(doc.getText(), new CompiledClassPropertiesProvider(classLoader));
+    ClassLoader classLoader = LoaderFactory.getInstance(getProject()).getLoader(formFile);
+    LwRootContainer rootContainer = Utils.getRootContainer(doc.getText(), new CompiledClassPropertiesProvider(classLoader));
     myRootContainer = XmlReader.createRoot(module, rootContainer, classLoader, null);
     if (myRootContainer.getComponentCount() > 0) {
       getDelegee().setLayout(new BorderLayout());
@@ -67,10 +67,10 @@ public class RadNestedForm extends RadComponent {
     }
   }
 
-  private void setRadComponentRecursive(final JComponent component) {
+  private void setRadComponentRecursive(JComponent component) {
     component.putClientProperty(CLIENT_PROP_RAD_COMPONENT, this);
     for (int i = 0; i < component.getComponentCount(); i++) {
-      final Component child = component.getComponent(i);
+      Component child = component.getComponent(i);
       if (child instanceof JComponent) {
         setRadComponentRecursive((JComponent)child);
       }
@@ -108,7 +108,7 @@ public class RadNestedForm extends RadComponent {
     return isNonStaticInnerClass(boundClass);
   }
 
-  private static boolean isNonStaticInnerClass(final PsiClass boundClass) {
+  private static boolean isNonStaticInnerClass(PsiClass boundClass) {
     if (boundClass == null) return false;
     return PsiUtil.isInnerClass(boundClass) || isNonStaticInnerClass(boundClass.getContainingClass());
   }

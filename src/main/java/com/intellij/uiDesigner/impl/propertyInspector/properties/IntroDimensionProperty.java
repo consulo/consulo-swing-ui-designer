@@ -40,7 +40,7 @@ public final class IntroDimensionProperty extends IntrospectedProperty<Dimension
   private final DimensionRenderer myRenderer;
   private final IntRegexEditor<Dimension> myEditor;
 
-  public IntroDimensionProperty(final String name, final Method readMethod, final Method writeMethod, final boolean storeAsClient){
+  public IntroDimensionProperty(String name, Method readMethod, Method writeMethod, boolean storeAsClient){
     super(name, readMethod, writeMethod, storeAsClient);
     myChildren = new Property[]{
       new IntFieldProperty(this, "width", -1, new Dimension(0, 0)),
@@ -51,13 +51,13 @@ public final class IntroDimensionProperty extends IntrospectedProperty<Dimension
   }
 
   @Override
-  public void write(@Nonnull final Dimension value, final XmlWriter writer) {
+  public void write(@Nonnull Dimension value, XmlWriter writer) {
     writer.addAttribute("width", value.width);
     writer.addAttribute("height", value.height);
   }
 
   @Nonnull
-  public Property[] getChildren(final RadComponent component) {
+  public Property[] getChildren(RadComponent component) {
     return myChildren;
   }
 
@@ -71,7 +71,7 @@ public final class IntroDimensionProperty extends IntrospectedProperty<Dimension
   }
 
   @Override
-  public void importSnapshotValue(final SnapshotContext context, final JComponent component, final RadComponent radComponent) {
+  public void importSnapshotValue(SnapshotContext context, JComponent component, RadComponent radComponent) {
     if (getName().equals(SwingProperties.MINIMUM_SIZE) ||
         getName().equals(SwingProperties.MAXIMUM_SIZE) ||
         getName().equals(SwingProperties.PREFERRED_SIZE)) {

@@ -319,7 +319,7 @@ public final class GuiEditor extends JPanel implements DesignerEditorPanelFacade
         final Alarm alarm = new Alarm();
         myDocumentListener = new DocumentAdapter() {
             @Override
-            public void documentChanged(final DocumentEvent e) {
+            public void documentChanged(DocumentEvent e) {
                 if (!myInsideChange) {
                     UndoManager undoManager = ProjectUndoManager.getInstance(getProject());
                     alarm.cancelAllRequests();
@@ -360,7 +360,7 @@ public final class GuiEditor extends JPanel implements DesignerEditorPanelFacade
         gbc.weighty = 1.0;
 
         myScrollPane = ScrollPaneFactory.createScrollPane(myLayeredPane);
-        myScrollPane.setBackground(new JBColor(new Supplier<Color>() {
+        myScrollPane.setBackground(new JBColor(new Supplier<>() {
             @Nonnull
             @Override
             public Color get() {
@@ -373,7 +373,7 @@ public final class GuiEditor extends JPanel implements DesignerEditorPanelFacade
 
         myValidCard.add(panel, BorderLayout.CENTER);
 
-        final CancelCurrentOperationAction cancelCurrentOperationAction = new CancelCurrentOperationAction();
+        CancelCurrentOperationAction cancelCurrentOperationAction = new CancelCurrentOperationAction();
         cancelCurrentOperationAction.registerCustomShortcutSet(CommonShortcuts.ESCAPE, this);
 
         myProcessor = new MainProcessor(this);
@@ -464,7 +464,7 @@ public final class GuiEditor extends JPanel implements DesignerEditorPanelFacade
     }
 
     public boolean isEditable() {
-        final Document document = FileDocumentManager.getInstance().getDocument(myFile);
+        Document document = FileDocumentManager.getInstance().getDocument(myFile);
         return document != null && document.isWritable();
     }
 
@@ -474,7 +474,7 @@ public final class GuiEditor extends JPanel implements DesignerEditorPanelFacade
         }
         VirtualFile sourceFileToCheckOut = null;
         if (!GuiDesignerConfiguration.getInstance(getProject()).INSTRUMENT_CLASSES) {
-            final String classToBind = myRootContainer.getClassToBind();
+            String classToBind = myRootContainer.getClassToBind();
             if (classToBind != null && classToBind.length() > 0) {
                 PsiClass psiClass = FormEditingUtil.findClassToBind(getModule(), classToBind);
                 if (psiClass != null) {
@@ -483,7 +483,7 @@ public final class GuiEditor extends JPanel implements DesignerEditorPanelFacade
             }
         }
 
-        final ReadonlyStatusHandler.OperationStatus status;
+        ReadonlyStatusHandler.OperationStatus status;
         if (sourceFileToCheckOut != null) {
             status = ReadonlyStatusHandler.getInstance(getProject()).ensureFilesWritable(myFile, sourceFileToCheckOut);
         }
@@ -499,9 +499,9 @@ public final class GuiEditor extends JPanel implements DesignerEditorPanelFacade
         repaintLayeredPane();
     }
 
-    public void refreshAndSave(final boolean forceSync) {
+    public void refreshAndSave(boolean forceSync) {
         // Update property inspector
-        final PropertyInspector propertyInspector = DesignerToolWindowManager.getInstance(this).getPropertyInspector();
+        PropertyInspector propertyInspector = DesignerToolWindowManager.getInstance(this).getPropertyInspector();
         if (propertyInspector != null) {
             propertyInspector.synchWithTree(forceSync);
         }
@@ -517,11 +517,11 @@ public final class GuiEditor extends JPanel implements DesignerEditorPanelFacade
         return myNextSaveGroupId;
     }
 
-    private static void refreshImpl(final RadComponent component) {
+    private static void refreshImpl(RadComponent component) {
         if (component.getParent() != null) {
-            final Dimension size = component.getSize();
-            final int oldWidth = size.width;
-            final int oldHeight = size.height;
+            Dimension size = component.getSize();
+            int oldWidth = size.width;
+            int oldHeight = size.height;
             Util.adjustSize(component.getDelegee(), component.getConstraints(), size);
 
             if (oldWidth != size.width || oldHeight != size.height) {
@@ -535,7 +535,7 @@ public final class GuiEditor extends JPanel implements DesignerEditorPanelFacade
         if (component instanceof RadContainer) {
             component.refresh();
 
-            final RadContainer container = (RadContainer) component;
+            RadContainer container = (RadContainer) component;
             for (int i = container.getComponentCount() - 1; i >= 0; i--) {
                 refreshImpl(container.getComponent(i));
             }
@@ -543,7 +543,7 @@ public final class GuiEditor extends JPanel implements DesignerEditorPanelFacade
     }
 
     @Override
-    public Object getData(@Nonnull final Key<?> dataId) {
+    public Object getData(@Nonnull Key<?> dataId) {
         if (PlatformDataKeys.HELP_ID == dataId) {
             return ourHelpID;
         }
@@ -553,7 +553,7 @@ public final class GuiEditor extends JPanel implements DesignerEditorPanelFacade
         if (project.isDisposed()) {
             return null;
         }
-        final PropertyInspector inspector = DesignerToolWindowManager.getInstance(this).getPropertyInspector();
+        PropertyInspector inspector = DesignerToolWindowManager.getInstance(this).getPropertyInspector();
         if (inspector != null && inspector.isEditing()) {
             return null;
         }
@@ -572,7 +572,7 @@ public final class GuiEditor extends JPanel implements DesignerEditorPanelFacade
     }
 
     private JPanel createInvalidCard() {
-        final JPanel panel = new JPanel(new GridBagLayout());
+        JPanel panel = new JPanel(new GridBagLayout());
         myFormInvalidLabel = new JLabel(UIDesignerBundle.message("error.form.file.is.invalid"));
         panel.add(myFormInvalidLabel, new GridBagConstraints(0, 0, 1, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0,
             0, 0), 0, 0));
@@ -600,15 +600,15 @@ public final class GuiEditor extends JPanel implements DesignerEditorPanelFacade
      * Fires event that selection changes
      */
     public void fireSelectedComponentChanged() {
-        final ComponentSelectionListener[] listeners = myListenerList.getListeners(ComponentSelectionListener.class);
+        ComponentSelectionListener[] listeners = myListenerList.getListeners(ComponentSelectionListener.class);
         for (ComponentSelectionListener listener : listeners) {
             listener.selectedComponentChanged(this);
         }
     }
 
     private void fireHierarchyChanged() {
-        final HierarchyChangeListener[] listeners = myListenerList.getListeners(HierarchyChangeListener.class);
-        for (final HierarchyChangeListener listener : listeners) {
+        HierarchyChangeListener[] listeners = myListenerList.getListeners(HierarchyChangeListener.class);
+        for (HierarchyChangeListener listener : listeners) {
             listener.hierarchyChanged();
         }
     }
@@ -639,28 +639,28 @@ public final class GuiEditor extends JPanel implements DesignerEditorPanelFacade
      * Adds specified selection listener. This listener gets notification each time
      * the selection in the component the changes.
      */
-    public void addComponentSelectionListener(final ComponentSelectionListener l) {
+    public void addComponentSelectionListener(ComponentSelectionListener l) {
         myListenerList.add(ComponentSelectionListener.class, l);
     }
 
     /**
      * Removes specified selection listener
      */
-    public void removeComponentSelectionListener(final ComponentSelectionListener l) {
+    public void removeComponentSelectionListener(ComponentSelectionListener l) {
         myListenerList.remove(ComponentSelectionListener.class, l);
     }
 
     /**
      * Adds specified hierarchy change listener
      */
-    public void addHierarchyChangeListener(@Nonnull final HierarchyChangeListener l) {
+    public void addHierarchyChangeListener(@Nonnull HierarchyChangeListener l) {
         myListenerList.add(HierarchyChangeListener.class, l);
     }
 
     /**
      * Removes specified hierarchy change listener
      */
-    public void removeHierarchyChangeListener(@Nonnull final HierarchyChangeListener l) {
+    public void removeHierarchyChangeListener(@Nonnull HierarchyChangeListener l) {
         myListenerList.remove(HierarchyChangeListener.class, l);
     }
 
@@ -674,13 +674,13 @@ public final class GuiEditor extends JPanel implements DesignerEditorPanelFacade
                     public void run() {
                         myInsideChange = true;
                         try {
-                            final XmlWriter writer = new XmlWriter();
+                            XmlWriter writer = new XmlWriter();
                             getRootContainer().write(writer);
-                            final String newText = writer.getText();
-                            final String oldText = myDocument.getText();
+                            String newText = writer.getText();
+                            String oldText = myDocument.getText();
 
                             try {
-                                final ReplaceInfo replaceInfo = findFragmentToChange(oldText, newText);
+                                ReplaceInfo replaceInfo = findFragmentToChange(oldText, newText);
                                 if (replaceInfo.getStartOffset() == -1) {
                                     // do nothing - texts are equal
                                 }
@@ -709,7 +709,7 @@ public final class GuiEditor extends JPanel implements DesignerEditorPanelFacade
         return myActiveDecorationLayer;
     }
 
-    public void setStringDescriptorLocale(final Locale locale) {
+    public void setStringDescriptorLocale(Locale locale) {
         myRootContainer.setStringDescriptorLocale(locale);
         refreshProperties();
         DesignerToolWindowManager.getInstance(this).updateComponentTree();
@@ -722,11 +722,11 @@ public final class GuiEditor extends JPanel implements DesignerEditorPanelFacade
     }
 
     private void refreshProperties() {
-        final Ref<Boolean> anythingModified = new Ref<Boolean>();
+        final Ref<Boolean> anythingModified = new Ref<>();
         FormEditingUtil.iterate(myRootContainer, new FormEditingUtil.ComponentVisitor() {
             @Override
-            public boolean visit(final IComponent component) {
-                final RadComponent radComponent = (RadComponent) component;
+            public boolean visit(IComponent component) {
+                RadComponent radComponent = (RadComponent) component;
                 boolean componentModified = false;
                 for (IProperty prop : component.getModifiedProperties()) {
                     if (prop instanceof IntroStringProperty) {
@@ -771,7 +771,7 @@ public final class GuiEditor extends JPanel implements DesignerEditorPanelFacade
         myQuickFixManager.refreshIntentionHint();
     }
 
-    public void setSelectionAnchor(final RadComponent component) {
+    public void setSelectionAnchor(RadComponent component) {
         mySelectionAnchor = new ComponentPtr(this, component);
     }
 
@@ -784,7 +784,7 @@ public final class GuiEditor extends JPanel implements DesignerEditorPanelFacade
         return mySelectionAnchor.getComponent();
     }
 
-    public void setSelectionLead(final RadComponent component) {
+    public void setSelectionLead(RadComponent component) {
         mySelectionLead = new ComponentPtr(this, component);
     }
 
@@ -797,7 +797,7 @@ public final class GuiEditor extends JPanel implements DesignerEditorPanelFacade
         return mySelectionLead.getComponent();
     }
 
-    public void scrollComponentInView(final RadComponent component) {
+    public void scrollComponentInView(RadComponent component) {
         Rectangle rect = SwingUtilities.convertRectangle(component.getDelegee().getParent(), component.getBounds(), myLayeredPane);
         myLayeredPane.scrollRectToVisible(rect);
     }
@@ -807,7 +807,7 @@ public final class GuiEditor extends JPanel implements DesignerEditorPanelFacade
         private final int myEndOffset;
         private final String myReplacement;
 
-        public ReplaceInfo(final int startOffset, final int endOffset, final String replacement) {
+        public ReplaceInfo(int startOffset, int endOffset, String replacement) {
             myStartOffset = startOffset;
             myEndOffset = endOffset;
             myReplacement = replacement;
@@ -826,13 +826,13 @@ public final class GuiEditor extends JPanel implements DesignerEditorPanelFacade
         }
     }
 
-    public static ReplaceInfo findFragmentToChange(final String oldText, final String newText) {
+    public static ReplaceInfo findFragmentToChange(String oldText, String newText) {
         if (oldText.equals(newText)) {
             return new ReplaceInfo(-1, -1, null);
         }
 
-        final int oldLength = oldText.length();
-        final int newLength = newText.length();
+        int oldLength = oldText.length();
+        int newLength = newText.length();
 
         int startOffset = 0;
         while (startOffset < oldLength && startOffset < newLength &&
@@ -845,13 +845,13 @@ public final class GuiEditor extends JPanel implements DesignerEditorPanelFacade
             if (endOffset <= startOffset) {
                 break;
             }
-            final int idxInNew = newLength - (oldLength - endOffset) - 1;
+            int idxInNew = newLength - (oldLength - endOffset) - 1;
             if (idxInNew < startOffset) {
                 break;
             }
 
-            final char c1 = oldText.charAt(endOffset - 1);
-            final char c2 = newText.charAt(idxInNew);
+            char c1 = oldText.charAt(endOffset - 1);
+            char c2 = newText.charAt(idxInNew);
             if (c1 != c2) {
                 break;
             }
@@ -864,7 +864,7 @@ public final class GuiEditor extends JPanel implements DesignerEditorPanelFacade
     /**
      * @param rootContainer new container to be set as a root.
      */
-    private void setRootContainer(@Nonnull final RadRootContainer rootContainer) {
+    private void setRootContainer(@Nonnull RadRootContainer rootContainer) {
         if (myRootContainer != null) {
             myLayeredPane.remove(myRootContainer.getDelegee());
         }
@@ -875,7 +875,7 @@ public final class GuiEditor extends JPanel implements DesignerEditorPanelFacade
         fireHierarchyChanged();
     }
 
-    public void setDesignTimeInsets(final int insets) {
+    public void setDesignTimeInsets(int insets) {
         Integer oldInsets = (Integer) myRootContainer.getDelegee().getClientProperty(GridLayoutManager.DESIGN_TIME_INSETS);
         if (oldInsets == null || oldInsets.intValue() != insets) {
             myRootContainer.getDelegee().putClientProperty(GridLayoutManager.DESIGN_TIME_INSETS, insets);
@@ -883,7 +883,7 @@ public final class GuiEditor extends JPanel implements DesignerEditorPanelFacade
         }
     }
 
-    private static void revalidateRecursive(final JComponent component) {
+    private static void revalidateRecursive(JComponent component) {
         for (Component child : component.getComponents()) {
             if (child instanceof JComponent) {
                 revalidateRecursive((JComponent) child);
@@ -898,7 +898,7 @@ public final class GuiEditor extends JPanel implements DesignerEditorPanelFacade
      *
      * @param keepSelection if true, the GUI designer tries to preserve the selection state after reload.
      */
-    public void readFromFile(final boolean keepSelection) {
+    public void readFromFile(boolean keepSelection) {
         try {
             ComponentPtr[] selection = null;
             Map<String, String> tabbedPaneSelectedTabs = null;
@@ -911,12 +911,12 @@ public final class GuiEditor extends JPanel implements DesignerEditorPanelFacade
                 oldLocale = myRootContainer.getStringDescriptorLocale();
             }
 
-            final String text = myDocument.getText();
+            String text = myDocument.getText();
 
-            final ClassLoader classLoader = LoaderFactory.getInstance(getProject()).getLoader(myFile);
+            ClassLoader classLoader = LoaderFactory.getInstance(getProject()).getLoader(myFile);
 
-            final LwRootContainer rootContainer = Utils.getRootContainer(text, new CompiledClassPropertiesProvider(classLoader));
-            final RadRootContainer container = XmlReader.createRoot(this, rootContainer, classLoader, oldLocale);
+            LwRootContainer rootContainer = Utils.getRootContainer(text, new CompiledClassPropertiesProvider(classLoader));
+            RadRootContainer container = XmlReader.createRoot(this, rootContainer, classLoader, oldLocale);
             setRootContainer(container);
             if (keepSelection) {
                 SelectionState.restoreSelection(this, selection);
@@ -933,12 +933,12 @@ public final class GuiEditor extends JPanel implements DesignerEditorPanelFacade
             }
             showInvalidCard(original);
         }
-        catch (final LinkageError exc) {
+        catch (LinkageError exc) {
             showInvalidCard(exc);
         }
     }
 
-    private void showInvalidCard(final Throwable exc) {
+    private void showInvalidCard(Throwable exc) {
         LOG.info(exc);
         // setting fictive container
         setRootContainer(new RadRootContainer(this, "0"));
@@ -953,10 +953,10 @@ public final class GuiEditor extends JPanel implements DesignerEditorPanelFacade
     }
 
     private Map<String, String> saveTabbedPaneSelectedTabs() {
-        final Map<String, String> result = new HashMap<String, String>();
+        final Map<String, String> result = new HashMap<>();
         FormEditingUtil.iterate(getRootContainer(), new FormEditingUtil.ComponentVisitor() {
             @Override
-            public boolean visit(final IComponent component) {
+            public boolean visit(IComponent component) {
                 if (component instanceof RadTabbedPane) {
                     RadTabbedPane tabbedPane = (RadTabbedPane) component;
                     RadComponent c = tabbedPane.getSelectedTab();
@@ -973,7 +973,7 @@ public final class GuiEditor extends JPanel implements DesignerEditorPanelFacade
     private void restoreTabbedPaneSelectedTabs(final Map<String, String> tabbedPaneSelectedTabs) {
         FormEditingUtil.iterate(getRootContainer(), new FormEditingUtil.ComponentVisitor() {
             @Override
-            public boolean visit(final IComponent component) {
+            public boolean visit(IComponent component) {
                 if (component instanceof RadTabbedPane) {
                     RadTabbedPane tabbedPane = (RadTabbedPane) component;
                     String selectedTabId = tabbedPaneSelectedTabs.get(tabbedPane.getId());
@@ -1000,8 +1000,8 @@ public final class GuiEditor extends JPanel implements DesignerEditorPanelFacade
         }
     }
 
-    public static void repaintLayeredPane(final RadComponent component) {
-        final GuiEditor uiEditor = (GuiEditor) SwingUtilities.getAncestorOfClass(GuiEditor.class, component.getDelegee());
+    public static void repaintLayeredPane(RadComponent component) {
+        GuiEditor uiEditor = (GuiEditor) SwingUtilities.getAncestorOfClass(GuiEditor.class, component.getDelegee());
         if (uiEditor != null) {
             uiEditor.repaintLayeredPane();
         }
@@ -1011,7 +1011,7 @@ public final class GuiEditor extends JPanel implements DesignerEditorPanelFacade
         return myShowGrid;
     }
 
-    public void setShowGrid(final boolean showGrid) {
+    public void setShowGrid(boolean showGrid) {
         if (myShowGrid != showGrid) {
             myShowGrid = showGrid;
             repaint();
@@ -1022,7 +1022,7 @@ public final class GuiEditor extends JPanel implements DesignerEditorPanelFacade
         return myShowComponentTags;
     }
 
-    public void setShowComponentTags(final boolean showComponentTags) {
+    public void setShowComponentTags(boolean showComponentTags) {
         if (myShowComponentTags != showComponentTags) {
             myShowComponentTags = showComponentTags;
             repaint();
@@ -1085,7 +1085,7 @@ public final class GuiEditor extends JPanel implements DesignerEditorPanelFacade
         @Override
         public void doLayout() {
             for (int i = getComponentCount() - 1; i >= 0; i--) {
-                final Component component = getComponent(i);
+                Component component = getComponent(i);
                 component.setBounds(0, 0, getWidth(), getHeight());
             }
         }
@@ -1101,7 +1101,7 @@ public final class GuiEditor extends JPanel implements DesignerEditorPanelFacade
             int width = 0;
             int height = 0;
             for (int i = 0; i < myRootContainer.getComponentCount(); i++) {
-                final RadComponent component = myRootContainer.getComponent(i);
+                RadComponent component = myRootContainer.getComponent(i);
                 width = Math.max(width, component.getX() + component.getWidth());
                 height = Math.max(height, component.getY() + component.getHeight());
             }
@@ -1148,13 +1148,13 @@ public final class GuiEditor extends JPanel implements DesignerEditorPanelFacade
      */
     private final class CancelCurrentOperationAction extends AnAction implements AnActionWithSyncUpdate {
         @Override
-        public void actionPerformed(final AnActionEvent e) {
+        public void actionPerformed(AnActionEvent e) {
             myProcessor.cancelOperation();
             myQuickFixManager.hideIntentionHint();
         }
 
         @Override
-        public void update(final AnActionEvent e) {
+        public void update(AnActionEvent e) {
             PropertyInspector inspector = DesignerToolWindowManager.getInstance(GuiEditor.this).getPropertyInspector();
             e.getPresentation().setEnabled(inspector != null && !inspector.isEditing());
         }
@@ -1165,7 +1165,7 @@ public final class GuiEditor extends JPanel implements DesignerEditorPanelFacade
      */
     private final class MyDeleteProvider implements DeleteProvider {
         @Override
-        public void deleteElement(@Nonnull final DataContext dataContext) {
+        public void deleteElement(@Nonnull DataContext dataContext) {
             if (!GuiEditor.this.ensureEditable()) {
                 return;
             }
@@ -1178,7 +1178,7 @@ public final class GuiEditor extends JPanel implements DesignerEditorPanelFacade
         }
 
         @Override
-        public boolean canDeleteElement(@Nonnull final DataContext dataContext) {
+        public boolean canDeleteElement(@Nonnull DataContext dataContext) {
             return !DesignerToolWindowManager.getInstance(GuiEditor.this).getPropertyInspector().isEditing() &&
                 !myInplaceEditingLayer.isEditing() &&
                 FormEditingUtil.canDeleteSelection(GuiEditor.this);
@@ -1206,17 +1206,17 @@ public final class GuiEditor extends JPanel implements DesignerEditorPanelFacade
         }
 
         @Override
-        public void childAdded(@Nonnull final PsiTreeChangeEvent event) {
+        public void childAdded(@Nonnull PsiTreeChangeEvent event) {
             handleEvent(event);
         }
 
         @Override
-        public void childMoved(@Nonnull final PsiTreeChangeEvent event) {
+        public void childMoved(@Nonnull PsiTreeChangeEvent event) {
             handleEvent(event);
         }
 
         @Override
-        public void childrenChanged(@Nonnull final PsiTreeChangeEvent event) {
+        public void childrenChanged(@Nonnull PsiTreeChangeEvent event) {
             handleEvent(event);
         }
 
@@ -1231,14 +1231,14 @@ public final class GuiEditor extends JPanel implements DesignerEditorPanelFacade
         }
 
         @Override
-        public void propertyChanged(@Nonnull final PsiTreeChangeEvent event) {
+        public void propertyChanged(@Nonnull PsiTreeChangeEvent event) {
             if (PsiTreeChangeEvent.PROP_ROOTS.equals(event.getPropertyName())) {
                 myAlarm.cancelRequest(myRefreshPropertiesRequest);
                 myAlarm.addRequest(myRefreshPropertiesRequest, 500, Application.get().getModalityStateForComponent(GuiEditor.this));
             }
         }
 
-        private void handleEvent(final PsiTreeChangeEvent event) {
+        private void handleEvent(PsiTreeChangeEvent event) {
             if (event.getParent() != null) {
                 PsiFile containingFile = event.getParent().getContainingFile();
                 if (containingFile instanceof PropertiesFile) {
@@ -1263,7 +1263,7 @@ public final class GuiEditor extends JPanel implements DesignerEditorPanelFacade
     private class MySynchronizeRequest implements Runnable {
         private final boolean myKeepSelection;
 
-        public MySynchronizeRequest(final boolean keepSelection) {
+        public MySynchronizeRequest(boolean keepSelection) {
             myKeepSelection = keepSelection;
         }
 

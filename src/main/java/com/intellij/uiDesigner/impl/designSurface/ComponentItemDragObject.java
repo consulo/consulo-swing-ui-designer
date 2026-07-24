@@ -31,7 +31,7 @@ import java.awt.*;
 public class ComponentItemDragObject implements ComponentDragObject {
   private final ComponentItem myItem;
 
-  public ComponentItemDragObject(@Nonnull final ComponentItem item) {
+  public ComponentItemDragObject(@Nonnull ComponentItem item) {
     myItem = item;
   }
 
@@ -73,8 +73,8 @@ public class ComponentItemDragObject implements ComponentDragObject {
   }
 
   @Nonnull
-  public Dimension getInitialSize(final RadContainer targetContainer) {
-    final ClassLoader loader = LoaderFactory.getInstance(targetContainer.getProject()).getLoader(targetContainer.getModule());
+  public Dimension getInitialSize(RadContainer targetContainer) {
+    ClassLoader loader = LoaderFactory.getInstance(targetContainer.getProject()).getLoader(targetContainer.getModule());
     return myItem.getInitialSize(targetContainer.getDelegee(), loader);
   }
 }

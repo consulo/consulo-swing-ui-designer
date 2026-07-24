@@ -49,7 +49,7 @@ public abstract class AbstractIntProperty<T extends RadComponent> extends Proper
     return myEditor;
   }
 
-  @Override public boolean isModified(final T component) {
+  @Override public boolean isModified(T component) {
     Integer intValue = getValue(component);
     return intValue != null && intValue != getDefaultValue(component);
   }
@@ -58,7 +58,7 @@ public abstract class AbstractIntProperty<T extends RadComponent> extends Proper
     setValue(component, getDefaultValue(component));
   }
 
-  protected int getDefaultValue(final T component) {
+  protected int getDefaultValue(T component) {
     return myDefaultValue;
   }
 }

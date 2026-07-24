@@ -62,22 +62,22 @@ public abstract class RadLayoutManager {
     container.setLayoutManager(this);
   }
 
-  public abstract void writeChildConstraints(final XmlWriter writer, final RadComponent child);
+  public abstract void writeChildConstraints(XmlWriter writer, RadComponent child);
 
-  public void writeLayout(final XmlWriter writer, final RadContainer radContainer) {
+  public void writeLayout(XmlWriter writer, RadContainer radContainer) {
   }
 
   public void refresh(RadContainer container) {
   }
 
   @Nonnull
-  public ComponentDropLocation getDropLocation(RadContainer container, @Nullable final Point location) {
+  public ComponentDropLocation getDropLocation(RadContainer container, @Nullable Point location) {
     return NoDropLocation.INSTANCE;
   }
 
-  public abstract void addComponentToContainer(final RadContainer container, final RadComponent component, final int index);
+  public abstract void addComponentToContainer(RadContainer container, RadComponent component, int index);
 
-  public void removeComponentFromContainer(final RadContainer container, final RadComponent component) {
+  public void removeComponentFromContainer(RadContainer container, RadComponent component) {
     container.getDelegee().remove(component.getDelegee());
   }
 
@@ -89,25 +89,25 @@ public abstract class RadLayoutManager {
     return false;
   }
 
-  public Property[] getContainerProperties(final Project project) {
+  public Property[] getContainerProperties(Project project) {
     return Property.EMPTY_ARRAY;
   }
 
-  public Property[] getComponentProperties(final Project project, final RadComponent component) {
+  public Property[] getComponentProperties(Project project, RadComponent component) {
     return Property.EMPTY_ARRAY;
   }
 
-  public void addSnapshotComponent(final JComponent parent,
-                                   final JComponent child,
-                                   final RadContainer container,
-                                   final RadComponent component) {
+  public void addSnapshotComponent(JComponent parent,
+                                   JComponent child,
+                                   RadContainer container,
+                                   RadComponent component) {
     throw new UnsupportedOperationException("Layout manager " + this + " does not support adding snapshot components");
   }
 
-  public void createSnapshotLayout(final SnapshotContext context,
-                                   final JComponent parent,
-                                   final RadContainer container,
-                                   final LayoutManager layout) {
+  public void createSnapshotLayout(SnapshotContext context,
+                                   JComponent parent,
+                                   RadContainer container,
+                                   LayoutManager layout) {
   }
 
   public boolean isIndexed() {
@@ -126,18 +126,18 @@ public abstract class RadLayoutManager {
     child.getDelegee().setVisible(!dragging);
   }
 
-  public boolean canMoveComponent(RadComponent c, int rowDelta, int colDelta, final int rowSpanDelta, final int colSpanDelta) {
+  public boolean canMoveComponent(RadComponent c, int rowDelta, int colDelta, int rowSpanDelta, int colSpanDelta) {
     return false;
   }
 
-  public void moveComponent(RadComponent c, int rowDelta, int colDelta, final int rowSpanDelta, final int colSpanDelta) {
+  public void moveComponent(RadComponent c, int rowDelta, int colDelta, int rowSpanDelta, int colSpanDelta) {
   }
 
-  protected static void ensureChildrenVisible(final RadContainer container) {
+  protected static void ensureChildrenVisible(RadContainer container) {
     if (container.getLayoutManager().areChildrenExclusive()) {
       // ensure that components which were hidden by previous layout are visible (IDEADEV-16077)
       for (RadComponent child : container.getComponents()) {
-        final IProperty property = FormInspectionUtil.findProperty(child, SwingProperties.VISIBLE);
+        IProperty property = FormInspectionUtil.findProperty(child, SwingProperties.VISIBLE);
         if (property == null || property.getPropertyValue(child) == Boolean.TRUE) {
           child.getDelegee().setVisible(true);
         }

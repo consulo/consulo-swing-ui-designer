@@ -53,7 +53,7 @@ public class DeleteComponentAction extends AnAction implements AnActionWithSyncU
             return;
         }
 
-        final Palette palette = Palette.getInstance(project);
+        Palette palette = Palette.getInstance(project);
         palette.removeItem(groupItem, selectedItem);
         palette.fireGroupsChanged();
     }

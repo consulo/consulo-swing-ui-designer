@@ -69,7 +69,7 @@ public class RadCardLayoutManager extends RadLayoutManager {
   }
 
   @Override
-  public void writeChildConstraints(final XmlWriter writer, final RadComponent child) {
+  public void writeChildConstraints(XmlWriter writer, RadComponent child) {
     writer.startElement(UIFormXmlConstants.ELEMENT_CARD);
     try {
       writer.addAttribute(UIFormXmlConstants.ATTRIBUTE_NAME, (String) child.getCustomLayoutConstraints());
@@ -80,7 +80,7 @@ public class RadCardLayoutManager extends RadLayoutManager {
   }
 
   @Override
-  public void writeLayout(final XmlWriter writer, final RadContainer radContainer) {
+  public void writeLayout(XmlWriter writer, RadContainer radContainer) {
     CardLayout layout = (CardLayout) radContainer.getLayout();
     
     writer.addAttribute(UIFormXmlConstants.ATTRIBUTE_HGAP, layout.getHgap());
@@ -93,7 +93,7 @@ public class RadCardLayoutManager extends RadLayoutManager {
   }
 
   @Override
-  public void addComponentToContainer(final RadContainer container, final RadComponent component, final int index) {
+  public void addComponentToContainer(RadContainer container, RadComponent component, int index) {
     container.getDelegee().add(component.getDelegee(), component.getCustomLayoutConstraints());
   }
 
@@ -113,12 +113,12 @@ public class RadCardLayoutManager extends RadLayoutManager {
   }
 
   @Override @Nonnull
-  public ComponentDropLocation getDropLocation(RadContainer container, @Nullable final Point location) {
+  public ComponentDropLocation getDropLocation(RadContainer container, @Nullable Point location) {
     return new CardDropLocation(container);
   }
 
   @Override
-  public Property[] getContainerProperties(final Project project) {
+  public Property[] getContainerProperties(Project project) {
     return new Property[]{
       HGapProperty.getInstance(project),
       VGapProperty.getInstance(project),
@@ -126,7 +126,7 @@ public class RadCardLayoutManager extends RadLayoutManager {
   }
 
   @Override
-  public Property[] getComponentProperties(final Project project, final RadComponent component) {
+  public Property[] getComponentProperties(Project project, RadComponent component) {
     return new Property[] { CardNameProperty.INSTANCE };
   }
 
@@ -148,10 +148,10 @@ public class RadCardLayoutManager extends RadLayoutManager {
     return true;
   }
 
-  @Override public void createSnapshotLayout(final SnapshotContext context,
-                                             final JComponent parent,
-                                             final RadContainer container,
-                                             final LayoutManager layout) {
+  @Override public void createSnapshotLayout(SnapshotContext context,
+                                             JComponent parent,
+                                             RadContainer container,
+                                             LayoutManager layout) {
     CardLayout cardLayout = (CardLayout) layout;
     container.setLayout(new CardLayout(cardLayout.getHgap(), cardLayout.getVgap()));
   }
@@ -159,14 +159,14 @@ public class RadCardLayoutManager extends RadLayoutManager {
 
   @SuppressWarnings({"UseOfObsoleteCollectionType"})
   @Override
-  public void addSnapshotComponent(final JComponent parent,
-                                   final JComponent child,
-                                   final RadContainer container,
-                                   final RadComponent component) {
+  public void addSnapshotComponent(JComponent parent,
+                                   JComponent child,
+                                   RadContainer container,
+                                   RadComponent component) {
     // unfortunately card can be extracted only through reflection
     String cardName = null;
     try {
-      final LayoutManager layout = parent.getLayout();
+      LayoutManager layout = parent.getLayout();
       Field vectorField = layout.getClass().getDeclaredField("vector");
       vectorField.setAccessible(true);
       Vector vector = (Vector) vectorField.get(parent.getLayout());
@@ -195,7 +195,7 @@ public class RadCardLayoutManager extends RadLayoutManager {
     private final RadContainer myContainer;
     private static final String CARD_NAME_PREFIX = "Card";
 
-    public CardDropLocation(final RadContainer container) {
+    public CardDropLocation(RadContainer container) {
       myContainer = container;
     }
 
@@ -257,18 +257,18 @@ public class RadCardLayoutManager extends RadLayoutManager {
     }
 
     @Override
-    public String getValue(final RadComponent component) {
+    public String getValue(RadComponent component) {
       return (String) component.getCustomLayoutConstraints();
     }
 
     @Override
-    protected void setValueImpl(final RadComponent component, final String value) throws Exception {
+    protected void setValueImpl(RadComponent component, String value) throws Exception {
       if (!value.equals(component.getCustomLayoutConstraints())) {
         if (component.getParent().findComponentWithConstraints(value) != null) {
           throw new Exception(UIDesignerLocalize.errorCardAlreadyExists(value).get());
         }
         component.changeCustomLayoutConstraints(value);
-        final JComponent parent = component.getParent().getDelegee();
+        JComponent parent = component.getParent().getDelegee();
         CardLayout layout = (CardLayout) parent.getLayout();
         layout.show(parent, value);
       }
@@ -286,7 +286,7 @@ public class RadCardLayoutManager extends RadLayoutManager {
     }
 
     @Override
-    public boolean appliesToSelection(final List<RadComponent> selection) {
+    public boolean appliesToSelection(List<RadComponent> selection) {
       return selection.size() == 1;
     }
   }

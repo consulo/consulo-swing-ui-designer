@@ -31,14 +31,14 @@ public class RadButtonGroup implements IButtonGroup {
   public static final RadButtonGroup NEW_GROUP = new RadButtonGroup(null);
 
   private String myName;
-  private final List<String> myComponentIds = new ArrayList<String>();
+  private final List<String> myComponentIds = new ArrayList<>();
   private boolean myBound;
 
-  public RadButtonGroup(final String name) {
+  public RadButtonGroup(String name) {
     myName = name;
   }
 
-  public void write(final XmlWriter writer) {
+  public void write(XmlWriter writer) {
     writer.startElement(UIFormXmlConstants.ELEMENT_GROUP);
     writer.addAttribute(UIFormXmlConstants.ATTRIBUTE_NAME, myName);
     if (myBound) {
@@ -52,7 +52,7 @@ public class RadButtonGroup implements IButtonGroup {
     writer.endElement();
   }
 
-  public boolean contains(final RadComponent component) {
+  public boolean contains(RadComponent component) {
     return myComponentIds.contains(component.getId());
   }
 
@@ -60,7 +60,7 @@ public class RadButtonGroup implements IButtonGroup {
     return myName;
   }
 
-  public void setName(final String name) {
+  public void setName(String name) {
     myName = name;
   }
 
@@ -68,19 +68,19 @@ public class RadButtonGroup implements IButtonGroup {
     return myBound;
   }
 
-  public void setBound(final boolean bound) {
+  public void setBound(boolean bound) {
     myBound = bound;
   }
 
-  public void add(final RadComponent component) {
+  public void add(RadComponent component) {
     myComponentIds.add(component.getId());
   }
 
-  public void remove(final RadComponent component) {
+  public void remove(RadComponent component) {
     myComponentIds.remove(component.getId());
   }
 
-  public void addComponentIds(final String[] componentIds) {
+  public void addComponentIds(String[] componentIds) {
     Collections.addAll(myComponentIds, componentIds);
   }
 

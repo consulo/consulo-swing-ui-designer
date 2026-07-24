@@ -43,9 +43,9 @@ public class CachedGridImage
 	private int[] myCols;
 	private int[] myColSpans;
 
-	private CachedGridImage(final RadContainer container)
+	private CachedGridImage(RadContainer container)
 	{
-		final GraphicsConfiguration graphicsConfiguration =
+		GraphicsConfiguration graphicsConfiguration =
 				WindowManager.getInstance().getFrame(container.getProject()).getGraphicsConfiguration();
 		if(container.getWidth() * container.getHeight() < 4096 * 4096)
 		{
@@ -60,7 +60,7 @@ public class CachedGridImage
 		}
 	}
 
-	private void update(final RadContainer container)
+	private void update(RadContainer container)
 	{
 		if(container.getWidth() * container.getHeight() >= 4096 * 4096)
 		{
@@ -98,10 +98,10 @@ public class CachedGridImage
 		}
 	}
 
-	private void repaint(final RadContainer container)
+	private void repaint(RadContainer container)
 	{
-		final int width = container.getWidth();
-		final int height = container.getHeight();
+		int width = container.getWidth();
+		int height = container.getHeight();
 
 		if(width * height >= 4096 * 4096)
 		{
@@ -132,7 +132,7 @@ public class CachedGridImage
 						: myHorzGridLines.length - 1;
 				for(int i = 1; i < lastLine; i++)
 				{
-					final int y = myHorzGridLines[i];
+					int y = myHorzGridLines[i];
 					g2d.drawLine(0, y, width, y);
 				}
 			}
@@ -145,7 +145,7 @@ public class CachedGridImage
 						: myVertGridLines.length - 1;
 				for(int i = 1; i < lastLine; i++)
 				{
-					final int x = myVertGridLines[i];
+					int x = myVertGridLines[i];
 					g2d.drawLine(x, 0, x, height);
 				}
 			}
@@ -154,7 +154,7 @@ public class CachedGridImage
 			g2d.setStroke(new BasicStroke(1.0f));
 			for(RadComponent childComponent : container.getComponents())
 			{
-				final GridConstraints constraints = childComponent.getConstraints();
+				GridConstraints constraints = childComponent.getConstraints();
 				if(constraints.getColSpan() > 1)
 				{
 					for(int col = constraints.getColumn() + 1; col < constraints.getColumn() + constraints.getColSpan(); col++)
@@ -178,7 +178,7 @@ public class CachedGridImage
 		}
 	}
 
-	private void drawVertGridLine(final Graphics2D g2d, final int col, final int row, final int rowSpan)
+	private void drawVertGridLine(Graphics2D g2d, int col, int row, int rowSpan)
 	{
 		// protect against invalid constraints
 		if(col < 0 || col >= myVertGridLines.length || row < 0 || row + rowSpan >= myHorzGridLines.length)
@@ -191,7 +191,7 @@ public class CachedGridImage
 				myHorzGridLines[row + rowSpan] - 4);
 	}
 
-	private void drawHorzGridLine(final Graphics2D g2d, final int row, final int col, final int colSpan)
+	private void drawHorzGridLine(Graphics2D g2d, int row, int col, int colSpan)
 	{
 		// protect against invalid constraints
 		if(col < 0 || col + colSpan >= myVertGridLines.length || row < 0 || row >= myHorzGridLines.length)
@@ -204,7 +204,7 @@ public class CachedGridImage
 				myHorzGridLines[row]);
 	}
 
-	private static boolean arraysEqual(final int[] newArray, final int[] oldArray)
+	private static boolean arraysEqual(int[] newArray, int[] oldArray)
 	{
 		if(oldArray == null || newArray.length != oldArray.length)
 		{
@@ -220,7 +220,7 @@ public class CachedGridImage
 		return true;
 	}
 
-	private boolean sizeEquals(final RadContainer container)
+	private boolean sizeEquals(RadContainer container)
 	{
 		return myImage.getWidth(null) == container.getWidth() &&
 				myImage.getHeight(null) == container.getHeight();
@@ -231,7 +231,7 @@ public class CachedGridImage
 		return myImage;
 	}
 
-	public static Image getGridImage(final RadContainer container)
+	public static Image getGridImage(RadContainer container)
 	{
 		CachedGridImage gridImage = null;
 		//noinspection unchecked
@@ -248,7 +248,7 @@ public class CachedGridImage
 		{
 			gridImage = new CachedGridImage(container);
 			container.getDelegee().putClientProperty(CACHED_GRID_IMAGE_KEY,
-					new SoftReference<CachedGridImage>(gridImage));
+					new SoftReference<>(gridImage));
 		}
 		return gridImage.getImage();
 	}

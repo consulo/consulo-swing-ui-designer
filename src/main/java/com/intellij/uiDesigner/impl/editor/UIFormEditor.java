@@ -53,9 +53,9 @@ public final class UIFormEditor extends UserDataHolderBase implements /*Navigata
     private final GuiEditor myEditor;
     private UIFormEditor.MyBackgroundEditorHighlighter myBackgroundEditorHighlighter;
 
-    public UIFormEditor(@Nonnull final Project project, @Nonnull final VirtualFile file) {
-        final VirtualFile vf = file instanceof LightVirtualFile ? ((LightVirtualFile) file).getOriginalFile() : file;
-        final Module module = ModuleUtilCore.findModuleForFile(vf, project);
+    public UIFormEditor(@Nonnull Project project, @Nonnull VirtualFile file) {
+        VirtualFile vf = file instanceof LightVirtualFile ? ((LightVirtualFile) file).getOriginalFile() : file;
+        Module module = ModuleUtilCore.findModuleForFile(vf, project);
         if (module == null) {
             throw new IllegalArgumentException("No module for file " + file + " in project " + project);
         }
@@ -109,12 +109,12 @@ public final class UIFormEditor extends UserDataHolderBase implements /*Navigata
     }
 
     @Override
-    public void addPropertyChangeListener(@Nonnull final PropertyChangeListener listener) {
+    public void addPropertyChangeListener(@Nonnull PropertyChangeListener listener) {
         //TODO[anton,vova]
     }
 
     @Override
-    public void removePropertyChangeListener(@Nonnull final PropertyChangeListener listener) {
+    public void removePropertyChangeListener(@Nonnull PropertyChangeListener listener) {
         //TODO[anton,vova]
     }
 
@@ -133,11 +133,11 @@ public final class UIFormEditor extends UserDataHolderBase implements /*Navigata
 
     @Override
     @Nonnull
-    public FileEditorState getState(@Nonnull final FileEditorStateLevel ignored) {
-        final Document document = FileDocumentManager.getInstance().getCachedDocument(myFile);
+    public FileEditorState getState(@Nonnull FileEditorStateLevel ignored) {
+        Document document = FileDocumentManager.getInstance().getCachedDocument(myFile);
         long modificationStamp = document != null ? document.getModificationStamp() : myFile.getModificationStamp();
-        final ArrayList<RadComponent> selection = FormEditingUtil.getSelectedComponents(myEditor);
-        final String[] ids = new String[selection.size()];
+        ArrayList<RadComponent> selection = FormEditingUtil.getSelectedComponents(myEditor);
+        String[] ids = new String[selection.size()];
         for (int i = ids.length - 1; i >= 0; i--) {
             ids[i] = selection.get(i).getId();
         }
@@ -145,26 +145,26 @@ public final class UIFormEditor extends UserDataHolderBase implements /*Navigata
     }
 
     @Override
-    public void setState(@Nonnull final FileEditorState state) {
+    public void setState(@Nonnull FileEditorState state) {
         FormEditingUtil.clearSelection(myEditor.getRootContainer());
-        final String[] ids = ((MyEditorState) state).getSelectedComponentIds();
-        for (final String id : ids) {
-            final RadComponent component = (RadComponent) FormEditingUtil.findComponent(myEditor.getRootContainer(), id);
+        String[] ids = ((MyEditorState) state).getSelectedComponentIds();
+        for (String id : ids) {
+            RadComponent component = (RadComponent) FormEditingUtil.findComponent(myEditor.getRootContainer(), id);
             if (component != null) {
                 component.setSelected(true);
             }
         }
     }
 
-    public void selectComponent(@Nonnull final String binding) {
-        final RadComponent component = (RadComponent) FormEditingUtil.findComponentWithBinding(myEditor.getRootContainer(), binding);
+    public void selectComponent(@Nonnull String binding) {
+        RadComponent component = (RadComponent) FormEditingUtil.findComponentWithBinding(myEditor.getRootContainer(), binding);
         if (component != null) {
             FormEditingUtil.selectSingleComponent(getEditor(), component);
         }
     }
 
-    public void selectComponentById(@Nonnull final String id) {
-        final RadComponent component = (RadComponent) FormEditingUtil.findComponent(myEditor.getRootContainer(), id);
+    public void selectComponentById(@Nonnull String id) {
+        RadComponent component = (RadComponent) FormEditingUtil.findComponent(myEditor.getRootContainer(), id);
         if (component != null) {
             FormEditingUtil.selectSingleComponent(getEditor(), component);
         }
@@ -200,7 +200,7 @@ public final class UIFormEditor extends UserDataHolderBase implements /*Navigata
     private class MyBackgroundEditorHighlighter implements BackgroundEditorHighlighter {
         private final HighlightingPass[] myPasses;
 
-        public MyBackgroundEditorHighlighter(final GuiEditor editor) {
+        public MyBackgroundEditorHighlighter(GuiEditor editor) {
             myPasses = new HighlightingPass[]{new FormHighlightingPass(editor)};
         }
 

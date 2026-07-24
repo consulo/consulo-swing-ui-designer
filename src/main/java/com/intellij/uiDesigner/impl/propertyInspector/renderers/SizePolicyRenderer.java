@@ -30,8 +30,8 @@ public final class SizePolicyRenderer extends LabelPropertyRenderer<Integer> {
     myBuffer=new StringBuffer();
   }
 
-  protected void customize(@Nonnull final Integer value) {
-    final int policy=value.intValue();
+  protected void customize(@Nonnull Integer value) {
+    int policy=value.intValue();
     myBuffer.setLength(0);
 
     if((policy & GridConstraints.SIZEPOLICY_CAN_SHRINK) != 0){

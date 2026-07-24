@@ -38,7 +38,7 @@ public final class DataBindingWizard extends AbstractWizard{
   private final Project myProject;
   private final BeanStep myBeanStep;
 
-  public DataBindingWizard(@Nonnull final Project project, @Nonnull final VirtualFile formFile, @Nonnull final WizardData data) {
+  public DataBindingWizard(@Nonnull Project project, @Nonnull VirtualFile formFile, @Nonnull WizardData data) {
     super(UIDesignerBundle.message("title.data.binding.wizard"), project);
     myProject = project;
     myData = data;

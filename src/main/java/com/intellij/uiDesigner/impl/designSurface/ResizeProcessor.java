@@ -49,7 +49,7 @@ public final class ResizeProcessor extends EventProcessor {
   private final GridConstraints myOriginalConstraints;
   private RadComponent myResizedCopy;
 
-  public ResizeProcessor(final GuiEditor editor, final RadComponent component, final int resizeMask){
+  public ResizeProcessor(GuiEditor editor, RadComponent component, int resizeMask){
     myEditor = editor;
     if (component.getParent() == null) {
       throw new IllegalArgumentException("parent is null for " + component);
@@ -59,7 +59,7 @@ public final class ResizeProcessor extends EventProcessor {
     myOriginalParent = component.getParent();
     myOriginalConstraints = component.getConstraints();
 
-    final List<RadComponent> copyList = CutCopyPasteSupport.copyComponents(editor, Collections.singletonList(component));
+    List<RadComponent> copyList = CutCopyPasteSupport.copyComponents(editor, Collections.singletonList(component));
     if (component.getParent().getLayoutManager().isGrid() && copyList != null) {
       myComponent.setResizing(true);
       Rectangle rc = SwingUtilities.convertRectangle(component.getParent().getDelegee(),
@@ -78,20 +78,20 @@ public final class ResizeProcessor extends EventProcessor {
     setCursor(getResizeCursor());
   }
 
-  protected void processKeyEvent(final KeyEvent e){}
+  protected void processKeyEvent(KeyEvent e){}
 
-  protected void processMouseEvent(final MouseEvent e){
+  protected void processMouseEvent(MouseEvent e){
     if (e.getID() == MouseEvent.MOUSE_PRESSED) {
       myLastPoint = e.getPoint();
       myBounds = myOriginalParent.getLayoutManager().isGrid() ? myResizedCopy.getBounds() : myComponent.getBounds();
       myOriginalBounds = new Rectangle(myBounds);
     }
     else if(e.getID()==MouseEvent.MOUSE_DRAGGED){
-      final int dx = e.getX() - myLastPoint.x;
-      final int dy = e.getY() - myLastPoint.y;
+      int dx = e.getX() - myLastPoint.x;
+      int dy = e.getY() - myLastPoint.y;
 
       if (myOriginalParent.getLayoutManager().isGrid()) {
-        final Point point = SwingUtilities.convertPoint(myEditor.getDragLayer(), e.getX(), e.getY(), myOriginalParent.getDelegee());
+        Point point = SwingUtilities.convertPoint(myEditor.getDragLayer(), e.getX(), e.getY(), myOriginalParent.getDelegee());
         putGridSpanFeedback(point);
       }
       else if (myOriginalParent.isXY()) {
@@ -102,7 +102,7 @@ public final class ResizeProcessor extends EventProcessor {
         return;
       }
 
-      final GridConstraints constraints = myComponent.getConstraints();
+      GridConstraints constraints = myComponent.getConstraints();
 
       if ((myResizeMask & Painter.WEST_MASK) != 0) {
         myBounds.x += dx;
@@ -119,9 +119,9 @@ public final class ResizeProcessor extends EventProcessor {
         myBounds.height += dy;
       }
 
-      final Dimension minSize = myComponent.getMinimumSize();
+      Dimension minSize = myComponent.getMinimumSize();
 
-      final Rectangle newBounds = myOriginalParent.getLayoutManager().isGrid() ? myResizedCopy.getBounds() : myComponent.getBounds();
+      Rectangle newBounds = myOriginalParent.getLayoutManager().isGrid() ? myResizedCopy.getBounds() : myComponent.getBounds();
 
       // Component's bounds cannot be less the some minimum size
       if (myBounds.width >= minSize.width) {
@@ -152,7 +152,7 @@ public final class ResizeProcessor extends EventProcessor {
         }
       }
 
-      final Dimension size = newBounds.getSize();
+      Dimension size = newBounds.getSize();
       Util.adjustSize(myComponent.getDelegee(), constraints, size);
       newBounds.width = size.width;
       newBounds.height = size.height;
@@ -179,7 +179,7 @@ public final class ResizeProcessor extends EventProcessor {
         myEditor.getDragLayer().remove(myResizedCopy.getDelegee());
       }
       if (myOriginalParent.getLayoutManager().isGrid() && myEditor.ensureEditable()) {
-        final Point point = SwingUtilities.convertPoint(myEditor.getDragLayer(), e.getX(), e.getY(), myOriginalParent.getDelegee());
+        Point point = SwingUtilities.convertPoint(myEditor.getDragLayer(), e.getX(), e.getY(), myOriginalParent.getDelegee());
         Rectangle rcGrid = getGridSpanGridRect(myOriginalParent, myOriginalConstraints, point, myResizeMask);
         if (rcGrid != null && isGridSpanDropAllowed(rcGrid)) {
           GridConstraints oldConstraints = (GridConstraints) myOriginalConstraints.clone();
@@ -208,7 +208,7 @@ public final class ResizeProcessor extends EventProcessor {
     return Cursor.getPredefinedCursor(Painter.getResizeCursor(myResizeMask));
   }
 
-  private void putGridSpanFeedback(final Point point) {
+  private void putGridSpanFeedback(Point point) {
     Rectangle rcGrid = getGridSpanGridRect(myOriginalParent, myOriginalConstraints, point, myResizeMask);
     if (rcGrid != null) {
       Rectangle rc = myOriginalParent.getGridLayoutManager().getGridCellRangeRect(myOriginalParent, rcGrid.y, rcGrid.x,
@@ -224,10 +224,10 @@ public final class ResizeProcessor extends EventProcessor {
   }
 
   @Nullable
-  static Rectangle getGridSpanGridRect(final RadContainer grid,
-                                       final GridConstraints originalConstraints,
-                                       final Point point,
-                                       final int resizeMask) {
+  static Rectangle getGridSpanGridRect(RadContainer grid,
+                                       GridConstraints originalConstraints,
+                                       Point point,
+                                       int resizeMask) {
     int rowAtMouse = (resizeMask & (Painter.NORTH_MASK | Painter.SOUTH_MASK)) != 0
                      ? grid.getGridRowAt(point.y)
                      : -1;
@@ -235,8 +235,8 @@ public final class ResizeProcessor extends EventProcessor {
                      ? grid.getGridColumnAt(point.x)
                      : -1;
     if (rowAtMouse != -1 || colAtMouse != -1) {
-      final int origStartCol = originalConstraints.getColumn();
-      final int origEndCol = originalConstraints.getColumn() + originalConstraints.getColSpan() - 1;
+      int origStartCol = originalConstraints.getColumn();
+      int origEndCol = originalConstraints.getColumn() + originalConstraints.getColSpan() - 1;
       int startCol = origStartCol;
       int endCol = origEndCol;
       if (colAtMouse >= 0) {
@@ -249,8 +249,8 @@ public final class ResizeProcessor extends EventProcessor {
         }
       }
 
-      final int origStartRow = originalConstraints.getRow();
-      final int origEndRow = originalConstraints.getRow() + originalConstraints.getRowSpan() - 1;
+      int origStartRow = originalConstraints.getRow();
+      int origEndRow = originalConstraints.getRow() + originalConstraints.getRowSpan() - 1;
       int startRow = origStartRow;
       int endRow = origEndRow;
       if (rowAtMouse >= 0) {
@@ -279,7 +279,7 @@ public final class ResizeProcessor extends EventProcessor {
     return true;
   }
 
-  private boolean isGridSpanDropAllowed(final Rectangle rcGrid) {
+  private boolean isGridSpanDropAllowed(Rectangle rcGrid) {
     return myOriginalParent.findComponentInRect(rcGrid.y, rcGrid.x, rcGrid.height, rcGrid.width) == null;
   }
 }

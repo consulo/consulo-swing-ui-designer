@@ -37,7 +37,7 @@ import java.awt.event.ItemEvent;
  */
 public class ButtonGroupProperty extends Property<RadComponent, RadButtonGroup> {
   private final LabelPropertyRenderer<RadButtonGroup> myRenderer = new LabelPropertyRenderer<>() {
-    @Override protected void customize(@Nonnull final RadButtonGroup value) {
+    @Override protected void customize(@Nonnull RadButtonGroup value) {
       setText(value.getName());
     }
   };
@@ -50,13 +50,13 @@ public class ButtonGroupProperty extends Property<RadComponent, RadButtonGroup> 
 
   @Override
   public RadButtonGroup getValue(RadComponent component) {
-    final RadRootContainer rootContainer = (RadRootContainer) FormEditingUtil.getRoot(component);
+    RadRootContainer rootContainer = (RadRootContainer) FormEditingUtil.getRoot(component);
     return rootContainer == null ? null : (RadButtonGroup) FormEditingUtil.findGroupForComponent(rootContainer, component);
   }
 
   @Override
   protected void setValueImpl(RadComponent component, RadButtonGroup value) throws Exception {
-    final RadRootContainer radRootContainer = (RadRootContainer) FormEditingUtil.getRoot(component);
+    RadRootContainer radRootContainer = (RadRootContainer) FormEditingUtil.getRoot(component);
     assert radRootContainer != null;
     radRootContainer.setGroupForComponent(component, value);
   }
@@ -72,7 +72,7 @@ public class ButtonGroupProperty extends Property<RadComponent, RadButtonGroup> 
     return myEditor;
   }
 
-  @Override public boolean isModified(final RadComponent component) {
+  @Override public boolean isModified(RadComponent component) {
     return getValue(component) != null;
   }
 

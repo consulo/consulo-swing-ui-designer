@@ -38,8 +38,8 @@ public final class DeleteAction extends AnAction implements AnActionWithSyncUpda
 
     @RequiredUIAccess
     @Override
-    public void actionPerformed(@Nonnull final AnActionEvent e) {
-        final GuiEditor editor = FormEditingUtil.getEditorFromContext(e.getDataContext());
+    public void actionPerformed(@Nonnull AnActionEvent e) {
+        GuiEditor editor = FormEditingUtil.getEditorFromContext(e.getDataContext());
         CaptionSelection selection = e.getData(CaptionSelection.DATA_KEY);
         if (editor == null || selection == null || selection.getFocusedIndex() < 0) {
             return;
@@ -49,8 +49,8 @@ public final class DeleteAction extends AnAction implements AnActionWithSyncUpda
     }
 
     @Override
-    public void update(@Nonnull final AnActionEvent e) {
-        final Presentation presentation = e.getPresentation();
+    public void update(@Nonnull AnActionEvent e) {
+        Presentation presentation = e.getPresentation();
         CaptionSelection selection = e.getData(CaptionSelection.DATA_KEY);
         if (selection == null || selection.getContainer() == null) {
             presentation.setVisible(false);

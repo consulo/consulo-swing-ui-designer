@@ -40,9 +40,9 @@ final class BindingsCache
 	private static final String BINDINGS_FILE_NAME = "formbinding.dat";
 	private BindingsStateCache<MyState> myCache;
 
-	public BindingsCache(final Project project)
+	public BindingsCache(Project project)
 	{
-		final File cacheStoreDirectory = CompilerPaths.getCacheStoreDirectory(project);
+		File cacheStoreDirectory = CompilerPaths.getCacheStoreDirectory(project);
 		try
 		{
 			if(cacheStoreDirectory != null)
@@ -82,13 +82,13 @@ final class BindingsCache
 		return new BindingsStateCache<>(new File(cacheStoreDirectory, BINDINGS_FILE_NAME))
 		{
 			@Override
-            public MyState read(final DataInput stream) throws IOException
+            public MyState read(DataInput stream) throws IOException
 			{
 				return new MyState(stream.readLong(), stream.readUTF());
 			}
 
 			@Override
-            public void write(final MyState myState, final DataOutput out) throws IOException
+            public void write(MyState myState, DataOutput out) throws IOException
 			{
 				out.writeLong(myState.getFormTimeStamp());
 				out.writeUTF(myState.getClassName());
@@ -96,14 +96,14 @@ final class BindingsCache
 		};
 	}
 
-	public String getBoundClassName(final VirtualFile formFile) throws Exception
+	public String getBoundClassName(VirtualFile formFile) throws Exception
 	{
 		File file = VirtualFileUtil.virtualToIoFile(formFile);
 		String classToBind = getSavedBinding(file);
 		if(classToBind == null)
 		{
-			final Document doc = FileDocumentManager.getInstance().getDocument(formFile);
-			final LwRootContainer rootContainer = Utils.getRootContainer(doc.getText(), null);
+			Document doc = FileDocumentManager.getInstance().getDocument(formFile);
+			LwRootContainer rootContainer = Utils.getRootContainer(doc.getText(), null);
 			classToBind = rootContainer.getClassToBind();
 		}
 		if(classToBind != null)
@@ -113,13 +113,13 @@ final class BindingsCache
 		return classToBind;
 	}
 
-	private String getSavedBinding(final File formFile)
+	private String getSavedBinding(File formFile)
 	{
 		if(myCache != null)
 		{
 			try
 			{
-				final MyState state = myCache.getState(formFile);
+				MyState state = myCache.getState(formFile);
 				if(state != null)
 				{
 					if(formFile.lastModified() == state.getFormTimeStamp())
@@ -136,11 +136,11 @@ final class BindingsCache
 		return null;
 	}
 
-	private void updateCache(final File formFile, final String classToBind)
+	private void updateCache(File formFile, String classToBind)
 	{
 		if(myCache != null)
 		{
-			final MyState state = new MyState(formFile.lastModified(), classToBind);
+			MyState state = new MyState(formFile.lastModified(), classToBind);
 			try
 			{
 				myCache.update(formFile, state);
@@ -177,7 +177,7 @@ final class BindingsCache
 		private final long myFormTimeStamp;
 		private final String myClassName;
 
-		public MyState(final long formTimeStamp, final String className)
+		public MyState(long formTimeStamp, String className)
 		{
 			myFormTimeStamp = formTimeStamp;
 			myClassName = className;

@@ -51,9 +51,9 @@ public class UseParentLayoutProperty extends AbstractBooleanProperty<RadComponen
 
 	protected void setValueImpl(RadComponent component, Boolean value) throws Exception
 	{
-		final boolean useParentLayout = value.booleanValue();
+		boolean useParentLayout = value.booleanValue();
 
-		final GridConstraints constraints = component.getConstraints();
+		GridConstraints constraints = component.getConstraints();
 		if(constraints.isUseParentLayout() != useParentLayout)
 		{
 			GridConstraints oldConstraints = (GridConstraints) constraints.clone();

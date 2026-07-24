@@ -37,7 +37,7 @@ public abstract class RowColumnAction extends AnAction implements AnActionWithSy
     private final String myRowText;
     private final Image myRowIcon;
 
-    public RowColumnAction(final String columnText, @Nullable final Image columnIcon, final String rowText, @Nullable final Image rowIcon) {
+    public RowColumnAction(String columnText, @Nullable Image columnIcon, String rowText, @Nullable Image rowIcon) {
         myColumnText = columnText;
         myColumnIcon = columnIcon;
         myRowText = rowText;
@@ -46,7 +46,7 @@ public abstract class RowColumnAction extends AnAction implements AnActionWithSy
 
     @RequiredUIAccess
     @Override
-    public void actionPerformed(@Nonnull final AnActionEvent e) {
+    public void actionPerformed(@Nonnull AnActionEvent e) {
         GuiEditor editor = FormEditingUtil.getEditorFromContext(e.getDataContext());
         CaptionSelection selection = e.getData(CaptionSelection.DATA_KEY);
         if (editor == null || selection == null || !editor.ensureEditable()) {
@@ -60,8 +60,8 @@ public abstract class RowColumnAction extends AnAction implements AnActionWithSy
     protected abstract void actionPerformed(CaptionSelection selection);
 
     @Override
-    public void update(@Nonnull final AnActionEvent e) {
-        final Presentation presentation = e.getPresentation();
+    public void update(@Nonnull AnActionEvent e) {
+        Presentation presentation = e.getPresentation();
         CaptionSelection selection = e.getData(CaptionSelection.DATA_KEY);
         if (selection == null) {
             presentation.setEnabled(false);

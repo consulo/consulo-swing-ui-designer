@@ -27,7 +27,7 @@ import com.intellij.uiDesigner.impl.XmlWriter;
 import javax.swing.*;
 
 public abstract class RadAbstractIndexedLayoutManager extends RadLayoutManager {
-  public void addComponentToContainer(final RadContainer container, final RadComponent component, final int index) {
+  public void addComponentToContainer(RadContainer container, RadComponent component, int index) {
     container.getDelegee().add(component.getDelegee(), index);
   }
 
@@ -36,19 +36,19 @@ public abstract class RadAbstractIndexedLayoutManager extends RadLayoutManager {
     return true;
   }
 
-  public void writeChildConstraints(final XmlWriter writer, final RadComponent child) {
+  public void writeChildConstraints(XmlWriter writer, RadComponent child) {
   }
 
   @Override
-  public void addSnapshotComponent(final JComponent parent,
-                                   final JComponent child,
-                                   final RadContainer container,
-                                   final RadComponent component) {
+  public void addSnapshotComponent(JComponent parent,
+                                   JComponent child,
+                                   RadContainer container,
+                                   RadComponent component) {
     container.addComponent(component);
   }
 
   @Override
-  public boolean canMoveComponent(RadComponent c, int rowDelta, int colDelta, final int rowSpanDelta, final int colSpanDelta) {
+  public boolean canMoveComponent(RadComponent c, int rowDelta, int colDelta, int rowSpanDelta, int colSpanDelta) {
     if (colDelta == 1 || colDelta == -1) {
       int newIndex = c.getParent().indexOfComponent(c) + colDelta;
       return newIndex >= 0 && newIndex < c.getParent().getComponentCount();
@@ -57,8 +57,8 @@ public abstract class RadAbstractIndexedLayoutManager extends RadLayoutManager {
   }
 
   @Override
-  public void moveComponent(RadComponent c, int rowDelta, int colDelta, final int rowSpanDelta, final int colSpanDelta) {
-    final RadContainer container = c.getParent();
+  public void moveComponent(RadComponent c, int rowDelta, int colDelta, int rowSpanDelta, int colSpanDelta) {
+    RadContainer container = c.getParent();
     int newIndex = container.indexOfComponent(c) + colDelta;
     container.removeComponent(c);
     container.addComponent(c, newIndex);

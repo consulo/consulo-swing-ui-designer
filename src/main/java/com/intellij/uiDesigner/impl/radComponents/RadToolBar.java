@@ -36,16 +36,16 @@ public class RadToolBar extends RadContainer {
       return new RadToolBar(module, aClass, id);
     }
 
-    public RadComponent newInstance(final Class componentClass, final String id, final Palette palette) {
+    public RadComponent newInstance(Class componentClass, String id, Palette palette) {
       return new RadToolBar(componentClass, id, palette);
     }
   }
 
-  public RadToolBar(final ModuleProvider module, final Class componentClass, final String id) {
+  public RadToolBar(ModuleProvider module, Class componentClass, String id) {
     super(module, componentClass, id);
   }
 
-  public RadToolBar(Class componentClass, final String id, final Palette palette) {
+  public RadToolBar(Class componentClass, String id, Palette palette) {
     super(componentClass, id, palette);
   }
 
@@ -54,7 +54,7 @@ public class RadToolBar extends RadContainer {
     return new RadToolBarLayoutManager();
   }
 
-  public void write(final XmlWriter writer) {
+  public void write(XmlWriter writer) {
     writer.startElement(UIFormXmlConstants.ELEMENT_TOOLBAR);
     try {
       writeNoLayout(writer, JToolBar.class.getName());
@@ -71,7 +71,7 @@ public class RadToolBar extends RadContainer {
     }
 
     @Override @Nonnull
-    public ComponentDropLocation getDropLocation(RadContainer container, @Nullable final Point location) {
+    public ComponentDropLocation getDropLocation(RadContainer container, @Nullable Point location) {
       return new FlowDropLocation(RadToolBar.this, location, FlowLayout.LEFT, 0, 0);
     }
   }

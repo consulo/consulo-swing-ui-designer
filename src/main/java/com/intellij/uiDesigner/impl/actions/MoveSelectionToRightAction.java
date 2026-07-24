@@ -24,16 +24,16 @@ import java.awt.*;
  * @author Vladimir Kondratyev
  */
 public final class MoveSelectionToRightAction extends AbstractMoveSelectionAction{
-  public MoveSelectionToRightAction(final GuiEditor editor, final boolean extend, final boolean moveToLast) {
+  public MoveSelectionToRightAction(GuiEditor editor, boolean extend, boolean moveToLast) {
     super(editor, extend, moveToLast);
   }
 
-  protected int calcDistance(final Point source, final Point point) {
+  protected int calcDistance(Point source, Point point) {
     if(source.x >= point.x){
       return Integer.MAX_VALUE;
     }
     else{
-      final int scale = (point.y - source.y) <= 0 ? 3 : 4;
+      int scale = (point.y - source.y) <= 0 ? 3 : 4;
       return (point.x - source.x) + Math.abs(point.y - source.y) * scale;
     }
   }

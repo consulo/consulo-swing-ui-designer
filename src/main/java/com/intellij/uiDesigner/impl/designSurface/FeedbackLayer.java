@@ -23,7 +23,7 @@ import java.awt.Rectangle;
  * @author yole
  */
 public interface FeedbackLayer {
-  void putFeedback(Component relativeTo, final Rectangle rc, final String tooltipText);
-  void putFeedback(Component relativeTo, Rectangle rc, final FeedbackPainter feedbackPainter, final String tooltipText);
+  void putFeedback(Component relativeTo, Rectangle rc, String tooltipText);
+  void putFeedback(Component relativeTo, Rectangle rc, FeedbackPainter feedbackPainter, String tooltipText);
   void removeFeedback();
 }

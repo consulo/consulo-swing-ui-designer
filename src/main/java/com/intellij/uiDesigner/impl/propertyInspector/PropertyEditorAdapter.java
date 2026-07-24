@@ -20,9 +20,9 @@ package com.intellij.uiDesigner.impl.propertyInspector;
  * @author Vladimir Kondratyev
  */
 public abstract class PropertyEditorAdapter implements PropertyEditorListener{
-  public void valueCommitted(final PropertyEditor source, final boolean continueEditing, final boolean closeEditorOnError) {}
+  public void valueCommitted(PropertyEditor source, boolean continueEditing, boolean closeEditorOnError) {}
 
-  public void editingCanceled(final PropertyEditor source) {}
+  public void editingCanceled(PropertyEditor source) {}
 
-  public void preferredSizeChanged(final PropertyEditor source) {}
+  public void preferredSizeChanged(PropertyEditor source) {}
 }

@@ -38,7 +38,7 @@ import javax.swing.*;
 public class LayoutManagerProperty extends Property<RadContainer, String> {
   private final PropertyRenderer<String> myRenderer = new LabelPropertyRenderer<>() {
     @Override
-    protected void customize(@Nonnull final String value) {
+    protected void customize(@Nonnull String value) {
       setText(LayoutManagerRegistry.getLayoutManagerDisplayName(value));
     }
   };
@@ -76,7 +76,7 @@ public class LayoutManagerProperty extends Property<RadContainer, String> {
   public String getValue(RadContainer component) {
     RadContainer container = component;
     while(container != null) {
-      final RadLayoutManager layoutManager = container.getLayoutManager();
+      RadLayoutManager layoutManager = container.getLayoutManager();
       if (layoutManager != null) {
         return layoutManager.getName();
       }
@@ -87,7 +87,7 @@ public class LayoutManagerProperty extends Property<RadContainer, String> {
 
   @Override
   protected void setValueImpl(RadContainer component, String value) throws Exception {
-    final RadLayoutManager oldLayout = component.getLayoutManager();
+    RadLayoutManager oldLayout = component.getLayoutManager();
     if (oldLayout != null && Comparing.equal(oldLayout.getName(), value)) {
       return;
     }

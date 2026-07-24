@@ -47,12 +47,12 @@ public class SurroundAction extends AbstractGuiEditorAction
 
 	public SurroundAction(String componentClass)
 	{
-		final String className = componentClass.substring(componentClass.lastIndexOf('.') + 1);
+		String className = componentClass.substring(componentClass.lastIndexOf('.') + 1);
 		getTemplatePresentation().setText(className);
 		myComponentClass = componentClass;
 	}
 
-	public void actionPerformed(final GuiEditor editor, final List<RadComponent> selection, final AnActionEvent e)
+	public void actionPerformed(final GuiEditor editor, final List<RadComponent> selection, AnActionEvent e)
 	{
 		// the action is also reused as quickfix for NoScrollPaneInspection, so this code should be kept here
 		FormEditingUtil.remapToActionTargets(selection);
@@ -118,7 +118,7 @@ public class SurroundAction extends AbstractGuiEditorAction
 
 						if(selectionParent.getLayoutManager().isGrid())
 						{
-							final GridConstraints newConstraints = newContainer.getConstraints();
+							GridConstraints newConstraints = newContainer.getConstraints();
 							newConstraints.setRow(rc.y);
 							newConstraints.setColumn(rc.x);
 							newConstraints.setRowSpan(rc.height);
@@ -209,7 +209,7 @@ public class SurroundAction extends AbstractGuiEditorAction
 				}, null, null);
 	}
 
-	protected void update(@Nonnull final GuiEditor editor, final ArrayList<RadComponent> selection, final AnActionEvent e)
+	protected void update(@Nonnull GuiEditor editor, ArrayList<RadComponent> selection, AnActionEvent e)
 	{
 		FormEditingUtil.remapToActionTargets(selection);
 		RadContainer selectionParent = FormEditingUtil.getSelectionParent(selection);
@@ -219,7 +219,7 @@ public class SurroundAction extends AbstractGuiEditorAction
 				canWrapSelection(selection));
 	}
 
-	private boolean canWrapSelection(final ArrayList<RadComponent> selection)
+	private boolean canWrapSelection(ArrayList<RadComponent> selection)
 	{
 		if(myComponentClass.equals(JScrollPane.class.getName()))
 		{

@@ -70,32 +70,32 @@ public final class Form2SourceCompiler implements SourceInstrumentingCompiler
 			return ProcessingItem.EMPTY_ARRAY;
 		}
 
-		final ArrayList<ProcessingItem> items = new ArrayList<ProcessingItem>();
+		final ArrayList<ProcessingItem> items = new ArrayList<>();
 
 		ApplicationManager.getApplication().runReadAction(new Runnable()
 		{
 			@Override
 			public void run()
 			{
-				final CompileScope scope = context.getCompileScope();
-				final CompileScope projectScope = CompilerManager.getInstance(project).createProjectCompileScope();
+				CompileScope scope = context.getCompileScope();
+				CompileScope projectScope = CompilerManager.getInstance(project).createProjectCompileScope();
 
-				final VirtualFile[] formFiles = projectScope.getFiles(GuiFormFileType.INSTANCE);
-				final CompilerManager compilerManager = CompilerManager.getInstance(project);
-				final BindingsCache bindingsCache = new BindingsCache(project);
+				VirtualFile[] formFiles = projectScope.getFiles(GuiFormFileType.INSTANCE);
+				CompilerManager compilerManager = CompilerManager.getInstance(project);
+				BindingsCache bindingsCache = new BindingsCache(project);
 
 				try
 				{
-					final HashMap<String, VirtualFile> class2form = new HashMap<String, VirtualFile>();
+					HashMap<String, VirtualFile> class2form = new HashMap<>();
 
-					for(final VirtualFile formFile : formFiles)
+					for(VirtualFile formFile : formFiles)
 					{
 						if(compilerManager.isExcludedFromCompilation(formFile))
 						{
 							continue;
 						}
 
-						final String classToBind;
+						String classToBind;
 						try
 						{
 							classToBind = bindingsCache.getBoundClassName(formFile);
@@ -116,7 +116,7 @@ public final class Form2SourceCompiler implements SourceInstrumentingCompiler
 							continue;
 						}
 
-						final VirtualFile sourceFile = Form2ByteCodeCompiler.findSourceFile(context, formFile, classToBind);
+						VirtualFile sourceFile = Form2ByteCodeCompiler.findSourceFile(context, formFile, classToBind);
 						if(sourceFile == null)
 						{
 							if(scope.belongs(formFile.getUrl()))
@@ -126,9 +126,9 @@ public final class Form2SourceCompiler implements SourceInstrumentingCompiler
 							continue;
 						}
 
-						final boolean inScope = scope.belongs(sourceFile.getUrl()) || scope.belongs(formFile.getUrl());
+						boolean inScope = scope.belongs(sourceFile.getUrl()) || scope.belongs(formFile.getUrl());
 
-						final VirtualFile alreadyProcessedForm = class2form.get(classToBind);
+						VirtualFile alreadyProcessedForm = class2form.get(classToBind);
 						if(alreadyProcessedForm != null)
 						{
 							if(inScope)
@@ -158,9 +158,9 @@ public final class Form2SourceCompiler implements SourceInstrumentingCompiler
 	}
 
 	@Override
-	public ProcessingItem[] process(final CompileContext context, final ProcessingItem[] items)
+	public ProcessingItem[] process(final CompileContext context, ProcessingItem[] items)
 	{
-		final ArrayList<ProcessingItem> compiledItems = new ArrayList<ProcessingItem>();
+		final ArrayList<ProcessingItem> compiledItems = new ArrayList<>();
 
 		context.getProgressIndicator().setText(UIDesignerBundle.message("progress.compiling.ui.forms"));
 
@@ -169,9 +169,9 @@ public final class Form2SourceCompiler implements SourceInstrumentingCompiler
 		final Project project = context.getProject();
 		final FormSourceCodeGenerator generator = new FormSourceCodeGenerator(project);
 
-		final HashSet<consulo.module.Module> processedModules = new HashSet<Module>();
+		final HashSet<consulo.module.Module> processedModules = new HashSet<>();
 
-		final List<File> filesToRefresh = new ArrayList<File>();
+		final List<File> filesToRefresh = new ArrayList<>();
 		for(ProcessingItem item1 : items)
 		{
 			context.getProgressIndicator().setFraction((double) (++formsProcessed) / ((double) items.length));
@@ -215,18 +215,18 @@ public final class Form2SourceCompiler implements SourceInstrumentingCompiler
 					@Override
 					public void run()
 					{
-						final consulo.module.Module module = ModuleUtilCore.findModuleForFile(formFile, project);
+						consulo.module.Module module = ModuleUtilCore.findModuleForFile(formFile, project);
 						if(module != null && !processedModules.contains(module))
 						{
 							processedModules.add(module);
-							final String moduleOutputPath = CompilerPaths.getModuleOutputPath(module, false);
+							String moduleOutputPath = CompilerPaths.getModuleOutputPath(module, false);
 							try
 							{
 								if(moduleOutputPath != null)
 								{
 									filesToRefresh.addAll(CopyResourcesUtil.copyFormsRuntime(moduleOutputPath, false));
 								}
-								final String testsOutputPath = CompilerPaths.getModuleOutputPath(module, true);
+								String testsOutputPath = CompilerPaths.getModuleOutputPath(module, true);
 								if(testsOutputPath != null && !testsOutputPath.equals(moduleOutputPath))
 								{
 									filesToRefresh.addAll(CopyResourcesUtil.copyFormsRuntime(testsOutputPath, false));
@@ -263,14 +263,14 @@ public final class Form2SourceCompiler implements SourceInstrumentingCompiler
 								{
 									PsiDocumentManager.getInstance(project).commitAllDocuments();
 									generator.generate(formFile);
-									final ArrayList<FormErrorInfo> errors = generator.getErrors();
+									ArrayList<FormErrorInfo> errors = generator.getErrors();
 									if(errors.size() == 0)
 									{
 										compiledItems.add(item);
 									}
 									else
 									{
-										for(final FormErrorInfo e : errors)
+										for(FormErrorInfo e : errors)
 										{
 											addError(context, e, formFile);
 										}
@@ -288,7 +288,7 @@ public final class Form2SourceCompiler implements SourceInstrumentingCompiler
 		return compiledItems.toArray(new ProcessingItem[compiledItems.size()]);
 	}
 
-	private static void addError(final CompileContext context, final FormErrorInfo e, final VirtualFile formFile)
+	private static void addError(CompileContext context, FormErrorInfo e, VirtualFile formFile)
 	{
 		if(formFile != null)
 		{
@@ -304,7 +304,7 @@ public final class Form2SourceCompiler implements SourceInstrumentingCompiler
 	}
 
 	@Override
-	public ValidityState createValidityState(final DataInput in) throws IOException
+	public ValidityState createValidityState(DataInput in) throws IOException
 	{
 		return TimestampValidityState.load(in);
 	}
@@ -316,7 +316,7 @@ public final class Form2SourceCompiler implements SourceInstrumentingCompiler
 		private final VirtualFile myFormFile;
 		private final TimestampValidityState myState;
 
-		public MyInstrumentationItem(@Nonnull final VirtualFile sourceFile, final VirtualFile formFile)
+		public MyInstrumentationItem(@Nonnull VirtualFile sourceFile, VirtualFile formFile)
 		{
 			mySourceFile = sourceFile;
 			myFormFile = formFile;

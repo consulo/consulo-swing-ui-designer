@@ -48,8 +48,8 @@ public class RadXYLayoutManager extends RadLayoutManager {
     return new XYLayoutManagerImpl();
   }
 
-  public void writeLayout(final XmlWriter writer, final RadContainer radContainer) {
-    final AbstractLayout layout = (AbstractLayout)radContainer.getLayout();
+  public void writeLayout(XmlWriter writer, RadContainer radContainer) {
+    AbstractLayout layout = (AbstractLayout)radContainer.getLayout();
     // It has sense to save hpap and vgap even for XY layout. The reason is
     // that XY was previously GRID with non default gaps, so when the user
     // compose XY into the grid again then he will get the same non default gaps.
@@ -57,7 +57,7 @@ public class RadXYLayoutManager extends RadLayoutManager {
     writer.addAttribute(UIFormXmlConstants.ATTRIBUTE_VGAP, layout.getVGap());
 
     // Margins
-    final Insets margin = layout.getMargin();
+    Insets margin = layout.getMargin();
     writer.startElement("margin");
     try {
       writer.writeInsets(margin);
@@ -67,7 +67,7 @@ public class RadXYLayoutManager extends RadLayoutManager {
     }
   }
 
-  public void writeChildConstraints(final XmlWriter writer, final RadComponent child) {
+  public void writeChildConstraints(XmlWriter writer, RadComponent child) {
     // Constraints of XY layout
     writer.startElement("xy");
     try{
@@ -82,11 +82,11 @@ public class RadXYLayoutManager extends RadLayoutManager {
 
   @Nonnull
   @Override
-  public ComponentDropLocation getDropLocation(RadContainer container, @Nullable final Point location) {
+  public ComponentDropLocation getDropLocation(RadContainer container, @Nullable Point location) {
     return new MyDropLocation(container, location != null ? location : new Point(5, 5));
   }
 
-  public void addComponentToContainer(final RadContainer container, final RadComponent component, final int index) {
+  public void addComponentToContainer(RadContainer container, RadComponent component, int index) {
     container.getDelegee().add(component.getDelegee(), component.getConstraints());
   }
 
@@ -94,7 +94,7 @@ public class RadXYLayoutManager extends RadLayoutManager {
     private final RadContainer myContainer;
     private final Point myLocation;
 
-    public MyDropLocation(final RadContainer container, @Nonnull final Point location) {
+    public MyDropLocation(RadContainer container, @Nonnull Point location) {
       myContainer = container;
       myLocation = location;
     }
@@ -127,9 +127,9 @@ public class RadXYLayoutManager extends RadLayoutManager {
       int patchY = 0;
 
       for (int i = 0; i < components.length; i++) {
-        final RadComponent c = components[i];
+        RadComponent c = components[i];
 
-        final Point p = new Point(myLocation);
+        Point p = new Point(myLocation);
         Point delta = dragObject.getDelta(i);
         if (delta != null) {
           p.translate(delta.x, delta.y);
@@ -156,7 +156,7 @@ public class RadXYLayoutManager extends RadLayoutManager {
     }
   }
 
-  @Override public Property[] getContainerProperties(final Project project) {
+  @Override public Property[] getContainerProperties(Project project) {
     return new Property[] {
       HGapProperty.getInstance(project),
       VGapProperty.getInstance(project)

@@ -35,7 +35,7 @@ import java.io.CharArrayWriter;
 @ExtensionImpl
 public class SaveFormAsTemplateHandler implements SaveFileAsTemplateHandler
 {
-	public String getTemplateText(final PsiFile file, final String fileText, final String nameWithoutExtension)
+	public String getTemplateText(PsiFile file, String fileText, String nameWithoutExtension)
 	{
 		if(GuiFormFileType.INSTANCE.equals(file.getFileType()))
 		{

@@ -50,9 +50,9 @@ public class GridBagLayoutSourceGenerator extends LayoutSourceGenerator {
   }
 
   @Override
-  public void generateContainerLayout(final LwContainer container,
-                                      final FormSourceCodeGenerator generator,
-                                      final String variable) {
+  public void generateContainerLayout(LwContainer container,
+                                      FormSourceCodeGenerator generator,
+                                      String variable) {
     generator.startMethodCall(variable, "setLayout");
 
     generator.startConstructor(GridBagLayout.class.getName());
@@ -62,10 +62,10 @@ public class GridBagLayoutSourceGenerator extends LayoutSourceGenerator {
   }
 
   @Override
-  public void generateComponentLayout(final LwComponent component,
-                                      final FormSourceCodeGenerator generator,
-                                      final String variable,
-                                      final String parentVariable) {
+  public void generateComponentLayout(LwComponent component,
+                                      FormSourceCodeGenerator generator,
+                                      String variable,
+                                      String parentVariable) {
     GridBagConstraints gbc;
     if (component.getCustomLayoutConstraints() instanceof GridBagConstraints) {
       gbc = (GridBagConstraints) component.getCustomLayoutConstraints();
@@ -79,9 +79,9 @@ public class GridBagLayoutSourceGenerator extends LayoutSourceGenerator {
     generateGridBagConstraints(generator, gbc, variable, parentVariable);
   }
 
-  private void generateConversionResult(final FormSourceCodeGenerator generator,
-                                        final GridBagConverter.Result result,
-                                        final String variable, final String parentVariable) {
+  private void generateConversionResult(FormSourceCodeGenerator generator,
+                                        GridBagConverter.Result result,
+                                        String variable, String parentVariable) {
     checkSetSize(generator, variable, "setMinimumSize", result.minimumSize);
     checkSetSize(generator, variable, "setPreferredSize", result.preferredSize);
     checkSetSize(generator, variable, "setMaximumSize", result.maximumSize);
@@ -89,10 +89,10 @@ public class GridBagLayoutSourceGenerator extends LayoutSourceGenerator {
     generateGridBagConstraints(generator, result.constraints, variable, parentVariable);
   }
 
-  private void generateGridBagConstraints(final FormSourceCodeGenerator generator,
-                                          final GridBagConstraints constraints,
-                                          final String variable,
-                                          final String parentVariable) {
+  private void generateGridBagConstraints(FormSourceCodeGenerator generator,
+                                          GridBagConstraints constraints,
+                                          String variable,
+                                          String parentVariable) {
     if (!myHaveGbc) {
       generator.append("java.awt.GridBagConstraints gbc;\n");
       myHaveGbc = true;
@@ -141,7 +141,7 @@ public class GridBagLayoutSourceGenerator extends LayoutSourceGenerator {
     generator.endMethod();
   }
 
-  private static void setIntField(final FormSourceCodeGenerator generator, @NonNls final String fieldName, final int value) {
+  private static void setIntField(FormSourceCodeGenerator generator, @NonNls String fieldName, int value) {
     generator.append("gbc.");
     generator.append(fieldName);
     generator.append("=");
@@ -149,8 +149,8 @@ public class GridBagLayoutSourceGenerator extends LayoutSourceGenerator {
     generator.append(";\n");
   }
 
-  private static void setIntField(final FormSourceCodeGenerator generator, @NonNls final String fieldName, final int value,
-                                  final IntObjectMap<String> map) {
+  private static void setIntField(FormSourceCodeGenerator generator, @NonNls String fieldName, int value,
+                                  IntObjectMap<String> map) {
     generator.append("gbc.");
     generator.append(fieldName);
     generator.append("=");
@@ -163,7 +163,7 @@ public class GridBagLayoutSourceGenerator extends LayoutSourceGenerator {
     generator.append(";\n");
   }
 
-  private static void setDoubleField(final FormSourceCodeGenerator generator, @NonNls final String fieldName, final double value) {
+  private static void setDoubleField(FormSourceCodeGenerator generator, @NonNls String fieldName, double value) {
     generator.append("gbc.");
     generator.append(fieldName);
     generator.append("=");
@@ -171,10 +171,10 @@ public class GridBagLayoutSourceGenerator extends LayoutSourceGenerator {
     generator.append(";\n");
   }
 
-  private static void checkSetSize(final FormSourceCodeGenerator generator,
-                                   final String variable,
-                                   @NonNls final String methodName,
-                                   final Dimension dimension) {
+  private static void checkSetSize(FormSourceCodeGenerator generator,
+                                   String variable,
+                                   @NonNls String methodName,
+                                   Dimension dimension) {
     if (dimension != null) {
       generator.startMethodCall(variable, methodName);
       generator.newDimension(dimension);
@@ -183,7 +183,7 @@ public class GridBagLayoutSourceGenerator extends LayoutSourceGenerator {
   }
 
   @Override
-  public String mapComponentClass(final String componentClassName) {
+  public String mapComponentClass(String componentClassName) {
     if (componentClassName.equals(Spacer.class.getName())) {
       return JPanel.class.getName();
     }

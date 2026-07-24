@@ -42,12 +42,12 @@ public final class SameSizeVerticallyProperty extends AbstractGridLayoutProperty
 		super(null, "Same Size Vertically");
 	}
 
-	protected boolean getGridLayoutPropertyValue(final GridLayoutManager gridLayoutManager)
+	protected boolean getGridLayoutPropertyValue(GridLayoutManager gridLayoutManager)
 	{
 		return gridLayoutManager.isSameSizeVertically();
 	}
 
-	protected void setGridLayoutPropertyValue(final GridLayoutManager gridLayoutManager, final boolean booleanValue)
+	protected void setGridLayoutPropertyValue(GridLayoutManager gridLayoutManager, boolean booleanValue)
 	{
 		gridLayoutManager.setSameSizeVertically(booleanValue);
 	}

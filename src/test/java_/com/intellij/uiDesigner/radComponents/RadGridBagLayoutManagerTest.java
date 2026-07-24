@@ -97,7 +97,7 @@ public abstract class RadGridBagLayoutManagerTest extends TestCase {
     assertEquals(3, myContainer.getComponent(0).getConstraints().getRowSpan());
   }
 
-  private void processSnapshot(final JPanel panel) {
+  private void processSnapshot(JPanel panel) {
     for(int i=0; i<panel.getComponentCount(); i++) {
       RadComponent button = new RadAtomicComponent(null, JButton.class, Integer.toString(i));
       myManager.addSnapshotComponent(panel, (JComponent) panel.getComponent(i), myContainer, button);
@@ -110,7 +110,7 @@ public abstract class RadGridBagLayoutManagerTest extends TestCase {
       setLayout(layout);
     }
 
-    public Component addButton(final String title, int gridx, int gridy) {
+    public Component addButton(String title, int gridx, int gridy) {
       GridBagConstraints buttonConstraints = new GridBagConstraints();
       buttonConstraints.gridx = gridx;
       buttonConstraints.gridy = gridy;

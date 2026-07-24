@@ -41,7 +41,7 @@ final class FormPropertyTableCellRenderer extends ColoredTableCellRenderer{
   private final SimpleTextAttributes myAttrs2;
   private final SimpleTextAttributes myAttrs3;
 
-  FormPropertyTableCellRenderer(@Nonnull final Project project) {
+  FormPropertyTableCellRenderer(@Nonnull Project project) {
     myPalette = Palette.getInstance(project);
     myAttrs1 = SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES;
     myAttrs2 = SimpleTextAttributes.REGULAR_ATTRIBUTES;
@@ -51,24 +51,24 @@ final class FormPropertyTableCellRenderer extends ColoredTableCellRenderer{
   }
 
   protected void customizeCellRenderer(
-    final JTable table,
-    final Object value,
-    final boolean selected,
-    final boolean hasFocus,
-    final int row,
-    final int column
+    JTable table,
+    Object value,
+    boolean selected,
+    boolean hasFocus,
+    int row,
+    int column
   ) {
     if (value == null) {
       return;
     }
-    final FormProperty property = (FormProperty)value;
+    FormProperty property = (FormProperty)value;
 
-    final LwComponent component = property.getLwComponent();
+    LwComponent component = property.getLwComponent();
 
     // Icon
-    final Image icon;
-    final String fqClassName = component.getComponentClassName();
-    final ComponentItem item = myPalette.getItem(fqClassName);
+    Image icon;
+    String fqClassName = component.getComponentClassName();
+    ComponentItem item = myPalette.getItem(fqClassName);
     if (item != null) {
       icon = item.getSmallIcon();
     }
@@ -81,9 +81,9 @@ final class FormPropertyTableCellRenderer extends ColoredTableCellRenderer{
     append(component.getBinding(), myAttrs1);
 
     // Component class name and package
-    final String shortClassName;
-    final String packageName;
-    final int lastDotIndex = fqClassName.lastIndexOf('.');
+    String shortClassName;
+    String packageName;
+    int lastDotIndex = fqClassName.lastIndexOf('.');
     if (lastDotIndex != -1) {
       shortClassName = fqClassName.substring(lastDotIndex + 1);
       packageName = fqClassName.substring(0, lastDotIndex);

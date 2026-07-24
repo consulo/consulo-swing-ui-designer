@@ -26,11 +26,11 @@ import com.intellij.uiDesigner.impl.propertyInspector.editors.IntEnumEditor;
 public final class IntEnumRenderer extends LabelPropertyRenderer<Integer> {
   private final IntEnumEditor.Pair[] myPairs;
 
-  public IntEnumRenderer(@Nonnull final IntEnumEditor.Pair[] pairs) {
+  public IntEnumRenderer(@Nonnull IntEnumEditor.Pair[] pairs) {
     myPairs = pairs;
   }
 
-  protected void customize(@Nonnull final Integer value) {
+  protected void customize(@Nonnull Integer value) {
     // Find pair
     for(int i = myPairs.length - 1; i >= 0; i--){
       if(myPairs[i].myValue == value.intValue()){

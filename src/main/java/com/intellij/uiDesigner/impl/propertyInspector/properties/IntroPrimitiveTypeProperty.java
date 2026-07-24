@@ -32,8 +32,8 @@ public class IntroPrimitiveTypeProperty<T> extends IntrospectedProperty<T> {
   private PropertyEditor<T> myEditor;
   private final Class<T> myClass;
 
-  public IntroPrimitiveTypeProperty(final String name, final Method readMethod, final Method writeMethod, final boolean storeAsClient, 
-                                    final Class<T> aClass){
+  public IntroPrimitiveTypeProperty(String name, Method readMethod, Method writeMethod, boolean storeAsClient,
+                                    Class<T> aClass){
     super(name, readMethod, writeMethod, storeAsClient);
     myClass = aClass;
   }
@@ -41,7 +41,7 @@ public class IntroPrimitiveTypeProperty<T> extends IntrospectedProperty<T> {
   @Nonnull
   public PropertyRenderer<T> getRenderer(){
     if (myRenderer == null) {
-      myRenderer = new LabelPropertyRenderer<T>();
+      myRenderer = new LabelPropertyRenderer<>();
     }
     return myRenderer;
   }

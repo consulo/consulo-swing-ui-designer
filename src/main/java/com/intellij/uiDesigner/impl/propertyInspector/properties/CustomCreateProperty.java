@@ -75,10 +75,10 @@ public class CustomCreateProperty extends Property<RadComponent, Boolean>
 	private final BooleanEditor myEditor = new BooleanEditor()
 	{
 		@Override
-		public JComponent getComponent(final RadComponent component, final Boolean value, final InplaceContext inplaceContext)
+		public JComponent getComponent(RadComponent component, Boolean value, InplaceContext inplaceContext)
 		{
 			JCheckBox result = (JCheckBox) super.getComponent(component, value, inplaceContext);
-			final boolean customCreateRequired = component.isCustomCreateRequired();
+			boolean customCreateRequired = component.isCustomCreateRequired();
 			if(customCreateRequired)
 			{
 				result.setEnabled(false);
@@ -97,7 +97,7 @@ public class CustomCreateProperty extends Property<RadComponent, Boolean>
 		super(null, "Custom Create");
 	}
 
-	public Boolean getValue(final RadComponent component)
+	public Boolean getValue(RadComponent component)
 	{
 		return component.isCustomCreate();
 	}
@@ -114,7 +114,7 @@ public class CustomCreateProperty extends Property<RadComponent, Boolean>
 	}
 
 	@Override
-	public boolean appliesToSelection(final List<RadComponent> selection)
+	public boolean appliesToSelection(List<RadComponent> selection)
 	{
 		if(selection.size() > 1)
 		{
@@ -130,7 +130,7 @@ public class CustomCreateProperty extends Property<RadComponent, Boolean>
 		return true;
 	}
 
-	protected void setValueImpl(final RadComponent component, final Boolean value) throws Exception
+	protected void setValueImpl(RadComponent component, Boolean value) throws Exception
 	{
 		if(value.booleanValue() && component.getBinding() == null)
 		{
@@ -156,10 +156,10 @@ public class CustomCreateProperty extends Property<RadComponent, Boolean>
 		component.setCustomCreate(value.booleanValue());
 		if(value.booleanValue())
 		{
-			final IRootContainer root = FormEditingUtil.getRoot(component);
+			IRootContainer root = FormEditingUtil.getRoot(component);
 			if(root.getClassToBind() != null && Utils.getCustomCreateComponentCount(root) == 1)
 			{
-				final PsiClass aClass = FormEditingUtil.findClassToBind(component.getModule(), root.getClassToBind());
+				PsiClass aClass = FormEditingUtil.findClassToBind(component.getModule(), root.getClassToBind());
 				if(aClass != null && FormEditingUtil.findCreateComponentsMethod(aClass) == null)
 				{
 					generateCreateComponentsMethod(aClass);
@@ -170,7 +170,7 @@ public class CustomCreateProperty extends Property<RadComponent, Boolean>
 
 	public static void generateCreateComponentsMethod(final PsiClass aClass)
 	{
-		final PsiFile psiFile = aClass.getContainingFile();
+		PsiFile psiFile = aClass.getContainingFile();
 		if(psiFile == null)
 		{
 			return;
@@ -185,7 +185,7 @@ public class CustomCreateProperty extends Property<RadComponent, Boolean>
 			return;
 		}
 
-		final Ref<SmartPsiElementPointer> refMethod = new Ref<SmartPsiElementPointer>();
+		final Ref<SmartPsiElementPointer> refMethod = new Ref<>();
 		CommandProcessor.getInstance().executeCommand(
 				aClass.getProject(),
 				new Runnable()
@@ -202,7 +202,7 @@ public class CustomCreateProperty extends Property<RadComponent, Boolean>
 									PsiMethod method = factory.createMethodFromText("private void " +
 											AsmCodeGenerator.CREATE_COMPONENTS_METHOD_NAME +
 											"() { \n // TODO: place custom component creation code here \n }", aClass);
-									final PsiMethod psiMethod = (PsiMethod) aClass.add(method);
+									PsiMethod psiMethod = (PsiMethod) aClass.add(method);
 									refMethod.set(SmartPointerManager.getInstance(aClass.getProject()).createSmartPsiElementPointer(psiMethod));
 									CodeStyleManager.getInstance(aClass.getProject()).reformat(psiMethod);
 								}
@@ -222,12 +222,12 @@ public class CustomCreateProperty extends Property<RadComponent, Boolean>
 			{
 				public void run()
 				{
-					final PsiMethod element = (PsiMethod) refMethod.get().getElement();
+					PsiMethod element = (PsiMethod) refMethod.get().getElement();
 					if(element != null)
 					{
-						final PsiCodeBlock body = element.getBody();
+						PsiCodeBlock body = element.getBody();
 						assert body != null;
-						final PsiComment comment = PsiTreeUtil.getChildOfType(body, PsiComment.class);
+						PsiComment comment = PsiTreeUtil.getChildOfType(body, PsiComment.class);
 						if(comment != null)
 						{
 							OpenFileDescriptorFactory.getInstance(comment.getProject()).builder(vFile).offset(comment.getTextOffset()).build().navigate(true);

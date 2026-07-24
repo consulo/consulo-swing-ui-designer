@@ -77,7 +77,7 @@ public class SnapShooterConfigurationExtension extends RunConfigurationExtension
             params.getProgramParametersList().prepend(Integer.toString(settings.getLastPort()));
             // add +1 because idea_rt.jar will be added as the last entry to the classpath
             params.getProgramParametersList().prepend(Integer.toString(params.getClassPath().getPathList().size() + 1));
-            Set<String> paths = new TreeSet<String>();
+            Set<String> paths = new TreeSet<>();
             paths.add(ClassPathUtil.getJarPathForClass(SnapShooter.class));         // ui-designer-impl
             paths.add(ClassPathUtil.getJarPathForClass(LwComponent.class));         // UIDesignerCore
             paths.add(ClassPathUtil.getJarPathForClass(GridConstraints.class));     // forms_rt
@@ -101,7 +101,7 @@ public class SnapShooterConfigurationExtension extends RunConfigurationExtension
     }
 
     @Override
-    public void attachToProcess(@Nonnull final RunConfigurationBase configuration, @Nonnull final ProcessHandler handler, RunnerSettings runnerSettings) {
+    public void attachToProcess(@Nonnull RunConfigurationBase configuration, @Nonnull ProcessHandler handler, RunnerSettings runnerSettings) {
         SnapShooterConfigurationSettings settings = configuration.getUserData(SnapShooterConfigurationSettings.SNAP_SHOOTER_KEY);
         if (settings != null) {
             final Runnable runnable = settings.getNotifyRunnable();
@@ -109,7 +109,7 @@ public class SnapShooterConfigurationExtension extends RunConfigurationExtension
                 settings.setNotifyRunnable(null);
                 handler.addProcessListener(new ProcessListener() {
                     @Override
-                    public void startNotified(final ProcessEvent event) {
+                    public void startNotified(ProcessEvent event) {
                         runnable.run();
                     }
                 });

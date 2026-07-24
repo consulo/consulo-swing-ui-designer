@@ -33,7 +33,7 @@ public abstract class QuickFix {
   private final String myName;
   protected RadComponent myComponent;
 
-  public QuickFix(@Nonnull final GuiEditor editor, @Nonnull final String name, @Nullable RadComponent component) {
+  public QuickFix(@Nonnull GuiEditor editor, @Nonnull String name, @Nullable RadComponent component) {
     myEditor = editor;
     myName = name;
     myComponent = component;

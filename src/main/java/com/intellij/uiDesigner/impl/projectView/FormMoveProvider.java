@@ -52,7 +52,7 @@ public class FormMoveProvider extends MoveHandlerDelegate
 	}
 
 	@Override
-	public boolean canMove(PsiElement[] elements, @Nullable final PsiElement targetContainer)
+	public boolean canMove(PsiElement[] elements, @Nullable PsiElement targetContainer)
 	{
 		return false;
 	}
@@ -85,7 +85,7 @@ public class FormMoveProvider extends MoveHandlerDelegate
 	{
 		if(source instanceof PsiFile && source.getParent() == target)
 		{
-			final VirtualFile virtualFile = ((PsiFile) source).getVirtualFile();
+			VirtualFile virtualFile = ((PsiFile) source).getVirtualFile();
 			if(virtualFile != null && virtualFile.getFileType() instanceof GuiFormFileType)
 			{
 				return true;

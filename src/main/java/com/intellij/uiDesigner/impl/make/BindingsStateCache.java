@@ -137,18 +137,18 @@ public abstract class BindingsStateCache<T>
 	}
 
 
-	private PersistentHashMap<File, T> createMap(final File file) throws IOException
+	private PersistentHashMap<File, T> createMap(File file) throws IOException
 	{
 		return new PersistentHashMap<>(file, FileKeyDescriptor.INSTANCE, new DataExternalizer<T>()
 		{
 			@Override
-			public void save(final DataOutput out, final T value) throws IOException
+			public void save(DataOutput out, T value) throws IOException
 			{
 				BindingsStateCache.this.write(value, out);
 			}
 
 			@Override
-			public T read(final DataInput in) throws IOException
+			public T read(DataInput in) throws IOException
 			{
 				return BindingsStateCache.this.read(in);
 			}

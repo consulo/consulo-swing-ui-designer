@@ -34,7 +34,7 @@ public class GroupRowsColumnsAction extends RowColumnAction
 	}
 
 	@Override
-	public void update(final AnActionEvent e)
+	public void update(AnActionEvent e)
 	{
 		super.update(e);
 		CaptionSelection selection = e.getData(CaptionSelection.DATA_KEY);
@@ -45,11 +45,11 @@ public class GroupRowsColumnsAction extends RowColumnAction
 		}
 	}
 
-	public static boolean isGrouped(final CaptionSelection selection)
+	public static boolean isGrouped(CaptionSelection selection)
 	{
 		FormLayout layout = (FormLayout) selection.getContainer().getLayout();
 		int[][] groups = selection.isRow() ? layout.getRowGroups() : layout.getColumnGroups();
-		final int[] indices = selection.getSelection();
+		int[] indices = selection.getSelection();
 		for(int[] group : groups)
 		{
 			if(intersect(group, indices))
@@ -60,7 +60,7 @@ public class GroupRowsColumnsAction extends RowColumnAction
 		return false;
 	}
 
-	public static boolean intersect(final int[] group, final int[] indices)
+	public static boolean intersect(int[] group, int[] indices)
 	{
 		for(int groupMember : group)
 		{
@@ -100,7 +100,7 @@ public class GroupRowsColumnsAction extends RowColumnAction
 
 	private static int[] getCellsToGroup(CaptionSelection selection)
 	{
-		ArrayList<Integer> cells = new ArrayList<Integer>();
+		ArrayList<Integer> cells = new ArrayList<>();
 		int[] selectedIndices = selection.getSelection();
 		for(int i : selectedIndices)
 		{

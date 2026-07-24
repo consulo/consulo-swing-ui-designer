@@ -24,7 +24,7 @@ import com.intellij.uiDesigner.impl.FormEditingUtil;
  * @author yole
  */
 public class ShowGridAction extends ToggleAction {
-  public void update(final AnActionEvent e) {
+  public void update(AnActionEvent e) {
     super.update(e);
     GuiEditor editor = FormEditingUtil.getEditorFromContext(e.getDataContext());
     e.getPresentation().setEnabled(editor != null);

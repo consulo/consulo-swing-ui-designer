@@ -35,16 +35,16 @@ public class ResetValueAction extends AbstractGuiEditorAction
 	private static final Logger LOG = Logger.getInstance(ResetValueAction.class);
 
 	@Override
-	protected void actionPerformed(final GuiEditor editor, final List<RadComponent> selection, final AnActionEvent e)
+	protected void actionPerformed(GuiEditor editor, List<RadComponent> selection, AnActionEvent e)
 	{
-		final PropertyInspectorTable inspector = e.getData(PropertyInspectorTable.DATA_KEY);
+		PropertyInspectorTable inspector = e.getData(PropertyInspectorTable.DATA_KEY);
 		assert inspector != null;
-		final Property property = inspector.getSelectedProperty();
+		Property property = inspector.getSelectedProperty();
 		assert property != null;
 		doResetValue(selection, property, editor);
 	}
 
-	public static void doResetValue(final List<RadComponent> selection, final Property property, final GuiEditor editor)
+	public static void doResetValue(List<RadComponent> selection, Property property, GuiEditor editor)
 	{
 		try
 		{
@@ -52,7 +52,7 @@ public class ResetValueAction extends AbstractGuiEditorAction
 			{
 				return;
 			}
-			final PropertyInspector propertyInspector = DesignerToolWindowManager.getInstance(editor).getPropertyInspector();
+			PropertyInspector propertyInspector = DesignerToolWindowManager.getInstance(editor).getPropertyInspector();
 			if(propertyInspector.isEditing())
 			{
 				propertyInspector.stopEditing();
@@ -84,7 +84,7 @@ public class ResetValueAction extends AbstractGuiEditorAction
 		PropertyInspectorTable inspector = e.getData(PropertyInspectorTable.DATA_KEY);
 		if(inspector != null)
 		{
-			final Property selectedProperty = inspector.getSelectedProperty();
+			Property selectedProperty = inspector.getSelectedProperty();
 			//noinspection unchecked
 			e.getPresentation().setEnabled(selectedProperty != null &&
 					selection.size() > 0 &&

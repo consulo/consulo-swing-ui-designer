@@ -45,16 +45,16 @@ public final class RadScrollPane extends RadContainer {
       return new RadScrollPane(module, aClass, id);
     }
 
-    public RadComponent newInstance(final Class componentClass, final String id, final Palette palette) {
+    public RadComponent newInstance(Class componentClass, String id, Palette palette) {
       return new RadScrollPane(componentClass, id, palette);
     }
   }
 
-  public RadScrollPane(final ModuleProvider module, final Class componentClass, final String id){
+  public RadScrollPane(ModuleProvider module, Class componentClass, String id){
     super(module, componentClass, id);
   }
 
-  public RadScrollPane(final Class componentClass, final String id, final Palette palette) {
+  public RadScrollPane(Class componentClass, String id, Palette palette) {
     super(componentClass, id, palette);
   }
 
@@ -63,7 +63,7 @@ public final class RadScrollPane extends RadContainer {
     return new RadScrollPaneLayoutManager();
   }
 
-  public void write(final XmlWriter writer) {
+  public void write(XmlWriter writer) {
     writer.startElement(UIFormXmlConstants.ELEMENT_SCROLLPANE);
     try {
       writeNoLayout(writer, JScrollPane.class.getName());
@@ -77,9 +77,9 @@ public final class RadScrollPane extends RadContainer {
   }
 
   @Override
-  protected void importSnapshotComponent(final SnapshotContext context, final JComponent component) {
+  protected void importSnapshotComponent(SnapshotContext context, JComponent component) {
     JScrollPane scrollPane = (JScrollPane) component;
-    final Component view = scrollPane.getViewport().getView();
+    Component view = scrollPane.getViewport().getView();
     if (view instanceof JComponent) {
       RadComponent childComponent = createSnapshotComponent(context, (JComponent) view);
       if (childComponent != null) {
@@ -95,21 +95,21 @@ public final class RadScrollPane extends RadContainer {
       return null;
     }
 
-    public void writeChildConstraints(final XmlWriter writer, final RadComponent child) {
+    public void writeChildConstraints(XmlWriter writer, RadComponent child) {
     }
 
     @Override @Nonnull
-    public ComponentDropLocation getDropLocation(RadContainer container, @Nullable final Point location) {
+    public ComponentDropLocation getDropLocation(RadContainer container, @Nullable Point location) {
       if (myDropLocation == null) {
         myDropLocation = new MyDropLocation();
       }
       return myDropLocation;
     }
 
-    public void addComponentToContainer(final RadContainer container, final RadComponent component, final int index) {
+    public void addComponentToContainer(RadContainer container, RadComponent component, int index) {
       try {
-        final JScrollPane scrollPane = (JScrollPane)container.getDelegee();
-        final JComponent delegee = component.getDelegee();
+        JScrollPane scrollPane = (JScrollPane)container.getDelegee();
+        JComponent delegee = component.getDelegee();
         delegee.setLocation(0,0);
         scrollPane.setViewportView(delegee);
       }
@@ -121,8 +121,8 @@ public final class RadScrollPane extends RadContainer {
       }
     }
 
-    @Override public void removeComponentFromContainer(final RadContainer container, final RadComponent component) {
-      final JScrollPane scrollPane = (JScrollPane)container.getDelegee();
+    @Override public void removeComponentFromContainer(RadContainer container, RadComponent component) {
+      JScrollPane scrollPane = (JScrollPane)container.getDelegee();
       scrollPane.setViewportView(null);
     }
   }

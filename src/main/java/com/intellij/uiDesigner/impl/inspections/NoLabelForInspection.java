@@ -61,11 +61,11 @@ public class NoLabelForInspection extends BaseFormInspection {
       while(root.getParentContainer() != null) {
         root = root.getParentContainer();
       }
-      final Ref<Boolean> found = new Ref<Boolean>(Boolean.FALSE);
-      final Ref<RadComponent> candidateLabel = new Ref<RadComponent>();
-      final List<RadComponent> allLabels = new ArrayList<RadComponent>();
+      final Ref<Boolean> found = new Ref<>(Boolean.FALSE);
+      final Ref<RadComponent> candidateLabel = new Ref<>();
+      final List<RadComponent> allLabels = new ArrayList<>();
       FormEditingUtil.iterate(root, new FormEditingUtil.ComponentVisitor() {
-        public boolean visit(final IComponent c2) {
+        public boolean visit(IComponent c2) {
           if (FormInspectionUtil.isComponentClass(module, c2, JLabel.class)) {
             IProperty prop = FormInspectionUtil.findProperty(c2, SwingProperties.LABEL_FOR);
             if (prop != null && component.getId().equals(prop.getPropertyValue(c2))) {
@@ -75,7 +75,7 @@ public class NoLabelForInspection extends BaseFormInspection {
             else if (component instanceof RadComponent &&
                      (prop == null || StringUtil.isEmpty((String)prop.getPropertyValue(c2)))) {
               RadComponent radComponent = (RadComponent) component;
-              final RadComponent radComponent2 = ((RadComponent)c2);
+              RadComponent radComponent2 = ((RadComponent)c2);
               allLabels.add(radComponent2);
               if (radComponent.getParent() == radComponent2.getParent() && radComponent.getParent().getLayoutManager().isGrid()) {
                 GridConstraints gc1 = radComponent.getConstraints();
@@ -114,7 +114,7 @@ public class NoLabelForInspection extends BaseFormInspection {
   private static class MyQuickFix extends QuickFix {
     private final RadComponent myLabel;
 
-    public MyQuickFix(final GuiEditor editor, RadComponent component, RadComponent label) {
+    public MyQuickFix(GuiEditor editor, RadComponent component, RadComponent label) {
       super(editor, UIDesignerLocalize.inspectionNoLabelForQuickfix(label.getComponentTitle()).get(), component);
       myLabel = label;
     }
@@ -125,7 +125,7 @@ public class NoLabelForInspection extends BaseFormInspection {
       }
       Runnable runnable = new Runnable() {
         public void run() {
-          final Palette palette = Palette.getInstance(myEditor.getProject());
+          Palette palette = Palette.getInstance(myEditor.getProject());
           IntrospectedProperty[] props = palette.getIntrospectedProperties(myLabel);
           boolean modified = false;
           for(IntrospectedProperty prop: props) {

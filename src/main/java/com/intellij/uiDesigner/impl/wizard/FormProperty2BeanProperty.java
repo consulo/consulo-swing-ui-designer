@@ -28,7 +28,7 @@ public final class FormProperty2BeanProperty {
    */
   public BeanProperty myBeanProperty;
 
-  public FormProperty2BeanProperty(@Nonnull final FormProperty formProperty) {
+  public FormProperty2BeanProperty(@Nonnull FormProperty formProperty) {
     myFormProperty = formProperty;
   }
 }

@@ -60,7 +60,7 @@ public class ComponentEditor extends ComboBoxPropertyEditor<String> {
     return myCbx;
   }
 
-  protected RadComponent[] collectFilteredComponents(final RadComponent component) {
+  protected RadComponent[] collectFilteredComponents(RadComponent component) {
     List<RadComponent> result = new ArrayList<>();
     result.add(null);
 
@@ -71,7 +71,7 @@ public class ComponentEditor extends ComboBoxPropertyEditor<String> {
 
     FormEditingUtil.iterate(container, component1 -> {
       RadComponent radComponent = (RadComponent) component1;
-      final JComponent delegee = radComponent.getDelegee();
+      JComponent delegee = radComponent.getDelegee();
       if (!myPropertyType.isInstance(delegee)) {
         return true;
       }
@@ -86,7 +86,7 @@ public class ComponentEditor extends ComboBoxPropertyEditor<String> {
 
   @Override
   public String getValue() throws Exception {
-    final RadComponent selection = (RadComponent)myCbx.getSelectedItem();
+    RadComponent selection = (RadComponent)myCbx.getSelectedItem();
     if (selection == null) {
       return myOldValue == null ? null : "";
     }

@@ -71,7 +71,7 @@ public abstract class FormEnumUsageTest extends PsiTestCase {
     PsiField valueBField = enumClass.findFieldByName("valueB", false);
     assertNotNull(valueBField);
     assertTrue(valueBField instanceof PsiEnumConstant);
-    final PsiClass componentClass = myJavaFacade.findClass("CustomComponent", ProjectScope.getAllScope(myProject));
+    PsiClass componentClass = myJavaFacade.findClass("CustomComponent", ProjectScope.getAllScope(myProject));
     assertNotNull(componentClass);
 
     assertEquals(1, ReferencesSearch.search(componentClass).findAll().size());

@@ -86,7 +86,7 @@ public class GeneratedCodeFoldingBuilder extends FoldingBuilderEx
 	private static class MyFoldingVisitor extends JavaRecursiveElementWalkingVisitor
 	{
 		private PsiElement myLastElement;
-		private final List<FoldingDescriptor> myFoldingData = new ArrayList<FoldingDescriptor>();
+		private final List<FoldingDescriptor> myFoldingData = new ArrayList<>();
 
 		@Override
 		public void visitMethod(PsiMethod method)
@@ -109,7 +109,7 @@ public class GeneratedCodeFoldingBuilder extends FoldingBuilderEx
 			}
 		}
 
-		private void addFoldingData(final PsiElement element)
+		private void addFoldingData(PsiElement element)
 		{
 			PsiElement prevSibling = PsiTreeUtil.skipSiblingsBackward(element, PsiWhiteSpace.class);
 			synchronized(myFoldingData)
@@ -121,7 +121,7 @@ public class GeneratedCodeFoldingBuilder extends FoldingBuilderEx
 				else
 				{
 					FoldingDescriptor lastDescriptor = myFoldingData.get(myFoldingData.size() - 1);
-					final TextRange range = new TextRange(lastDescriptor.getRange().getStartOffset(), element.getTextRange().getEndOffset());
+					TextRange range = new TextRange(lastDescriptor.getRange().getStartOffset(), element.getTextRange().getEndOffset());
 					myFoldingData.set(myFoldingData.size() - 1, new FoldingDescriptor(lastDescriptor.getElement(), range));
 				}
 			}

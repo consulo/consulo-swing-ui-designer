@@ -30,7 +30,7 @@ public class FormHighlightingPass implements HighlightingPass
 {
 	private final GuiEditor myEditor;
 
-	public FormHighlightingPass(final GuiEditor editor)
+	public FormHighlightingPass(GuiEditor editor)
 	{
 		myEditor = editor;
 	}

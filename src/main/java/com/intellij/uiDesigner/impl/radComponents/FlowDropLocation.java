@@ -130,7 +130,7 @@ public class FlowDropLocation implements ComponentDropLocation
 			}
 			maxSize = Math.max(maxSize, initialSize.height);
 			maxSize = Math.min(maxSize, myContainer.getBounds().height);
-			final Rectangle rc;
+			Rectangle rc;
 			if(myInsertIndex == 0)
 			{
 				rc = new Rectangle(minX - myHGap - initialSize.width, lastTop, initialSize.width, maxSize);

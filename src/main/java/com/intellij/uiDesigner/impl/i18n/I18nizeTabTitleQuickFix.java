@@ -26,7 +26,7 @@ import com.intellij.uiDesigner.impl.radComponents.RadTabbedPane;
 public class I18nizeTabTitleQuickFix extends I18nizeFormQuickFix {
   private final String myPropName;
 
-  public I18nizeTabTitleQuickFix(final GuiEditor editor, final String name, final RadComponent component, final String propName) {
+  public I18nizeTabTitleQuickFix(GuiEditor editor, String name, RadComponent component, String propName) {
     super(editor, name, component);
     myPropName = propName;
   }
@@ -36,7 +36,7 @@ public class I18nizeTabTitleQuickFix extends I18nizeFormQuickFix {
     return tabbedPane.getTabProperty(myComponent, myPropName);
   }
 
-  protected void setStringDescriptorValue(final StringDescriptor descriptor) throws Exception {
+  protected void setStringDescriptorValue(StringDescriptor descriptor) throws Exception {
     RadTabbedPane tabbedPane = (RadTabbedPane) myComponent.getParent();
     tabbedPane.setTabProperty(myComponent, myPropName, descriptor);
   }

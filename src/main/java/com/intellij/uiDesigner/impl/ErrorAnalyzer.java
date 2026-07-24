@@ -69,7 +69,7 @@ public final class ErrorAnalyzer {
     private ErrorAnalyzer() {
     }
 
-    public static void analyzeErrors(final GuiEditor editor, final IRootContainer rootContainer, @Nullable final ProgressIndicator progress) {
+    public static void analyzeErrors(GuiEditor editor, IRootContainer rootContainer, @Nullable ProgressIndicator progress) {
         analyzeErrors(editor.getModule(), editor.getFile(), editor, rootContainer, progress);
     }
 
@@ -77,7 +77,7 @@ public final class ErrorAnalyzer {
      * @param editor if null, no quick fixes are created. This is used in form to source compiler.
      */
     public static void analyzeErrors(@Nonnull final Module module,
-                                     @Nonnull final VirtualFile formFile,
+                                     @Nonnull VirtualFile formFile,
                                      @Nullable final GuiEditor editor,
                                      @Nonnull final IRootContainer rootContainer,
                                      @Nullable final ProgressIndicator progress) {
@@ -86,13 +86,13 @@ public final class ErrorAnalyzer {
         }
 
         // 1. Validate class to bind
-        final String classToBind = rootContainer.getClassToBind();
+        String classToBind = rootContainer.getClassToBind();
         final PsiClass psiClass;
         if (classToBind != null) {
             psiClass = FormEditingUtil.findClassToBind(module, classToBind);
             if (psiClass == null) {
-                final QuickFix[] fixes = editor != null ? new QuickFix[]{new CreateClassToBindFix(editor, classToBind)} : QuickFix.EMPTY_ARRAY;
-                final ErrorInfo errorInfo = new ErrorInfo(null, null, UIDesignerBundle.message("error.class.does.not.exist", classToBind),
+                QuickFix[] fixes = editor != null ? new QuickFix[]{new CreateClassToBindFix(editor, classToBind)} : QuickFix.EMPTY_ARRAY;
+                ErrorInfo errorInfo = new ErrorInfo(null, null, UIDesignerBundle.message("error.class.does.not.exist", classToBind),
                     HighlightDisplayLevel.ERROR, fixes);
                 rootContainer.putClientProperty(CLIENT_PROP_CLASS_TO_BIND_ERROR, errorInfo);
             }
@@ -107,12 +107,12 @@ public final class ErrorAnalyzer {
 
         // 2. Validate bindings to fields
         // field name -> error message
-        final ArrayList<String> usedBindings = new ArrayList<String>(); // for performance reasons
-        final Set<IButtonGroup> processedGroups = new HashSet<IButtonGroup>();
+        final ArrayList<String> usedBindings = new ArrayList<>(); // for performance reasons
+        final Set<IButtonGroup> processedGroups = new HashSet<>();
         FormEditingUtil.iterate(
             rootContainer,
-            new FormEditingUtil.ComponentVisitor<IComponent>() {
-                public boolean visit(final IComponent component) {
+            new FormEditingUtil.ComponentVisitor<>() {
+                public boolean visit(IComponent component) {
                     if (progress != null && progress.isCanceled()) {
                         return false;
                     }
@@ -120,7 +120,7 @@ public final class ErrorAnalyzer {
                     // Reset previous error (if any)
                     component.putClientProperty(CLIENT_PROP_BINDING_ERROR, null);
 
-                    final String binding = component.getBinding();
+                    String binding = component.getBinding();
 
                     // a. Check that field exists and field is not static
                     if (psiClass != null && binding != null) {
@@ -166,8 +166,8 @@ public final class ErrorAnalyzer {
         // Check that there are no panels in XY with children
         FormEditingUtil.iterate(
             rootContainer,
-            new FormEditingUtil.ComponentVisitor<IComponent>() {
-                public boolean visit(final IComponent component) {
+            new FormEditingUtil.ComponentVisitor<>() {
+                public boolean visit(IComponent component) {
                     if (progress != null && progress.isCanceled()) {
                         return false;
                     }
@@ -179,9 +179,9 @@ public final class ErrorAnalyzer {
                         return true;
                     }
 
-                    final IContainer container = (IContainer) component;
+                    IContainer container = (IContainer) component;
                     if (container instanceof IRootContainer) {
-                        final IRootContainer rootContainer = (IRootContainer) container;
+                        IRootContainer rootContainer = (IRootContainer) container;
                         if (rootContainer.getComponentCount() > 1) {
                             // TODO[vova] implement
                             putError(component, new ErrorInfo(
@@ -210,9 +210,9 @@ public final class ErrorAnalyzer {
 
         try {
             // Run inspections for form elements
-            final PsiFile formPsiFile = PsiManager.getInstance(module.getProject()).findFile(formFile);
+            PsiFile formPsiFile = PsiManager.getInstance(module.getProject()).findFile(formFile);
             if (formPsiFile != null && rootContainer instanceof RadRootContainer) {
-                final List<FormInspectionTool> formInspectionTools = new ArrayList<FormInspectionTool>();
+                final List<FormInspectionTool> formInspectionTools = new ArrayList<>();
                 List<InspectionTool> tools = Application.get().getExtensionList(InspectionTool.class);
                 for (InspectionTool tool : tools) {
                     if (tool instanceof FormInspectionTool formInspectionTool) {
@@ -229,7 +229,7 @@ public final class ErrorAnalyzer {
                     FormEditingUtil.iterate(
                         rootContainer,
                         new FormEditingUtil.ComponentVisitor<RadComponent>() {
-                            public boolean visit(final RadComponent component) {
+                            public boolean visit(RadComponent component) {
                                 if (progress != null && progress.isCanceled()) {
                                     return false;
                                 }
@@ -242,7 +242,7 @@ public final class ErrorAnalyzer {
                                     if (errorInfos != null) {
                                         ArrayList<ErrorInfo> errorList = getErrorInfos(component);
                                         if (errorList == null) {
-                                            errorList = new ArrayList<ErrorInfo>();
+                                            errorList = new ArrayList<>();
                                             component.putClientProperty(CLIENT_PROP_ERROR_ARRAY, errorList);
                                         }
                                         Collections.addAll(errorList, errorInfos);
@@ -266,9 +266,9 @@ public final class ErrorAnalyzer {
         }
     }
 
-    private static boolean validateFieldInClass(final IComponent component, final String fieldName, final String fieldClassName,
-                                                final PsiClass psiClass, final GuiEditor editor, final consulo.module.Module module) {
-        final PsiField[] fields = psiClass.getFields();
+    private static boolean validateFieldInClass(IComponent component, String fieldName, String fieldClassName,
+                                                PsiClass psiClass, GuiEditor editor, consulo.module.Module module) {
+        PsiField[] fields = psiClass.getFields();
         PsiField field = null;
         for (int i = fields.length - 1; i >= 0; i--) {
             if (fieldName.equals(fields[i].getName())) {
@@ -277,7 +277,7 @@ public final class ErrorAnalyzer {
             }
         }
         if (field == null) {
-            final QuickFix[] fixes = editor != null
+            QuickFix[] fixes = editor != null
                 ? new QuickFix[]{new CreateFieldFix(editor, psiClass, fieldClassName, fieldName)}
                 : QuickFix.EMPTY_ARRAY;
             component.putClientProperty(
@@ -304,14 +304,14 @@ public final class ErrorAnalyzer {
 
         // Check that field has correct fieldType
         try {
-            final String className = fieldClassName.replace('$', '.'); // workaround for PSI
-            final PsiType componentType = JavaPsiFacade.getInstance(module.getProject()).getElementFactory().createTypeFromText(
+            String className = fieldClassName.replace('$', '.'); // workaround for PSI
+            PsiType componentType = JavaPsiFacade.getInstance(module.getProject()).getElementFactory().createTypeFromText(
                 className,
                 null
             );
-            final PsiType fieldType = field.getType();
+            PsiType fieldType = field.getType();
             if (!fieldType.isAssignableFrom(componentType)) {
-                final QuickFix[] fixes = editor != null ? new QuickFix[]{
+                QuickFix[] fixes = editor != null ? new QuickFix[]{
                     new ChangeFieldTypeFix(editor, field, componentType)
                 } : QuickFix.EMPTY_ARRAY;
                 component.putClientProperty(
@@ -329,7 +329,7 @@ public final class ErrorAnalyzer {
         }
 
         if (component.isCustomCreate() && FormEditingUtil.findCreateComponentsMethod(psiClass) == null) {
-            final QuickFix[] fixes = editor != null ? new QuickFix[]{
+            QuickFix[] fixes = editor != null ? new QuickFix[]{
                 new GenerateCreateComponentsFix(editor, psiClass)
             } : QuickFix.EMPTY_ARRAY;
             component.putClientProperty(
@@ -343,10 +343,10 @@ public final class ErrorAnalyzer {
         return false;
     }
 
-    private static void putError(final IComponent component, final ErrorInfo errorInfo) {
+    private static void putError(IComponent component, ErrorInfo errorInfo) {
         ArrayList<ErrorInfo> errorList = getErrorInfos(component);
         if (errorList == null) {
-            errorList = new ArrayList<ErrorInfo>();
+            errorList = new ArrayList<>();
             component.putClientProperty(CLIENT_PROP_ERROR_ARRAY, errorList);
         }
 
@@ -358,10 +358,10 @@ public final class ErrorAnalyzer {
      * any error then the method returns <code>null</code>.
      */
     @Nullable
-    public static ErrorInfo getErrorForComponent(@Nonnull final IComponent component) {
+    public static ErrorInfo getErrorForComponent(@Nonnull IComponent component) {
         // Check bind to class errors
         {
-            final ErrorInfo errorInfo = (ErrorInfo) component.getClientProperty(CLIENT_PROP_CLASS_TO_BIND_ERROR);
+            ErrorInfo errorInfo = (ErrorInfo) component.getClientProperty(CLIENT_PROP_CLASS_TO_BIND_ERROR);
             if (errorInfo != null) {
                 return errorInfo;
             }
@@ -369,7 +369,7 @@ public final class ErrorAnalyzer {
 
         // Check binding errors
         {
-            final ErrorInfo error = (ErrorInfo) component.getClientProperty(CLIENT_PROP_BINDING_ERROR);
+            ErrorInfo error = (ErrorInfo) component.getClientProperty(CLIENT_PROP_BINDING_ERROR);
             if (error != null) {
                 return error;
             }
@@ -377,7 +377,7 @@ public final class ErrorAnalyzer {
 
         // General error
         {
-            final ArrayList<ErrorInfo> errorInfo = getErrorInfos(component);
+            ArrayList<ErrorInfo> errorInfo = getErrorInfos(component);
             if (errorInfo != null && errorInfo.size() > 0) {
                 return errorInfo.get(0);
             }
@@ -388,7 +388,7 @@ public final class ErrorAnalyzer {
 
     @Nonnull
     public static ErrorInfo[] getAllErrorsForComponent(@Nonnull IComponent component) {
-        List<ErrorInfo> result = new ArrayList<ErrorInfo>();
+        List<ErrorInfo> result = new ArrayList<>();
         ErrorInfo errorInfo = (ErrorInfo) component.getClientProperty(CLIENT_PROP_CLASS_TO_BIND_ERROR);
         if (errorInfo != null) {
             result.add(errorInfo);
@@ -397,20 +397,20 @@ public final class ErrorAnalyzer {
         if (errorInfo != null) {
             result.add(errorInfo);
         }
-        final ArrayList<ErrorInfo> errorInfos = getErrorInfos(component);
+        ArrayList<ErrorInfo> errorInfos = getErrorInfos(component);
         if (errorInfos != null) {
             result.addAll(errorInfos);
         }
         return result.toArray(new ErrorInfo[result.size()]);
     }
 
-    private static ArrayList<ErrorInfo> getErrorInfos(final IComponent component) {
+    private static ArrayList<ErrorInfo> getErrorInfos(IComponent component) {
         //noinspection unchecked
         return (ArrayList<ErrorInfo>) component.getClientProperty(CLIENT_PROP_ERROR_ARRAY);
     }
 
     @Nullable
-    public static HighlightDisplayLevel getHighlightDisplayLevel(final Project project, @Nonnull final RadComponent component) {
+    public static HighlightDisplayLevel getHighlightDisplayLevel(Project project, @Nonnull RadComponent component) {
         HighlightDisplayLevel displayLevel = null;
         for (ErrorInfo errInfo : getAllErrorsForComponent(component)) {
             if (displayLevel == null || SeverityRegistrar.getSeverityRegistrar(project).compare(errInfo.getHighlightDisplayLevel().getSeverity(), displayLevel.getSeverity()) > 0) {

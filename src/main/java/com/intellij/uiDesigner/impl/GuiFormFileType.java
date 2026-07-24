@@ -75,7 +75,7 @@ public class GuiFormFileType implements FileTypeWithPredefinedCharset
 	}
 
 	@Override
-	public String getCharset(@Nonnull VirtualFile file, final byte[] content)
+	public String getCharset(@Nonnull VirtualFile file, byte[] content)
 	{
 		return StandardCharsets.UTF_8.name();
 	}

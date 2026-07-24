@@ -118,7 +118,7 @@ public final class Palette implements PersistentStateComponent<Element>, Disposa
 	private static final String ATTRIBUTE_CAN_ATTACH_LABEL = "can-attach-label";
 	private static final String ATTRIBUTE_IS_CONTAINER = "is-container";
 
-	public static Palette getInstance(@Nonnull final Project project)
+	public static Palette getInstance(@Nonnull Project project)
 	{
 		return project.getComponent(Palette.class);
 	}
@@ -150,7 +150,7 @@ public final class Palette implements PersistentStateComponent<Element>, Disposa
 	@Override
     public Element getState()
 	{
-		final Element e = new Element("state");
+		Element e = new Element("state");
 		writeExternal(e);
 		return e;
 	}
@@ -164,7 +164,7 @@ public final class Palette implements PersistentStateComponent<Element>, Disposa
 	/**
 	 * Adds specified listener.
 	 */
-	public void addListener(@Nonnull final Listener l)
+	public void addListener(@Nonnull Listener l)
 	{
 		LOG.assertTrue(!myListeners.contains(l));
 		myListeners.add(l);
@@ -173,7 +173,7 @@ public final class Palette implements PersistentStateComponent<Element>, Disposa
 	/**
 	 * Removes specified listener.
 	 */
-	public void removeListener(@Nonnull final Listener l)
+	public void removeListener(@Nonnull Listener l)
 	{
 		LOG.assertTrue(myListeners.contains(l));
 		myListeners.remove(l);
@@ -187,7 +187,7 @@ public final class Palette implements PersistentStateComponent<Element>, Disposa
 		}
 	}
 
-	public void readExternal(@Nonnull final Element element)
+	public void readExternal(@Nonnull Element element)
 	{
 	/*
 	ApplicationManager.getApplication().assertIsDispatchThread();
@@ -200,7 +200,7 @@ public final class Palette implements PersistentStateComponent<Element>, Disposa
 		myGroups.clear();
 
 		// Parse XML
-		final List groupElements = element.getChildren(ELEMENT_GROUP);
+		List groupElements = element.getChildren(ELEMENT_GROUP);
 		processGroups(groupElements);
 
 		// Ensure that all predefined items are loaded
@@ -218,7 +218,7 @@ public final class Palette implements PersistentStateComponent<Element>, Disposa
 		try
 		{
 			//noinspection HardCodedStringLiteral
-			final Document document = JDOMUtil.loadDocument(getClass().getResourceAsStream("/defaultState/Palette2.xml"));
+			Document document = JDOMUtil.loadDocument(getClass().getResourceAsStream("/defaultState/Palette2.xml"));
 			for(Element o : document.getRootElement().getChildren(ELEMENT_GROUP))
 			{
 				for(GroupItem group : myGroups)
@@ -237,7 +237,7 @@ public final class Palette implements PersistentStateComponent<Element>, Disposa
 		}
 	}
 
-	private void upgradeGroup(final GroupItem group, final Element groupElement)
+	private void upgradeGroup(GroupItem group, Element groupElement)
 	{
 		for(Element itemElement : groupElement.getChildren(ELEMENT_ITEM))
 		{
@@ -245,8 +245,8 @@ public final class Palette implements PersistentStateComponent<Element>, Disposa
 			{
 				processItemElement(itemElement, group, true);
 			}
-			final String className = LwXmlReader.getRequiredString(itemElement, ATTRIBUTE_CLASS);
-			final ComponentItem item = getItem(className);
+			String className = LwXmlReader.getRequiredString(itemElement, ATTRIBUTE_CLASS);
+			ComponentItem item = getItem(className);
 			if(item != null)
 			{
 				if(LwXmlReader.getOptionalBoolean(itemElement, ATTRIBUTE_AUTO_CREATE_BINDING, false))
@@ -261,7 +261,7 @@ public final class Palette implements PersistentStateComponent<Element>, Disposa
 		}
 	}
 
-	public void writeExternal(@Nonnull final Element element)
+	public void writeExternal(@Nonnull Element element)
 	{
 		writeGroups(element);
 	}
@@ -281,7 +281,7 @@ public final class Palette implements PersistentStateComponent<Element>, Disposa
 	 * class.
 	 */
 	@Nullable
-	public ComponentItem getItem(@Nonnull final String componentClassName)
+	public ComponentItem getItem(@Nonnull String componentClassName)
 	{
 		return myClassName2Item.get(componentClassName);
 	}
@@ -325,10 +325,10 @@ public final class Palette implements PersistentStateComponent<Element>, Disposa
 	 *                                  is already exists in the palette
 	 */
 	@RequiredUIAccess
-    public void addItem(@Nonnull final GroupItem group, @Nonnull final ComponentItem item)
+    public void addItem(@Nonnull GroupItem group, @Nonnull ComponentItem item)
 	{
 		// class -> item
-		final String componentClassName = item.getClassName();
+		String componentClassName = item.getClassName();
 		if(getItem(componentClassName) != null)
 		{
             Messages.showMessageDialog(
@@ -356,13 +356,13 @@ public final class Palette implements PersistentStateComponent<Element>, Disposa
 		myClassName2Item.put(oldItem.getClassName(), newItem);
 	}
 
-	public void removeItem(final GroupItem group, final ComponentItem selectedItem)
+	public void removeItem(GroupItem group, ComponentItem selectedItem)
 	{
 		group.removeItem(selectedItem);
 		myClassName2Item.remove(selectedItem.getClassName());
 	}
 
-	public GroupItem findGroup(final ComponentItem componentItem)
+	public GroupItem findGroup(ComponentItem componentItem)
 	{
 		for(GroupItem group : myGroups)
 		{
@@ -377,9 +377,9 @@ public final class Palette implements PersistentStateComponent<Element>, Disposa
 	/**
 	 * Helper method.
 	 */
-	private static GridConstraints processDefaultConstraintsElement(@Nonnull final Element element)
+	private static GridConstraints processDefaultConstraintsElement(@Nonnull Element element)
 	{
-		final GridConstraints constraints = new GridConstraints();
+		GridConstraints constraints = new GridConstraints();
 
 		// grid related attributes
 		constraints.setVSizePolicy(LwXmlReader.getRequiredInt(element, ATTRIBUTE_VSIZE_POLICY));
@@ -388,7 +388,7 @@ public final class Palette implements PersistentStateComponent<Element>, Disposa
 		constraints.setFill(LwXmlReader.getRequiredInt(element, ATTRIBUTE_FILL));
 
 		// minimum size
-		final Element minSizeElement = element.getChild(ELEMENT_MINIMUM_SIZE);
+		Element minSizeElement = element.getChild(ELEMENT_MINIMUM_SIZE);
 		if(minSizeElement != null)
 		{
 			constraints.myMinimumSize.width = LwXmlReader.getRequiredInt(minSizeElement, ATTRIBUTE_WIDTH);
@@ -396,7 +396,7 @@ public final class Palette implements PersistentStateComponent<Element>, Disposa
 		}
 
 		// preferred size
-		final Element prefSizeElement = element.getChild(ELEMENT_PREFERRED_SIZE);
+		Element prefSizeElement = element.getChild(ELEMENT_PREFERRED_SIZE);
 		if(prefSizeElement != null)
 		{
 			constraints.myPreferredSize.width = LwXmlReader.getRequiredInt(prefSizeElement, ATTRIBUTE_WIDTH);
@@ -404,7 +404,7 @@ public final class Palette implements PersistentStateComponent<Element>, Disposa
 		}
 
 		// maximum size
-		final Element maxSizeElement = element.getChild(ELEMENT_MAXIMUM_SIZE);
+		Element maxSizeElement = element.getChild(ELEMENT_MAXIMUM_SIZE);
 		if(maxSizeElement != null)
 		{
 			constraints.myMaximumSize.width = LwXmlReader.getRequiredInt(maxSizeElement, ATTRIBUTE_WIDTH);
@@ -414,28 +414,28 @@ public final class Palette implements PersistentStateComponent<Element>, Disposa
 		return constraints;
 	}
 
-	private void processItemElement(@Nonnull final Element itemElement, @Nonnull final GroupItem group, final boolean skipExisting)
+	private void processItemElement(@Nonnull Element itemElement, @Nonnull GroupItem group, boolean skipExisting)
 	{
 		// Class name. It's OK if class does not exist.
-		final String className = LwXmlReader.getRequiredString(itemElement, ATTRIBUTE_CLASS);
+		String className = LwXmlReader.getRequiredString(itemElement, ATTRIBUTE_CLASS);
 		if(skipExisting && getItem(className) != null)
 		{
 			return;
 		}
 
 		// Icon (optional)
-		final String iconPath = LwXmlReader.getString(itemElement, ATTRIBUTE_ICON);
+		String iconPath = LwXmlReader.getString(itemElement, ATTRIBUTE_ICON);
 
 		// Tooltip text (optional)
-		final String toolTipText = LwXmlReader.getString(itemElement, ATTRIBUTE_TOOLTIP_TEXT); // can be null
+		String toolTipText = LwXmlReader.getString(itemElement, ATTRIBUTE_TOOLTIP_TEXT); // can be null
 
 		boolean autoCreateBinding = LwXmlReader.getOptionalBoolean(itemElement, ATTRIBUTE_AUTO_CREATE_BINDING, false);
 		boolean canAttachLabel = LwXmlReader.getOptionalBoolean(itemElement, ATTRIBUTE_CAN_ATTACH_LABEL, false);
 		boolean isContainer = LwXmlReader.getOptionalBoolean(itemElement, ATTRIBUTE_IS_CONTAINER, false);
 
 		// Default constraint
-		final GridConstraints constraints;
-		final Element defaultConstraints = itemElement.getChild(ELEMENT_DEFAULT_CONSTRAINTS);
+		GridConstraints constraints;
+		Element defaultConstraints = itemElement.getChild(ELEMENT_DEFAULT_CONSTRAINTS);
 		if(defaultConstraints != null)
 		{
 			constraints = processDefaultConstraintsElement(defaultConstraints);
@@ -447,23 +447,23 @@ public final class Palette implements PersistentStateComponent<Element>, Disposa
 
 		Map<String, StringDescriptor> propertyName2initialValue = new HashMap<>();
 		{
-			final Element initialValues = itemElement.getChild(ELEMENT_INITIAL_VALUES);
+			Element initialValues = itemElement.getChild(ELEMENT_INITIAL_VALUES);
 			if(initialValues != null)
 			{
-				for(final Object o : initialValues.getChildren(ELEMENT_PROPERTY))
+				for(Object o : initialValues.getChildren(ELEMENT_PROPERTY))
 				{
-					final Element e = (Element) o;
-					final String name = LwXmlReader.getRequiredString(e, ATTRIBUTE_NAME);
+					Element e = (Element) o;
+					String name = LwXmlReader.getRequiredString(e, ATTRIBUTE_NAME);
 					// TODO[all] currently all initial values are strings
-					final StringDescriptor value = StringDescriptor.create(LwXmlReader.getRequiredString(e, ATTRIBUTE_VALUE));
+					StringDescriptor value = StringDescriptor.create(LwXmlReader.getRequiredString(e, ATTRIBUTE_VALUE));
 					propertyName2initialValue.put(name, value);
 				}
 			}
 		}
 
-		final boolean removable = LwXmlReader.getOptionalBoolean(itemElement, ATTRIBUTE_REMOVABLE, true);
+		boolean removable = LwXmlReader.getOptionalBoolean(itemElement, ATTRIBUTE_REMOVABLE, true);
 
-		final ComponentItem item = new ComponentItem(
+		ComponentItem item = new ComponentItem(
 				myProject,
 				className,
 				iconPath,
@@ -481,17 +481,17 @@ public final class Palette implements PersistentStateComponent<Element>, Disposa
 	/**
 	 * Reads PaletteElements from
 	 */
-	private void processGroups(final List groupElements)
+	private void processGroups(List groupElements)
 	{
-		for(final Object groupElement1 : groupElements)
+		for(Object groupElement1 : groupElements)
 		{
-			final Element groupElement = (Element) groupElement1;
-			final String groupName = LwXmlReader.getRequiredString(groupElement, ATTRIBUTE_NAME);
-			final GroupItem group = new GroupItem(groupName);
+			Element groupElement = (Element) groupElement1;
+			String groupName = LwXmlReader.getRequiredString(groupElement, ATTRIBUTE_NAME);
+			GroupItem group = new GroupItem(groupName);
 			myGroups.add(group);
-			for(final Object o : groupElement.getChildren(ELEMENT_ITEM))
+			for(Object o : groupElement.getChildren(ELEMENT_ITEM))
 			{
-				final Element itemElement = (Element) o;
+				Element itemElement = (Element) o;
 				try
 				{
 					processItemElement(itemElement, group, false);
@@ -507,11 +507,11 @@ public final class Palette implements PersistentStateComponent<Element>, Disposa
 	/**
 	 * Helper method
 	 */
-	private static void writeDefaultConstraintsElement(@Nonnull final Element itemElement, @Nonnull final GridConstraints c)
+	private static void writeDefaultConstraintsElement(@Nonnull Element itemElement, @Nonnull GridConstraints c)
 	{
 		LOG.assertTrue(ELEMENT_ITEM.equals(itemElement.getName()));
 
-		final Element element = new Element(ELEMENT_DEFAULT_CONSTRAINTS);
+		Element element = new Element(ELEMENT_DEFAULT_CONSTRAINTS);
 		itemElement.addContent(element);
 
 		// grid related attributes
@@ -526,7 +526,7 @@ public final class Palette implements PersistentStateComponent<Element>, Disposa
 		{
 			if(c.myMinimumSize.width != -1 || c.myMinimumSize.height != -1)
 			{
-				final Element _element = new Element(ELEMENT_MINIMUM_SIZE);
+				Element _element = new Element(ELEMENT_MINIMUM_SIZE);
 				element.addContent(_element);
 				_element.setAttribute(ATTRIBUTE_WIDTH, Integer.toString(c.myMinimumSize.width));
 				_element.setAttribute(ATTRIBUTE_HEIGHT, Integer.toString(c.myMinimumSize.height));
@@ -537,7 +537,7 @@ public final class Palette implements PersistentStateComponent<Element>, Disposa
 		{
 			if(c.myPreferredSize.width != -1 || c.myPreferredSize.height != -1)
 			{
-				final Element _element = new Element(ELEMENT_PREFERRED_SIZE);
+				Element _element = new Element(ELEMENT_PREFERRED_SIZE);
 				element.addContent(_element);
 				_element.setAttribute(ATTRIBUTE_WIDTH, Integer.toString(c.myPreferredSize.width));
 				_element.setAttribute(ATTRIBUTE_HEIGHT, Integer.toString(c.myPreferredSize.height));
@@ -548,7 +548,7 @@ public final class Palette implements PersistentStateComponent<Element>, Disposa
 		{
 			if(c.myMaximumSize.width != -1 || c.myMaximumSize.height != -1)
 			{
-				final Element _element = new Element(ELEMENT_MAXIMUM_SIZE);
+				Element _element = new Element(ELEMENT_MAXIMUM_SIZE);
 				element.addContent(_element);
 				_element.setAttribute(ATTRIBUTE_WIDTH, Integer.toString(c.myMaximumSize.width));
 				_element.setAttribute(ATTRIBUTE_HEIGHT, Integer.toString(c.myMaximumSize.height));
@@ -560,8 +560,8 @@ public final class Palette implements PersistentStateComponent<Element>, Disposa
 	 * Helper method
 	 */
 	private static void writeInitialValuesElement(
-			@Nonnull final Element itemElement,
-			@Nonnull final Map<String, StringDescriptor> name2value
+			@Nonnull Element itemElement,
+			@Nonnull Map<String, StringDescriptor> name2value
 	)
 	{
 		LOG.assertTrue(ELEMENT_ITEM.equals(itemElement.getName()));
@@ -571,12 +571,12 @@ public final class Palette implements PersistentStateComponent<Element>, Disposa
 			return;
 		}
 
-		final Element initialValuesElement = new Element(ELEMENT_INITIAL_VALUES);
+		Element initialValuesElement = new Element(ELEMENT_INITIAL_VALUES);
 		itemElement.addContent(initialValuesElement);
 
-		for(final Map.Entry<String, StringDescriptor> entry : name2value.entrySet())
+		for(Map.Entry<String, StringDescriptor> entry : name2value.entrySet())
 		{
-			final Element propertyElement = new Element(ELEMENT_PROPERTY);
+			Element propertyElement = new Element(ELEMENT_PROPERTY);
 			initialValuesElement.addContent(propertyElement);
 			propertyElement.setAttribute(ATTRIBUTE_NAME, entry.getKey());
 			propertyElement.setAttribute(ATTRIBUTE_VALUE, entry.getValue().getValue()/*descriptor is always trivial*/);
@@ -586,11 +586,11 @@ public final class Palette implements PersistentStateComponent<Element>, Disposa
 	/**
 	 * Helper method
 	 */
-	private static void writeComponentItem(@Nonnull final Element groupElement, @Nonnull final ComponentItem item)
+	private static void writeComponentItem(@Nonnull Element groupElement, @Nonnull ComponentItem item)
 	{
 		LOG.assertTrue(ELEMENT_GROUP.equals(groupElement.getName()));
 
-		final Element itemElement = new Element(ELEMENT_ITEM);
+		Element itemElement = new Element(ELEMENT_ITEM);
 		groupElement.addContent(itemElement);
 
 		// Class
@@ -603,7 +603,7 @@ public final class Palette implements PersistentStateComponent<Element>, Disposa
 		}
 
 		// Icon (if any)
-		final String iconPath = item.getIconPath();
+		String iconPath = item.getIconPath();
 		if(iconPath != null)
 		{
 			itemElement.setAttribute(ATTRIBUTE_ICON, iconPath);
@@ -628,15 +628,15 @@ public final class Palette implements PersistentStateComponent<Element>, Disposa
 	/**
 	 * @param parentElement element to which all "group" elements will be appended
 	 */
-	private void writeGroups(@Nonnull final Element parentElement)
+	private void writeGroups(@Nonnull Element parentElement)
 	{
-		for(final GroupItem group : myGroups)
+		for(GroupItem group : myGroups)
 		{
-			final Element groupElement = new Element(ELEMENT_GROUP);
+			Element groupElement = new Element(ELEMENT_GROUP);
 			parentElement.addContent(groupElement);
 			groupElement.setAttribute(ATTRIBUTE_NAME, group.getName());
 
-			final ComponentItem[] itemList = group.getItems();
+			ComponentItem[] itemList = group.getItems();
 			for(ComponentItem aItemList : itemList)
 			{
 				writeComponentItem(groupElement, aItemList);
@@ -648,10 +648,10 @@ public final class Palette implements PersistentStateComponent<Element>, Disposa
 	 * Helper method
 	 */
 	private static IntroIntProperty createIntEnumProperty(
-			final String name,
-			final Method readMethod,
-			final Method writeMethod,
-			final IntEnumEditor.Pair[] pairs
+			String name,
+			Method readMethod,
+			Method writeMethod,
+			IntEnumEditor.Pair[] pairs
 	)
 	{
 		return new IntroIntProperty(
@@ -663,7 +663,7 @@ public final class Palette implements PersistentStateComponent<Element>, Disposa
 	}
 
 	@Nonnull
-	public IntrospectedProperty[] getIntrospectedProperties(@Nonnull final RadComponent component)
+	public IntrospectedProperty[] getIntrospectedProperties(@Nonnull RadComponent component)
 	{
 		return getIntrospectedProperties(component.getComponentClass(), component.getDelegee().getClass());
 	}
@@ -674,7 +674,7 @@ public final class Palette implements PersistentStateComponent<Element>, Disposa
 	 * returned.
 	 */
 	@Nonnull
-	public IntrospectedProperty[] getIntrospectedProperties(@Nonnull final Class aClass, @Nonnull final Class delegeeClass)
+	public IntrospectedProperty[] getIntrospectedProperties(@Nonnull Class aClass, @Nonnull Class delegeeClass)
 	{
 		// Try the cache first
 		// TODO[vova, anton] update cache after class reloading (its properties caould be hanged).
@@ -686,9 +686,9 @@ public final class Palette implements PersistentStateComponent<Element>, Disposa
 		List<IntrospectedProperty> result = new ArrayList<>();
 		try
 		{
-			final BeanInfo beanInfo = Introspector.getBeanInfo(aClass);
-			final PropertyDescriptor[] descriptors = beanInfo.getPropertyDescriptors();
-			for(final PropertyDescriptor descriptor : descriptors)
+			BeanInfo beanInfo = Introspector.getBeanInfo(aClass);
+			PropertyDescriptor[] descriptors = beanInfo.getPropertyDescriptors();
+			for(PropertyDescriptor descriptor : descriptors)
 			{
 				Method readMethod = descriptor.getReadMethod();
 				Method writeMethod = descriptor.getWriteMethod();
@@ -709,11 +709,11 @@ public final class Palette implements PersistentStateComponent<Element>, Disposa
 					storeAsClient = true;
 				}
 
-				final String name = descriptor.getName();
+				String name = descriptor.getName();
 
-				final IntrospectedProperty property;
+				IntrospectedProperty property;
 
-				final Properties properties = (myProject == null) ? new Properties() : Properties.getInstance();
+				Properties properties = (myProject == null) ? new Properties() : Properties.getInstance();
 				if(int.class.equals(propertyType))
 				{ // int
 					IntEnumEditor.Pair[] enumPairs = properties.getEnumPairs(aClass, name);
@@ -862,7 +862,7 @@ public final class Palette implements PersistentStateComponent<Element>, Disposa
 			throw new RuntimeException(e);
 		}
 
-		final IntrospectedProperty[] properties = result.toArray(new IntrospectedProperty[result.size()]);
+		IntrospectedProperty[] properties = result.toArray(new IntrospectedProperty[result.size()]);
 		myClass2Properties.put(aClass, properties);
 		return properties;
 	}
@@ -873,10 +873,10 @@ public final class Palette implements PersistentStateComponent<Element>, Disposa
 	 * property with the such name.
 	 */
 	@Nullable
-	public IntrospectedProperty getIntrospectedProperty(@Nonnull final RadComponent component, @Nonnull final String name)
+	public IntrospectedProperty getIntrospectedProperty(@Nonnull RadComponent component, @Nonnull String name)
 	{
-		final IntrospectedProperty[] properties = getIntrospectedProperties(component);
-		for(final IntrospectedProperty property : properties)
+		IntrospectedProperty[] properties = getIntrospectedProperties(component);
+		for(IntrospectedProperty property : properties)
 		{
 			if(name.equals(property.getName()))
 			{
@@ -892,13 +892,13 @@ public final class Palette implements PersistentStateComponent<Element>, Disposa
 	 * instead.
 	 */
 	@Nullable
-	public IntrospectedProperty getInplaceProperty(@Nonnull final RadComponent component)
+	public IntrospectedProperty getInplaceProperty(@Nonnull RadComponent component)
 	{
-		final String inplaceProperty = Properties.getInstance().getInplaceProperty(component.getComponentClass());
-		final IntrospectedProperty[] properties = getIntrospectedProperties(component);
+		String inplaceProperty = Properties.getInstance().getInplaceProperty(component.getComponentClass());
+		IntrospectedProperty[] properties = getIntrospectedProperties(component);
 		for(int i = properties.length - 1; i >= 0; i--)
 		{
-			final IntrospectedProperty property = properties[i];
+			IntrospectedProperty property = properties[i];
 			if(property.getName().equals(inplaceProperty))
 			{
 				return property;
@@ -907,9 +907,9 @@ public final class Palette implements PersistentStateComponent<Element>, Disposa
 		return null;
 	}
 
-	public static boolean isRemovable(@Nonnull final GroupItem group)
+	public static boolean isRemovable(@Nonnull GroupItem group)
 	{
-		final ComponentItem[] items = group.getItems();
+		ComponentItem[] items = group.getItems();
 		for(int i = items.length - 1; i >= 0; i--)
 		{
 			if(!items[i].isRemovable())
@@ -925,16 +925,16 @@ public final class Palette implements PersistentStateComponent<Element>, Disposa
 	 */
 	private final class MyLafManagerListener implements LafManagerListener
 	{
-		private void updateUI(final Property property)
+		private void updateUI(Property property)
 		{
-			final PropertyRenderer renderer = property.getRenderer();
+			PropertyRenderer renderer = property.getRenderer();
 			renderer.updateUI();
-			final PropertyEditor editor = property.getEditor();
+			PropertyEditor editor = property.getEditor();
 			if(editor != null)
 			{
 				editor.updateUI();
 			}
-			final Property[] children = property.getChildren(null);
+			Property[] children = property.getChildren(null);
 			for(int i = children.length - 1; i >= 0; i--)
 			{
 				updateUI(children[i]);
@@ -942,9 +942,9 @@ public final class Palette implements PersistentStateComponent<Element>, Disposa
 		}
 
 		@Override
-        public void lookAndFeelChanged(final LafManager source)
+        public void lookAndFeelChanged(LafManager source)
 		{
-			for(final IntrospectedProperty[] properties : myClass2Properties.values())
+			for(IntrospectedProperty[] properties : myClass2Properties.values())
 			{
 				LOG.assertTrue(properties != null);
 				for(int j = properties.length - 1; j >= 0; j--)

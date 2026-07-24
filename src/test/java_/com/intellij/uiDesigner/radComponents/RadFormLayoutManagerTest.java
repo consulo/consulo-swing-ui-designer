@@ -56,7 +56,7 @@ public abstract class RadFormLayoutManagerTest extends TestCase {
     assertEquals(1, cc.gridHeight);
   }
 
-  private RadComponent newComponent(final int row, final int column, final int rowSpan, final int colSpan) {
+  private RadComponent newComponent(int row, int column, int rowSpan, int colSpan) {
     RadComponent c = new RadAtomicComponent(null, JLabel.class, "1");
     c.setCustomLayoutConstraints(new CellConstraints(1, 1, CellConstraints.DEFAULT, CellConstraints.DEFAULT));
     c.getConstraints().restore(new GridConstraints(row, column, rowSpan, colSpan, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
@@ -72,7 +72,7 @@ public abstract class RadFormLayoutManagerTest extends TestCase {
 
   public void testResizeColumn() {
     myManager.processCellResized(myContainer, false, 0, 210);
-    final ColumnSpec spec = myLayout.getColumnSpec(1);
+    ColumnSpec spec = myLayout.getColumnSpec(1);
     assertTrue(spec.getSize() instanceof ConstantSize);
     ConstantSize cSize = (ConstantSize) spec.getSize();
     assertEquals(210, cSize.getPixelSize(myContainer.getDelegee()));
@@ -80,7 +80,7 @@ public abstract class RadFormLayoutManagerTest extends TestCase {
 
   public void testMoveColumnRight() {
     myManager.insertGridCells(myContainer, 0, false, false, true);
-    final ConstantSize colSize = new ConstantSize(17, ConstantSize.MM);
+    ConstantSize colSize = new ConstantSize(17, ConstantSize.MM);
     myLayout.setColumnSpec(1, new ColumnSpec(colSize));
     RadComponent c = newComponent(0, 0, 1, 1);
     myContainer.addComponent(c);
@@ -91,7 +91,7 @@ public abstract class RadFormLayoutManagerTest extends TestCase {
 
   public void testMoveColumnLeft() {
     myManager.insertGridCells(myContainer, 0, false, false, true);
-    final ConstantSize colSize = new ConstantSize(17, ConstantSize.MM);
+    ConstantSize colSize = new ConstantSize(17, ConstantSize.MM);
     myLayout.setColumnSpec(3, new ColumnSpec(colSize));
     RadComponent c = newComponent(0, 2, 1, 1);
     myContainer.addComponent(c);
@@ -103,8 +103,8 @@ public abstract class RadFormLayoutManagerTest extends TestCase {
   public void testMoveMultipleColumnsRight() {
     myManager.insertGridCells(myContainer, 0, false, false, true);
     myManager.insertGridCells(myContainer, 0, false, false, true);
-    final ConstantSize colSize1 = new ConstantSize(17, ConstantSize.MM);
-    final ConstantSize colSize2 = new ConstantSize(19, ConstantSize.MM);
+    ConstantSize colSize1 = new ConstantSize(17, ConstantSize.MM);
+    ConstantSize colSize2 = new ConstantSize(19, ConstantSize.MM);
     myLayout.setColumnSpec(1, new ColumnSpec(colSize1));
     myLayout.setColumnSpec(3, new ColumnSpec(colSize2));
     RadComponent c1 = newComponent(0, 0, 1, 1);

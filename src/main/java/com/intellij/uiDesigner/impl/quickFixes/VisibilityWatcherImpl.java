@@ -31,7 +31,7 @@ final class VisibilityWatcherImpl extends VisibilityWatcher
   private final QuickFixManager myManager;
   private final JComponent myComponent;
 
-  public VisibilityWatcherImpl(final QuickFixManager manager, final JComponent component) {
+  public VisibilityWatcherImpl(QuickFixManager manager, JComponent component) {
     myManager = manager;
     myComponent = component;
   }

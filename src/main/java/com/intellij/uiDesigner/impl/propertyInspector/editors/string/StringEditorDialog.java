@@ -87,10 +87,10 @@ public final class StringEditorDialog extends DialogWrapper
 	private final Locale myLocale;
 	private boolean myDefaultBundleInitialized = false;
 
-	StringEditorDialog(final Component parent,
-					   final StringDescriptor descriptor,
-					   @Nullable Locale locale,
-					   final GuiEditor editor)
+	StringEditorDialog(Component parent,
+                       StringDescriptor descriptor,
+                       @Nullable Locale locale,
+                       GuiEditor editor)
 	{
 		super(parent, true);
 		myLocale = locale;
@@ -126,18 +126,18 @@ public final class StringEditorDialog extends DialogWrapper
 	{
 		if(myForm.myRbResourceBundle.isSelected())
 		{
-			final StringDescriptor descriptor = getDescriptor();
+			StringDescriptor descriptor = getDescriptor();
 			if(descriptor != null && descriptor.getKey().length() > 0)
 			{
-				final String value = myForm.myTfRbValue.getText();
-				final PropertiesFile propFile = getPropertiesFile(descriptor);
+				String value = myForm.myTfRbValue.getText();
+				PropertiesFile propFile = getPropertiesFile(descriptor);
 				if(propFile != null && propFile.findPropertyByKey(descriptor.getKey()) == null)
 				{
 					saveCreatedProperty(propFile, descriptor.getKey(), value, myEditor.getPsiFile());
 				}
 				else
 				{
-					final String newKeyName = saveModifiedPropertyValue(myEditor.getModule(), descriptor, myLocale, value, myEditor.getPsiFile());
+					String newKeyName = saveModifiedPropertyValue(myEditor.getModule(), descriptor, myLocale, value, myEditor.getPsiFile());
 					if(newKeyName != null)
 					{
 						myForm.myTfKey.setText(newKeyName);
@@ -148,29 +148,29 @@ public final class StringEditorDialog extends DialogWrapper
 		super.doOKAction();
 	}
 
-	private PropertiesFile getPropertiesFile(final StringDescriptor descriptor)
+	private PropertiesFile getPropertiesFile(StringDescriptor descriptor)
 	{
-		final PropertiesReferenceManager manager = PropertiesReferenceManager.getInstance(myEditor.getProject());
+		PropertiesReferenceManager manager = PropertiesReferenceManager.getInstance(myEditor.getProject());
 		return manager.findPropertiesFile(myEditor.getModule(), descriptor.getDottedBundleName(), myLocale);
 	}
 
 	@Nullable
 	public static String saveModifiedPropertyValue(final Module module, final StringDescriptor descriptor,
-												   final Locale locale, final String editedValue, final PsiFile formFile)
+												   Locale locale, final String editedValue, final PsiFile formFile)
 	{
-		final PropertiesReferenceManager manager = PropertiesReferenceManager.getInstance(module.getProject());
+		PropertiesReferenceManager manager = PropertiesReferenceManager.getInstance(module.getProject());
 		final PropertiesFile propFile = manager.findPropertiesFile(module, descriptor.getDottedBundleName(), locale);
 		if(propFile != null)
 		{
-			final IProperty propertyByKey = propFile.findPropertyByKey(descriptor.getKey());
+			IProperty propertyByKey = propFile.findPropertyByKey(descriptor.getKey());
 			if(propertyByKey instanceof Property && !editedValue.equals(propertyByKey.getValue()))
 			{
-				final Collection<PsiReference> references = findPropertyReferences((Property) propertyByKey, module);
+				Collection<PsiReference> references = findPropertyReferences((Property) propertyByKey, module);
 
 				String newKeyName = null;
 				if(references.size() > 1)
 				{
-					final int rc = Messages.showYesNoCancelDialog(module.getProject(), UIDesignerBundle.message("edit.text.multiple.usages",
+					int rc = Messages.showYesNoCancelDialog(module.getProject(), UIDesignerBundle.message("edit.text.multiple.usages",
 							propertyByKey.getUnescapedKey(), references.size()),
 							UIDesignerBundle.message("edit.text.multiple.usages.title"),
 							UIDesignerBundle.message("edit.text.change.all"),
@@ -190,7 +190,7 @@ public final class StringEditorDialog extends DialogWrapper
 						}
 					}
 				}
-				final ReadonlyStatusHandler.OperationStatus operationStatus =
+				ReadonlyStatusHandler.OperationStatus operationStatus =
 						ReadonlyStatusHandler.getInstance(module.getProject()).ensureFilesWritable(propFile.getVirtualFile());
 				if(operationStatus.hasReadonlyFiles())
 				{
@@ -217,7 +217,7 @@ public final class StringEditorDialog extends DialogWrapper
 											}
 											else
 											{
-												final IProperty propertyByKey = propFile.findPropertyByKey(descriptor.getKey());
+												IProperty propertyByKey = propFile.findPropertyByKey(descriptor.getKey());
 												if(propertyByKey != null)
 												{
 													propertyByKey.setValue(editedValue);
@@ -238,7 +238,7 @@ public final class StringEditorDialog extends DialogWrapper
 		return null;
 	}
 
-	private static Collection<PsiReference> findPropertyReferences(final Property pproperty, final consulo.module.Module module)
+	private static Collection<PsiReference> findPropertyReferences(final Property pproperty, consulo.module.Module module)
 	{
 		final Collection<PsiReference> references = Collections.synchronizedList(new ArrayList<PsiReference>());
 		ProgressManager.getInstance().runProcessWithProgressSynchronously(
@@ -246,9 +246,9 @@ public final class StringEditorDialog extends DialogWrapper
 				{
 					public void run()
 					{
-						ReferencesSearch.search(pproperty).forEach(new Processor<PsiReference>()
+						ReferencesSearch.search(pproperty).forEach(new Processor<>()
 						{
-							public boolean process(final PsiReference psiReference)
+							public boolean process(PsiReference psiReference)
 							{
 								PsiMethod method = PsiTreeUtil.getParentOfType(psiReference.getElement(), PsiMethod.class);
 								if(method == null || !AsmCodeGenerator.SETUP_METHOD_NAME.equals(method.getName()))
@@ -264,7 +264,7 @@ public final class StringEditorDialog extends DialogWrapper
 		return references;
 	}
 
-	private static String promptNewKeyName(final Project project, final PropertiesFile propFile, final String key)
+	private static String promptNewKeyName(Project project, final PropertiesFile propFile, String key)
 	{
 		String newName;
 		int index = 0;
@@ -295,7 +295,7 @@ public final class StringEditorDialog extends DialogWrapper
 	public static boolean saveCreatedProperty(final PropertiesFile bundle, final String name, final String value,
 											  final PsiFile formFile)
 	{
-		final ReadonlyStatusHandler.OperationStatus operationStatus =
+		ReadonlyStatusHandler.OperationStatus operationStatus =
 				ReadonlyStatusHandler.getInstance(bundle.getProject()).ensureFilesWritable(bundle.getVirtualFile());
 		if(operationStatus.hasReadonlyFiles())
 		{
@@ -336,22 +336,22 @@ public final class StringEditorDialog extends DialogWrapper
 	{
 		if(myForm.myRbString.isSelected())
 		{ // plain value
-			final String value = myForm.myTfValue.getText();
+			String value = myForm.myTfValue.getText();
 			if(myValue == null && value.length() == 0)
 			{
 				return null;
 			}
 			else
 			{
-				final StringDescriptor stringDescriptor = StringDescriptor.create(value);
+				StringDescriptor stringDescriptor = StringDescriptor.create(value);
 				stringDescriptor.setNoI18n(myForm.myNoI18nCheckbox.isSelected());
 				return stringDescriptor;
 			}
 		}
 		else
 		{ // bundled value
-			final String bundleName = myForm.myTfBundleName.getText();
-			final String key = myForm.myTfKey.getText();
+			String bundleName = myForm.myTfBundleName.getText();
+			String key = myForm.myTfKey.getText();
 			return new StringDescriptor(bundleName, key);
 		}
 	}
@@ -359,10 +359,10 @@ public final class StringEditorDialog extends DialogWrapper
 	/**
 	 * Applies specified descriptor to the proper card
 	 */
-	private void setValue(final StringDescriptor descriptor)
+	private void setValue(StringDescriptor descriptor)
 	{
 		myValue = descriptor;
-		final CardLayout cardLayout = (CardLayout) myForm.myCardHolder.getLayout();
+		CardLayout cardLayout = (CardLayout) myForm.myCardHolder.getLayout();
 		if(descriptor == null || descriptor.getValue() != null)
 		{ // trivial descriptor
 			myForm.myRbString.setSelected(true);
@@ -401,7 +401,7 @@ public final class StringEditorDialog extends DialogWrapper
 			myRbString.addActionListener(
 					new ActionListener()
 					{
-						public void actionPerformed(final ActionEvent e)
+						public void actionPerformed(ActionEvent e)
 						{
 							CardLayout cardLayout = (CardLayout) myCardHolder.getLayout();
 							cardLayout.show(myCardHolder, CARD_STRING);
@@ -412,7 +412,7 @@ public final class StringEditorDialog extends DialogWrapper
 			myRbResourceBundle.addActionListener(
 					new ActionListener()
 					{
-						public void actionPerformed(final ActionEvent e)
+						public void actionPerformed(ActionEvent e)
 						{
 							if(!myDefaultBundleInitialized)
 							{
@@ -438,7 +438,7 @@ public final class StringEditorDialog extends DialogWrapper
 			myTfBundleName.registerKeyboardAction(
 					new AbstractAction()
 					{
-						public void actionPerformed(final ActionEvent e)
+						public void actionPerformed(ActionEvent e)
 						{
 							myTfBundleName.getButton().doClick();
 						}
@@ -450,17 +450,17 @@ public final class StringEditorDialog extends DialogWrapper
 			myTfBundleName.addActionListener(
 					new ActionListener()
 					{
-						public void actionPerformed(final ActionEvent e)
+						public void actionPerformed(ActionEvent e)
 						{
 							Project project = myEditor.getProject();
-							final String bundleNameText = myTfBundleName.getText().replace('/', '.');
+							String bundleNameText = myTfBundleName.getText().replace('/', '.');
 							PropertiesFile file = PropertiesUtil.getPropertiesFile(bundleNameText, myEditor.getModule(), myLocale);
 							PsiFile initialPropertiesFile = file == null ? null : file.getContainingFile();
-							final GlobalSearchScope moduleScope = GlobalSearchScope.moduleWithDependenciesScope(myEditor.getModule());
+							GlobalSearchScope moduleScope = GlobalSearchScope.moduleWithDependenciesScope(myEditor.getModule());
 							TreeFileChooser fileChooser = TreeClassChooserFactory.getInstance(project).createFileChooser(UIDesignerBundle.message("title.choose.properties.file"),
 									initialPropertiesFile, PropertiesFileType.INSTANCE,
 									file1 -> {
-										final VirtualFile virtualFile = file1.getVirtualFile();
+										VirtualFile virtualFile = file1.getVirtualFile();
 										return virtualFile != null && moduleScope.contains(virtualFile);
 									});
 							fileChooser.showDialog();
@@ -469,7 +469,7 @@ public final class StringEditorDialog extends DialogWrapper
 							{
 								return;
 							}
-							final String bundleName = FormReferenceProvider.getBundleName(propertiesFile);
+							String bundleName = FormReferenceProvider.getBundleName(propertiesFile);
 							if(bundleName == null)
 							{
 								return;
@@ -483,7 +483,7 @@ public final class StringEditorDialog extends DialogWrapper
 			myTfKey.registerKeyboardAction(
 					new AbstractAction()
 					{
-						public void actionPerformed(final ActionEvent e)
+						public void actionPerformed(ActionEvent e)
 						{
 							myTfKey.getButton().doClick();
 						}
@@ -495,10 +495,10 @@ public final class StringEditorDialog extends DialogWrapper
 			myTfKey.addActionListener(
 					new ActionListener()
 					{
-						public void actionPerformed(final ActionEvent e)
+						public void actionPerformed(ActionEvent e)
 						{
 							// 1. Check that bundle exist. Otherwise we cannot show key chooser
-							final String bundleName = myTfBundleName.getText();
+							String bundleName = myTfBundleName.getText();
 							if(bundleName.length() == 0)
 							{
 								Messages.showErrorDialog(
@@ -507,8 +507,8 @@ public final class StringEditorDialog extends DialogWrapper
 								);
 								return;
 							}
-							final PropertiesReferenceManager manager = PropertiesReferenceManager.getInstance(myEditor.getProject());
-							final PropertiesFile bundle = manager.findPropertiesFile(myEditor.getModule(), bundleName.replace('/', '.'), myLocale);
+							PropertiesReferenceManager manager = PropertiesReferenceManager.getInstance(myEditor.getProject());
+							PropertiesFile bundle = manager.findPropertiesFile(myEditor.getModule(), bundleName.replace('/', '.'), myLocale);
 							if(bundle == null)
 							{
 								Messages.showErrorDialog(
@@ -519,7 +519,7 @@ public final class StringEditorDialog extends DialogWrapper
 							}
 
 							// 2. Show key chooser
-							final KeyChooserDialog dialog = new KeyChooserDialog(
+							KeyChooserDialog dialog = new KeyChooserDialog(
 									myTfKey,
 									bundle,
 									bundleName,
@@ -533,7 +533,7 @@ public final class StringEditorDialog extends DialogWrapper
 							}
 
 							// 3. Apply new key/value
-							final StringDescriptor descriptor = dialog.getDescriptor();
+							StringDescriptor descriptor = dialog.getDescriptor();
 							if(descriptor == null)
 							{
 								return;
@@ -545,15 +545,15 @@ public final class StringEditorDialog extends DialogWrapper
 			);
 		}
 
-		public void showStringDescriptor(@Nullable final StringDescriptor descriptor)
+		public void showStringDescriptor(@Nullable StringDescriptor descriptor)
 		{
 			myTfValue.setText(StringDescriptorManager.getInstance(myEditor.getModule()).resolve(descriptor, myLocale));
 			myNoI18nCheckbox.setSelected(descriptor != null && descriptor.isNoI18n());
 		}
 
-		public void showResourceBundleDescriptor(@Nonnull final StringDescriptor descriptor)
+		public void showResourceBundleDescriptor(@Nonnull StringDescriptor descriptor)
 		{
-			final String key = descriptor.getKey();
+			String key = descriptor.getKey();
 			LOG.assertTrue(key != null);
 			myTfBundleName.setText(descriptor.getBundleName());
 			myTfKey.setText(key);

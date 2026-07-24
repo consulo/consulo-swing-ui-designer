@@ -62,17 +62,17 @@ public class DraggedComponentList implements Transferable, ComponentDragObject {
   private boolean myHasDragDelta = false;
 
   private DraggedComponentList(Collection<RadComponent> selection) {
-    mySelection = new ArrayList<RadComponent>(selection);
+    mySelection = new ArrayList<>(selection);
     fillOriginalConstraints();
   }
 
-  private DraggedComponentList(final GuiEditor editor, final Point pnt) {
+  private DraggedComponentList(GuiEditor editor, Point pnt) {
     // Store selected components
     mySelection = FormEditingUtil.getSelectedComponents(editor);
 
     // sort selection in correct grid order
-    Collections.sort(mySelection, new Comparator<RadComponent>() {
-      public int compare(final RadComponent o1, final RadComponent o2) {
+    Collections.sort(mySelection, new Comparator<>() {
+      public int compare(RadComponent o1, RadComponent o2) {
         if (o1.getParent() == o2.getParent()) {
           int result = o1.getConstraints().getRow() - o2.getConstraints().getRow();
           if (result == 0) {
@@ -138,25 +138,25 @@ public class DraggedComponentList implements Transferable, ComponentDragObject {
     myOriginalBounds = new Rectangle[mySelection.size()];
     myOriginalParents = new RadContainer[mySelection.size()];
     for (int i1 = 0; i1 < mySelection.size(); i1++) {
-      final RadComponent component = mySelection.get(i1);
+      RadComponent component = mySelection.get(i1);
       myOriginalConstraints[i1] = component.getConstraints().store();
       myOriginalBounds[i1] = component.getBounds();
       myOriginalParents[i1] = component.getParent();
     }
   }
 
-  public static DraggedComponentList pickupSelection(final GuiEditor editor, @Nullable Point pnt) {
+  public static DraggedComponentList pickupSelection(GuiEditor editor, @Nullable Point pnt) {
     return new DraggedComponentList(editor, pnt);
   }
 
   public static DraggedComponentList withComponents(RadComponent... c) {
-    ArrayList<RadComponent> list = new ArrayList<RadComponent>();
+    ArrayList<RadComponent> list = new ArrayList<>();
     Collections.addAll(list, c);
     return new DraggedComponentList(list);
   }
 
   @Nullable
-  public static DraggedComponentList fromTransferable(final Transferable transferable) {
+  public static DraggedComponentList fromTransferable(Transferable transferable) {
     if (transferable.isDataFlavorSupported(ourDataFlavor)) {
       Object data;
       try {
@@ -188,7 +188,7 @@ public class DraggedComponentList implements Transferable, ComponentDragObject {
     return mySelection.size();
   }
 
-  public RadContainer getOriginalParent(final RadComponent c) {
+  public RadContainer getOriginalParent(RadComponent c) {
     return myOriginalParents [mySelection.indexOf(c)];
   }
 
@@ -207,7 +207,7 @@ public class DraggedComponentList implements Transferable, ComponentDragObject {
     return myOriginalBounds;
   }
 
-  public Rectangle getOriginalBounds(final RadComponent c) {
+  public Rectangle getOriginalBounds(RadComponent c) {
     return myOriginalBounds [mySelection.indexOf(c)];
   }
 
@@ -258,7 +258,7 @@ public class DraggedComponentList implements Transferable, ComponentDragObject {
   }
 
   @Nonnull
-  public Dimension getInitialSize(final RadContainer targetContainer) {
+  public Dimension getInitialSize(RadContainer targetContainer) {
     if (myOriginalBounds.length == 1) {
       return myOriginalBounds [0].getSize();
     }

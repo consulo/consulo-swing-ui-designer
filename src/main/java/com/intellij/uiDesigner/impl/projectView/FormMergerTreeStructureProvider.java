@@ -88,7 +88,7 @@ public class FormMergerTreeStructureProvider implements TreeStructureProvider
 			}
 			else if(element.getValue() instanceof PsiClassOwner)
 			{
-				final PsiClass[] psiClasses = ((PsiClassOwner) element.getValue()).getClasses();
+				PsiClass[] psiClasses = ((PsiClassOwner) element.getValue()).getClasses();
 				if(psiClasses.length == 1)
 				{
 					psiClass = psiClasses[0];
@@ -175,7 +175,7 @@ public class FormMergerTreeStructureProvider implements TreeStructureProvider
 		}
 		ArrayList<BasePsiNode<? extends PsiElement>> result = new ArrayList<>();
 		HashSet<PsiFile> psiFiles = new HashSet<>(forms);
-		for(final AbstractTreeNode child : children)
+		for(AbstractTreeNode child : children)
 		{
 			if(child instanceof BasePsiNode)
 			{
@@ -195,7 +195,7 @@ public class FormMergerTreeStructureProvider implements TreeStructureProvider
 	{
 		private final PsiElement[] myElements;
 
-		public MyDeleteProvider(final Collection<AbstractTreeNode> selected)
+		public MyDeleteProvider(Collection<AbstractTreeNode> selected)
 		{
 			myElements = collectFormPsiElements(selected);
 		}

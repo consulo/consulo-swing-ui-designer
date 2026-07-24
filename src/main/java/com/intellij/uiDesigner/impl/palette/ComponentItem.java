@@ -97,14 +97,14 @@ public final class ComponentItem implements Cloneable, PaletteItem
 	private final Project myProject;
 
 	public ComponentItem(@Nonnull Project project,
-						 @Nonnull final String className,
-						 @Nullable final String iconPath,
-						 @Nullable final String toolTipText,
-						 @Nonnull final GridConstraints defaultConstraints,
-						 @Nonnull final Map<String, StringDescriptor> propertyName2initialValue,
-						 final boolean removable,
-						 final boolean autoCreateBinding,
-						 final boolean canAttachLabel)
+						 @Nonnull String className,
+						 @Nullable String iconPath,
+						 @Nullable String toolTipText,
+						 @Nonnull GridConstraints defaultConstraints,
+						 @Nonnull Map<String, StringDescriptor> propertyName2initialValue,
+						 boolean removable,
+						 boolean autoCreateBinding,
+						 boolean canAttachLabel)
 	{
 		myAutoCreateBinding = autoCreateBinding;
 		myCanAttachLabel = canAttachLabel;
@@ -127,9 +127,9 @@ public final class ComponentItem implements Cloneable, PaletteItem
 		return myRemovable;
 	}
 
-	private static String calcToolTipText(@Nonnull final String className)
+	private static String calcToolTipText(@Nonnull String className)
 	{
-		final int lastDotIndex = className.lastIndexOf('.');
+		int lastDotIndex = className.lastIndexOf('.');
 		if(lastDotIndex != -1 && lastDotIndex != className.length() - 1/*not the last char in class name*/)
 		{
 			return className.substring(lastDotIndex + 1) + " (" + className.substring(0, lastDotIndex) + ")";
@@ -177,7 +177,7 @@ public final class ComponentItem implements Cloneable, PaletteItem
 	 *                 <code>iconPath</code> is not specified and some "unknown" icon should be used
 	 *                 to represent the {@link ComponentItem} in UI.
 	 */
-	void setIconPath(@Nullable final String iconPath)
+	void setIconPath(@Nullable String iconPath)
 	{
 		myIcon = null; // reset cached icon
 		mySmallIcon = null; // reset cached icon
@@ -202,7 +202,7 @@ public final class ComponentItem implements Cloneable, PaletteItem
 		// Create new icon
 		if(myIconPath != null && myIconPath.length() > 0)
 		{
-			final VirtualFile iconFile = ResourceFileUtil.findResourceFileInScope(myIconPath, myProject, GlobalSearchScope.allScope(myProject));
+			VirtualFile iconFile = ResourceFileUtil.findResourceFileInScope(myIconPath, myProject, GlobalSearchScope.allScope(myProject));
 			if(iconFile != null)
 			{
 				try
@@ -264,7 +264,7 @@ public final class ComponentItem implements Cloneable, PaletteItem
 
 	public String getClassShortName()
 	{
-		final int lastDotIndex = myClassName.lastIndexOf('.');
+		int lastDotIndex = myClassName.lastIndexOf('.');
 		if(lastDotIndex != -1 && lastDotIndex != myClassName.length() - 1/*not the last char in class name*/)
 		{
 			return myClassName.substring(lastDotIndex + 1).replace('$', '.');
@@ -282,7 +282,7 @@ public final class ComponentItem implements Cloneable, PaletteItem
 	 *                  it's not a subclass of JComponent, etc) then placeholder component will be
 	 *                  added to the form.
 	 */
-	public void setClassName(@Nonnull final String className)
+	public void setClassName(@Nonnull String className)
 	{
 		myClassName = className;
 	}
@@ -310,7 +310,7 @@ public final class ComponentItem implements Cloneable, PaletteItem
 	 * <code>ComponentItem</code>, so we need to initialize <code>RadComponent</code>
 	 * in all places where it's needed explicitly.
 	 */
-	public Object getInitialValue(final IntrospectedProperty property)
+	public Object getInitialValue(IntrospectedProperty property)
 	{
 		return myPropertyName2initialValue.get(property.getName());
 	}
@@ -329,7 +329,7 @@ public final class ComponentItem implements Cloneable, PaletteItem
 		return myAutoCreateBinding;
 	}
 
-	public void setAutoCreateBinding(final boolean autoCreateBinding)
+	public void setAutoCreateBinding(boolean autoCreateBinding)
 	{
 		myAutoCreateBinding = autoCreateBinding;
 	}
@@ -339,7 +339,7 @@ public final class ComponentItem implements Cloneable, PaletteItem
 		return myCanAttachLabel;
 	}
 
-	public void setCanAttachLabel(final boolean canAttachLabel)
+	public void setCanAttachLabel(boolean canAttachLabel)
 	{
 		myCanAttachLabel = canAttachLabel;
 	}
@@ -349,12 +349,12 @@ public final class ComponentItem implements Cloneable, PaletteItem
 		return myIsContainer;
 	}
 
-	public void setIsContainer(final boolean isContainer)
+	public void setIsContainer(boolean isContainer)
 	{
 		myIsContainer = isContainer;
 	}
 
-	public boolean equals(final Object o)
+	public boolean equals(Object o)
 	{
 		if(this == o)
 		{
@@ -365,7 +365,7 @@ public final class ComponentItem implements Cloneable, PaletteItem
 			return false;
 		}
 
-		final ComponentItem componentItem = (ComponentItem) o;
+		ComponentItem componentItem = (ComponentItem) o;
 
 		if(myClassName != null ? !myClassName.equals(componentItem.myClassName) : componentItem.myClassName != null)
 		{
@@ -467,7 +467,7 @@ public final class ComponentItem implements Cloneable, PaletteItem
 	}
 
 	@Nonnull
-	public Dimension getInitialSize(final JComponent parent, final ClassLoader loader)
+	public Dimension getInitialSize(JComponent parent, ClassLoader loader)
 	{
 		if(myInitialSize != null)
 		{
@@ -481,10 +481,10 @@ public final class ComponentItem implements Cloneable, PaletteItem
 				Class aClass = Class.forName(getClassName(), true, loader);
 				RadAtomicComponent component = new RadAtomicComponent(aClass, "", Palette.getInstance(myProject));
 				component.initDefaultProperties(this);
-				final JComponent delegee = component.getDelegee();
+				JComponent delegee = component.getDelegee();
 				if(parent != null)
 				{
-					final Font font = parent.getFont();
+					Font font = parent.getFont();
 					delegee.setFont(font);
 				}
 				Dimension prefSize = delegee.getPreferredSize();
@@ -508,9 +508,9 @@ public final class ComponentItem implements Cloneable, PaletteItem
 		return myInitialSize;
 	}
 
-	public static ComponentItem createAnyComponentItem(final Project project)
+	public static ComponentItem createAnyComponentItem(Project project)
 	{
-		ComponentItem result = new ComponentItem(project, "", null, null, new GridConstraints(), new HashMap<String, StringDescriptor>(), false, false, false);
+		ComponentItem result = new ComponentItem(project, "", null, null, new GridConstraints(), new HashMap<>(), false, false, false);
 		result.myAnyComponent = true;
 		return result;
 	}

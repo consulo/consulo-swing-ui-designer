@@ -51,24 +51,24 @@ public class Java15FormInspection extends BaseFormInspection
 	}
 
 	@Override
-	protected void checkComponentProperties(Module module, final IComponent component, final FormErrorCollector collector)
+	protected void checkComponentProperties(Module module, IComponent component, FormErrorCollector collector)
 	{
-		final GlobalSearchScope scope = GlobalSearchScope.moduleWithDependenciesAndLibrariesScope(module);
-		final PsiManager psiManager = PsiManager.getInstance(module.getProject());
-		final PsiClass aClass = JavaPsiFacade.getInstance(psiManager.getProject()).findClass(component.getComponentClassName(), scope);
+		GlobalSearchScope scope = GlobalSearchScope.moduleWithDependenciesAndLibrariesScope(module);
+		PsiManager psiManager = PsiManager.getInstance(module.getProject());
+		PsiClass aClass = JavaPsiFacade.getInstance(psiManager.getProject()).findClass(component.getComponentClassName(), scope);
 		if(aClass == null)
 		{
 			return;
 		}
 
-		for(final IProperty prop : component.getModifiedProperties())
+		for(IProperty prop : component.getModifiedProperties())
 		{
-			final PsiMethod getter = PropertyUtil.findPropertyGetter(aClass, prop.getName(), false, true);
+			PsiMethod getter = PropertyUtil.findPropertyGetter(aClass, prop.getName(), false, true);
 			if(getter == null)
 			{
 				continue;
 			}
-			final LanguageLevel languageLevel = EffectiveLanguageLevelUtil.getEffectiveLanguageLevel(module);
+			LanguageLevel languageLevel = EffectiveLanguageLevelUtil.getEffectiveLanguageLevel(module);
 			if(Java15APIUsageInspection.getLastIncompatibleLanguageLevel(getter, languageLevel) != null)
 			{
 				registerError(component, collector, prop, "@since " + Java15APIUsageInspection.getShortName(languageLevel));
@@ -77,7 +77,7 @@ public class Java15FormInspection extends BaseFormInspection
 	}
 
 	private void registerError(
-			final IComponent component, final FormErrorCollector collector, final IProperty prop, @NonNls final String api)
+			IComponent component, FormErrorCollector collector, final IProperty prop, @NonNls String api)
 	{
 		collector.addError(getID(), component, prop, InspectionsBundle.message("inspection.1.5.problem.descriptor", api),
 				new EditorQuickFixProvider()

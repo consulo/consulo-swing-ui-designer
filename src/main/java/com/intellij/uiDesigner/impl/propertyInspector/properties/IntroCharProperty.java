@@ -24,7 +24,7 @@ import java.lang.reflect.Method;
  * @author yole
  */
 public class IntroCharProperty extends IntroPrimitiveTypeProperty<Character> {
-  public IntroCharProperty(final String name, final Method readMethod, final Method writeMethod, final boolean storeAsClient) {
+  public IntroCharProperty(String name, Method readMethod, Method writeMethod, boolean storeAsClient) {
     super(name, readMethod, writeMethod, storeAsClient, Character.class);
   }
 

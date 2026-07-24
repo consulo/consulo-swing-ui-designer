@@ -32,15 +32,15 @@ import javax.swing.*;
 final class ShowHintAction extends AnAction implements AnActionWithSyncUpdate {
     private final QuickFixManager myManager;
 
-    public ShowHintAction(@Nonnull final QuickFixManager manager, @Nonnull final JComponent component) {
+    public ShowHintAction(@Nonnull QuickFixManager manager, @Nonnull JComponent component) {
         myManager = manager;
         registerCustomShortcutSet(ActionManager.getInstance().getAction(IdeActions.ACTION_SHOW_INTENTION_ACTIONS).getShortcutSet(), component);
     }
 
     @RequiredUIAccess
     @Override
-    public void actionPerformed(final AnActionEvent e) {
-        final GuiEditor editor = myManager.getEditor();
+    public void actionPerformed(AnActionEvent e) {
+        GuiEditor editor = myManager.getEditor();
         if (editor == null) {
             return;
         }
@@ -49,7 +49,7 @@ final class ShowHintAction extends AnAction implements AnActionWithSyncUpdate {
         myManager.showIntentionHint();
 
         // 2. Commit possible non committed value and show popup
-        final PropertyInspector propertyInspector = DesignerToolWindowManager.getInstance(myManager.getEditor()).getPropertyInspector();
+        PropertyInspector propertyInspector = DesignerToolWindowManager.getInstance(myManager.getEditor()).getPropertyInspector();
         if (propertyInspector != null && propertyInspector.isEditing()) {
             propertyInspector.stopEditing();
         }

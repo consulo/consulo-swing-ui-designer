@@ -36,25 +36,25 @@ public abstract class AbstractGridLayoutProperty extends Property<RadContainer, 
   protected final BooleanRenderer myRenderer = new BooleanRenderer();
   protected final BooleanEditor myEditor = new BooleanEditor();
 
-  public AbstractGridLayoutProperty(final Property parent, @Nonnull @NonNls final String name) {
+  public AbstractGridLayoutProperty(Property parent, @Nonnull @NonNls String name) {
     super(parent, name);
   }
 
   @Override
-  public Boolean getValue(final RadContainer component) {
-    final LayoutManager layoutManager = component.getLayout();
+  public Boolean getValue(RadContainer component) {
+    LayoutManager layoutManager = component.getLayout();
     if (!(layoutManager instanceof GridLayoutManager)) return null;
-    final GridLayoutManager gridLayoutManager = (GridLayoutManager) layoutManager;
+    GridLayoutManager gridLayoutManager = (GridLayoutManager) layoutManager;
     return getGridLayoutPropertyValue(gridLayoutManager);
   }
 
   @Override
-  protected void setValueImpl(final RadContainer component, final Boolean value) throws Exception {
-    final AbstractLayout layoutManager=(AbstractLayout) component.getLayout();
+  protected void setValueImpl(RadContainer component, Boolean value) throws Exception {
+    AbstractLayout layoutManager=(AbstractLayout) component.getLayout();
     if (!(layoutManager instanceof GridLayoutManager)) {
       throw new IllegalArgumentException("grid layout expected: "+layoutManager);
     }
-    final GridLayoutManager gridLayoutManager = (GridLayoutManager)layoutManager;
+    GridLayoutManager gridLayoutManager = (GridLayoutManager)layoutManager;
     setGridLayoutPropertyValue(gridLayoutManager, value.booleanValue());
   }
 
@@ -73,8 +73,8 @@ public abstract class AbstractGridLayoutProperty extends Property<RadContainer, 
     return myEditor;
   }
 
-  @Override public boolean isModified(final RadContainer component) {
-    final Boolean value = getValue(component);
+  @Override public boolean isModified(RadContainer component) {
+    Boolean value = getValue(component);
     return value != null && value;
   }
 

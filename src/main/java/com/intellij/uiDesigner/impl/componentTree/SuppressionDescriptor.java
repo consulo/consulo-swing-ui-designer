@@ -28,7 +28,7 @@ public class SuppressionDescriptor extends NodeDescriptor
   private final RadComponent myTarget;
   private final LwInspectionSuppression myInspectionSuppression;
 
-  public SuppressionDescriptor(final NodeDescriptor parentDescriptor, final RadComponent target, final LwInspectionSuppression inspectionSuppression) {
+  public SuppressionDescriptor(NodeDescriptor parentDescriptor, RadComponent target, LwInspectionSuppression inspectionSuppression) {
     super(parentDescriptor);
     myTarget = target;
     myInspectionSuppression = inspectionSuppression;

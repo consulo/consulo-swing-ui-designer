@@ -30,11 +30,11 @@ import consulo.module.Module;
 public abstract class RadComponentFactory {
   public RadComponent newInstance(ModuleProvider moduleProvider, String className, String id) throws ClassNotFoundException {
     Module module = moduleProvider.getModule();
-    final Class<?> aClass = Class.forName(className, true, LoaderFactory.getInstance(module.getProject()).getLoader(module));
+    Class<?> aClass = Class.forName(className, true, LoaderFactory.getInstance(module.getProject()).getLoader(module));
     return newInstance(moduleProvider, aClass, id);
   }
 
   protected abstract RadComponent newInstance(ModuleProvider moduleProvider, Class aClass, String id);
 
-  public abstract RadComponent newInstance(final Class componentClass, final String id, final Palette palette);
+  public abstract RadComponent newInstance(Class componentClass, String id, Palette palette);
 }

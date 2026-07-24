@@ -35,7 +35,7 @@ public abstract class SizePolicyProperty extends Property<RadComponent, Integer>
   private final Property[] myChildren;
   private final SizePolicyRenderer myRenderer;
 
-  public SizePolicyProperty(@NonNls final String name){
+  public SizePolicyProperty(@NonNls String name){
     super(null, name);
     myChildren=new Property[]{
       new MyBooleanProperty("Can Shrink", GridConstraints.SIZEPOLICY_CAN_SHRINK),
@@ -49,16 +49,16 @@ public abstract class SizePolicyProperty extends Property<RadComponent, Integer>
 
   protected abstract void setValueImpl(GridConstraints constraints,int policy);
 
-  public final Integer getValue(final RadComponent component) {
+  public final Integer getValue(RadComponent component) {
     return getValueImpl(component.getConstraints());
   }
 
-  protected final void setValueImpl(final RadComponent component,final Integer value) throws Exception {
+  protected final void setValueImpl(RadComponent component, Integer value) throws Exception {
     setValueImpl(component.getConstraints(), value.intValue());
   }
 
   @Nonnull
-  public final Property[] getChildren(final RadComponent component){
+  public final Property[] getChildren(RadComponent component){
     return myChildren;
   }
 
@@ -71,8 +71,8 @@ public abstract class SizePolicyProperty extends Property<RadComponent, Integer>
     return null;
   }
 
-  @Override public boolean isModified(final RadComponent component) {
-    final GridConstraints defaultConstraints = FormEditingUtil.getDefaultConstraints(component);
+  @Override public boolean isModified(RadComponent component) {
+    GridConstraints defaultConstraints = FormEditingUtil.getDefaultConstraints(component);
     return getValueImpl(component.getConstraints()) != getValueImpl(defaultConstraints);
   }
 
@@ -88,20 +88,20 @@ public abstract class SizePolicyProperty extends Property<RadComponent, Integer>
     private final BooleanEditor myEditor;
     private final int myPropertyMask;
 
-    public MyBooleanProperty(@NonNls final String name, final int propertyMask) {
+    public MyBooleanProperty(@NonNls String name, int propertyMask) {
       super(SizePolicyProperty.this, name);
       myPropertyMask = propertyMask;
       myRenderer=new BooleanRenderer();
       myEditor=new BooleanEditor();
     }
 
-    public final Boolean getValue(final RadComponent component) {
-      final GridConstraints constraints=component.getConstraints();
+    public final Boolean getValue(RadComponent component) {
+      GridConstraints constraints=component.getConstraints();
       return (getValueImpl(constraints) & myPropertyMask) != 0;
     }
 
-    protected final void setValueImpl(final RadComponent component, final Boolean value) throws Exception{
-      final boolean canShrink=value.booleanValue();
+    protected final void setValueImpl(RadComponent component, Boolean value) throws Exception{
+      boolean canShrink=value.booleanValue();
       int newValue=getValueImpl(component.getConstraints());
       if(canShrink){
         newValue|=myPropertyMask;

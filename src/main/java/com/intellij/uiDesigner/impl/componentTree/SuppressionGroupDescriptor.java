@@ -27,7 +27,7 @@ public class SuppressionGroupDescriptor extends NodeDescriptor
 {
 	private final LwInspectionSuppression[] myInspectionSuppressions;
 
-	public SuppressionGroupDescriptor(final NodeDescriptor parentDescriptor, final LwInspectionSuppression[] lwInspectionSuppressions)
+	public SuppressionGroupDescriptor(NodeDescriptor parentDescriptor, LwInspectionSuppression[] lwInspectionSuppressions)
 	{
 		super(parentDescriptor);
 		myInspectionSuppressions = lwInspectionSuppressions;

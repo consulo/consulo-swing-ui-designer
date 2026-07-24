@@ -38,19 +38,19 @@ import consulo.language.util.IncorrectOperationException;
 public final class ResourceBundleFileReference extends ReferenceInForm {
   private static final Logger LOG = Logger.getInstance("#com.intellij.uiDesigner.ResourceBundleFileReference");
 
-  public ResourceBundleFileReference(final PsiPlainTextFile file, TextRange bundleNameRange) {
+  public ResourceBundleFileReference(PsiPlainTextFile file, TextRange bundleNameRange) {
     super(file, bundleNameRange);
   }
 
   public PsiElement resolve() {
-    final Project project = myFile.getProject();
+    Project project = myFile.getProject();
 
-    final ProjectFileIndex fileIndex = ProjectRootManager.getInstance(project).getFileIndex();
-    final VirtualFile formVirtualFile = myFile.getVirtualFile();
+    ProjectFileIndex fileIndex = ProjectRootManager.getInstance(project).getFileIndex();
+    VirtualFile formVirtualFile = myFile.getVirtualFile();
     if (formVirtualFile == null) {
       return null;
     }
-    final Module module = fileIndex.getModuleForFile(formVirtualFile);
+    Module module = fileIndex.getModuleForFile(formVirtualFile);
     if (module == null) {
       return null;
     }
@@ -59,26 +59,26 @@ public final class ResourceBundleFileReference extends ReferenceInForm {
   }
 
   @Override
-  public boolean isReferenceTo(final PsiElement element) {
+  public boolean isReferenceTo(PsiElement element) {
     if (!(element instanceof PropertiesFile)) return false;
     String baseName = PropertiesUtil.getFullName((PropertiesFile) element);
     if (baseName == null) return false;
     baseName = baseName.replace('.', '/');
-    final String rangeText = getRangeText();
+    String rangeText = getRangeText();
     return rangeText.equals(baseName);
   }
 
-  public PsiElement handleElementRename(final String newElementName) {
+  public PsiElement handleElementRename(String newElementName) {
     return handleFileRename(newElementName, PropertiesFileType.DOT_DEFAULT_EXTENSION, false);
   }
 
-  public PsiElement bindToElement(@Nonnull final PsiElement element) throws IncorrectOperationException {
+  public PsiElement bindToElement(@Nonnull PsiElement element) throws IncorrectOperationException {
     if (!(element instanceof PropertiesFile)) {
       throw new IncorrectOperationException();
     }
 
-    final PropertiesFile propertyFile = (PropertiesFile)element;
-    final String bundleName = FormReferenceProvider.getBundleName(propertyFile);
+    PropertiesFile propertyFile = (PropertiesFile)element;
+    String bundleName = FormReferenceProvider.getBundleName(propertyFile);
     LOG.assertTrue(bundleName != null);
     updateRangeText(bundleName);
     return myFile;

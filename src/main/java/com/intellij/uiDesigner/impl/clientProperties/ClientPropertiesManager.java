@@ -81,7 +81,7 @@ public class ClientPropertiesManager implements PersistentStateComponent<Element
 	{
 	}
 
-	private ClientPropertiesManager(final Map<String, List<ClientProperty>> propertyMap)
+	private ClientPropertiesManager(Map<String, List<ClientProperty>> propertyMap)
 	{
 		this();
 		myPropertyMap.putAll(propertyMap);
@@ -94,7 +94,7 @@ public class ClientPropertiesManager implements PersistentStateComponent<Element
 		return new ClientPropertiesManager(myPropertyMap);
 	}
 
-	public void saveFrom(final ClientPropertiesManager manager)
+	public void saveFrom(ClientPropertiesManager manager)
 	{
 		myPropertyMap.clear();
 		myPropertyMap.putAll(manager.myPropertyMap);
@@ -105,7 +105,7 @@ public class ClientPropertiesManager implements PersistentStateComponent<Element
 		private final String myName;
 		private final String myClass;
 
-		public ClientProperty(final String name, final String aClass)
+		public ClientProperty(String name, String aClass)
 		{
 			myName = name;
 			myClass = aClass;
@@ -122,13 +122,13 @@ public class ClientPropertiesManager implements PersistentStateComponent<Element
 		}
 
 		@Override
-		public int compareTo(final Object o)
+		public int compareTo(Object o)
 		{
 			ClientProperty prop = (ClientProperty) o;
 			return myName.compareTo(prop.getName());
 		}
 
-		public boolean equals(final Object o)
+		public boolean equals(Object o)
 		{
 			if(this == o)
 			{
@@ -139,7 +139,7 @@ public class ClientPropertiesManager implements PersistentStateComponent<Element
 				return false;
 			}
 
-			final ClientProperty that = (ClientProperty) o;
+			ClientProperty that = (ClientProperty) o;
 
 			if(!myClass.equals(that.myClass))
 			{
@@ -207,7 +207,7 @@ public class ClientPropertiesManager implements PersistentStateComponent<Element
 		return element;
 	}
 
-	public void addConfiguredProperty(final Class selectedClass, final ClientProperty enteredProperty)
+	public void addConfiguredProperty(Class selectedClass, ClientProperty enteredProperty)
 	{
 		List<ClientProperty> list = myPropertyMap.get(selectedClass.getName());
 		if(list == null)
@@ -218,7 +218,7 @@ public class ClientPropertiesManager implements PersistentStateComponent<Element
 		list.add(enteredProperty);
 	}
 
-	public void removeConfiguredProperty(final Class selectedClass, final String name)
+	public void removeConfiguredProperty(Class selectedClass, String name)
 	{
 		List<ClientProperty> list = myPropertyMap.get(selectedClass.getName());
 		if(list != null)
@@ -251,7 +251,7 @@ public class ClientPropertiesManager implements PersistentStateComponent<Element
 		return result;
 	}
 
-	public void addClientPropertyClass(final String className)
+	public void addClientPropertyClass(String className)
 	{
 		if(!myPropertyMap.containsKey(className))
 		{
@@ -259,7 +259,7 @@ public class ClientPropertiesManager implements PersistentStateComponent<Element
 		}
 	}
 
-	public void removeClientPropertyClass(final Class selectedClass)
+	public void removeClientPropertyClass(Class selectedClass)
 	{
 		myPropertyMap.remove(selectedClass.getName());
 	}

@@ -49,10 +49,10 @@ public class PaletteRefactoringListenerProvider implements RefactoringElementLis
 		if(element instanceof PsiClass)
 		{
 			PsiClass psiClass = (PsiClass) element;
-			final String oldName = ClassUtil.getJVMClassName(psiClass);
+			String oldName = ClassUtil.getJVMClassName(psiClass);
 			if(oldName != null)
 			{
-				final ComponentItem item = myPalette.getItem(oldName);
+				ComponentItem item = myPalette.getItem(oldName);
 				if(item != null)
 				{
 					return new MyRefactoringElementListener(item);
@@ -66,7 +66,7 @@ public class PaletteRefactoringListenerProvider implements RefactoringElementLis
 	{
 		private final ComponentItem myItem;
 
-		public MyRefactoringElementListener(final ComponentItem item)
+		public MyRefactoringElementListener(ComponentItem item)
 		{
 			myItem = item;
 		}
@@ -74,7 +74,7 @@ public class PaletteRefactoringListenerProvider implements RefactoringElementLis
 		public void elementRenamedOrMoved(@Nonnull PsiElement newElement)
 		{
 			PsiClass psiClass = (PsiClass) newElement;
-			final String qName = ClassUtil.getJVMClassName(psiClass);
+			String qName = ClassUtil.getJVMClassName(psiClass);
 			if(qName != null)
 			{
 				myItem.setClassName(qName);

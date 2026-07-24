@@ -36,7 +36,7 @@ public class IntRegexEditor<T> extends AbstractTextFieldEditor<T> {
   private final LabelPropertyRenderer<T> myRenderer;
   private final int[] myMinValues;
 
-  public IntRegexEditor(Class<T> valueClass, LabelPropertyRenderer<T> renderer, final int[] minValues) {
+  public IntRegexEditor(Class<T> valueClass, LabelPropertyRenderer<T> renderer, int[] minValues) {
     myMinValues = minValues;
     myValueClass = valueClass;
     myRenderer = renderer;
@@ -50,14 +50,14 @@ public class IntRegexEditor<T> extends AbstractTextFieldEditor<T> {
   }
 
   @Override
-  protected void setValueFromComponent(final RadComponent component, final T value) {
+  protected void setValueFromComponent(RadComponent component, T value) {
     RadRootContainer root = (RadRootContainer) FormEditingUtil.getRoot(component);
     JLabel label = myRenderer.getComponent(root, value, false, false);
     myTf.setText(label.getText());
   }
 
   public T getValue() throws Exception {
-    final Matcher matcher = myPattern.matcher(myTf.getText());
+    Matcher matcher = myPattern.matcher(myTf.getText());
     if (!matcher.matches()) {
       throw new Exception("Incorrect dimension format");
     }
@@ -66,7 +66,7 @@ public class IntRegexEditor<T> extends AbstractTextFieldEditor<T> {
     Integer[] params = new Integer[myMinValues.length];
     for(int i=0; i<myMinValues.length; i++) {
       paramTypes [i] = int.class;
-      final int value = Integer.parseInt(matcher.group(i + 1));
+      int value = Integer.parseInt(matcher.group(i + 1));
       if (value < myMinValues [i]) {
         throw new RuntimeException(UIDesignerBundle.message("error.value.should.not.be.less", myMinValues [i]));
       }

@@ -53,7 +53,7 @@ public class IconEditor extends PropertyEditor<IconDescriptor>
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-				final TreeClassChooserFactory factory = TreeClassChooserFactory.getInstance(getModule().getProject());
+				TreeClassChooserFactory factory = TreeClassChooserFactory.getInstance(getModule().getProject());
 				PsiFile iconFile = null;
 				if(myValue != null)
 				{
@@ -94,7 +94,7 @@ public class IconEditor extends PropertyEditor<IconDescriptor>
 		{
 			return null;
 		}
-		final IconDescriptor descriptor = new IconDescriptor(myTextField.getText());
+		IconDescriptor descriptor = new IconDescriptor(myTextField.getText());
 		IntroIconProperty.ensureIconLoaded(getModule(), descriptor);
 		return descriptor;
 	}

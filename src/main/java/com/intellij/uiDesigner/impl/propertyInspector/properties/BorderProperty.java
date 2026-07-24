@@ -59,7 +59,7 @@ public final class BorderProperty extends Property<RadContainer, BorderType>
 			return new LabelPropertyRenderer<>()
 			{
 				@Override
-                protected void customize(@Nonnull final BorderType value)
+                protected void customize(@Nonnull BorderType value)
 				{
 					setText(value.getName());
 				}
@@ -67,7 +67,7 @@ public final class BorderProperty extends Property<RadContainer, BorderType>
 		}
 	};
 
-	public BorderProperty(final Project project)
+	public BorderProperty(Project project)
 	{
 		super(null, NAME);
 		myProject = project;
@@ -82,19 +82,19 @@ public final class BorderProperty extends Property<RadContainer, BorderType>
 	}
 
 	@Override
-    public BorderType getValue(final RadContainer component)
+    public BorderType getValue(RadContainer component)
 	{
 		return component.getBorderType();
 	}
 
 	@Override
-    protected void setValueImpl(final RadContainer component, final BorderType value) throws Exception
+    protected void setValueImpl(RadContainer component, BorderType value) throws Exception
 	{
 	}
 
     @Nonnull
     @Override
-	public Property[] getChildren(final RadComponent component)
+	public Property[] getChildren(RadComponent component)
 	{
 		if(!(component instanceof RadContainer))
 		{
@@ -142,7 +142,7 @@ public final class BorderProperty extends Property<RadContainer, BorderType>
 	}
 
 	@Override
-	public boolean isModified(final RadContainer component)
+	public boolean isModified(RadContainer component)
 	{
 		return !component.getBorderType().equals(BorderType.NONE) || component.getBorderTitle() != null;
 	}
@@ -167,13 +167,13 @@ public final class BorderProperty extends Property<RadContainer, BorderType>
 		}
 
         @Override
-		public BorderType getValue(final RadContainer component)
+		public BorderType getValue(RadContainer component)
 		{
 			return component.getBorderType();
 		}
 
         @Override
-		protected void setValueImpl(final RadContainer component, final BorderType value) throws Exception
+		protected void setValueImpl(RadContainer component, BorderType value) throws Exception
 		{
 			component.setBorderType(value);
 		}
@@ -196,7 +196,7 @@ public final class BorderProperty extends Property<RadContainer, BorderType>
 		}
 
 		@Override
-		public boolean isModified(final RadContainer component)
+		public boolean isModified(RadContainer component)
 		{
 			return !getValue(component).equals(BorderType.NONE);
 		}
@@ -228,10 +228,10 @@ public final class BorderProperty extends Property<RadContainer, BorderType>
 		}
 
         @Override
-		public StringDescriptor getValue(final RadContainer component)
+		public StringDescriptor getValue(RadContainer component)
 		{
-			final StringDescriptor descriptor = component.getBorderTitle();
-			final String resolvedValue = StringDescriptorManager.getInstance(component.getModule()).resolve(component, descriptor);
+			StringDescriptor descriptor = component.getBorderTitle();
+			String resolvedValue = StringDescriptorManager.getInstance(component.getModule()).resolve(component, descriptor);
 			if(descriptor != null)
 			{
 				descriptor.setResolvedValue(resolvedValue);
@@ -240,7 +240,7 @@ public final class BorderProperty extends Property<RadContainer, BorderType>
 		}
 
         @Override
-		protected void setValueImpl(final RadContainer component, final StringDescriptor value) throws Exception
+		protected void setValueImpl(RadContainer component, StringDescriptor value) throws Exception
 		{
 			StringDescriptor title = value;
 			if(title != null && StringDescriptorManager.getInstance(component.getModule()).resolve(component, title).isEmpty())
@@ -272,7 +272,7 @@ public final class BorderProperty extends Property<RadContainer, BorderType>
 		}
 
 		@Override
-		public boolean isModified(final RadContainer component)
+		public boolean isModified(RadContainer component)
 		{
 			return getValue(component) != null;
 		}
@@ -311,20 +311,20 @@ public final class BorderProperty extends Property<RadContainer, BorderType>
 		private IntEnumEditor myEditor;
 		private final boolean myJustification;
 
-		public MyTitleIntEnumProperty(final Property parent, final String name, final boolean isJustification)
+		public MyTitleIntEnumProperty(Property parent, String name, boolean isJustification)
 		{
 			super(parent, name);
 			myJustification = isJustification;
 		}
 
         @Override
-		public Integer getValue(final RadContainer component)
+		public Integer getValue(RadContainer component)
 		{
 			return myJustification ? component.getBorderTitleJustification() : component.getBorderTitlePosition();
 		}
 
         @Override
-		protected void setValueImpl(final RadContainer component, final Integer value) throws Exception
+		protected void setValueImpl(RadContainer component, Integer value) throws Exception
 		{
 			if(myJustification)
 			{
@@ -358,13 +358,13 @@ public final class BorderProperty extends Property<RadContainer, BorderType>
 		}
 
 		@Override
-		public boolean isModified(final RadContainer component)
+		public boolean isModified(RadContainer component)
 		{
 			return getValue(component) != 0;
 		}
 
 		@Override
-		public void resetValue(final RadContainer component) throws Exception
+		public void resetValue(RadContainer component) throws Exception
 		{
 			setValue(component, 0);
 		}
@@ -375,19 +375,19 @@ public final class BorderProperty extends Property<RadContainer, BorderType>
 		private FontRenderer myRenderer;
 		private FontEditor myEditor;
 
-		public MyTitleFontProperty(final Property parent)
+		public MyTitleFontProperty(Property parent)
 		{
 			super(parent, "title font");
 		}
 
         @Override
-		public FontDescriptor getValue(final RadContainer component)
+		public FontDescriptor getValue(RadContainer component)
 		{
 			return component.getBorderTitleFont();
 		}
 
         @Override
-		protected void setValueImpl(final RadContainer component, final FontDescriptor value) throws Exception
+		protected void setValueImpl(RadContainer component, FontDescriptor value) throws Exception
 		{
 			component.setBorderTitleFont(value);
 		}
@@ -414,13 +414,13 @@ public final class BorderProperty extends Property<RadContainer, BorderType>
 		}
 
 		@Override
-		public boolean isModified(final RadContainer component)
+		public boolean isModified(RadContainer component)
 		{
 			return component.getBorderTitleFont() != null;
 		}
 
 		@Override
-		public void resetValue(final RadContainer component) throws Exception
+		public void resetValue(RadContainer component) throws Exception
 		{
 			component.setBorderTitleFont(null);
 		}
@@ -432,20 +432,20 @@ public final class BorderProperty extends Property<RadContainer, BorderType>
 		private ColorEditor myEditor;
 		private final boolean myTitleColor;
 
-		public MyBorderColorProperty(final Property parent, final boolean titleColor)
+		public MyBorderColorProperty(Property parent, boolean titleColor)
 		{
 			super(parent, titleColor ? "title color" : "color");
 			myTitleColor = titleColor;
 		}
 
 		@Override
-        public ColorDescriptor getValue(final RadContainer component)
+        public ColorDescriptor getValue(RadContainer component)
 		{
 			return myTitleColor ? component.getBorderTitleColor() : component.getBorderColor();
 		}
 
 		@Override
-        protected void setValueImpl(final RadContainer component, final ColorDescriptor value) throws Exception
+        protected void setValueImpl(RadContainer component, ColorDescriptor value) throws Exception
 		{
 			if(myTitleColor)
 			{
@@ -479,13 +479,13 @@ public final class BorderProperty extends Property<RadContainer, BorderType>
 		}
 
 		@Override
-		public boolean isModified(final RadContainer component)
+		public boolean isModified(RadContainer component)
 		{
 			return getValue(component) != null;
 		}
 
 		@Override
-		public void resetValue(final RadContainer component) throws Exception
+		public void resetValue(RadContainer component) throws Exception
 		{
 			setValueImpl(component, null);
 		}
@@ -493,19 +493,19 @@ public final class BorderProperty extends Property<RadContainer, BorderType>
 
 	private static class MySizeProperty extends AbstractInsetsProperty<RadContainer>
 	{
-		public MySizeProperty(final Property parent)
+		public MySizeProperty(Property parent)
 		{
 			super(parent, "size");
 		}
 
 		@Override
-        public Insets getValue(final RadContainer container)
+        public Insets getValue(RadContainer container)
 		{
 			return container.getBorderSize();
 		}
 
 		@Override
-        protected void setValueImpl(final RadContainer container, final Insets insets) throws Exception
+        protected void setValueImpl(RadContainer container, Insets insets) throws Exception
 		{
 			container.setBorderSize(insets);
 		}

@@ -58,7 +58,7 @@ public class FontEditorDialog extends DialogWrapper {
   private JCheckBox myFontSizeCheckbox;
   private FontDescriptor myValue;
 
-  protected FontEditorDialog(final Project project, String propertyName) {
+  protected FontEditorDialog(Project project, String propertyName) {
     super(project, false);
     init();
     setTitle(UIDesignerBundle.message("font.chooser.title", propertyName));
@@ -74,7 +74,7 @@ public class FontEditorDialog extends DialogWrapper {
     myFontSizeList.setListData(UIUtil.getStandardFontSizes());
     myFontSizeList.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
-        final Integer selValue = Integer.valueOf(myFontSizeList.getSelectedValue().toString());
+        Integer selValue = Integer.valueOf(myFontSizeList.getSelectedValue().toString());
         myFontSizeEdit.setValue(selValue);
         updateValue();
       }
@@ -126,7 +126,7 @@ public class FontEditorDialog extends DialogWrapper {
     });
   }
 
-  private static String fontToString(final Font font) {
+  private static String fontToString(Font font) {
     StringBuilder result = new StringBuilder(font.getFamily());
     result.append(" ").append(font.getSize());
     if ((font.getStyle() & Font.BOLD) != 0) {
@@ -139,7 +139,7 @@ public class FontEditorDialog extends DialogWrapper {
   }
 
   private static FontDescriptor[] collectSwingFontDescriptors() {
-    ArrayList<FontDescriptor> result = new ArrayList<FontDescriptor>();
+    ArrayList<FontDescriptor> result = new ArrayList<>();
     UIDefaults defaults = UIManager.getDefaults();
     Enumeration e = defaults.keys ();
     while(e.hasMoreElements()) {
@@ -149,8 +149,8 @@ public class FontEditorDialog extends DialogWrapper {
         result.add(FontDescriptor.fromSwingFont((String) key));
       }
     }
-    Collections.sort(result, new Comparator<FontDescriptor>() {
-      public int compare(final FontDescriptor o1, final FontDescriptor o2) {
+    Collections.sort(result, new Comparator<>() {
+      public int compare(FontDescriptor o1, FontDescriptor o2) {
         return o1.getSwingFont().compareTo(o2.getSwingFont());
       }
     });
@@ -161,7 +161,7 @@ public class FontEditorDialog extends DialogWrapper {
     return myValue;
   }
 
-  public void setValue(@Nonnull final FontDescriptor value) {
+  public void setValue(@Nonnull FontDescriptor value) {
     myValue = value;
     if (value.getSwingFont() != null) {
       myTabbedPane.setSelectedIndex(1);
@@ -187,7 +187,7 @@ public class FontEditorDialog extends DialogWrapper {
   }
 
   private void updateValue() {
-    final int fontSize = ((Integer)myFontSizeEdit.getValue()).intValue();
+    int fontSize = ((Integer)myFontSizeEdit.getValue()).intValue();
     myValue = new FontDescriptor(myFontNameCheckbox.isSelected() ? (String) myFontNameList.getSelectedValue() : null,
                                  myFontStyleCheckbox.isSelected() ? myFontStyleList.getSelectedIndex() : -1,
                                  myFontSizeCheckbox.isSelected() ? fontSize : -1);
@@ -206,13 +206,13 @@ public class FontEditorDialog extends DialogWrapper {
   private class MyListSelectionListener implements ListSelectionListener {
     private final JTextField myTextField;
 
-    public MyListSelectionListener(final JTextField textField) {
+    public MyListSelectionListener(JTextField textField) {
       myTextField = textField;
     }
 
     public void valueChanged(ListSelectionEvent e) {
       JList sourceList = (JList) e.getSource();
-      final Object selValue = sourceList.getSelectedValue();
+      Object selValue = sourceList.getSelectedValue();
       if (selValue != null) {
         myTextField.setText(selValue.toString());
       }

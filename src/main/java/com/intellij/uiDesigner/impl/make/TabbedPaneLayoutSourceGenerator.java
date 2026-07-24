@@ -23,11 +23,11 @@ import com.intellij.uiDesigner.lw.LwTabbedPane;
  * @author yole
  */
 public class TabbedPaneLayoutSourceGenerator extends LayoutSourceGenerator {
-  public void generateComponentLayout(final LwComponent component,
-                                      final FormSourceCodeGenerator generator,
-                                      final String variable,
-                                      final String parentVariable) {
-    final LwTabbedPane.Constraints tabConstraints = (LwTabbedPane.Constraints)component.getCustomLayoutConstraints();
+  public void generateComponentLayout(LwComponent component,
+                                      FormSourceCodeGenerator generator,
+                                      String variable,
+                                      String parentVariable) {
+    LwTabbedPane.Constraints tabConstraints = (LwTabbedPane.Constraints)component.getCustomLayoutConstraints();
     if (tabConstraints == null){
       throw new IllegalArgumentException("tab constraints cannot be null: " + component.getId());
     }

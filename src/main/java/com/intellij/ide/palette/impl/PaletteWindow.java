@@ -59,10 +59,10 @@ import java.util.*;
 public class PaletteWindow extends JPanel implements LightToolWindowContent, DataProvider
 {
 	private final Project myProject;
-	private final ArrayList<PaletteGroupHeader> myGroupHeaders = new ArrayList<PaletteGroupHeader>();
+	private final ArrayList<PaletteGroupHeader> myGroupHeaders = new ArrayList<>();
 	private final PaletteItemProvider[] myProviders;
 	private final MyPropertyChangeListener myPropertyChangeListener = new MyPropertyChangeListener();
-	private final Set<PaletteGroup> myGroups = new HashSet<PaletteGroup>();
+	private final Set<PaletteGroup> myGroups = new HashSet<>();
 	private final JTabbedPane myTabbedPane = new JBTabbedPane();
 	private final JScrollPane myScrollPane = ScrollPaneFactory.createScrollPane();
 	private final MyListSelectionListener myListSelectionListener = new MyListSelectionListener();
@@ -141,7 +141,7 @@ public class PaletteWindow extends JPanel implements LightToolWindowContent, Dat
 		}
 
 		VirtualFile file = designer == null ? null : designer.getFile();
-		Set<PaletteGroup> currentGroups = new HashSet<PaletteGroup>(collectCurrentGroups(file));
+		Set<PaletteGroup> currentGroups = new HashSet<>(collectCurrentGroups(file));
 		if(!currentGroups.equals(myGroups))
 		{
 			refreshPalette(file);
@@ -159,7 +159,7 @@ public class PaletteWindow extends JPanel implements LightToolWindowContent, Dat
 		myGroupHeaders.clear();
 		myGroups.clear();
 
-		final ArrayList<PaletteGroup> currentGroups = collectCurrentGroups(selectedFile);
+		ArrayList<PaletteGroup> currentGroups = collectCurrentGroups(selectedFile);
 		String[] tabNames = collectTabNames(currentGroups);
 		if(tabNames.length == 1)
 		{
@@ -177,7 +177,7 @@ public class PaletteWindow extends JPanel implements LightToolWindowContent, Dat
 				addGroupToControl(group, contentWindow);
 			}
 
-			final JComponent view = (JComponent) myScrollPane.getViewport().getView();
+			JComponent view = (JComponent) myScrollPane.getViewport().getView();
 			if(view != null)
 			{
 				view.revalidate();
@@ -224,9 +224,9 @@ public class PaletteWindow extends JPanel implements LightToolWindowContent, Dat
 		componentList.addListSelectionListener(myListSelectionListener);
 	}
 
-	private static String[] collectTabNames(final Collection<PaletteGroup> groups)
+	private static String[] collectTabNames(Collection<PaletteGroup> groups)
 	{
-		Set<String> result = new TreeSet<String>();
+		Set<String> result = new TreeSet<>();
 		for(PaletteGroup group : groups)
 		{
 			result.add(group.getTabName());
@@ -236,7 +236,7 @@ public class PaletteWindow extends JPanel implements LightToolWindowContent, Dat
 
 	private ArrayList<PaletteGroup> collectCurrentGroups(@Nullable VirtualFile selectedFile)
 	{
-		ArrayList<PaletteGroup> result = new ArrayList<PaletteGroup>();
+		ArrayList<PaletteGroup> result = new ArrayList<>();
 		if(selectedFile != null)
 		{
 			for(PaletteItemProvider provider : myProviders)
@@ -314,7 +314,7 @@ public class PaletteWindow extends JPanel implements LightToolWindowContent, Dat
 				return groupHeader.getGroup().getData(myProject, dataId);
 			}
 		}
-		final int tabCount = collectTabNames(myGroups).length;
+		int tabCount = collectTabNames(myGroups).length;
 		if(tabCount > 0)
 		{
 			JScrollPane activeScrollPane;
@@ -341,7 +341,7 @@ public class PaletteWindow extends JPanel implements LightToolWindowContent, Dat
 		return myProject;
 	}
 
-	void setLastFocusedGroup(final PaletteGroupHeader focusedGroup)
+	void setLastFocusedGroup(PaletteGroupHeader focusedGroup)
 	{
 		myLastFocusedGroup = focusedGroup;
 		for(PaletteGroupHeader group : myGroupHeaders)
@@ -350,7 +350,7 @@ public class PaletteWindow extends JPanel implements LightToolWindowContent, Dat
 		}
 	}
 
-	void notifyKeyEvent(final KeyEvent e)
+	void notifyKeyEvent(KeyEvent e)
 	{
 		if(myDesigner != null)
 		{
@@ -373,7 +373,7 @@ public class PaletteWindow extends JPanel implements LightToolWindowContent, Dat
 		}
 	}
 
-	void notifySelectionChanged(final ListSelectionEvent event)
+	void notifySelectionChanged(ListSelectionEvent event)
 	{
 		if(myDesigner != null)
 		{

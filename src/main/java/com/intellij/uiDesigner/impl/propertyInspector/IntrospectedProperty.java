@@ -60,10 +60,10 @@ public abstract class IntrospectedProperty<V> extends Property<RadComponent, V> 
 
   @NonNls private static final String INTRO_PREFIX = "Intro:";
 
-  public IntrospectedProperty(final String name,
-                              @Nonnull final Method readMethod,
-                              @Nonnull final Method writeMethod,
-                              final boolean storeAsClient) {
+  public IntrospectedProperty(String name,
+                              @Nonnull Method readMethod,
+                              @Nonnull Method writeMethod,
+                              boolean storeAsClient) {
     super(null, name);
     myReadMethod = readMethod;
     myWriteMethod = writeMethod;
@@ -73,12 +73,12 @@ public abstract class IntrospectedProperty<V> extends Property<RadComponent, V> 
   /**
    * <b>Do not overide this method without serious reason!</b>
    */
-  public V getValue(final RadComponent component){
+  public V getValue(RadComponent component){
     //noinspection unchecked
     return (V)invokeGetter(component);
   }
 
-  protected Object invokeGetter(final RadComponent component) {
+  protected Object invokeGetter(RadComponent component) {
     if (myStoreAsClient) {
       return component.getClientProperty(INTRO_PREFIX + getName());
     }
@@ -94,11 +94,11 @@ public abstract class IntrospectedProperty<V> extends Property<RadComponent, V> 
   /**
    * <b>Do not overide this method without serious reason!</b>
    */
-  protected void setValueImpl(final RadComponent component,final V value) throws Exception{
+  protected void setValueImpl(RadComponent component, V value) throws Exception{
     invokeSetter(component, value);
   }
 
-  protected void invokeSetter(final RadComponent component, final Object value) throws IllegalAccessException, InvocationTargetException {
+  protected void invokeSetter(RadComponent component, Object value) throws IllegalAccessException, InvocationTargetException {
     if (myStoreAsClient) {
       component.putClientProperty(INTRO_PREFIX + getName(), value);
     }
@@ -121,17 +121,17 @@ public abstract class IntrospectedProperty<V> extends Property<RadComponent, V> 
     writer.addAttribute(UIFormXmlConstants.ATTRIBUTE_VALUE, value.toString());
   }
 
-  @Override public boolean isModified(final RadComponent component) {
+  @Override public boolean isModified(RadComponent component) {
     return component.isMarkedAsModified(this);
   }
 
   @Override public void resetValue(RadComponent component) throws Exception {
-    final V defaultValue = getDefaultValue(component.getDelegee());
+    V defaultValue = getDefaultValue(component.getDelegee());
     invokeSetter(component, defaultValue);
     markTopmostModified(component, false);
   }
 
-  public void importSnapshotValue(final SnapshotContext context, final JComponent component, final RadComponent radComponent) {
+  public void importSnapshotValue(SnapshotContext context, JComponent component, RadComponent radComponent) {
     try {
       //noinspection unchecked
       V value = (V) myReadMethod.invoke(component, EMPTY_OBJECT_ARRAY);
@@ -145,11 +145,11 @@ public abstract class IntrospectedProperty<V> extends Property<RadComponent, V> 
     }
   }
 
-  protected V getDefaultValue(final JComponent delegee) throws Exception {
+  protected V getDefaultValue(JComponent delegee) throws Exception {
     if (myStoreAsClient) {
       return null;
     }
-    final Constructor constructor = delegee.getClass().getConstructor(ArrayUtil.EMPTY_CLASS_ARRAY);
+    Constructor constructor = delegee.getClass().getConstructor(ArrayUtil.EMPTY_CLASS_ARRAY);
     constructor.setAccessible(true);
     JComponent newComponent = (JComponent)constructor.newInstance(ArrayUtil.EMPTY_OBJECT_ARRAY);
     //noinspection unchecked
@@ -157,23 +157,23 @@ public abstract class IntrospectedProperty<V> extends Property<RadComponent, V> 
   }
 
   @Override
-  public boolean appliesTo(final RadComponent component) {
+  public boolean appliesTo(RadComponent component) {
     @NonNls String name = getName();
     //noinspection SimplifiableIfStatement
     if (name.equals(SwingProperties.PREFERRED_SIZE) ||
         name.equals(SwingProperties.MINIMUM_SIZE) ||
         name.equals(SwingProperties.MAXIMUM_SIZE)) {
       // our own properties must be used instead
-      final RadContainer parent = component.getParent();
+      RadContainer parent = component.getParent();
       return parent != null && !(parent.getLayoutManager() instanceof RadGridLayoutManager);
     }
 
     // check if property is available in the JDK used by the module containing the component
-    final PsiManager psiManager = PsiManager.getInstance(component.getProject());
-    final GlobalSearchScope scope = GlobalSearchScope.moduleWithDependenciesAndLibrariesScope(component.getModule(), true);
+    PsiManager psiManager = PsiManager.getInstance(component.getProject());
+    GlobalSearchScope scope = GlobalSearchScope.moduleWithDependenciesAndLibrariesScope(component.getModule(), true);
     PsiClass componentClass = JavaPsiFacade.getInstance(psiManager.getProject()).findClass(component.getComponentClassName(), scope);
     if (componentClass == null) return true;
-    final PsiMethod[] psiMethods = componentClass.findMethodsByName(myReadMethod.getName(), true);
+    PsiMethod[] psiMethods = componentClass.findMethodsByName(myReadMethod.getName(), true);
     for(PsiMethod method: psiMethods) {
       if (!method.hasModifierProperty(PsiModifier.STATIC) &&
           method.getParameterList().getParametersCount() == 0) {

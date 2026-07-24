@@ -66,7 +66,7 @@ public abstract class QuickFixManager <T extends JComponent>{
   private LightweightHint myHint;
   private Rectangle myLastHintBounds;
 
-  public QuickFixManager(@Nullable final GuiEditor editor, @Nonnull final T component, @Nonnull final JViewport viewPort) {
+  public QuickFixManager(@Nullable GuiEditor editor, @Nonnull T component, @Nonnull final JViewport viewPort) {
     myEditor = editor;
     myComponent = component;
     myAlarm = new Alarm();
@@ -89,7 +89,7 @@ public abstract class QuickFixManager <T extends JComponent>{
     return myEditor;
   }
 
-  public void setEditor(final GuiEditor editor) {
+  public void setEditor(GuiEditor editor) {
     myEditor = editor;
   }
 
@@ -117,8 +117,8 @@ public abstract class QuickFixManager <T extends JComponent>{
       updateIntentionHintVisibility();
     }
     else {
-      final ErrorInfo[] errorInfos = getErrorInfos();
-      final Rectangle bounds = getErrorBounds();
+      ErrorInfo[] errorInfos = getErrorInfos();
+      Rectangle bounds = getErrorBounds();
       if (!haveFixes(errorInfos) || bounds == null || !bounds.equals(myLastHintBounds)) {
         hideIntentionHint();
         updateIntentionHintVisibility();
@@ -147,26 +147,26 @@ public abstract class QuickFixManager <T extends JComponent>{
     hideIntentionHint();
 
     // 2. Found error (if any)
-    final ErrorInfo[] errorInfos = getErrorInfos();
+    ErrorInfo[] errorInfos = getErrorInfos();
     if(!haveFixes(errorInfos)) {
       hideIntentionHint();
       return;
     }
 
     // 3. Determine position where this hint should be shown
-    final Rectangle bounds = getErrorBounds();
+    Rectangle bounds = getErrorBounds();
     if(bounds == null){
       return;
     }
 
     // 4. Show light bulb to fix this error
-    final LightBulbComponentImpl lightBulbComponent = new LightBulbComponentImpl(this, AllIcons.Actions.IntentionBulb);
+    LightBulbComponentImpl lightBulbComponent = new LightBulbComponentImpl(this, AllIcons.Actions.IntentionBulb);
     myHint = new LightweightHintImpl(lightBulbComponent);
     myLastHintBounds = bounds;
     myHint.show(myComponent, bounds.x - AllIcons.Actions.IntentionBulb.getWidth() - 4, bounds.y, myComponent, new HintHint(myComponent, bounds.getLocation()));
   }
 
-  private void updateIntentionHintPosition(final JViewport viewPort) {
+  private void updateIntentionHintPosition(JViewport viewPort) {
     if (myHint != null && myHint.isVisible()) {
       Rectangle rc = getErrorBounds();
       if (rc != null) {
@@ -185,11 +185,11 @@ public abstract class QuickFixManager <T extends JComponent>{
     }
   }
 
-  protected Rectangle getHintClipRect(final JViewport viewPort) {
+  protected Rectangle getHintClipRect(JViewport viewPort) {
     return viewPort.getViewRect();
   }
 
-  private static boolean haveFixes(final ErrorInfo[] errorInfos) {
+  private static boolean haveFixes(ErrorInfo[] errorInfos) {
     boolean haveFixes = false;
     for(ErrorInfo errorInfo: errorInfos) {
       if (errorInfo.myFixes.length > 0 || errorInfo.getInspectionId() != null) {
@@ -216,14 +216,14 @@ public abstract class QuickFixManager <T extends JComponent>{
     if(myHint == null || !myHint.isVisible()){
       return;
     }
-    final ErrorInfo[] errorInfos = getErrorInfos();
+    ErrorInfo[] errorInfos = getErrorInfos();
     if(!haveFixes(errorInfos)){
       return;
     }
 
-    final ArrayList<ErrorWithFix> fixList = new ArrayList<ErrorWithFix>();
+    ArrayList<ErrorWithFix> fixList = new ArrayList<>();
     for(ErrorInfo errorInfo: errorInfos) {
-      final QuickFix[] quickFixes = errorInfo.myFixes;
+      QuickFix[] quickFixes = errorInfo.myFixes;
       if (quickFixes.length > 0) {
         for (QuickFix fix: quickFixes) {
           fixList.add(new ErrorWithFix(errorInfo, fix));
@@ -234,28 +234,28 @@ public abstract class QuickFixManager <T extends JComponent>{
       }
     }
 
-    final ListPopup popup = JBPopupFactory.getInstance().createListPopup(new QuickFixPopupStep(fixList, true));
+    ListPopup popup = JBPopupFactory.getInstance().createListPopup(new QuickFixPopupStep(fixList, true));
     popup.showUnderneathOf(((LightweightHintImpl) myHint).getComponent());
   }
 
-  private void buildSuppressFixes(final ErrorInfo errorInfo, final ArrayList<ErrorWithFix> suppressList, boolean named) {
-    final String suppressName = named
+  private void buildSuppressFixes(ErrorInfo errorInfo, ArrayList<ErrorWithFix> suppressList, boolean named) {
+    String suppressName = named
                                 ? UIDesignerBundle.message("action.suppress.named.for.component", errorInfo.myDescription)
                                 : UIDesignerBundle.message("action.suppress.for.component");
-    final String suppressAllName = named
+    String suppressAllName = named
                                 ? UIDesignerBundle.message("action.suppress.named.for.all.components", errorInfo.myDescription)
                                 : UIDesignerBundle.message("action.suppress.for.all.components");
 
-    final SuppressFix suppressFix = new SuppressFix(myEditor, suppressName,
+    SuppressFix suppressFix = new SuppressFix(myEditor, suppressName,
                                                     errorInfo.getInspectionId(), errorInfo.getComponent());
-    final SuppressFix suppressAllFix = new SuppressFix(myEditor, suppressAllName,
+    SuppressFix suppressAllFix = new SuppressFix(myEditor, suppressAllName,
                                                        errorInfo.getInspectionId(), null);
     suppressList.add(new ErrorWithFix(errorInfo, suppressFix));
     suppressList.add(new ErrorWithFix(errorInfo, suppressAllFix));
   }
 
   private static class ErrorWithFix extends Pair<ErrorInfo, QuickFix> {
-    public ErrorWithFix(final ErrorInfo first, final QuickFix second) {
+    public ErrorWithFix(ErrorInfo first, QuickFix second) {
       super(first, second);
     }
   }
@@ -264,17 +264,17 @@ public abstract class QuickFixManager <T extends JComponent>{
   {
     private final boolean myShowSuppresses;
 
-    public QuickFixPopupStep(final ArrayList<ErrorWithFix> fixList, boolean showSuppresses) {
+    public QuickFixPopupStep(ArrayList<ErrorWithFix> fixList, boolean showSuppresses) {
       super(null, fixList);
       myShowSuppresses = showSuppresses;
     }
 
     @Nonnull
-    public String getTextFor(final ErrorWithFix value) {
+    public String getTextFor(ErrorWithFix value) {
       return value.second.getName();
     }
 
-    public PopupStep onChosen(final ErrorWithFix selectedValue, final boolean finalChoice) {
+    public PopupStep onChosen(final ErrorWithFix selectedValue, boolean finalChoice) {
       if (selectedValue.second instanceof PopupQuickFix) {
         return ((PopupQuickFix) selectedValue.second).getPopupStep();
       }
@@ -291,14 +291,14 @@ public abstract class QuickFixManager <T extends JComponent>{
       }
       if (selectedValue.first.getInspectionId() != null && selectedValue.second.getComponent() != null &&
           !(selectedValue.second instanceof SuppressFix)) {
-        ArrayList<ErrorWithFix> suppressList = new ArrayList<ErrorWithFix>();
+        ArrayList<ErrorWithFix> suppressList = new ArrayList<>();
         buildSuppressFixes(selectedValue.first, suppressList, false);
         return new QuickFixPopupStep(suppressList, false);
       }
       return FINAL_CHOICE;
     }
 
-    public boolean hasSubstep(final ErrorWithFix selectedValue) {
+    public boolean hasSubstep(ErrorWithFix selectedValue) {
       return (myShowSuppresses && selectedValue.first.getInspectionId() != null && selectedValue.second.getComponent() != null &&
         !(selectedValue.second instanceof SuppressFix)) || selectedValue.second instanceof PopupQuickFix;
     }
@@ -311,7 +311,7 @@ public abstract class QuickFixManager <T extends JComponent>{
   private static class SuppressFix extends QuickFix {
     private final String myInspectionId;
 
-    public SuppressFix(final GuiEditor editor, final String name, final String inspectionId, final RadComponent component) {
+    public SuppressFix(GuiEditor editor, String name, String inspectionId, RadComponent component) {
       super(editor, name, component);
       myInspectionId = inspectionId;
     }
@@ -327,7 +327,7 @@ public abstract class QuickFixManager <T extends JComponent>{
   private final class MyShowHintRequest implements Runnable{
     private final QuickFixManager myManager;
 
-    public MyShowHintRequest(@Nonnull final QuickFixManager manager) {
+    public MyShowHintRequest(@Nonnull QuickFixManager manager) {
       myManager = manager;
     }
 

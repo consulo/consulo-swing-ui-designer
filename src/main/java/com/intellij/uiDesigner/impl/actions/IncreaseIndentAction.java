@@ -36,7 +36,7 @@ public class IncreaseIndentAction extends AbstractGuiEditorAction {
     super(true);
   }
 
-  protected void actionPerformed(final GuiEditor editor, final List<RadComponent> selection, final AnActionEvent e) {
+  protected void actionPerformed(GuiEditor editor, List<RadComponent> selection, AnActionEvent e) {
     IndentProperty indentProperty = IndentProperty.getInstance(editor.getProject());
     for(RadComponent c: selection) {
       int indent = indentProperty.getValue(c).intValue();
@@ -44,14 +44,14 @@ public class IncreaseIndentAction extends AbstractGuiEditorAction {
     }
   }
 
-  protected void update(@Nonnull GuiEditor editor, final ArrayList<RadComponent> selection, final AnActionEvent e) {
-    final boolean applicable = canAdjustIndent(selection);
+  protected void update(@Nonnull GuiEditor editor, ArrayList<RadComponent> selection, AnActionEvent e) {
+    boolean applicable = canAdjustIndent(selection);
     e.getPresentation().setVisible(applicable);
-    final Component focusOwner = IdeFocusManager.findInstanceByComponent(editor).getFocusOwner();
+    Component focusOwner = IdeFocusManager.findInstanceByComponent(editor).getFocusOwner();
     e.getPresentation().setEnabled(applicable && (focusOwner == editor || editor.isAncestorOf(focusOwner)));
   }
 
-  private boolean canAdjustIndent(final ArrayList<RadComponent> selection) {
+  private boolean canAdjustIndent(ArrayList<RadComponent> selection) {
     for(RadComponent c: selection) {
       if (canAdjustIndent(c)) {
         return true;
@@ -60,11 +60,11 @@ public class IncreaseIndentAction extends AbstractGuiEditorAction {
     return false;
   }
 
-  protected int adjustIndent(final int indent) {
+  protected int adjustIndent(int indent) {
     return indent + 1;
   }
 
-  protected boolean canAdjustIndent(final RadComponent component) {
+  protected boolean canAdjustIndent(RadComponent component) {
     return component.getParent().getLayout() instanceof GridLayoutManager;
   }
 }

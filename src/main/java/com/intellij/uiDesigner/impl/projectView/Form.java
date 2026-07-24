@@ -39,7 +39,7 @@ public class Form implements Navigatable {
 
   public Form(PsiClass classToBind, Collection<PsiFile> formFiles) {
     myClassToBind = classToBind;
-    myFormFiles = new HashSet<PsiFile>(formFiles);
+    myFormFiles = new HashSet<>(formFiles);
   }
 
   public boolean equals(Object object) {
@@ -102,14 +102,14 @@ public class Form implements Navigatable {
     return true;
   }
 
-  public boolean containsFile(final VirtualFile vFile) {
-    final PsiFile classFile = myClassToBind.getContainingFile();
-    final VirtualFile classVFile = classFile == null ? null : classFile.getVirtualFile();
+  public boolean containsFile(VirtualFile vFile) {
+    PsiFile classFile = myClassToBind.getContainingFile();
+    VirtualFile classVFile = classFile == null ? null : classFile.getVirtualFile();
     if (classVFile != null && classVFile.equals(vFile)) {
       return true;
     }
     for (PsiFile psiFile : myFormFiles) {
-      final VirtualFile virtualFile = psiFile.getVirtualFile();
+      VirtualFile virtualFile = psiFile.getVirtualFile();
       if (virtualFile != null && virtualFile.equals(vFile)) {
         return true;
       }

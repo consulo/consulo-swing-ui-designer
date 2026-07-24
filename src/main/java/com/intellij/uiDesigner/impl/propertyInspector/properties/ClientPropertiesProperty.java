@@ -78,7 +78,7 @@ public class ClientPropertiesProperty extends ReadOnlyProperty
 
 	@Nonnull
 	@Override
-	public Property[] getChildren(final RadComponent component)
+	public Property[] getChildren(RadComponent component)
 	{
 		ClientPropertiesManager manager = ClientPropertiesManager.getInstance(component.getProject());
 		List<ClientPropertiesManager.ClientProperty> props = manager.getClientProperties(component.getComponentClass());
@@ -125,7 +125,7 @@ public class ClientPropertiesProperty extends ReadOnlyProperty
 			return null;
 		}
 
-		public JComponent getComponent(final RadComponent component, final Object value, final InplaceContext inplaceContext)
+		public JComponent getComponent(RadComponent component, Object value, InplaceContext inplaceContext)
 		{
 			return myTf;
 		}

@@ -31,16 +31,16 @@ import consulo.ui.ex.action.AnActionEvent;
 public class SelectAllComponentsAction extends AbstractGuiEditorAction
 {
 	@Override
-	protected void actionPerformed(final GuiEditor editor, final List<RadComponent> selection, final AnActionEvent e)
+	protected void actionPerformed(GuiEditor editor, List<RadComponent> selection, AnActionEvent e)
 	{
-		final ComponentTreeBuilder builder = DesignerToolWindowManager.getInstance(editor).getComponentTreeBuilder();
+		ComponentTreeBuilder builder = DesignerToolWindowManager.getInstance(editor).getComponentTreeBuilder();
 		builder.beginUpdateSelection();
 		try
 		{
 			FormEditingUtil.iterate(editor.getRootContainer(), new FormEditingUtil.ComponentVisitor()
 			{
 				@Override
-				public boolean visit(final IComponent component)
+				public boolean visit(IComponent component)
 				{
 					((RadComponent) component).setSelected(true);
 					return true;

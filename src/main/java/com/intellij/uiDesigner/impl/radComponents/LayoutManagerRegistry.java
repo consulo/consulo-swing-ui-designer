@@ -32,9 +32,9 @@ import java.util.*;
  * @author yole
  */
 public class LayoutManagerRegistry {
-  @NonNls private static final Map<String, Class<? extends RadLayoutManager>> ourLayoutManagerRegistry = new HashMap<String, Class<? extends RadLayoutManager>>();
-  @NonNls private static final Map<Class, Class<? extends RadLayoutManager>> ourLayoutManagerClassRegistry = new HashMap<Class, Class<? extends RadLayoutManager>>();
-  @NonNls private static final Map<String, String> ourLayoutManagerDisplayNames = new HashMap<String, String>();
+  @NonNls private static final Map<String, Class<? extends RadLayoutManager>> ourLayoutManagerRegistry = new HashMap<>();
+  @NonNls private static final Map<Class, Class<? extends RadLayoutManager>> ourLayoutManagerClassRegistry = new HashMap<>();
+  @NonNls private static final Map<String, String> ourLayoutManagerDisplayNames = new HashMap<>();
 
   private LayoutManagerRegistry() {
   }
@@ -61,13 +61,13 @@ public class LayoutManagerRegistry {
   }
 
   public static String[] getLayoutManagerNames() {
-    final String[] layoutManagerNames = ArrayUtil.toStringArray(ourLayoutManagerRegistry.keySet());
+    String[] layoutManagerNames = ArrayUtil.toStringArray(ourLayoutManagerRegistry.keySet());
     Arrays.sort(layoutManagerNames);
     return layoutManagerNames;
   }
 
   public static String[] getNonDeprecatedLayoutManagerNames() {
-    ArrayList<String> layoutManagerNames = new ArrayList<String>();
+    ArrayList<String> layoutManagerNames = new ArrayList<>();
     for(String name: ourLayoutManagerRegistry.keySet()) {
       if (!name.equals(UIFormXmlConstants.LAYOUT_XY)) {
         layoutManagerNames.add(name);
@@ -99,7 +99,7 @@ public class LayoutManagerRegistry {
   }
 
   @Nullable
-  private static RadLayoutManager createFromLayoutClass(final Class aClass) {
+  private static RadLayoutManager createFromLayoutClass(Class aClass) {
     // we can't use isInstance() because the class in our map and aClass may have been loaded with
     // different classloaders
     for(Map.Entry<Class, Class<? extends RadLayoutManager>> e: ourLayoutManagerClassRegistry.entrySet()) {
@@ -128,7 +128,7 @@ public class LayoutManagerRegistry {
   }
 
   public static RadLayoutManager createDefaultGridLayoutManager(Project project) {
-    final String defaultLayoutManager = GuiDesignerConfiguration.getInstance(project).DEFAULT_LAYOUT_MANAGER;
+    String defaultLayoutManager = GuiDesignerConfiguration.getInstance(project).DEFAULT_LAYOUT_MANAGER;
     if (defaultLayoutManager.equals(UIFormXmlConstants.LAYOUT_GRIDBAG)) {
       return new RadGridBagLayoutManager();
     }

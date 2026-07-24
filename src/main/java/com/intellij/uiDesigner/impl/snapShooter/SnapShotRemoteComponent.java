@@ -29,7 +29,7 @@ public class SnapShotRemoteComponent {
   private final String myText;
   private SnapShotRemoteComponent[] myChildren = null;
 
-  public SnapShotRemoteComponent(final int id, final String className, final String layoutManager, final String text) {
+  public SnapShotRemoteComponent(int id, String className, String layoutManager, String text) {
     myId = id;
     myClassName = className;
     myLayoutManager = layoutManager;
@@ -37,7 +37,7 @@ public class SnapShotRemoteComponent {
   }
 
   public SnapShotRemoteComponent(String line, boolean topLevel) {
-    final String[] strings = line.trim().split(";", 4);
+    String[] strings = line.trim().split(";", 4);
     myId = Integer.parseInt(strings [0]);
     myClassName = strings [1];
     myLayoutManager = strings [2];
@@ -70,7 +70,7 @@ public class SnapShotRemoteComponent {
     return myChildren;
   }
 
-  public void setChildren(final SnapShotRemoteComponent[] children) {
+  public void setChildren(SnapShotRemoteComponent[] children) {
     myChildren = children;
   }
 

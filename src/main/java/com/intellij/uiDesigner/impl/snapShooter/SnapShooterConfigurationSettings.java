@@ -35,15 +35,15 @@ public class SnapShooterConfigurationSettings {
     return myNotifyRunnable;
   }
 
-  public void setLastPort(final int lastPort) {
+  public void setLastPort(int lastPort) {
     myLastPort = lastPort;
   }
 
-  public void setNotifyRunnable(final Runnable notifyRunnable) {
+  public void setNotifyRunnable(Runnable notifyRunnable) {
     myNotifyRunnable = notifyRunnable;
   }
 
-  public static SnapShooterConfigurationSettings get(final RunConfigurationBase config) {
+  public static SnapShooterConfigurationSettings get(RunConfigurationBase config) {
     SnapShooterConfigurationSettings settings = config.getUserData(SNAP_SHOOTER_KEY);
     if (settings == null) {
       settings = new SnapShooterConfigurationSettings();

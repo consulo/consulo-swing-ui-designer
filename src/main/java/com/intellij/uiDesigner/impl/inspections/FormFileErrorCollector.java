@@ -39,18 +39,18 @@ public class FormFileErrorCollector extends FormErrorCollector {
   private final InspectionManager myManager;
   private final PsiFile myFile;
   private final boolean myOnTheFly;
-  private final List<ProblemDescriptor> myProblems = new ArrayList<ProblemDescriptor>();
+  private final List<ProblemDescriptor> myProblems = new ArrayList<>();
 
-  public FormFileErrorCollector(final PsiFile file, final InspectionManager manager, boolean onTheFly) {
+  public FormFileErrorCollector(PsiFile file, InspectionManager manager, boolean onTheFly) {
     myManager = manager;
     myFile = file;
     myOnTheFly = onTheFly;
   }
 
-  public void addError(final String inspectionId, final IComponent component, @Nullable IProperty prop,
+  public void addError(String inspectionId, IComponent component, @Nullable IProperty prop,
                        @Nonnull String errorMessage,
                        EditorQuickFixProvider... editorQuickFixProviders) {
-    final ProblemDescriptor problemDescriptor = myManager.createProblemDescriptor(myFile, JDOMUtil.escapeText(errorMessage),
+    ProblemDescriptor problemDescriptor = myManager.createProblemDescriptor(myFile, JDOMUtil.escapeText(errorMessage),
                                                                                   (LocalQuickFix)null,
                                                                                   ProblemHighlightType.GENERIC_ERROR_OR_WARNING, myOnTheFly);
     if (problemDescriptor instanceof ProblemDescriptorBase && component != null) {

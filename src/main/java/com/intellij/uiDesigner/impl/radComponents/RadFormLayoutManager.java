@@ -72,8 +72,8 @@ public class RadFormLayoutManager extends RadAbstractGridLayoutManager implement
   }
 
   @Override
-  protected void changeLayoutFromGrid(final RadContainer container, final List<RadComponent> contents, final List<Boolean> canRowsGrow,
-                                      final List<Boolean> canColumnsGrow) {
+  protected void changeLayoutFromGrid(RadContainer container, List<RadComponent> contents, List<Boolean> canRowsGrow,
+                                      List<Boolean> canColumnsGrow) {
     int rowCount = canRowsGrow.size();
     int columnCount = canColumnsGrow.size();
     int rowCountWithGaps = (rowCount == 0) ? 0 : rowCount * 2 - 1;
@@ -98,7 +98,7 @@ public class RadFormLayoutManager extends RadAbstractGridLayoutManager implement
   }
 
   @Override
-  protected void changeLayoutFromIndexed(final RadContainer container, final List<RadComponent> components) {
+  protected void changeLayoutFromIndexed(RadContainer container, List<RadComponent> components) {
     int maxSizePolicy = 0;
     for(RadComponent c: components) {
       maxSizePolicy = Math.max(maxSizePolicy, c.getConstraints().getHSizePolicy());
@@ -116,7 +116,7 @@ public class RadFormLayoutManager extends RadAbstractGridLayoutManager implement
   }
 
   @Override
-  public void writeLayout(final XmlWriter writer, final RadContainer radContainer) {
+  public void writeLayout(XmlWriter writer, RadContainer radContainer) {
     FormLayout layout = (FormLayout) radContainer.getLayout();
     for(int i=1; i<=layout.getRowCount(); i++) {
       RowSpec rowSpec = layout.getRowSpec(i);
@@ -142,7 +142,7 @@ public class RadFormLayoutManager extends RadAbstractGridLayoutManager implement
     writeGroups(writer, UIFormXmlConstants.ELEMENT_COLGROUP, layout.getColumnGroups());
   }
 
-  private static void writeGroups(final XmlWriter writer, final String elementName, final int[][] groups) {
+  private static void writeGroups(XmlWriter writer, String elementName, int[][] groups) {
     for(int[] group: groups) {
       writer.startElement(elementName);
       try {
@@ -159,9 +159,9 @@ public class RadFormLayoutManager extends RadAbstractGridLayoutManager implement
   }
 
   @Override
-  public void addComponentToContainer(final RadContainer container, final RadComponent component, final int index) {
+  public void addComponentToContainer(RadContainer container, RadComponent component, int index) {
     super.addComponentToContainer(container, component, index);
-    final CellConstraints cc = gridToCellConstraints(component);
+    CellConstraints cc = gridToCellConstraints(component);
     if (component.getCustomLayoutConstraints() instanceof CellConstraints) {
       CellConstraints customCellConstraints = (CellConstraints) component.getCustomLayoutConstraints();
       cc.insets = customCellConstraints.insets;
@@ -170,7 +170,7 @@ public class RadFormLayoutManager extends RadAbstractGridLayoutManager implement
     container.getDelegee().add(component.getDelegee(), cc, index);
   }
 
-  private static CellConstraints gridToCellConstraints(final RadComponent component) {
+  private static CellConstraints gridToCellConstraints(RadComponent component) {
     GridConstraints gc = component.getConstraints();
     CellConstraints.Alignment hAlign = ((gc.getHSizePolicy() & GridConstraints.SIZEPOLICY_WANT_GROW) != 0)
                                        ? CellConstraints.FILL
@@ -187,7 +187,7 @@ public class RadFormLayoutManager extends RadAbstractGridLayoutManager implement
   }
 
   @Override
-  public void writeChildConstraints(final XmlWriter writer, final RadComponent child) {
+  public void writeChildConstraints(XmlWriter writer, RadComponent child) {
     writeGridConstraints(writer, child);
     if (child.getCustomLayoutConstraints() instanceof CellConstraints) {
       CellConstraints cc = (CellConstraints) child.getCustomLayoutConstraints();
@@ -212,7 +212,7 @@ public class RadFormLayoutManager extends RadAbstractGridLayoutManager implement
     }
   }
 
-  private static FormLayout getFormLayout(final RadContainer container) {
+  private static FormLayout getFormLayout(RadContainer container) {
     return (FormLayout) container.getLayout();
   }
 
@@ -225,7 +225,7 @@ public class RadFormLayoutManager extends RadAbstractGridLayoutManager implement
   }
 
   @Override public int[] getGridCellCoords(RadContainer container, boolean isRow) {
-    final FormLayout.LayoutInfo layoutInfo = getFormLayout(container).getLayoutInfo(container.getDelegee());
+    FormLayout.LayoutInfo layoutInfo = getFormLayout(container).getLayoutInfo(container.getDelegee());
     int[] origins = isRow ? layoutInfo.rowOrigins : layoutInfo.columnOrigins;
     int[] result = new int [origins.length-1];
     System.arraycopy(origins, 0, result, 0, result.length);
@@ -233,7 +233,7 @@ public class RadFormLayoutManager extends RadAbstractGridLayoutManager implement
   }
 
   @Override public int[] getGridCellSizes(RadContainer container, boolean isRow) {
-    final FormLayout.LayoutInfo layoutInfo = getFormLayout(container).getLayoutInfo(container.getDelegee());
+    FormLayout.LayoutInfo layoutInfo = getFormLayout(container).getLayoutInfo(container.getDelegee());
     int[] origins = isRow ? layoutInfo.rowOrigins : layoutInfo.columnOrigins;
     int[] result = new int [origins.length-1];
     for(int i=0; i<result.length; i++) {
@@ -243,26 +243,26 @@ public class RadFormLayoutManager extends RadAbstractGridLayoutManager implement
   }
 
   @Override public int[] getHorizontalGridLines(RadContainer container) {
-    final FormLayout.LayoutInfo layoutInfo = getFormLayout(container).getLayoutInfo(container.getDelegee());
+    FormLayout.LayoutInfo layoutInfo = getFormLayout(container).getLayoutInfo(container.getDelegee());
     return layoutInfo.rowOrigins;
   }
 
   @Override public int[] getVerticalGridLines(RadContainer container) {
-    final FormLayout.LayoutInfo layoutInfo = getFormLayout(container).getLayoutInfo(container.getDelegee());
+    FormLayout.LayoutInfo layoutInfo = getFormLayout(container).getLayoutInfo(container.getDelegee());
     return layoutInfo.columnOrigins;
   }
 
   @Override public int getGridRowAt(RadContainer container, int y) {
-    final FormLayout.LayoutInfo layoutInfo = getFormLayout(container).getLayoutInfo(container.getDelegee());
+    FormLayout.LayoutInfo layoutInfo = getFormLayout(container).getLayoutInfo(container.getDelegee());
     return findCell(layoutInfo.rowOrigins, y);
   }
 
   @Override public int getGridColumnAt(RadContainer container, int x) {
-    final FormLayout.LayoutInfo layoutInfo = getFormLayout(container).getLayoutInfo(container.getDelegee());
+    FormLayout.LayoutInfo layoutInfo = getFormLayout(container).getLayoutInfo(container.getDelegee());
     return findCell(layoutInfo.columnOrigins, x);
   }
 
-  private static int findCell(final int[] origins, final int coord) {
+  private static int findCell(int[] origins, int coord) {
     for(int i=0; i<origins.length-1; i++) {
       if (coord >= origins [i] && coord < origins [i+1]) return i;
     }
@@ -271,7 +271,7 @@ public class RadFormLayoutManager extends RadAbstractGridLayoutManager implement
 
   @Nonnull
   @Override
-  public ComponentDropLocation getDropLocation(@Nonnull RadContainer container, @Nullable final Point location) {
+  public ComponentDropLocation getDropLocation(@Nonnull RadContainer container, @Nullable Point location) {
     FormLayout formLayout = getFormLayout(container);
     if (formLayout.getRowCount() == 0 || formLayout.getColumnCount() == 0) {
       if (location != null) {
@@ -279,7 +279,7 @@ public class RadFormLayoutManager extends RadAbstractGridLayoutManager implement
         return new FormFirstComponentInsertLocation(container, location, rc);
       }
     }
-    final FormLayout.LayoutInfo layoutInfo = formLayout.getLayoutInfo(container.getDelegee());
+    FormLayout.LayoutInfo layoutInfo = formLayout.getLayoutInfo(container.getDelegee());
     if (location != null && location.x > layoutInfo.getWidth()) {
       int row = findCell(layoutInfo.rowOrigins, location.y);
       if (row == -1) {
@@ -297,7 +297,7 @@ public class RadFormLayoutManager extends RadAbstractGridLayoutManager implement
 
     if (container.getGridRowCount() == 1 && container.getGridColumnCount() == 1 &&
         getComponentAtGrid(container, 0, 0) == null) {
-      final Rectangle rc = getGridCellRangeRect(container, 0, 0, 0, 0);
+      Rectangle rc = getGridCellRangeRect(container, 0, 0, 0, 0);
       if (location == null) {
         return new FormFirstComponentInsertLocation(container, rc, 0, 0);
       }
@@ -341,8 +341,8 @@ public class RadFormLayoutManager extends RadAbstractGridLayoutManager implement
   }
 
   @Override
-  public void paintCaptionDecoration(final RadContainer container, final boolean isRow, final int index, final Graphics2D g2d,
-                                     final Rectangle rc) {
+  public void paintCaptionDecoration(RadContainer container, boolean isRow, int index, Graphics2D g2d,
+                                     Rectangle rc) {
     // don't paint gap rows/columns with red background
     if (isGapCell(container, isRow, index)) {
       g2d.setColor(Color.LIGHT_GRAY);
@@ -387,8 +387,8 @@ public class RadFormLayoutManager extends RadAbstractGridLayoutManager implement
     drawGroupLine(rc, isRow, g2d, false, haveBottomLeft, haveBottomRight, haveBottomLine);
   }
 
-  private static void drawGroupLine(final Rectangle rc, final boolean isRow, final Graphics2D g2d, boolean isTop,
-                                    final boolean haveLeft, final boolean haveRight, final boolean haveLine) {
+  private static void drawGroupLine(Rectangle rc, boolean isRow, Graphics2D g2d, boolean isTop,
+                                    boolean haveLeft, boolean haveRight, boolean haveLine) {
 
     int maxX = (int) rc.getMaxX();
     int maxY = (int) rc.getMaxY();
@@ -424,12 +424,12 @@ public class RadFormLayoutManager extends RadAbstractGridLayoutManager implement
   }
 
   @Override
-  public Property[] getContainerProperties(final Project project) {
+  public Property[] getContainerProperties(Project project) {
     return Property.EMPTY_ARRAY;
   }
 
   @Override
-  public Property[] getComponentProperties(final Project project, final RadComponent component) {
+  public Property[] getComponentProperties(Project project, RadComponent component) {
     return new Property[] {
       HorzAlignProperty.getInstance(project),
       VertAlignProperty.getInstance(project),
@@ -438,7 +438,7 @@ public class RadFormLayoutManager extends RadAbstractGridLayoutManager implement
   }
 
   @Override
-  public int insertGridCells(final RadContainer grid, final int cellIndex, final boolean isRow, final boolean isBefore, final boolean grow) {
+  public int insertGridCells(RadContainer grid, int cellIndex, boolean isRow, boolean isBefore, boolean grow) {
     FormSpec formSpec;
     if (isRow) {
       formSpec = grow ? RowSpec.decode(ENCODED_FORMSPEC_GROW) : new RowSpec(DEFAULT_NOGROW_SIZE);
@@ -451,7 +451,7 @@ public class RadFormLayoutManager extends RadAbstractGridLayoutManager implement
   }
 
   @Override
-  public void copyGridCells(RadContainer source, final RadContainer destination, final boolean isRow, int cellIndex, int cellCount, int targetIndex) {
+  public void copyGridCells(RadContainer source, RadContainer destination, boolean isRow, int cellIndex, int cellCount, int targetIndex) {
     FormLayout sourceLayout = getFormLayout(source);
     FormLayout destinationLayout = getFormLayout(destination);
     if (isRow) {
@@ -466,9 +466,9 @@ public class RadFormLayoutManager extends RadAbstractGridLayoutManager implement
     updateGridConstraintsFromCellConstraints(destination);
   }
 
-  private static void copyFormSpecs(final FormLayout sourceLayout,
-                                    final FormLayout destinationLayout,
-                                    final boolean isRow,
+  private static void copyFormSpecs(FormLayout sourceLayout,
+                                    FormLayout destinationLayout,
+                                    boolean isRow,
                                     int cellIndex,
                                     int cellCount,
                                     int targetIndex) {
@@ -487,8 +487,8 @@ public class RadFormLayoutManager extends RadAbstractGridLayoutManager implement
   }
 
   @Override
-  public void copyGridSection(final RadContainer source, final RadContainer destination, final Rectangle rc) {
-    final FormLayout destinationLayout = new FormLayout();
+  public void copyGridSection(RadContainer source, RadContainer destination, Rectangle rc) {
+    FormLayout destinationLayout = new FormLayout();
     destination.setLayout(destinationLayout);
     copyFormSpecs(getFormLayout(source), destinationLayout, true, rc.y, rc.height, 0);
     copyFormSpecs(getFormLayout(source), destinationLayout, false, rc.x, rc.width, 0);
@@ -500,7 +500,7 @@ public class RadFormLayoutManager extends RadAbstractGridLayoutManager implement
   }
 
   @Override
-  public int getGapCellSize(final RadContainer container, boolean isRow) {
+  public int getGapCellSize(RadContainer container, boolean isRow) {
     Size size = isRow ? FormSpecs.RELATED_GAP_ROWSPEC.getSize() : FormSpecs.RELATED_GAP_COLSPEC.getSize();
     if (size instanceof ConstantSize) {
       return ((ConstantSize) size).getPixelSize(container.getDelegee());
@@ -514,7 +514,7 @@ public class RadFormLayoutManager extends RadAbstractGridLayoutManager implement
       return false;
     }
     if (cellIndex % 2 == 1) {
-      final GridChangeUtil.CellStatus status = GridChangeUtil.canDeleteCell(grid, cellIndex, isRow);
+      GridChangeUtil.CellStatus status = GridChangeUtil.canDeleteCell(grid, cellIndex, isRow);
       if (status == GridChangeUtil.CellStatus.Empty || status == GridChangeUtil.CellStatus.Redundant) {
         return true;
       }
@@ -551,7 +551,7 @@ public class RadFormLayoutManager extends RadAbstractGridLayoutManager implement
     return index-1;
   }
 
-  private static void insertOrAppendRow(final FormLayout formLayout, final int index, final RowSpec rowSpec) {
+  private static void insertOrAppendRow(FormLayout formLayout, int index, RowSpec rowSpec) {
     if (index == formLayout.getRowCount()+1) {
       formLayout.appendRow(rowSpec);
     }
@@ -560,7 +560,7 @@ public class RadFormLayoutManager extends RadAbstractGridLayoutManager implement
     }
   }
 
-  private static void insertOrAppendColumn(final FormLayout formLayout, final int index, final ColumnSpec columnSpec) {
+  private static void insertOrAppendColumn(FormLayout formLayout, int index, ColumnSpec columnSpec) {
     if (index == formLayout.getColumnCount()+1) {
       formLayout.appendColumn(columnSpec);
     }
@@ -570,7 +570,7 @@ public class RadFormLayoutManager extends RadAbstractGridLayoutManager implement
   }
 
   @Override
-  public int deleteGridCells(final RadContainer grid, final int cellIndex, final boolean isRow) {
+  public int deleteGridCells(RadContainer grid, int cellIndex, boolean isRow) {
     int result = 1;
     FormLayout formLayout = (FormLayout) grid.getLayout();
     adjustDeletedCellOrigins(grid, cellIndex, isRow);
@@ -607,13 +607,13 @@ public class RadFormLayoutManager extends RadAbstractGridLayoutManager implement
     return result;
   }
 
-  private void adjustDeletedCellOrigins(final RadContainer grid, final int cellIndex, final boolean isRow) {
+  private void adjustDeletedCellOrigins(RadContainer grid, int cellIndex, boolean isRow) {
     int gapCellDelta = isGapCell(grid, isRow, cellIndex+1) ? 2 : 1;
     for(RadComponent component: grid.getComponents()) {
       // ensure that we don't have component origins in the deleted cells
-      final GridConstraints gc = component.getConstraints();
+      GridConstraints gc = component.getConstraints();
       if (gc.getCell(isRow) == cellIndex) {
-        final int span = gc.getSpan(isRow);
+        int span = gc.getSpan(isRow);
         if (span > gapCellDelta) {
           gc.setCell(isRow, cellIndex+gapCellDelta);
           gc.setSpan(isRow, span -gapCellDelta);
@@ -626,7 +626,7 @@ public class RadFormLayoutManager extends RadAbstractGridLayoutManager implement
     }
   }
 
-  private static int[][] removeDeletedCell(final int[][] groupIndices, final int deletedIndex) {
+  private static int[][] removeDeletedCell(int[][] groupIndices, int deletedIndex) {
     for(int i=0; i<groupIndices.length; i++) {
       for(int j=0; j<groupIndices [i].length; j++) {
         if (groupIndices [i][j] == deletedIndex) {
@@ -667,16 +667,16 @@ public class RadFormLayoutManager extends RadAbstractGridLayoutManager implement
 
   @Override @Nullable
   public String getCellResizeTooltip(RadContainer container, boolean isRow, int cell, int newSize) {
-    final String size = getUpdatedSize(container, isRow, cell, newSize).toString();
+    String size = getUpdatedSize(container, isRow, cell, newSize).toString();
     return isRow
            ? UIDesignerBundle.message("tooltip.resize.row", cell+getCellIndexBase(), size)
            : UIDesignerBundle.message("tooltip.resize.column", cell+getCellIndexBase(), size);
   }
 
   @Override
-  public void processCellResized(RadContainer container, final boolean isRow, final int cell, final int newSize) {
+  public void processCellResized(RadContainer container, boolean isRow, int cell, int newSize) {
     FormLayout formLayout = (FormLayout) container.getLayout();
-    final ConstantSize updatedSize = getUpdatedSize(container, isRow, cell, newSize);
+    ConstantSize updatedSize = getUpdatedSize(container, isRow, cell, newSize);
     FormSpec newSpec;
     if (isRow) {
       RowSpec rowSpec = formLayout.getRowSpec(cell+1);
@@ -691,7 +691,7 @@ public class RadFormLayoutManager extends RadAbstractGridLayoutManager implement
   }
 
   // Explicitly resize all cells in the group to desired size to make sure that the resize operation is effective (IDEADEV-10202) 
-  private static void resizeSameGroupCells(final int cell, final FormLayout formLayout, final FormSpec newSpec, final boolean isRow) {
+  private static void resizeSameGroupCells(int cell, FormLayout formLayout, FormSpec newSpec, boolean isRow) {
     int[][] groups = isRow ? formLayout.getRowGroups() : formLayout.getColumnGroups();
     for(int[] group: groups) {
       boolean foundGroup = false;
@@ -710,7 +710,7 @@ public class RadFormLayoutManager extends RadAbstractGridLayoutManager implement
     }
   }
 
-  private static void setSpec(final FormLayout formLayout, final FormSpec newSpec, final int cell, boolean isRow) {
+  private static void setSpec(FormLayout formLayout, FormSpec newSpec, int cell, boolean isRow) {
     if (isRow) {
       formLayout.setRowSpec(cell, (RowSpec) newSpec);
     }
@@ -729,7 +729,7 @@ public class RadFormLayoutManager extends RadAbstractGridLayoutManager implement
     }
   }
 
-  private static ConstantSize scaleSize(final FormSpec rowSpec, final RadContainer container, final int newPx) {
+  private static ConstantSize scaleSize(FormSpec rowSpec, RadContainer container, int newPx) {
     if (rowSpec.getSize() instanceof ConstantSize) {
       ConstantSize oldSize = (ConstantSize) rowSpec.getSize();
       int oldPx = oldSize.getPixelSize(container.getDelegee());
@@ -740,9 +740,9 @@ public class RadFormLayoutManager extends RadAbstractGridLayoutManager implement
   }
 
   @Override
-  public void processCellsMoved(final RadContainer container, final boolean isRow, final int[] cellsToMove, int targetCell) {
+  public void processCellsMoved(RadContainer container, boolean isRow, int[] cellsToMove, int targetCell) {
     for(int i=0; i<cellsToMove.length; i++) {
-      final int sourceCell = cellsToMove[i];
+      int sourceCell = cellsToMove[i];
       moveCells(container, isRow, sourceCell, targetCell);
       if (sourceCell < targetCell) {
         for(int j=i+1; j<cellsToMove.length; j++) {
@@ -755,12 +755,12 @@ public class RadFormLayoutManager extends RadAbstractGridLayoutManager implement
     }
   }
 
-  private void moveCells(final RadContainer container, final boolean isRow, final int cell, int targetCell) {
+  private void moveCells(RadContainer container, boolean isRow, int cell, int targetCell) {
     if (targetCell >= cell && targetCell <= cell+2) {
       return;
     }
     FormLayout layout = (FormLayout) container.getLayout();
-    List<RadComponent> componentsToMove = new ArrayList<RadComponent>();
+    List<RadComponent> componentsToMove = new ArrayList<>();
     FormSpec oldSpec = isRow ? layout.getRowSpec(cell+1) : layout.getColumnSpec(cell+1);
     for(RadComponent c: container.getComponents()) {
       if (c.getConstraints().getCell(isRow) == cell) {
@@ -770,7 +770,7 @@ public class RadFormLayoutManager extends RadAbstractGridLayoutManager implement
     }
     int count = deleteGridCells(container, cell, isRow);
     int insertCell = (targetCell > cell) ? targetCell - count - 1 : targetCell;
-    final boolean isBefore = targetCell < cell;
+    boolean isBefore = targetCell < cell;
     int newIndex = insertGridCells(container, insertCell, isRow, isBefore, oldSpec);
     for(RadComponent c: componentsToMove) {
       c.getConstraints().setCell(isRow, newIndex);
@@ -787,7 +787,7 @@ public class RadFormLayoutManager extends RadAbstractGridLayoutManager implement
     }
   }
 
-  private static void copyCellToGridConstraints(final GridConstraints gc, final CellConstraints cc) {
+  private static void copyCellToGridConstraints(GridConstraints gc, CellConstraints cc) {
     gc.setColumn(cc.gridX-1);
     gc.setRow(cc.gridY-1);
     gc.setColSpan(cc.gridWidth);
@@ -802,7 +802,7 @@ public class RadFormLayoutManager extends RadAbstractGridLayoutManager implement
       FormSpec formSpec = horizontal
                           ? formLayout.getColumnSpec(component.getConstraints().getColumn()+1)
                           : formLayout.getRowSpec(component.getConstraints().getRow()+1);
-      final FormSpec.DefaultAlignment defaultAlignment = formSpec.getDefaultAlignment();
+      FormSpec.DefaultAlignment defaultAlignment = formSpec.getDefaultAlignment();
       if (defaultAlignment.equals(RowSpec.FILL)) {
         return GridConstraints.ALIGN_FILL;
       }
@@ -846,7 +846,7 @@ public class RadFormLayoutManager extends RadAbstractGridLayoutManager implement
   }
 
   @Override
-  protected void updateConstraints(final RadComponent component) {
+  protected void updateConstraints(RadComponent component) {
     FormLayout layout = (FormLayout) component.getParent().getLayout();
     layout.setConstraints(component.getDelegee(), gridToCellConstraints(component));
     super.updateConstraints(component);
@@ -857,10 +857,10 @@ public class RadFormLayoutManager extends RadAbstractGridLayoutManager implement
   }
 
   @Override
-  public void createSnapshotLayout(final SnapshotContext context,
-                                   final JComponent parent,
-                                   final RadContainer container,
-                                   final LayoutManager layout) {
+  public void createSnapshotLayout(SnapshotContext context,
+                                   JComponent parent,
+                                   RadContainer container,
+                                   LayoutManager layout) {
     ColumnSpec[] colSpecs;
     RowSpec[] rowSpecs;
     int[][] rowGroups;
@@ -893,13 +893,13 @@ public class RadFormLayoutManager extends RadAbstractGridLayoutManager implement
       throw new RuntimeException(ex);
     }
 
-    final FormLayout formLayout = new FormLayout(colSpecs, rowSpecs);
+    FormLayout formLayout = new FormLayout(colSpecs, rowSpecs);
     formLayout.setRowGroups(rowGroups);
     formLayout.setColumnGroups(columnGroups);
     container.setLayout(formLayout);
   }
 
-  private static Object createSerializedCopy(final Object original) {
+  private static Object createSerializedCopy(Object original) {
     // FormLayout may have been loaded with a different classloader, so we need to create a copy through serialization
     Object copy;
     try {
@@ -928,10 +928,10 @@ public class RadFormLayoutManager extends RadAbstractGridLayoutManager implement
   }
 
   @Override
-  public void addSnapshotComponent(final JComponent parent,
-                                   final JComponent child,
-                                   final RadContainer container,
-                                   final RadComponent component) {
+  public void addSnapshotComponent(JComponent parent,
+                                   JComponent child,
+                                   RadContainer container,
+                                   RadComponent component) {
     CellConstraints cc;
     try {
       LayoutManager layout = parent.getLayout();
@@ -952,17 +952,17 @@ public class RadFormLayoutManager extends RadAbstractGridLayoutManager implement
       super(null, "Insets");
     }
 
-    public Insets getValue(final RadComponent component) {
+    public Insets getValue(RadComponent component) {
       if (component.getCustomLayoutConstraints() instanceof CellConstraints) {
-        final CellConstraints cellConstraints = (CellConstraints)component.getCustomLayoutConstraints();
+        CellConstraints cellConstraints = (CellConstraints)component.getCustomLayoutConstraints();
         return cellConstraints.insets;
       }
       return new Insets(0, 0, 0, 0);
     }
 
-    protected void setValueImpl(final RadComponent component, final Insets value) throws Exception {
+    protected void setValueImpl(RadComponent component, Insets value) throws Exception {
       if (component.getCustomLayoutConstraints() instanceof CellConstraints) {
-        final CellConstraints cellConstraints = (CellConstraints)component.getCustomLayoutConstraints();
+        CellConstraints cellConstraints = (CellConstraints)component.getCustomLayoutConstraints();
         cellConstraints.insets = value;
 
         FormLayout layout = (FormLayout) component.getParent().getLayout();

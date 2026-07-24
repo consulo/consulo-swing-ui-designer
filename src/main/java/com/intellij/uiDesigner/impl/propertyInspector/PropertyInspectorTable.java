@@ -114,15 +114,14 @@ public final class PropertyInspectorTable extends JBTable implements DataProvide
      * Component to be edited
      */
     @Nonnull
-    private final List<RadComponent> mySelection = new ArrayList<RadComponent>();
+    private final List<RadComponent> mySelection = new ArrayList<>();
     /**
      * If true then inspector will show "expert" properties
      */
     private boolean myShowExpertProperties;
 
-    private final Map<HighlightSeverity, SimpleTextAttributes> myHighlightAttributes = new HashMap<HighlightSeverity, SimpleTextAttributes>();
-    private final Map<HighlightSeverity, SimpleTextAttributes> myModifiedHighlightAttributes = new HashMap<HighlightSeverity,
-        SimpleTextAttributes>();
+    private final Map<HighlightSeverity, SimpleTextAttributes> myHighlightAttributes = new HashMap<>();
+    private final Map<HighlightSeverity, SimpleTextAttributes> myModifiedHighlightAttributes = new HashMap<>();
 
     private final ClassToBindProperty myClassToBindProperty;
     private final BindingProperty myBindingProperty;
@@ -138,7 +137,7 @@ public final class PropertyInspectorTable extends JBTable implements DataProvide
 
     private static final String ourHelpID = "guiDesigner.uiTour.inspector";
 
-    PropertyInspectorTable(Project project, @Nonnull final ComponentTree componentTree) {
+    PropertyInspectorTable(Project project, @Nonnull ComponentTree componentTree) {
         myProject = project;
         myClassToBindProperty = new ClassToBindProperty(project);
         myBindingProperty = new BindingProperty(project);
@@ -147,8 +146,8 @@ public final class PropertyInspectorTable extends JBTable implements DataProvide
         myPropertyEditorListener = new MyPropertyEditorListener();
         myLafManagerListener = new MyLafManagerListener();
         myComponentTree = componentTree;
-        myProperties = new ArrayList<Property>();
-        myExpandedProperties = new HashSet<String>();
+        myProperties = new ArrayList<>();
+        myExpandedProperties = new HashSet<>();
         myModel = new MyModel();
         setModel(myModel);
         setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -158,19 +157,19 @@ public final class PropertyInspectorTable extends JBTable implements DataProvide
 
         addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(final MouseEvent e) {
-                final int row = rowAtPoint(e.getPoint());
+            public void mousePressed(MouseEvent e) {
+                int row = rowAtPoint(e.getPoint());
                 if (row == -1) {
                     return;
                 }
-                final Property property = myProperties.get(row);
+                Property property = myProperties.get(row);
                 int indent = getPropertyIndent(property) * 11;
-                final Rectangle rect = getCellRect(row, convertColumnIndexToView(0), false);
+                Rectangle rect = getCellRect(row, convertColumnIndexToView(0), false);
                 if (e.getX() < rect.x + indent || e.getX() > rect.x + 9 + indent || e.getY() < rect.y || e.getY() > rect.y + rect.height) {
                     return;
                 }
 
-                final Property[] children = getPropChildren(property);
+                Property[] children = getPropChildren(property);
                 if (children.length == 0) {
                     return;
                 }
@@ -190,7 +189,7 @@ public final class PropertyInspectorTable extends JBTable implements DataProvide
                 int row = rowAtPoint(e.getPoint());
                 int column = columnAtPoint(e.getPoint());
                 if (row >= 0 && column == 0) {
-                    final Property property = myProperties.get(row);
+                    Property property = myProperties.get(row);
                     if (getPropChildren(property).length == 0) {
                         startEditing(row);
                         return true;
@@ -201,7 +200,7 @@ public final class PropertyInspectorTable extends JBTable implements DataProvide
         }.installOn(this);
 
 
-        final AnAction quickJavadocAction = ActionManager.getInstance().getAction(IdeActions.ACTION_QUICK_JAVADOC);
+        AnAction quickJavadocAction = ActionManager.getInstance().getAction(IdeActions.ACTION_QUICK_JAVADOC);
         new ShowJavadocAction().registerCustomShortcutSet(quickJavadocAction.getShortcutSet(), this);
 
         // Popup menu
@@ -209,7 +208,7 @@ public final class PropertyInspectorTable extends JBTable implements DataProvide
             .GROUP_GUI_DESIGNER_PROPERTY_INSPECTOR_POPUP), ActionPlaces.GUI_DESIGNER_PROPERTY_INSPECTOR_POPUP, ActionManager.getInstance());
     }
 
-    public void setEditor(final GuiEditor editor) {
+    public void setEditor(GuiEditor editor) {
         finishEditing();
         myEditor = editor;
         if (myEditor == null) {
@@ -235,7 +234,7 @@ public final class PropertyInspectorTable extends JBTable implements DataProvide
 
     @Nullable
     public Property getSelectedProperty() {
-        final int selectedRow = getSelectedRow();
+        int selectedRow = getSelectedRow();
         if (selectedRow < 0 || selectedRow >= getRowCount()) {
             return null;
         }
@@ -247,7 +246,7 @@ public final class PropertyInspectorTable extends JBTable implements DataProvide
      * @return {@link PsiClass} of the component which properties are displayed inside the inspector
      */
     public PsiClass getComponentClass() {
-        final Module module = myEditor.getModule();
+        Module module = myEditor.getModule();
 
         if (mySelection.size() == 0) {
             return null;
@@ -269,16 +268,16 @@ public final class PropertyInspectorTable extends JBTable implements DataProvide
             return this;
         }
         else if (CommonDataKeys.PSI_ELEMENT == dataId) {
-            final IntrospectedProperty introspectedProperty = getSelectedIntrospectedProperty();
+            IntrospectedProperty introspectedProperty = getSelectedIntrospectedProperty();
             if (introspectedProperty == null) {
                 return null;
             }
-            final PsiClass aClass = getComponentClass();
+            PsiClass aClass = getComponentClass();
             if (aClass == null) {
                 return null;
             }
 
-            final PsiMethod getter = PropertyUtil.findPropertyGetter(aClass, introspectedProperty.getName(), false, true);
+            PsiMethod getter = PropertyUtil.findPropertyGetter(aClass, introspectedProperty.getName(), false, true);
             if (getter != null) {
                 return getter;
             }
@@ -306,7 +305,7 @@ public final class PropertyInspectorTable extends JBTable implements DataProvide
     /**
      * Sets whenther "expert" properties are shown or not
      */
-    void setShowExpertProperties(final boolean showExpertProperties) {
+    void setShowExpertProperties(boolean showExpertProperties) {
         if (myShowExpertProperties == showExpertProperties) {
             return;
         }
@@ -336,7 +335,7 @@ public final class PropertyInspectorTable extends JBTable implements DataProvide
      * editing. Therefore we have to replace some standard actions.
      */
     @Override
-    public void setUI(final TableUI ui) {
+    public void setUI(TableUI ui) {
         super.setUI(ui);
 
         // Customize action and input maps
@@ -369,8 +368,8 @@ public final class PropertyInspectorTable extends JBTable implements DataProvide
     }
 
     @Override
-    public void setValueAt(final Object aValue, final int row, final int column) {
-        final Property property = myProperties.get(row);
+    public void setValueAt(Object aValue, int row, int column) {
+        Property property = myProperties.get(row);
         super.setValueAt(aValue, row, column);
         // We need to repaint whole inspector because change of one property
         // might causes change of another property.
@@ -390,7 +389,7 @@ public final class PropertyInspectorTable extends JBTable implements DataProvide
      *                   is the same as current component in the PropertyInspector then method does
      *                   nothing such sace. If <code>true</code> then inspector is forced to resynch.
      */
-    public void synchWithTree(final boolean forceSynch) {
+    public void synchWithTree(boolean forceSynch) {
         if (myInsideSynch) {
             return;
         }
@@ -418,7 +417,7 @@ public final class PropertyInspectorTable extends JBTable implements DataProvide
             }
 
             // Store selected property
-            final int selectedRow = getSelectedRow();
+            int selectedRow = getSelectedRow();
             Property selectedProperty = null;
             if (selectedRow >= 0 && selectedRow < myProperties.size()) {
                 selectedProperty = myProperties.get(selectedRow);
@@ -428,14 +427,14 @@ public final class PropertyInspectorTable extends JBTable implements DataProvide
             myModel.fireTableDataChanged();
 
             // Try to restore selection
-            final ArrayList<Property> reversePath = new ArrayList<Property>(2);
+            ArrayList<Property> reversePath = new ArrayList<>(2);
             while (selectedProperty != null) {
                 reversePath.add(selectedProperty);
                 selectedProperty = selectedProperty.getParent();
             }
             int indexToSelect = -1;
             for (int i = reversePath.size() - 1; i >= 0; i--) {
-                final Property property = reversePath.get(i);
+                Property property = reversePath.get(i);
                 int index = findPropertyByName(myProperties, property.getName());
                 if (index == -1 && indexToSelect != -1) { // try to expand parent and try again
                     expandProperty(indexToSelect);
@@ -478,16 +477,16 @@ public final class PropertyInspectorTable extends JBTable implements DataProvide
             }
 
             for (int i = 1; i < mySelection.size(); i++) {
-                ArrayList<Property> otherProperties = new ArrayList<Property>();
+                ArrayList<Property> otherProperties = new ArrayList<>();
                 collectProperties(mySelection.get(i), otherProperties);
                 for (int propIndex = myProperties.size() - 1; propIndex >= 0; propIndex--) {
-                    final Property prop = myProperties.get(propIndex);
+                    Property prop = myProperties.get(propIndex);
                     int otherPropIndex = findPropertyByName(otherProperties, prop.getName());
                     if (otherPropIndex < 0) {
                         myProperties.remove(propIndex);
                         continue;
                     }
-                    final Property otherProp = otherProperties.get(otherPropIndex);
+                    Property otherProp = otherProperties.get(otherPropIndex);
                     if (!otherProp.getClass().equals(prop.getClass())) {
                         myProperties.remove(propIndex);
                         continue;
@@ -513,9 +512,9 @@ public final class PropertyInspectorTable extends JBTable implements DataProvide
      * @return index of the property with specified <code>name</code>.
      * If there is no such property then the method returns <code>-1</code>.
      */
-    private static int findPropertyByName(final ArrayList<Property> properties, final String name) {
+    private static int findPropertyByName(ArrayList<Property> properties, String name) {
         for (int i = properties.size() - 1; i >= 0; i--) {
-            final Property property = properties.get(i);
+            Property property = properties.get(i);
             if (property.getName().equals(name)) {
                 return i;
             }
@@ -527,7 +526,7 @@ public final class PropertyInspectorTable extends JBTable implements DataProvide
      * Populates result list with the properties available for the specified
      * component
      */
-    private void collectProperties(final RadComponent component, final ArrayList<Property> result) {
+    private void collectProperties(RadComponent component, ArrayList<Property> result) {
         if (component instanceof RadRootContainer) {
             addProperty(result, myClassToBindProperty);
         }
@@ -544,13 +543,13 @@ public final class PropertyInspectorTable extends JBTable implements DataProvide
                 }
                 addProperty(result, myBorderProperty);
 
-                final Property[] containerProperties = container.getLayoutManager().getContainerProperties(myProject);
+                Property[] containerProperties = container.getLayoutManager().getContainerProperties(myProject);
                 addApplicableProperties(containerProperties, container, result);
             }
 
-            final RadContainer parent = component.getParent();
+            RadContainer parent = component.getParent();
             if (parent != null) {
-                final Property[] properties = parent.getLayoutManager().getComponentProperties(myProject, component);
+                Property[] properties = parent.getLayoutManager().getComponentProperties(myProject, component);
                 addApplicableProperties(properties, component, result);
             }
 
@@ -562,11 +561,11 @@ public final class PropertyInspectorTable extends JBTable implements DataProvide
             }
 
             if (component.hasIntrospectedProperties()) {
-                final Class componentClass = component.getComponentClass();
-                final IntrospectedProperty[] introspectedProperties = Palette.getInstance(myEditor.getProject()).getIntrospectedProperties
+                Class componentClass = component.getComponentClass();
+                IntrospectedProperty[] introspectedProperties = Palette.getInstance(myEditor.getProject()).getIntrospectedProperties
                     (component);
-                final Properties properties = Properties.getInstance();
-                for (final IntrospectedProperty property : introspectedProperties) {
+                Properties properties = Properties.getInstance();
+                for (IntrospectedProperty property : introspectedProperties) {
                     if (!property.appliesTo(component)) {
                         continue;
                     }
@@ -580,7 +579,7 @@ public final class PropertyInspectorTable extends JBTable implements DataProvide
         }
     }
 
-    private void addApplicableProperties(final Property[] containerProperties, final RadComponent component, final ArrayList<Property> result) {
+    private void addApplicableProperties(Property[] containerProperties, RadComponent component, ArrayList<Property> result) {
         for (Property prop : containerProperties) {
             //noinspection unchecked
             if (prop.appliesTo(component)) {
@@ -589,7 +588,7 @@ public final class PropertyInspectorTable extends JBTable implements DataProvide
         }
     }
 
-    private void addProperty(final ArrayList<Property> result, final Property property) {
+    private void addProperty(ArrayList<Property> result, Property property) {
         result.add(property);
         if (isPropertyExpanded(property, property.getParent())) {
             for (Property child : getPropChildren(property)) {
@@ -598,33 +597,33 @@ public final class PropertyInspectorTable extends JBTable implements DataProvide
         }
     }
 
-    private boolean isPropertyExpanded(final Property property, final Property parent) {
+    private boolean isPropertyExpanded(Property property, Property parent) {
         return myExpandedProperties.contains(getDottedName(property));
     }
 
-    private static String getDottedName(final Property property) {
-        final Property parent = property.getParent();
+    private static String getDottedName(Property property) {
+        Property parent = property.getParent();
         if (parent != null) {
             return parent.getName() + "." + property.getName();
         }
         return property.getName();
     }
 
-    private static int getPropertyIndent(final Property property) {
-        final Property parent = property.getParent();
+    private static int getPropertyIndent(Property property) {
+        Property parent = property.getParent();
         if (parent != null) {
             return parent.getParent() != null ? 2 : 1;
         }
         return 0;
     }
 
-    private Property[] getPropChildren(final Property property) {
+    private Property[] getPropChildren(Property property) {
         return property.getChildren(mySelection.get(0));
     }
 
     @Override
-    public TableCellEditor getCellEditor(final int row, final int column) {
-        final PropertyEditor editor = myProperties.get(row).getEditor();
+    public TableCellEditor getCellEditor(int row, int column) {
+        PropertyEditor editor = myProperties.get(row).getEditor();
         editor.removePropertyEditorListener(myPropertyEditorListener); // we do not need to add listener on every invocation
         editor.addPropertyEditorListener(myPropertyEditorListener);
         myCellEditor.setEditor(editor);
@@ -632,7 +631,7 @@ public final class PropertyInspectorTable extends JBTable implements DataProvide
     }
 
     @Override
-    public TableCellRenderer getCellRenderer(final int row, final int column) {
+    public TableCellRenderer getCellRenderer(int row, int column) {
         return myCellRenderer;
     }
 
@@ -642,9 +641,9 @@ public final class PropertyInspectorTable extends JBTable implements DataProvide
      * has opaque child components.
      */
     @Override
-    public boolean editCellAt(final int row, final int column, final EventObject e) {
-        final boolean result = super.editCellAt(row, column, e);
-        final Rectangle cellRect = getCellRect(row, column, true);
+    public boolean editCellAt(int row, int column, EventObject e) {
+        boolean result = super.editCellAt(row, column, e);
+        Rectangle cellRect = getCellRect(row, column, true);
         repaint(cellRect);
         return result;
     }
@@ -653,9 +652,9 @@ public final class PropertyInspectorTable extends JBTable implements DataProvide
      * Starts editing property with the specified <code>index</code>.
      * The method does nothing is property isn't editable.
      */
-    private void startEditing(final int index) {
-        final Property property = myProperties.get(index);
-        final PropertyEditor editor = property.getEditor();
+    private void startEditing(int index) {
+        Property property = myProperties.get(index);
+        PropertyEditor editor = property.getEditor();
         if (editor == null) {
             return;
         }
@@ -679,23 +678,23 @@ public final class PropertyInspectorTable extends JBTable implements DataProvide
     }
 
     @Override
-    public void editingStopped(final ChangeEvent ignored) {
+    public void editingStopped(ChangeEvent ignored) {
         LOG.assertTrue(isEditing());
         LOG.assertTrue(editingRow != -1);
         if (myStoppingEditing) {
             return;
         }
         myStoppingEditing = true;
-        final Property property = myProperties.get(editingRow);
-        final PropertyEditor editor = property.getEditor();
+        Property property = myProperties.get(editingRow);
+        PropertyEditor editor = property.getEditor();
         editor.removePropertyEditorListener(myPropertyEditorListener);
         try {
             if (myEditor != null && !myEditor.isUndoRedoInProgress()) {
-                final Object value = editor.getValue();
+                Object value = editor.getValue();
                 setValueAt(value, editingRow, editingColumn);
             }
         }
-        catch (final Exception exc) {
+        catch (Exception exc) {
             showInvalidInput(exc);
         }
         finally {
@@ -704,8 +703,8 @@ public final class PropertyInspectorTable extends JBTable implements DataProvide
         }
     }
 
-    private static void showInvalidInput(final Exception exc) {
-        final Throwable cause = exc.getCause();
+    private static void showInvalidInput(Exception exc) {
+        Throwable cause = exc.getCause();
         String message;
         if (cause != null) {
             message = cause.getMessage();
@@ -724,12 +723,12 @@ public final class PropertyInspectorTable extends JBTable implements DataProvide
      * Expands property with the specified index. The method fires event that
      * model changes and keeps currently selected row.
      */
-    private void expandProperty(final int index) {
-        final int selectedRow = getSelectedRow();
+    private void expandProperty(int index) {
+        int selectedRow = getSelectedRow();
 
         // Expand property
-        final Property property = myProperties.get(index);
-        final String dottedName = getDottedName(property);
+        Property property = myProperties.get(index);
+        String dottedName = getDottedName(property);
 
         // it's possible that property was expanded and we switched to a component which doesn't have this property
         if (myExpandedProperties.contains(dottedName)) {
@@ -737,7 +736,7 @@ public final class PropertyInspectorTable extends JBTable implements DataProvide
         }
         myExpandedProperties.add(dottedName);
 
-        final Property[] children = getPropChildren(property);
+        Property[] children = getPropChildren(property);
         for (int i = 0; i < children.length; i++) {
             myProperties.add(index + i + 1, children[i]);
         }
@@ -753,15 +752,15 @@ public final class PropertyInspectorTable extends JBTable implements DataProvide
      * Collapse property with the specified index. The method fires event that
      * model changes and keeps currently selected row.
      */
-    private void collapseProperty(final int index) {
-        final int selectedRow = getSelectedRow();
+    private void collapseProperty(int index) {
+        int selectedRow = getSelectedRow();
 
         // Expand property
-        final Property property = myProperties.get(index);
+        Property property = myProperties.get(index);
         LOG.assertTrue(isPropertyExpanded(property, property.getParent()));
         myExpandedProperties.remove(getDottedName(property));
 
-        final Property[] children = getPropChildren(property);
+        Property[] children = getPropChildren(property);
         for (int i = 0; i < children.length; i++) {
             myProperties.remove(index + 1);
         }
@@ -774,13 +773,13 @@ public final class PropertyInspectorTable extends JBTable implements DataProvide
     }
 
     @Nullable
-    ErrorInfo getErrorInfoForRow(final int row) {
+    ErrorInfo getErrorInfoForRow(int row) {
         LOG.assertTrue(row < myProperties.size());
         if (mySelection.size() != 1) {
             return null;
         }
         RadComponent component = mySelection.get(0);
-        final Property property = myProperties.get(row);
+        Property property = myProperties.get(row);
         ErrorInfo errorInfo = null;
         if (myClassToBindProperty.equals(property)) {
             errorInfo = (ErrorInfo) component.getClientProperty(ErrorAnalyzer.CLIENT_PROP_CLASS_TO_BIND_ERROR);
@@ -808,22 +807,22 @@ public final class PropertyInspectorTable extends JBTable implements DataProvide
      * any error then the method returns <code>null</code>.
      */
     @Nullable
-    private String getErrorForRow(final int row) {
+    private String getErrorForRow(int row) {
         LOG.assertTrue(row < myProperties.size());
-        final ErrorInfo errorInfo = getErrorInfoForRow(row);
+        ErrorInfo errorInfo = getErrorInfoForRow(row);
         return errorInfo != null ? errorInfo.myDescription : null;
     }
 
     @Override
-    public String getToolTipText(final MouseEvent e) {
-        final int row = rowAtPoint(e.getPoint());
+    public String getToolTipText(MouseEvent e) {
+        int row = rowAtPoint(e.getPoint());
         if (row == -1) {
             return null;
         }
         return getErrorForRow(row);
     }
 
-    private Object getSelectionValue(final Property property) {
+    private Object getSelectionValue(Property property) {
         if (mySelection.size() == 0) {
             return null;
         }
@@ -879,7 +878,7 @@ public final class PropertyInspectorTable extends JBTable implements DataProvide
         return true;
     }
 
-    private static boolean setPropValue(final Property property, final RadComponent c, final Object newValue) {
+    private static boolean setPropValue(Property property, RadComponent c, Object newValue) {
         try {
             //noinspection unchecked
             property.setValue(c, newValue);
@@ -895,7 +894,7 @@ public final class PropertyInspectorTable extends JBTable implements DataProvide
         return true;
     }
 
-    public boolean isModifiedForSelection(final Property property) {
+    public boolean isModifiedForSelection(Property property) {
         for (RadComponent c : mySelection) {
             //noinspection unchecked
             if (property.isModified(c)) {
@@ -924,7 +923,7 @@ public final class PropertyInspectorTable extends JBTable implements DataProvide
         }
 
         @Override
-        public String getColumnName(final int column) {
+        public String getColumnName(int column) {
             return myColumnNames[column];
         }
 
@@ -934,35 +933,35 @@ public final class PropertyInspectorTable extends JBTable implements DataProvide
         }
 
         @Override
-        public boolean isCellEditable(final int row, final int column) {
+        public boolean isCellEditable(int row, int column) {
             return column == 1 && myProperties.get(row).getEditor() != null;
         }
 
         @Override
-        public Object getValueAt(final int row, final int column) {
+        public Object getValueAt(int row, int column) {
             return myProperties.get(row);
         }
 
         @Override
-        public void setValueAt(final Object newValue, final int row, final int column) {
+        public void setValueAt(Object newValue, int row, int column) {
             if (column != 1) {
                 throw new IllegalArgumentException("wrong index: " + column);
             }
             setValueAtRow(row, newValue);
         }
 
-        boolean setValueAtRow(final int row, final Object newValue) {
+        boolean setValueAtRow(int row, final Object newValue) {
             final Property property = myProperties.get(row);
 
             // Optimization: do nothing if value doesn't change
-            final Object oldValue = getSelectionValue(property);
+            Object oldValue = getSelectionValue(property);
             boolean retVal = true;
             if (!Comparing.equal(oldValue, newValue)) {
                 final GuiEditor editor = myEditor;
                 if (!editor.ensureEditable()) {
                     return false;
                 }
-                final Ref<Boolean> result = new Ref<Boolean>(Boolean.FALSE);
+                final Ref<Boolean> result = new Ref<>(Boolean.FALSE);
                 CommandProcessor.getInstance().executeCommand(myProject, new Runnable() {
                     @Override
                     public void run() {
@@ -983,14 +982,14 @@ public final class PropertyInspectorTable extends JBTable implements DataProvide
 
     private final class MyPropertyEditorListener extends PropertyEditorAdapter {
         @Override
-        public void valueCommitted(final PropertyEditor source, final boolean continueEditing, final boolean closeEditorOnError) {
+        public void valueCommitted(PropertyEditor source, boolean continueEditing, boolean closeEditorOnError) {
             if (isEditing()) {
-                final Object value;
-                final TableCellEditor tableCellEditor = cellEditor;
+                Object value;
+                TableCellEditor tableCellEditor = cellEditor;
                 try {
                     value = tableCellEditor.getCellEditorValue();
                 }
-                catch (final Exception exc) {
+                catch (Exception exc) {
                     showInvalidInput(exc);
                     return;
                 }
@@ -1009,7 +1008,7 @@ public final class PropertyInspectorTable extends JBTable implements DataProvide
         }
 
         @Override
-        public void editingCanceled(final PropertyEditor source) {
+        public void editingCanceled(PropertyEditor source) {
             if (isEditing()) {
                 cellEditor.cancelCellEditing();
             }
@@ -1031,8 +1030,8 @@ public final class PropertyInspectorTable extends JBTable implements DataProvide
         public MyCompositeTableCellRenderer() {
             myPropertyNameRenderer = new ColoredTableCellRenderer() {
                 @Override
-                protected void customizeCellRenderer(final JTable table, final Object value, final boolean selected, final boolean hasFocus,
-                                                     final int row, final int column) {
+                protected void customizeCellRenderer(JTable table, Object value, boolean selected, boolean hasFocus,
+                                                     int row, int column) {
                     // We will append text later in the
                     setPaintFocusBorder(false);
                     setFocusBorderAroundIcon(true);
@@ -1056,15 +1055,15 @@ public final class PropertyInspectorTable extends JBTable implements DataProvide
         }
 
         @Override
-        public Component getTableCellRendererComponent(final JTable table, @Nonnull final Object value, final boolean selected,
-                                                       final boolean hasFocus, final int row, int column) {
+        public Component getTableCellRendererComponent(JTable table, @Nonnull Object value, boolean selected,
+                                                       boolean hasFocus, int row, int column) {
             myPropertyNameRenderer.getTableCellRendererComponent(table, value, selected, hasFocus, row, column);
 
             column = table.convertColumnIndexToModel(column);
-            final Property property = (Property) value;
+            Property property = (Property) value;
 
-            final Color background;
-            final Property parent = property.getParent();
+            Color background;
+            Property parent = property.getParent();
             if (property instanceof IntrospectedProperty) {
                 background = table.getBackground();
             }
@@ -1109,9 +1108,9 @@ public final class PropertyInspectorTable extends JBTable implements DataProvide
             }
             else if (column == 1) { // painter for second column
                 try {
-                    final PropertyRenderer renderer = property.getRenderer();
+                    PropertyRenderer renderer = property.getRenderer();
                     //noinspection unchecked
-                    final JComponent component = renderer.getComponent(myEditor.getRootContainer(), getSelectionValue(property), selected, hasFocus);
+                    JComponent component = renderer.getComponent(myEditor.getRootContainer(), getSelectionValue(property), selected, hasFocus);
                     if (!selected) {
                         component.setBackground(background);
                     }
@@ -1142,8 +1141,8 @@ public final class PropertyInspectorTable extends JBTable implements DataProvide
             if (!selected) {
                 myPropertyNameRenderer.setForeground(PropertyInspectorTable.this.getForeground());
                 if (property instanceof IntrospectedProperty) {
-                    final RadComponent component = mySelection.get(0);
-                    final Class componentClass = component.getComponentClass();
+                    RadComponent component = mySelection.get(0);
+                    Class componentClass = component.getComponentClass();
                     if (Properties.getInstance().isExpertProperty(component.getModule(), componentClass, property.getName())) {
                         myPropertyNameRenderer.setForeground(Color.LIGHT_GRAY);
                     }
@@ -1153,7 +1152,7 @@ public final class PropertyInspectorTable extends JBTable implements DataProvide
             return myPropertyNameRenderer;
         }
 
-        private SimpleTextAttributes getTextAttributes(final int row, final Property property) {
+        private SimpleTextAttributes getTextAttributes(int row, Property property) {
             // 1. Text
             ErrorInfo errInfo = getErrorInfoForRow(row);
 
@@ -1170,11 +1169,11 @@ public final class PropertyInspectorTable extends JBTable implements DataProvide
                 result = modified ? SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES : SimpleTextAttributes.REGULAR_ATTRIBUTES;
             }
             else {
-                final HighlightSeverity severity = errInfo.getHighlightDisplayLevel().getSeverity();
+                HighlightSeverity severity = errInfo.getHighlightDisplayLevel().getSeverity();
                 Map<HighlightSeverity, SimpleTextAttributes> cache = modified ? myModifiedHighlightAttributes : myHighlightAttributes;
                 result = cache.get(severity);
                 if (result == null) {
-                    final TextAttributesKey attrKey = SeverityRegistrar.getSeverityRegistrar(myProject).getHighlightInfoTypeBySeverity(severity)
+                    TextAttributesKey attrKey = SeverityRegistrar.getSeverityRegistrar(myProject).getHighlightInfoTypeBySeverity(severity)
                         .getAttributesKey();
                     TextAttributes textAttrs = EditorColorsManager.getInstance().getGlobalScheme().getAttributes(attrKey);
                     if (modified) {
@@ -1187,7 +1186,7 @@ public final class PropertyInspectorTable extends JBTable implements DataProvide
             }
 
             if (property instanceof IntrospectedProperty) {
-                final RadComponent c = mySelection.get(0);
+                RadComponent c = mySelection.get(0);
                 if (Properties.getInstance().isPropertyDeprecated(c.getModule(), c.getComponentClass(), property.getName())) {
                     return new SimpleTextAttributes(result.getBgColor(), result.getFgColor(), result.getWaveColor(),
                         result.getStyle() | SimpleTextAttributes.STYLE_STRIKEOUT);
@@ -1204,7 +1203,7 @@ public final class PropertyInspectorTable extends JBTable implements DataProvide
     private final class MyCellEditor extends AbstractCellEditor implements TableCellEditor {
         private PropertyEditor myEditor;
 
-        public void setEditor(@Nonnull final PropertyEditor editor) {
+        public void setEditor(@Nonnull PropertyEditor editor) {
             myEditor = editor;
         }
 
@@ -1219,12 +1218,12 @@ public final class PropertyInspectorTable extends JBTable implements DataProvide
         }
 
         @Override
-        public Component getTableCellEditorComponent(final JTable table, @Nonnull final Object value, final boolean isSelected, final int row,
-                                                     final int column) {
-            final Property property = (Property) value;
+        public Component getTableCellEditorComponent(JTable table, @Nonnull Object value, boolean isSelected, int row,
+                                                     int column) {
+            Property property = (Property) value;
             try {
                 //noinspection unchecked
-                final JComponent c = myEditor.getComponent(mySelection.get(0), getSelectionValue(property), null);
+                JComponent c = myEditor.getComponent(mySelection.get(0), getSelectionValue(property), null);
                 if (c instanceof JComboBox) {
                     c.putClientProperty("JComboBox.isTableCellEditor", Boolean.TRUE);
                 }
@@ -1251,8 +1250,8 @@ public final class PropertyInspectorTable extends JBTable implements DataProvide
      */
     private final class MySelectPreviousRowAction extends AbstractAction {
         @Override
-        public void actionPerformed(final ActionEvent e) {
-            final int rowCount = getRowCount();
+        public void actionPerformed(ActionEvent e) {
+            int rowCount = getRowCount();
             LOG.assertTrue(rowCount > 0);
             int selectedRow = getSelectedRow();
             if (selectedRow != -1) {
@@ -1280,10 +1279,10 @@ public final class PropertyInspectorTable extends JBTable implements DataProvide
      */
     private final class MySelectNextRowAction extends AbstractAction {
         @Override
-        public void actionPerformed(final ActionEvent e) {
-            final int rowCount = getRowCount();
+        public void actionPerformed(ActionEvent e) {
+            int rowCount = getRowCount();
             LOG.assertTrue(rowCount > 0);
-            final int selectedRow = (getSelectedRow() + 1) % rowCount;
+            int selectedRow = (getSelectedRow() + 1) % rowCount;
             if (isEditing()) {
                 finishEditing();
                 getSelectionModel().setSelectionInterval(selectedRow, selectedRow);
@@ -1305,8 +1304,8 @@ public final class PropertyInspectorTable extends JBTable implements DataProvide
      */
     private final class MyStartEditingAction extends AbstractAction {
         @Override
-        public void actionPerformed(final ActionEvent e) {
-            final int selectedRow = getSelectedRow();
+        public void actionPerformed(ActionEvent e) {
+            int selectedRow = getSelectedRow();
             if (selectedRow == -1 || isEditing()) {
                 return;
             }
@@ -1321,13 +1320,13 @@ public final class PropertyInspectorTable extends JBTable implements DataProvide
      */
     private final class MyEnterAction extends AbstractAction {
         @Override
-        public void actionPerformed(final ActionEvent e) {
-            final int selectedRow = getSelectedRow();
+        public void actionPerformed(ActionEvent e) {
+            int selectedRow = getSelectedRow();
             if (isEditing() || selectedRow == -1) {
                 return;
             }
 
-            final Property property = myProperties.get(selectedRow);
+            Property property = myProperties.get(selectedRow);
             if (getPropChildren(property).length > 0) {
                 if (isPropertyExpanded(property, property.getParent())) {
                     collapseProperty(selectedRow);
@@ -1345,17 +1344,17 @@ public final class PropertyInspectorTable extends JBTable implements DataProvide
     private class MyExpandCurrentAction extends AbstractAction {
         private final boolean myExpand;
 
-        public MyExpandCurrentAction(final boolean expand) {
+        public MyExpandCurrentAction(boolean expand) {
             myExpand = expand;
         }
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            final int selectedRow = getSelectedRow();
+            int selectedRow = getSelectedRow();
             if (isEditing() || selectedRow == -1) {
                 return;
             }
-            final Property property = myProperties.get(selectedRow);
+            Property property = myProperties.get(selectedRow);
             if (getPropChildren(property).length > 0) {
                 if (myExpand) {
                     if (!isPropertyExpanded(property, property.getParent())) {
@@ -1379,16 +1378,16 @@ public final class PropertyInspectorTable extends JBTable implements DataProvide
          * Recursively updates renderer and editor UIs of all synthetic
          * properties.
          */
-        private void updateUI(final Property property) {
-            final PropertyRenderer renderer = property.getRenderer();
+        private void updateUI(Property property) {
+            PropertyRenderer renderer = property.getRenderer();
             renderer.updateUI();
-            final PropertyEditor editor = property.getEditor();
+            PropertyEditor editor = property.getEditor();
             if (editor != null) {
                 editor.updateUI();
             }
-            final Property[] children = getPropChildren(property);
+            Property[] children = getPropChildren(property);
             for (int i = children.length - 1; i >= 0; i--) {
-                final Property child = children[i];
+                Property child = children[i];
                 if (!(child instanceof IntrospectedProperty)) {
                     updateUI(child);
                 }

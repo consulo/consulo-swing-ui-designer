@@ -25,7 +25,7 @@ final class RootDescriptor extends NodeDescriptor
 {
 	private final Object myRootElement;
 
-	public RootDescriptor(final NodeDescriptor parentDescriptor, final Object rootElement)
+	public RootDescriptor(NodeDescriptor parentDescriptor, Object rootElement)
 	{
 		super(parentDescriptor);
 		myRootElement = rootElement;

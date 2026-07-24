@@ -33,7 +33,7 @@ public class GridInsertProcessor {
 
   private final GuiEditor myEditor;
 
-  public GridInsertProcessor(final GuiEditor editor) {
+  public GridInsertProcessor(GuiEditor editor) {
     myEditor = editor;
   }
 
@@ -45,16 +45,16 @@ public class GridInsertProcessor {
       return NoDropLocation.INSTANCE;
     }
 
-    final Point targetPoint = SwingUtilities.convertPoint(rootContainer.getDelegee(), aPoint, container.getDelegee());
+    Point targetPoint = SwingUtilities.convertPoint(rootContainer.getDelegee(), aPoint, container.getDelegee());
     return container.getDropLocation(targetPoint);
   }
 
-  public static RadContainer getDropTargetContainer(final RadRootContainer rootContainer, final Point aPoint) {
+  public static RadContainer getDropTargetContainer(RadRootContainer rootContainer, Point aPoint) {
     int EPSILON = 4;
     RadContainer container = FormEditingUtil.getRadContainerAt(rootContainer, aPoint.x, aPoint.y, EPSILON);
     // to facilitate initial component adding, increase stickiness if there is one container at top level
     if (container instanceof RadRootContainer && rootContainer.getComponentCount() == 1) {
-      final RadComponent singleComponent = rootContainer.getComponents()[0];
+      RadComponent singleComponent = rootContainer.getComponents()[0];
       if (singleComponent instanceof RadContainer) {
         Rectangle rc = singleComponent.getDelegee().getBounds();
         rc.grow(EPSILON*2, EPSILON*2);
@@ -68,7 +68,7 @@ public class GridInsertProcessor {
   }
 
   public ComponentDropLocation processDragEvent(Point pnt, ComponentDragObject dragObject) {
-    final ComponentDropLocation dropLocation = getDropLocation(myEditor.getRootContainer(), pnt);
+    ComponentDropLocation dropLocation = getDropLocation(myEditor.getRootContainer(), pnt);
     LOG.debug("GridInsertProcessor.processDragEvent(): dropLocation " + dropLocation.toString());
     if (dropLocation.canDrop(dragObject)) {
       dropLocation.placeFeedback(myEditor.getActiveDecorationLayer(), dragObject);
@@ -80,7 +80,7 @@ public class GridInsertProcessor {
     return dropLocation;
   }
 
-  public Cursor processMouseMoveEvent(final Point pnt, final boolean copyOnDrop, final ComponentDragObject dragObject) {
+  public Cursor processMouseMoveEvent(Point pnt, boolean copyOnDrop, ComponentDragObject dragObject) {
     ComponentDropLocation location = processDragEvent(pnt, dragObject);
     if (!location.canDrop(dragObject)) {
       return FormEditingUtil.getMoveNoDropCursor();

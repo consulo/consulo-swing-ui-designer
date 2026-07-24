@@ -33,7 +33,7 @@ public class MoveComponentAction extends AbstractGuiEditorAction {
   private final int myRowSpanDelta;
   private final int myColSpanDelta;
 
-  public MoveComponentAction(final int rowDelta, final int columnDelta, final int rowSpanDelta, final int colSpanDelta) {
+  public MoveComponentAction(int rowDelta, int columnDelta, int rowSpanDelta, int colSpanDelta) {
     super(true);
     myRowDelta = rowDelta;
     myColumnDelta = columnDelta;
@@ -42,7 +42,7 @@ public class MoveComponentAction extends AbstractGuiEditorAction {
   }
 
   @Override
-  protected void actionPerformed(final GuiEditor editor, final List<RadComponent> selection, final AnActionEvent e) {
+  protected void actionPerformed(GuiEditor editor, List<RadComponent> selection, AnActionEvent e) {
     if (myColumnDelta != 0) {
       // sort the selection so that move in indexed layout will handle components in correct order
       Collections.sort(selection, (o1, o2) -> {

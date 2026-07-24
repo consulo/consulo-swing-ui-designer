@@ -38,13 +38,13 @@ public class SurroundPopupAction extends AbstractGuiEditorAction
 {
 	private final SurroundActionGroup myActionGroup = new SurroundActionGroup();
 
-	protected void actionPerformed(final GuiEditor editor, final List<RadComponent> selection, final AnActionEvent e)
+	protected void actionPerformed(GuiEditor editor, List<RadComponent> selection, AnActionEvent e)
 	{
-		final ListPopup groupPopup = JBPopupFactory.getInstance()
+		ListPopup groupPopup = JBPopupFactory.getInstance()
 				.createActionGroupPopup(UIDesignerBundle.message("surround.with.popup.title"), myActionGroup, e.getDataContext(),
 						JBPopupFactory.ActionSelectionAid.ALPHA_NUMBERING, true);
 
-		final JComponent component = (JComponent) e.getData(UIExAWTDataKey.CONTEXT_COMPONENT);
+		JComponent component = (JComponent) e.getData(UIExAWTDataKey.CONTEXT_COMPONENT);
 		if(component instanceof ComponentTree)
 		{
 			groupPopup.show(JBPopupFactory.getInstance().guessBestPopupLocation(component));
@@ -56,7 +56,7 @@ public class SurroundPopupAction extends AbstractGuiEditorAction
 		}
 	}
 
-	protected void update(@Nonnull GuiEditor editor, final ArrayList<RadComponent> selection, final AnActionEvent e)
+	protected void update(@Nonnull GuiEditor editor, ArrayList<RadComponent> selection, AnActionEvent e)
 	{
 		e.getPresentation().setEnabled(selection.size() > 0);
 	}

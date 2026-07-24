@@ -9,13 +9,13 @@ import java.lang.reflect.Method;
 public final class PrimitiveTypeEditor<T> extends AbstractTextFieldEditor<T> {
   private final Class<T> myClass;
 
-  public PrimitiveTypeEditor(final Class<T> aClass) {
+  public PrimitiveTypeEditor(Class<T> aClass) {
     myClass = aClass;
   }
 
   public T getValue() throws Exception {
     try {
-      final Method method = myClass.getMethod("valueOf", String.class);
+      Method method = myClass.getMethod("valueOf", String.class);
       //noinspection unchecked
       return (T) method.invoke(null, myTf.getText());
     }

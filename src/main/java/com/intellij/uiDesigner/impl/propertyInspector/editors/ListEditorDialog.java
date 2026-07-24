@@ -34,7 +34,7 @@ public class ListEditorDialog extends DialogWrapper
   private JPanel myRootPanel;
   private JTextArea myLinesTextArea;
 
-  protected ListEditorDialog(final Project project, String propertyName) {
+  protected ListEditorDialog(Project project, String propertyName) {
     super(project, true);
     init();
     setTitle(UIDesignerBundle.message("list.editor.title", propertyName));
@@ -51,12 +51,12 @@ public class ListEditorDialog extends DialogWrapper
   }
 
   public String[] getValue() {
-    final String text = myLinesTextArea.getText();
+    String text = myLinesTextArea.getText();
     if (text.length() == 0) return ArrayUtil.EMPTY_STRING_ARRAY;
     return text.split("\n");
   }
 
-  public void setValue(final String[] value) {
+  public void setValue(String[] value) {
     myLinesTextArea.setText(value == null ? "" : StringUtil.join(value, "\n"));
   }
 

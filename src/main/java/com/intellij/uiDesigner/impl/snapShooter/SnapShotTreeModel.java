@@ -30,7 +30,7 @@ public class SnapShotTreeModel implements TreeModel {
   private final SnapShotClient myClient;
   private final SnapShotRemoteComponent myRoot;
 
-  public SnapShotTreeModel(final SnapShotClient client) {
+  public SnapShotTreeModel(SnapShotClient client) {
     myClient = client;
     myRoot = new SnapShotRemoteComponent(0, Object.class.getName(), "", "Root");
   }
@@ -44,7 +44,7 @@ public class SnapShotTreeModel implements TreeModel {
     return checkGetChildren(component) [index];
   }
 
-  private SnapShotRemoteComponent[] checkGetChildren(final SnapShotRemoteComponent component) {
+  private SnapShotRemoteComponent[] checkGetChildren(SnapShotRemoteComponent component) {
     if (component.getChildren() == null) {
       try {
         component.setChildren(myClient.listChildren(component.getId()));
@@ -57,7 +57,7 @@ public class SnapShotTreeModel implements TreeModel {
     return component.getChildren();
   }
 
-  private static void reportDisconnection(final SnapShotClient client) {
+  private static void reportDisconnection(SnapShotClient client) {
     Messages.showMessageDialog("Disconnected from remote application", "Create Form Snapshot",
                                Messages.getErrorIcon());
     client.setDisconnected();
@@ -78,7 +78,7 @@ public class SnapShotTreeModel implements TreeModel {
 
   public int getIndexOfChild(Object parent, Object child) {
     SnapShotRemoteComponent component = (SnapShotRemoteComponent) parent;
-    final SnapShotRemoteComponent[] snapShotRemoteComponents = checkGetChildren(component);
+    SnapShotRemoteComponent[] snapShotRemoteComponents = checkGetChildren(component);
     for(int i=0; i<snapShotRemoteComponents.length; i++) {
       if (snapShotRemoteComponents [i] == child) {
         return i;

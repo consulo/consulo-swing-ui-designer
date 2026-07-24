@@ -27,18 +27,18 @@ import java.util.Collections;
  * @author yole
  */
 public class GridReplaceDropLocation extends GridDropLocation {
-  public GridReplaceDropLocation(final RadContainer container, final int row, final int column) {
+  public GridReplaceDropLocation(RadContainer container, int row, int column) {
     super(container, row, column);
   }
 
   @Override
-  public boolean canDrop(final ComponentDragObject dragObject) {
+  public boolean canDrop(ComponentDragObject dragObject) {
     if (dragObject.getComponentCount() != 1) return false;
     return super.canDrop(dragObject);    //To change body of overridden methods use File | Settings | File Templates.
   }
 
   @Override
-  protected RadComponent findOverlappingComponent(final int startRow, final int startCol, final int rowSpan, final int colSpan) {
+  protected RadComponent findOverlappingComponent(int startRow, int startCol, int rowSpan, int colSpan) {
     if (rowSpan == 1 && colSpan == 1) {
       // we will replace the overlapping component, so it shouldn't prevent drop
       return null;
@@ -47,10 +47,10 @@ public class GridReplaceDropLocation extends GridDropLocation {
   }
 
   @Override
-  public void processDrop(final GuiEditor editor,
-                          final RadComponent[] components,
-                          final GridConstraints[] constraintsToAdjust,
-                          final ComponentDragObject dragObject) {
+  public void processDrop(GuiEditor editor,
+                          RadComponent[] components,
+                          GridConstraints[] constraintsToAdjust,
+                          ComponentDragObject dragObject) {
     RadComponent c = myContainer.getComponentAtGrid(myRow, myColumn);
     if (c != null) {
       FormEditingUtil.deleteComponents(Collections.singletonList(c), false);

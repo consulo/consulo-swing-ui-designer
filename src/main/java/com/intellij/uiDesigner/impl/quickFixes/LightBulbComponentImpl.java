@@ -40,12 +40,12 @@ final class LightBulbComponentImpl extends JComponent{
   private final QuickFixManager myManager;
   private final Image myIcon;
 
-  public LightBulbComponentImpl(@Nonnull final QuickFixManager manager, @Nonnull final Image icon) {
+  public LightBulbComponentImpl(@Nonnull QuickFixManager manager, @Nonnull Image icon) {
     myManager = manager;
     myIcon = icon;
 
     setPreferredSize(new Dimension(icon.getWidth(), icon.getHeight()));
-    final String acceleratorsText = KeymapUtil.getFirstKeyboardShortcutText(
+    String acceleratorsText = KeymapUtil.getFirstKeyboardShortcutText(
       ActionManager.getInstance().getAction(IdeActions.ACTION_SHOW_INTENTION_ACTIONS));
     if (acceleratorsText.length() > 0) {
       setToolTipText(UIDesignerBundle.message("tooltip.press.accelerator", acceleratorsText));
@@ -60,7 +60,7 @@ final class LightBulbComponentImpl extends JComponent{
     }.installOn(this);
   }
 
-  protected void paintComponent(final Graphics g) {
+  protected void paintComponent(Graphics g) {
     TargetAWT.to(myIcon).paintIcon(this, g, 0, 0);
   }
 }

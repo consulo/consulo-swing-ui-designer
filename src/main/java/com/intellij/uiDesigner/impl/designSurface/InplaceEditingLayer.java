@@ -80,7 +80,7 @@ public final class InplaceEditingLayer extends JComponent
 	 */
 	private boolean myInsideChange;
 
-	public InplaceEditingLayer(@Nonnull final GuiEditor editor)
+	public InplaceEditingLayer(@Nonnull GuiEditor editor)
 	{
 		myEditor = editor;
 		myEditor.addComponentSelectionListener(new MyComponentSelectionListener());
@@ -102,7 +102,7 @@ public final class InplaceEditingLayer extends JComponent
 	 * and finish editing by any MOUSE_PRESSED or MOUSE_RELEASED event.
 	 * We are acting like yet another glass pane over the standard glass layer.
 	 */
-	protected void processMouseEvent(final MouseEvent e)
+	protected void processMouseEvent(MouseEvent e)
 	{
 		if(
 				myInplaceComponent != null &&
@@ -132,28 +132,28 @@ public final class InplaceEditingLayer extends JComponent
 	 * @param x x coordinate in the editor coordinate system
 	 * @param y y coordinate in the editor coordinate system
 	 */
-	public void startInplaceEditing(final int x, final int y)
+	public void startInplaceEditing(int x, int y)
 	{
-		final RadComponent inplaceComponent = FormEditingUtil.getRadComponentAt(myEditor.getRootContainer(), x, y);
+		RadComponent inplaceComponent = FormEditingUtil.getRadComponentAt(myEditor.getRootContainer(), x, y);
 		if(inplaceComponent == null)
 		{ // nothing to edit
 			return;
 		}
 
 		// Try to find property with inplace editor
-		final Point p = SwingUtilities.convertPoint(this, x, y, inplaceComponent.getDelegee());
-		final Property inplaceProperty = inplaceComponent.getInplaceProperty(p.x, p.y);
+		Point p = SwingUtilities.convertPoint(this, x, y, inplaceComponent.getDelegee());
+		Property inplaceProperty = inplaceComponent.getInplaceProperty(p.x, p.y);
 		if(inplaceProperty != null)
 		{
-			final Rectangle bounds = inplaceComponent.getInplaceEditorBounds(inplaceProperty, p.x, p.y);
+			Rectangle bounds = inplaceComponent.getInplaceEditorBounds(inplaceProperty, p.x, p.y);
 			startInplaceEditing(inplaceComponent, inplaceProperty, bounds, new InplaceContext(true));
 		}
 	}
 
-	public void startInplaceEditing(@Nonnull final RadComponent inplaceComponent,
-									@Nullable final Property property,
-									@Nullable final Rectangle bounds,
-									final InplaceContext context)
+	public void startInplaceEditing(@Nonnull RadComponent inplaceComponent,
+									@Nullable Property property,
+									@Nullable Rectangle bounds,
+									InplaceContext context)
 	{
 		myInplaceProperty = property;
 		if(myInplaceProperty == null)
@@ -191,15 +191,15 @@ public final class InplaceEditingLayer extends JComponent
 		myInplaceEditor.addPropertyEditorListener(myPropertyEditorListener);
 
 		// 2. Set editor component bounds
-		final Dimension prefSize = myInplaceEditorComponent.getPreferredSize();
+		Dimension prefSize = myInplaceEditorComponent.getPreferredSize();
 		if(bounds != null)
 		{ // use bounds provided by the component itself
-			final Point _p = SwingUtilities.convertPoint(myInplaceComponent.getDelegee(), bounds.x, bounds.y, this);
+			Point _p = SwingUtilities.convertPoint(myInplaceComponent.getDelegee(), bounds.x, bounds.y, this);
 			myPreferredBounds = new Rectangle(_p.x, _p.y, bounds.width, bounds.height);
 		}
 		else
 		{ // set some default bounds
-			final Point _p = SwingUtilities.convertPoint(myInplaceComponent.getDelegee(), 0, 0, this);
+			Point _p = SwingUtilities.convertPoint(myInplaceComponent.getDelegee(), 0, 0, this);
 			myPreferredBounds = new Rectangle(_p.x, _p.y, myInplaceComponent.getWidth(), myInplaceComponent.getHeight());
 		}
 		myInplaceEditorComponent.setBounds(
@@ -253,7 +253,7 @@ public final class InplaceEditingLayer extends JComponent
 		{
 			return;
 		}
-		final Dimension preferredSize = myInplaceEditorComponent.getPreferredSize();
+		Dimension preferredSize = myInplaceEditorComponent.getPreferredSize();
 		int width = Math.max(preferredSize.width, myPreferredBounds.width);
 		// Editor component should not be extended to invisible area
 		width = Math.min(width, getWidth() - myInplaceEditorComponent.getX());
@@ -285,7 +285,7 @@ public final class InplaceEditingLayer extends JComponent
 							{
 								try
 								{
-									final Object value = myInplaceEditor.getValue();
+									Object value = myInplaceEditor.getValue();
 									myInplaceProperty.setValue(myInplaceComponent, value);
 								}
 								catch(Exception ignored)
@@ -366,7 +366,7 @@ public final class InplaceEditingLayer extends JComponent
 	 */
 	private final class MyComponentSelectionListener implements ComponentSelectionListener
 	{
-		public void selectedComponentChanged(final GuiEditor source)
+		public void selectedComponentChanged(GuiEditor source)
 		{
 			finishInplaceEditing();
 		}
@@ -377,9 +377,9 @@ public final class InplaceEditingLayer extends JComponent
 	 */
 	private final class MyFocusWatcher extends FocusWatcher
 	{
-		protected void focusLostImpl(final FocusEvent e)
+		protected void focusLostImpl(FocusEvent e)
 		{
-			final Component opposite = e.getOppositeComponent();
+			Component opposite = e.getOppositeComponent();
 			if(
 					e.isTemporary() ||
 							opposite != null && SwingUtilities.isDescendingFrom(opposite, getTopComponent())
@@ -404,17 +404,17 @@ public final class InplaceEditingLayer extends JComponent
 	 */
 	private final class MyPropertyEditorListener extends PropertyEditorAdapter
 	{
-		public void valueCommitted(final PropertyEditor source, final boolean continueEditing, final boolean closeEditorOnError)
+		public void valueCommitted(PropertyEditor source, boolean continueEditing, boolean closeEditorOnError)
 		{
 			finishInplaceEditing();
 		}
 
-		public void editingCanceled(final PropertyEditor source)
+		public void editingCanceled(PropertyEditor source)
 		{
 			cancelInplaceEditing();
 		}
 
-		public void preferredSizeChanged(final PropertyEditor source)
+		public void preferredSizeChanged(PropertyEditor source)
 		{
 			adjustEditorComponentSize();
 		}

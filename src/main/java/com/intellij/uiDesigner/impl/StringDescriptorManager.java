@@ -55,7 +55,7 @@ public class StringDescriptorManager
 	}
 
 	private Module myModule;
-	private final Map<Pair<Locale, String>, SoftReference<PropertiesFile>> myPropertiesFileCache = new HashMap<Pair<Locale, String>, SoftReference<PropertiesFile>>();
+	private final Map<Pair<Locale, String>, SoftReference<PropertiesFile>> myPropertiesFileCache = new HashMap<>();
 
 	@Inject
 	public StringDescriptorManager(consulo.module.Module module)
@@ -63,7 +63,7 @@ public class StringDescriptorManager
 		myModule = module;
 		module.getMessageBus().connect().subscribe(ModuleRootListener.class, new ModuleRootAdapter()
 		{
-			public void rootsChanged(final ModuleRootEvent event)
+			public void rootsChanged(ModuleRootEvent event)
 			{
 				synchronized(myPropertiesFileCache)
 				{
@@ -97,7 +97,7 @@ public class StringDescriptorManager
 		IProperty prop = resolveToProperty(descriptor, locale);
 		if(prop != null)
 		{
-			final String value = prop.getUnescapedValue();
+			String value = prop.getUnescapedValue();
 			if(value != null)
 			{
 				return value;
@@ -110,7 +110,7 @@ public class StringDescriptorManager
 	public IProperty resolveToProperty(@Nonnull StringDescriptor descriptor, @Nullable Locale locale)
 	{
 		String propFileName = descriptor.getDottedBundleName();
-		Pair<Locale, String> cacheKey = new Pair<Locale, String>(locale, propFileName);
+		Pair<Locale, String> cacheKey = new Pair<>(locale, propFileName);
 		SoftReference<PropertiesFile> propertiesFileRef;
 		synchronized(myPropertiesFileCache)
 		{
@@ -128,7 +128,7 @@ public class StringDescriptorManager
 
 		if(propertiesFile != null)
 		{
-			final IProperty propertyByKey = propertiesFile.findPropertyByKey(descriptor.getKey());
+			IProperty propertyByKey = propertiesFile.findPropertyByKey(descriptor.getKey());
 			if(propertyByKey != null)
 			{
 				return propertyByKey;

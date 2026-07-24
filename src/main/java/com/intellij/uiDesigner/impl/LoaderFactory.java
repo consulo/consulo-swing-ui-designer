@@ -63,20 +63,20 @@ public final class LoaderFactory
 	private ClassLoader myProjectClassLoader = null;
 	private final MessageBusConnection myConnection;
 
-	public static LoaderFactory getInstance(final Project project)
+	public static LoaderFactory getInstance(Project project)
 	{
 		return ServiceManager.getService(project, LoaderFactory.class);
 	}
 
 	@Inject
-	public LoaderFactory(final Project project)
+	public LoaderFactory(Project project)
 	{
 		myProject = project;
 		myModule2ClassLoader = ContainerUtil.createWeakMap();
 		myConnection = myProject.getMessageBus().connect();
 		myConnection.subscribe(ModuleRootListener.class, new ModuleRootAdapter()
 		{
-			public void rootsChanged(final ModuleRootEvent event)
+			public void rootsChanged(ModuleRootEvent event)
 			{
 				clearClassLoaderCache();
 			}
@@ -93,9 +93,9 @@ public final class LoaderFactory
 	}
 
 	@Nonnull
-	public ClassLoader getLoader(final VirtualFile formFile)
+	public ClassLoader getLoader(VirtualFile formFile)
 	{
-		final consulo.module.Module module = ModuleUtilCore.findModuleForFile(formFile, myProject);
+		consulo.module.Module module = ModuleUtilCore.findModuleForFile(formFile, myProject);
 		if(module == null)
 		{
 			return getClass().getClassLoader();
@@ -104,17 +104,17 @@ public final class LoaderFactory
 		return getLoader(module);
 	}
 
-	public ClassLoader getLoader(final Module module)
+	public ClassLoader getLoader(Module module)
 	{
-		final ClassLoader cachedLoader = myModule2ClassLoader.get(module);
+		ClassLoader cachedLoader = myModule2ClassLoader.get(module);
 		if(cachedLoader != null)
 		{
 			return cachedLoader;
 		}
 
-		final String runClasspath = OrderEnumerator.orderEntries(module).recursively().getPathsList().getPathsString();
+		String runClasspath = OrderEnumerator.orderEntries(module).recursively().getPathsList().getPathsString();
 
-		final ClassLoader classLoader = createClassLoader(runClasspath, module.getName());
+		ClassLoader classLoader = createClassLoader(runClasspath, module.getName());
 
 		myModule2ClassLoader.put(module, classLoader);
 
@@ -126,20 +126,20 @@ public final class LoaderFactory
 	{
 		if(myProjectClassLoader == null)
 		{
-			final String runClasspath = OrderEnumerator.orderEntries(myProject).withoutSdk().getPathsList().getPathsString();
+			String runClasspath = OrderEnumerator.orderEntries(myProject).withoutSdk().getPathsList().getPathsString();
 			myProjectClassLoader = createClassLoader(runClasspath, "<project>");
 		}
 		return myProjectClassLoader;
 	}
 
-	private static ClassLoader createClassLoader(final String runClasspath, final String moduleName)
+	private static ClassLoader createClassLoader(String runClasspath, String moduleName)
 	{
-		final ArrayList<URL> urls = new ArrayList<URL>();
-		final VirtualFileManager manager = VirtualFileManager.getInstance();
-		final StringTokenizer tokenizer = new StringTokenizer(runClasspath, File.pathSeparator);
+		ArrayList<URL> urls = new ArrayList<>();
+		VirtualFileManager manager = VirtualFileManager.getInstance();
+		StringTokenizer tokenizer = new StringTokenizer(runClasspath, File.pathSeparator);
 		while(tokenizer.hasMoreTokens())
 		{
-			final String s = tokenizer.nextToken();
+			String s = tokenizer.nextToken();
 			try
 			{
 				VirtualFile vFile = manager.findFileByUrl(VirtualFileUtil.pathToUrl(s));
@@ -182,7 +182,7 @@ public final class LoaderFactory
 	public void clearClassLoaderCache()
 	{
 		// clear classes with invalid classloader from UIManager cache
-		final UIDefaults uiDefaults = UIManager.getDefaults();
+		UIDefaults uiDefaults = UIManager.getDefaults();
 		for(Iterator it = uiDefaults.keySet().iterator(); it.hasNext(); )
 		{
 			Object key = it.next();
@@ -204,7 +204,7 @@ public final class LoaderFactory
 	{
 		private final String myModuleName;
 
-		public DesignTimeClassLoader(final List<URL> urls, final ClassLoader parent, final String moduleName)
+		public DesignTimeClassLoader(List<URL> urls, ClassLoader parent, String moduleName)
 		{
 			super(build().urls(urls).parent(parent));
 			myModuleName = moduleName;

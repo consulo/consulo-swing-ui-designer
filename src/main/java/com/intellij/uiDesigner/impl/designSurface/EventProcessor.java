@@ -32,7 +32,7 @@ public abstract class EventProcessor {
     return myCursor;
   }
 
-  public final void setCursor(final Cursor cursor){
+  public final void setCursor(Cursor cursor){
     myCursor = cursor;
   }
 
@@ -53,7 +53,7 @@ public abstract class EventProcessor {
     return false;
   }
 
-  protected static ComponentDropLocation.Direction directionFromKey(final int keyCode) {
+  protected static ComponentDropLocation.Direction directionFromKey(int keyCode) {
     switch(keyCode) {
       case KeyEvent.VK_RIGHT: return ComponentDropLocation.Direction.RIGHT;
       case KeyEvent.VK_LEFT: return ComponentDropLocation.Direction.LEFT;
@@ -67,14 +67,14 @@ public abstract class EventProcessor {
     }
   }
 
-  private static boolean isMoveToLast(final int keyCode) {
+  private static boolean isMoveToLast(int keyCode) {
     return keyCode == KeyEvent.VK_HOME || keyCode == KeyEvent.VK_END ||
            keyCode == KeyEvent.VK_PAGE_UP || keyCode == KeyEvent.VK_PAGE_DOWN;
   }
 
   @Nullable
-  protected static ComponentDropLocation moveDropLocation(final GuiEditor editor, final ComponentDropLocation location,
-                                                 final ComponentDragObject dragObject, final KeyEvent e) {
+  protected static ComponentDropLocation moveDropLocation(GuiEditor editor, ComponentDropLocation location,
+                                                          ComponentDragObject dragObject, KeyEvent e) {
     ComponentDropLocation.Direction dir = directionFromKey(e.getKeyCode());
     boolean moveToLast = isMoveToLast(e.getKeyCode());
     if (dir != null && location != null) {

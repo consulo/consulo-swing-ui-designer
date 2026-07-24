@@ -42,10 +42,10 @@ import java.util.Stack;
 public final class ExpandSelectionAction extends AnAction implements AnActionWithSyncUpdate {
     @RequiredUIAccess
     @Override
-    public void actionPerformed(final AnActionEvent e) {
-        final GuiEditor editor = FormEditingUtil.getEditorFromContext(e.getDataContext());
+    public void actionPerformed(AnActionEvent e) {
+        GuiEditor editor = FormEditingUtil.getEditorFromContext(e.getDataContext());
         assert editor != null;
-        final SelectionState selectionState = editor.getSelectionState();
+        SelectionState selectionState = editor.getSelectionState();
         selectionState.setInsideChange(true);
 
         ComponentTreeBuilder builder = DesignerToolWindowManager.getInstance(editor).getComponentTreeBuilder();
@@ -53,27 +53,27 @@ public final class ExpandSelectionAction extends AnAction implements AnActionWit
             builder.beginUpdateSelection();
         }
 
-        final Stack<ComponentPtr[]> history = selectionState.getSelectionHistory();
+        Stack<ComponentPtr[]> history = selectionState.getSelectionHistory();
 
         try {
-            final ComponentPtr[] ptrs = history.peek();
+            ComponentPtr[] ptrs = history.peek();
             for (int i = ptrs.length - 1; i >= 0; i--) {
                 // Skip invalid components
-                final ComponentPtr ptr = ptrs[i];
+                ComponentPtr ptr = ptrs[i];
                 ptr.validate();
                 if (!ptr.isValid()) {
                     continue;
                 }
 
                 // Extend selection
-                final RadComponent component = ptr.getComponent();
-                final RadContainer parent = component.getParent();
+                RadComponent component = ptr.getComponent();
+                RadContainer parent = component.getParent();
                 if (parent == null) { // skip components without parents
                     continue;
                 }
                 boolean shouldSelectParent = true;
                 for (int j = parent.getComponentCount() - 1; j >= 0; j--) {
-                    final RadComponent sibling = parent.getComponent(j);
+                    RadComponent sibling = parent.getComponent(j);
                     if (!sibling.isSelected()) {
                         shouldSelectParent = false;
                         sibling.setSelected(true);
@@ -96,18 +96,18 @@ public final class ExpandSelectionAction extends AnAction implements AnActionWit
     }
 
     @Override
-    public void update(final AnActionEvent e) {
-        final Presentation presentation = e.getPresentation();
-        final GuiEditor editor = FormEditingUtil.getEditorFromContext(e.getDataContext());
+    public void update(AnActionEvent e) {
+        Presentation presentation = e.getPresentation();
+        GuiEditor editor = FormEditingUtil.getEditorFromContext(e.getDataContext());
 
         if (editor == null) {
             presentation.setEnabled(false);
             return;
         }
 
-        final SelectionState selectionState = editor.getSelectionState();
+        SelectionState selectionState = editor.getSelectionState();
         selectionState.setInsideChange(true);
-        final Stack<ComponentPtr[]> history = selectionState.getSelectionHistory();
+        Stack<ComponentPtr[]> history = selectionState.getSelectionHistory();
 
         presentation.setEnabled(!history.isEmpty());
     }

@@ -44,7 +44,7 @@ public class FormLayoutColumnProperties implements CustomPropertiesPanel
 
 	static
 	{
-		UNITS_MAP = new HashMap<Object, String>();
+		UNITS_MAP = new HashMap<>();
 		UNITS_MAP.put("px", UIDesignerBundle.message("unit.pixels"));
 		UNITS_MAP.put("dlu", UIDesignerBundle.message("unit.dialog.units"));
 		UNITS_MAP.put("pt", UIDesignerBundle.message("unit.points"));
@@ -111,7 +111,7 @@ public class FormLayoutColumnProperties implements CustomPropertiesPanel
 		myConstantSizeUnitsCombo.setRenderer(new UnitRender());
 		myMinSizeUnitsCombo.setRenderer(new UnitRender());
 		myMaxSizeUnitsCombo.setRenderer(new UnitRender());
-		final MyRadioListener listener = new MyRadioListener();
+		MyRadioListener listener = new MyRadioListener();
 		myDefaultRadioButton.addActionListener(listener);
 		myPreferredRadioButton.addActionListener(listener);
 		myMinimumRadioButton.addActionListener(listener);
@@ -131,7 +131,7 @@ public class FormLayoutColumnProperties implements CustomPropertiesPanel
 				updateSpec();
 			}
 		});
-		final MyChangeListener changeListener = new MyChangeListener();
+		MyChangeListener changeListener = new MyChangeListener();
 		myGrowSpinner.setModel(new SpinnerNumberModel(1.0, 0.0, 10.0, 0.1));
 		myGrowSpinner.addChangeListener(changeListener);
 		myMinSizeSpinner.addChangeListener(changeListener);
@@ -142,7 +142,7 @@ public class FormLayoutColumnProperties implements CustomPropertiesPanel
 		myRightRadioButton.addChangeListener(changeListener);
 		myFillRadioButton.addChangeListener(changeListener);
 
-		final MyItemListener itemListener = new MyItemListener();
+		MyItemListener itemListener = new MyItemListener();
 		myMinSizeUnitsCombo.addItemListener(itemListener);
 		myMaxSizeUnitsCombo.addItemListener(itemListener);
 		myConstantSizeUnitsCombo.addItemListener(itemListener);
@@ -163,7 +163,7 @@ public class FormLayoutColumnProperties implements CustomPropertiesPanel
 		myListeners.remove(listener);
 	}
 
-	public void showProperties(final RadContainer container, final boolean row, final int[] selectedIndices)
+	public void showProperties(RadContainer container, boolean row, int[] selectedIndices)
 	{
 		if(mySaving)
 		{
@@ -217,7 +217,7 @@ public class FormLayoutColumnProperties implements CustomPropertiesPanel
 		}
 	}
 
-	private void showControls(final boolean visible)
+	private void showControls(boolean visible)
 	{
 		mySizePanel.setVisible(visible);
 		myAlignmentPanel.setVisible(visible);
@@ -225,7 +225,7 @@ public class FormLayoutColumnProperties implements CustomPropertiesPanel
 		myGrowSpinner.setVisible(visible);
 	}
 
-	private void showAlignment(final FormSpec.DefaultAlignment defaultAlignment)
+	private void showAlignment(FormSpec.DefaultAlignment defaultAlignment)
 	{
 		if(defaultAlignment.equals(RowSpec.TOP) || defaultAlignment.equals(ColumnSpec.LEFT))
 		{
@@ -307,7 +307,7 @@ public class FormLayoutColumnProperties implements CustomPropertiesPanel
 		}
 	}
 
-	private static void showConstantSize(final ConstantSize size, final JComboBox unitsCombo, final JSpinner spinner)
+	private static void showConstantSize(ConstantSize size, JComboBox unitsCombo, JSpinner spinner)
 	{
 		double value = size.getValue();
 		ConstantSize.Unit unit = size.getUnit();
@@ -326,7 +326,7 @@ public class FormLayoutColumnProperties implements CustomPropertiesPanel
 
 	private void updateOnRadioChange()
 	{
-		final boolean canSetBounds = !myConstantRadioButton.isSelected();
+		boolean canSetBounds = !myConstantRadioButton.isSelected();
 		myMinimumCheckBox.setEnabled(canSetBounds);
 		myMaximumCheckBox.setEnabled(canSetBounds);
 
@@ -360,7 +360,7 @@ public class FormLayoutColumnProperties implements CustomPropertiesPanel
 		{
 			Size size = getSelectedSize();
 
-			final SpinnerNumberModel model = (SpinnerNumberModel) myGrowSpinner.getModel();
+			SpinnerNumberModel model = (SpinnerNumberModel) myGrowSpinner.getModel();
 			double resizeWeight = myGrowCheckBox.isSelected() ? model.getNumber().doubleValue() : 0.0;
 			FormSpec.DefaultAlignment alignment = getSelectedAlignment();
 
@@ -437,7 +437,7 @@ public class FormLayoutColumnProperties implements CustomPropertiesPanel
 		return RowSpec.FILL;
 	}
 
-	private ConstantSize getConstantSize(final JComboBox unitsCombo, final JSpinner spinner)
+	private ConstantSize getConstantSize(JComboBox unitsCombo, JSpinner spinner)
 	{
 		return Sizes.constant(spinner.getValue().toString() + unitsCombo.getSelectedItem().toString(), myIsRow);
 	}
@@ -457,7 +457,7 @@ public class FormLayoutColumnProperties implements CustomPropertiesPanel
 		private final JComboBox myUnitsCombo;
 		private final JSpinner mySpinner;
 
-		public MyCheckboxListener(final AbstractButton button, final JComboBox unitsCombo, final JSpinner spinner)
+		public MyCheckboxListener(AbstractButton button, JComboBox unitsCombo, JSpinner spinner)
 		{
 			myButton = button;
 			myUnitsCombo = unitsCombo;

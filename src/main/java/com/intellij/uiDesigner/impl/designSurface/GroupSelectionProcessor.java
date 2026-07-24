@@ -40,27 +40,27 @@ public final class GroupSelectionProcessor extends EventProcessor {
    * @param component group where drag is started. This group should not be selected
    * after drag is complete.
    */
-  public GroupSelectionProcessor(final GuiEditor editor, final RadComponent component) {
+  public GroupSelectionProcessor(GuiEditor editor, RadComponent component) {
     myEditor = editor;
     myComponent = component;
     myRectangePainter=new MyRectanglePainter();
   }
 
-  protected void processKeyEvent(final KeyEvent e){
+  protected void processKeyEvent(KeyEvent e){
   }
 
-  protected void processMouseEvent(final MouseEvent e){
+  protected void processMouseEvent(MouseEvent e){
     if (e.getID() == MouseEvent.MOUSE_PRESSED) {
       myStartPoint = e.getPoint();
       myEditor.getDragLayer().add(myRectangePainter);
     }
     else if (e.getID() == MouseEvent.MOUSE_DRAGGED) {
-      final Rectangle rectangle = getRectangle(e);
+      Rectangle rectangle = getRectangle(e);
       myRectangePainter.setBounds(rectangle);
       myEditor.getDragLayer().repaint();
     }
     else if (e.getID() == MouseEvent.MOUSE_RELEASED) {
-      final Rectangle rectangle = getRectangle(e);
+      Rectangle rectangle = getRectangle(e);
       if (e.isShiftDown() && rectangle.width <= 3 && rectangle.height <= 3) {
         RadComponent component = FormEditingUtil.getRadComponentAt(myEditor.getRootContainer(), e.getX(), e.getY());
         if (component != null) {
@@ -75,16 +75,16 @@ public final class GroupSelectionProcessor extends EventProcessor {
         }
       }
       markRectangle(myEditor.getRootContainer(), rectangle, e.getComponent());
-      final JComponent dragLayer = myEditor.getDragLayer();
+      JComponent dragLayer = myEditor.getDragLayer();
       dragLayer.remove(myRectangePainter);
       dragLayer.repaint();
       myStartPoint = null;
     }
   }
 
-  private static void selectComponentsInRange(final RadComponent component, final RadComponent anchor) {
-    final GridConstraints c1 = component.getConstraints();
-    final GridConstraints c2 = anchor.getConstraints();
+  private static void selectComponentsInRange(RadComponent component, RadComponent anchor) {
+    GridConstraints c1 = component.getConstraints();
+    GridConstraints c2 = anchor.getConstraints();
     int startRow = Math.min(c1.getRow(), c2.getRow());
     int startCol = Math.min(c1.getColumn(), c2.getColumn());
     int endRow = Math.max(c1.getRow() + c1.getRowSpan(), c2.getRow() + c2.getRowSpan());
@@ -100,30 +100,30 @@ public final class GroupSelectionProcessor extends EventProcessor {
   }
 
   protected boolean cancelOperation() {
-    final JComponent dragLayer = myEditor.getDragLayer();
+    JComponent dragLayer = myEditor.getDragLayer();
     dragLayer.remove(myRectangePainter);
     dragLayer.repaint();
     return true;
   }
 
-  private Rectangle getRectangle(final MouseEvent e){
-    final int x = Math.min(myStartPoint.x, e.getX());
-    final int y = Math.min(myStartPoint.y, e.getY());
+  private Rectangle getRectangle(MouseEvent e){
+    int x = Math.min(myStartPoint.x, e.getX());
+    int y = Math.min(myStartPoint.y, e.getY());
 
-    final int width = Math.abs(myStartPoint.x - e.getX());
-    final int height = Math.abs(myStartPoint.y - e.getY());
+    int width = Math.abs(myStartPoint.x - e.getX());
+    int height = Math.abs(myStartPoint.y - e.getY());
 
     return new Rectangle(x, y, width, height);
   }
 
   private void markRectangle(
-    final RadComponent component,
-    final Rectangle rectangle,
-    final Component coordinateOriginComponent
+    RadComponent component,
+    Rectangle rectangle,
+    Component coordinateOriginComponent
   ){
     if (!(component instanceof RadRootContainer) && !component.equals(myComponent)) {
-      final Rectangle bounds = component.getBounds();
-      final Point point = SwingUtilities.convertPoint(component.getDelegee().getParent(), bounds.x, bounds.y, coordinateOriginComponent);
+      Rectangle bounds = component.getBounds();
+      Point point = SwingUtilities.convertPoint(component.getDelegee().getParent(), bounds.x, bounds.y, coordinateOriginComponent);
       bounds.setLocation(point);
 
       if(rectangle.intersects(bounds)){
@@ -133,10 +133,10 @@ public final class GroupSelectionProcessor extends EventProcessor {
     }
 
     if (component instanceof RadContainer){
-      final RadContainer container = (RadContainer)component;
+      RadContainer container = (RadContainer)component;
       // [anton] it is very important to iterate through a STORED array because setSelected can
       // change order of components so iteration via getComponent(i) is incorrect 
-      final RadComponent[] components = container.getComponents();
+      RadComponent[] components = container.getComponents();
       for (RadComponent component1 : components) {
         markRectangle(component1, rectangle, coordinateOriginComponent);
       }
@@ -155,11 +155,11 @@ public final class GroupSelectionProcessor extends EventProcessor {
       myColor = new Color(47, 67, 96);
     }
 
-    protected void paintComponent(final Graphics g){
-      final Graphics2D g2d = (Graphics2D)g;
+    protected void paintComponent(Graphics g){
+      Graphics2D g2d = (Graphics2D)g;
       super.paintComponent(g);
-      final Composite oldComposite = g2d.getComposite();
-      final Color oldColor = g2d.getColor();
+      Composite oldComposite = g2d.getComposite();
+      Color oldColor = g2d.getColor();
       g2d.setColor(myColor);
 
       g2d.setComposite(myComposite1);

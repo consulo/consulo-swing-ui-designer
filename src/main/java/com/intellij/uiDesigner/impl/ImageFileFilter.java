@@ -38,12 +38,12 @@ public class ImageFileFilter implements Predicate<PsiFile>
 
 	public ImageFileFilter(@Nullable Module module)
 	{
-		final String[] formatNames = ImageIO.getReaderFormatNames();
+		String[] formatNames = ImageIO.getReaderFormatNames();
 		for(int i = 0; i < formatNames.length; i++)
 		{
 			formatNames[i] = formatNames[i].toLowerCase();
 		}
-		myExtensions = new HashSet<String>(Arrays.asList(formatNames));
+		myExtensions = new HashSet<>(Arrays.asList(formatNames));
 		if(module != null)
 		{
 			myModuleScope = GlobalSearchScope.moduleWithDependenciesAndLibrariesScope(module, true);
@@ -52,7 +52,7 @@ public class ImageFileFilter implements Predicate<PsiFile>
 
 	public boolean test(PsiFile file)
 	{
-		final VirtualFile virtualFile = file.getVirtualFile();
+		VirtualFile virtualFile = file.getVirtualFile();
 		if(virtualFile != null)
 		{
 			String extension = virtualFile.getExtension();

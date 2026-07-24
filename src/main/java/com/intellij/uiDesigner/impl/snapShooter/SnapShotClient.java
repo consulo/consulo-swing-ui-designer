@@ -69,11 +69,11 @@ public class SnapShotClient {
     myWriter.flush();
   }
 
-  public SnapShotRemoteComponent[] listChildren(final int id) throws IOException {
+  public SnapShotRemoteComponent[] listChildren(int id) throws IOException {
     if (myDisconnected) {
       return new SnapShotRemoteComponent[0];
     }
-    List<SnapShotRemoteComponent> result = new ArrayList<SnapShotRemoteComponent>();
+    List<SnapShotRemoteComponent> result = new ArrayList<>();
     myWriter.write("L" + Integer.toString(id) + "\n");
     myWriter.flush();
     while(true) {
@@ -89,7 +89,7 @@ public class SnapShotClient {
     return result.toArray(new SnapShotRemoteComponent[result.size()]);
   }
 
-  public String createSnapshot(final int id) throws Exception {
+  public String createSnapshot(int id) throws Exception {
     myWriter.write("X" + id + "\n");
     myWriter.flush();
     StringBuilder result = new StringBuilder();

@@ -40,11 +40,11 @@ public class IntroListModelProperty extends IntrospectedProperty<String[]> {
   private ListModelEditor myEditor;
   @NonNls private static final String CLIENT_PROPERTY_KEY_PREFIX = "IntroListModelProperty_";
 
-  public IntroListModelProperty(final String name, final Method readMethod, final Method writeMethod, final boolean storeAsClient) {
+  public IntroListModelProperty(String name, Method readMethod, Method writeMethod, boolean storeAsClient) {
     super(name, readMethod, writeMethod, storeAsClient);
   }
 
-  public void write(final String[] value, final XmlWriter writer) {
+  public void write(String[] value, XmlWriter writer) {
     for(String s: value) {
       writer.startElement(UIFormXmlConstants.ELEMENT_ITEM);
       writer.addAttribute(UIFormXmlConstants.ATTRIBUTE_VALUE, s);
@@ -67,15 +67,15 @@ public class IntroListModelProperty extends IntrospectedProperty<String[]> {
     return myEditor;
   }
 
-  @Override public String[] getValue(final RadComponent component) {
-    final String[] strings = (String[])component.getDelegee().getClientProperty(CLIENT_PROPERTY_KEY_PREFIX + getName());
+  @Override public String[] getValue(RadComponent component) {
+    String[] strings = (String[])component.getDelegee().getClientProperty(CLIENT_PROPERTY_KEY_PREFIX + getName());
     if (strings == null) {
       return ArrayUtil.EMPTY_STRING_ARRAY;
     }
     return strings;
   }
 
-  @Override protected void setValueImpl(final RadComponent component, final String[] value) throws Exception {
+  @Override protected void setValueImpl(RadComponent component, String[] value) throws Exception {
     component.getDelegee().putClientProperty(CLIENT_PROPERTY_KEY_PREFIX + getName(), value);
     DefaultComboBoxModel model = new DefaultComboBoxModel();
     for(String s: value) {
@@ -85,7 +85,7 @@ public class IntroListModelProperty extends IntrospectedProperty<String[]> {
   }
 
   @Override
-  public void importSnapshotValue(final SnapshotContext context, final JComponent component, final RadComponent radComponent) {
+  public void importSnapshotValue(SnapshotContext context, JComponent component, RadComponent radComponent) {
     ListModel listModel;
     try {
       listModel = (ListModel)myReadMethod.invoke(component, EMPTY_OBJECT_ARRAY);
@@ -96,7 +96,7 @@ public class IntroListModelProperty extends IntrospectedProperty<String[]> {
     if (listModel == null || listModel.getSize() == 0) return;
     String[] values = new String [listModel.getSize()];
     for(int i=0; i<listModel.getSize(); i++) {
-      final Object value = listModel.getElementAt(i);
+      Object value = listModel.getElementAt(i);
       if (!(value instanceof String)) {
         return;
       }
@@ -111,7 +111,7 @@ public class IntroListModelProperty extends IntrospectedProperty<String[]> {
   }
 
   private static class MyRenderer extends LabelPropertyRenderer<String[]> {
-    @Override protected void customize(final String[] value) {
+    @Override protected void customize(String[] value) {
       setText(ListModelEditor.listValueToString(value));
     }
   }

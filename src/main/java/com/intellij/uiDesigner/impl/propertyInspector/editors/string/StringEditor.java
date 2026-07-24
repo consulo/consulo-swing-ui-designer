@@ -61,30 +61,30 @@ public final class StringEditor extends PropertyEditor<StringDescriptor> {
     this(project, null);
   }
 
-  public StringEditor(Project project, final IntroStringProperty property) {
+  public StringEditor(Project project, IntroStringProperty property) {
     myProject = project;
     myProperty = property;
     myTfWithButton = new TextFieldWithBrowseButton(new MyActionListener());
     myTfWithButton.getTextField().setBorder(null);
 
-    final JTextField textField = myTfWithButton.getTextField();
+    JTextField textField = myTfWithButton.getTextField();
     textField.addActionListener(
       new ActionListener() {
-        public void actionPerformed(final ActionEvent e) {
+        public void actionPerformed(ActionEvent e) {
           fireValueCommitted(false, false);
         }
       }
     );
     textField.getDocument().addDocumentListener(
       new DocumentAdapter() {
-        protected void textChanged(final DocumentEvent e) {
+        protected void textChanged(DocumentEvent e) {
           preferredSizeChanged();
           myTextFieldModified = true;
         }
       }
     );
 
-    final MyCancelEditingAction cancelEditingAction = new MyCancelEditingAction();
+    MyCancelEditingAction cancelEditingAction = new MyCancelEditingAction();
     cancelEditingAction.registerCustomShortcutSet(CommonShortcuts.ESCAPE, myTfWithButton);
   }
 
@@ -102,11 +102,11 @@ public final class StringEditor extends PropertyEditor<StringDescriptor> {
   /**
    * Applies specified bundle to the myTfWithBrowseButton
    */
-  private void setValue(final StringDescriptor descriptor){
+  private void setValue(StringDescriptor descriptor){
     myValue = descriptor;
-    final JTextField textField = myTfWithButton.getTextField();
+    JTextField textField = myTfWithButton.getTextField();
     if(descriptor != null){
-      final String value = descriptor.getValue();
+      String value = descriptor.getValue();
       if(value != null){ // plain value
         textField.setEditable(true);
         textField.setText(value);
@@ -125,11 +125,11 @@ public final class StringEditor extends PropertyEditor<StringDescriptor> {
     }
   }
 
-  public JComponent getPreferredFocusedComponent(@Nonnull final JComponent component) {
+  public JComponent getPreferredFocusedComponent(@Nonnull JComponent component) {
     return ((TextFieldWithBrowseButton)component).getTextField();
   }
 
-  public JComponent getComponent(final RadComponent component, final StringDescriptor value, final InplaceContext inplaceContext) {
+  public JComponent getComponent(RadComponent component, StringDescriptor value, InplaceContext inplaceContext) {
     myComponent = component;
     setValue(value);
 
@@ -144,12 +144,12 @@ public final class StringEditor extends PropertyEditor<StringDescriptor> {
   public StringDescriptor getValue(){
     if(myValue == null || (myValue.getValue() != null && myTextFieldModified)) {
       // editor is for "trivial" StringDescriptor
-      final String value = myTfWithButton.getText();
+      String value = myTfWithButton.getText();
       if (myValue == null && value.length() == 0) {
         return null;
       }
       else{
-        final StringDescriptor stringDescriptor = StringDescriptor.create(value);
+        StringDescriptor stringDescriptor = StringDescriptor.create(value);
         if (myValue != null && myValue.isNoI18n()) {
           stringDescriptor.setNoI18n(true);
         }
@@ -162,13 +162,13 @@ public final class StringEditor extends PropertyEditor<StringDescriptor> {
   }
 
   private final class MyCancelEditingAction extends AnAction{
-    public void actionPerformed(final AnActionEvent e) {
+    public void actionPerformed(AnActionEvent e) {
       fireEditingCancelled();
     }
   }
 
   private final class MyActionListener implements ActionListener{
-    public void actionPerformed(final ActionEvent e) {
+    public void actionPerformed(ActionEvent e) {
       // 1. Show editor dialog
 
       final GuiEditor guiEditor = DesignerToolWindowManager.getInstance(myProject).getActiveFormEditor();
@@ -194,7 +194,7 @@ public final class StringEditor extends PropertyEditor<StringDescriptor> {
             }
 
             // 2. Apply new value
-            final StringDescriptor descriptor = dialog.getDescriptor();
+            StringDescriptor descriptor = dialog.getDescriptor();
             if(descriptor == null){
               return;
             }

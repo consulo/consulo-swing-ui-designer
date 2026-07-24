@@ -36,8 +36,8 @@ public class GridLayoutSourceGenerator extends LayoutSourceGenerator {
   public static final GridLayoutSourceGenerator INSTANCE = new GridLayoutSourceGenerator();
 
   @Override
-  public void generateContainerLayout(final LwContainer container, final FormSourceCodeGenerator generator,
-                                      final String variable) {
+  public void generateContainerLayout(LwContainer container, FormSourceCodeGenerator generator,
+                                      String variable) {
     if (container.isXY()) {
       if (container.getComponentCount() != 0) {
         throw new IllegalStateException("only empty xys are accepted");
@@ -46,7 +46,7 @@ public class GridLayoutSourceGenerator extends LayoutSourceGenerator {
     }
     else {
       if (container.isGrid()) {
-        final GridLayoutManager layout = (GridLayoutManager)container.getLayout();
+        GridLayoutManager layout = (GridLayoutManager)container.getLayout();
 
         generator.startMethodCall(variable, "setLayout");
 
@@ -79,16 +79,16 @@ public class GridLayoutSourceGenerator extends LayoutSourceGenerator {
     }
   }
 
-  public void generateComponentLayout(final LwComponent component, final FormSourceCodeGenerator generator,
-                                      final String variable, final String parentVariable) {
+  public void generateComponentLayout(LwComponent component, FormSourceCodeGenerator generator,
+                                      String variable, String parentVariable) {
     generator.startMethodCall(parentVariable, "add");
     generator.pushVar(variable);
     addNewGridConstraints(generator, component);
     generator.endMethod();
   }
 
-  private static void addNewGridConstraints(final FormSourceCodeGenerator generator, final LwComponent component) {
-    final GridConstraints constraints = component.getConstraints();
+  private static void addNewGridConstraints(FormSourceCodeGenerator generator, LwComponent component) {
+    GridConstraints constraints = component.getConstraints();
 
     generator.startConstructor(GridConstraints.class.getName());
     generator.push(constraints.getRow());
@@ -107,8 +107,8 @@ public class GridLayoutSourceGenerator extends LayoutSourceGenerator {
     generator.endConstructor();
   }
 
-  private static void pushSizePolicy(final FormSourceCodeGenerator generator, final int value) {
-    final String className = GridConstraints.class.getName();
+  private static void pushSizePolicy(FormSourceCodeGenerator generator, int value) {
+    String className = GridConstraints.class.getName();
 
     //noinspection NonConstantStringShouldBeStringBuffer
     @NonNls String presentation;
@@ -149,15 +149,15 @@ public class GridLayoutSourceGenerator extends LayoutSourceGenerator {
     generator.pushVar(presentation);
   }
 
-  private static IntObjectMap<String> fillMap(final Class<GridConstraints> aClass, @NonNls final String prefix) {
-    final IntObjectMap<String> map = IntMaps.newIntObjectHashMap();
+  private static IntObjectMap<String> fillMap(Class<GridConstraints> aClass, @NonNls String prefix) {
+    IntObjectMap<String> map = IntMaps.newIntObjectHashMap();
 
-    final Field[] fields = aClass.getFields();
-    for (final Field field : fields) {
+    Field[] fields = aClass.getFields();
+    for (Field field : fields) {
       if ((field.getModifiers() & Modifier.STATIC) != 0 && field.getName().startsWith(prefix)) {
         field.setAccessible(true);
         try {
-          final int value = field.getInt(aClass);
+          int value = field.getInt(aClass);
           map.put(value, aClass.getName() + '.' + field.getName());
         }
         catch (IllegalAccessException e) {

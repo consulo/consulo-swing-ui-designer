@@ -34,7 +34,7 @@ public final class ComponentPtr{
   /**
    * @param component
    */
-  public ComponentPtr(@Nonnull final GuiEditor editor, @Nonnull final RadComponent component) {
+  public ComponentPtr(@Nonnull GuiEditor editor, @Nonnull RadComponent component) {
     this(editor, component, true);
   }
 
@@ -42,7 +42,7 @@ public final class ComponentPtr{
    * @param component
    * @param validate
    */
-  public ComponentPtr(@Nonnull final GuiEditor editor, @Nonnull final RadComponent component, final boolean validate){
+  public ComponentPtr(@Nonnull GuiEditor editor, @Nonnull RadComponent component, boolean validate){
     myEditor=editor;
     myId=component.getId();
 
@@ -79,11 +79,11 @@ public final class ComponentPtr{
    */
   public void validate(){
     // Try to find component with myId starting from root container
-    final RadContainer container=myEditor.getRootContainer();
+    RadContainer container=myEditor.getRootContainer();
     myComponent= (RadComponent)FormEditingUtil.findComponent(container,myId);
   }
 
-  public boolean equals(final Object obj){
+  public boolean equals(Object obj){
     if(!(obj instanceof ComponentPtr)){
       return false;
     }

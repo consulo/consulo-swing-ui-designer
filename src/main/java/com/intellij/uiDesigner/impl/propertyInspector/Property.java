@@ -43,7 +43,7 @@ public abstract class Property<T extends RadComponent, V> implements IProperty {
    */
   private final String myName;
 
-  public Property(final Property parent, @Nonnull @NonNls final String name) {
+  public Property(Property parent, @Nonnull @NonNls String name) {
     myParent = parent;
     myName = name;
   }
@@ -56,7 +56,7 @@ public abstract class Property<T extends RadComponent, V> implements IProperty {
     return myName;
   }
 
-  public Object getPropertyValue(final IComponent component) {
+  public Object getPropertyValue(IComponent component) {
     //noinspection unchecked
     return getValue((T) component);
   }
@@ -89,7 +89,7 @@ public abstract class Property<T extends RadComponent, V> implements IProperty {
    * be applied to the <code>component</code>. Note, the exception's
    * message will be shown to the user.
    */
-  public final void setValue(final T component, final V value) throws Exception{
+  public final void setValue(T component, V value) throws Exception{
     setValueImpl(component, value);
     markTopmostModified(component, true);
     component.getDelegee().invalidate();
@@ -104,7 +104,7 @@ public abstract class Property<T extends RadComponent, V> implements IProperty {
     }
   }
 
-  protected void markTopmostModified(final T component, final boolean modified) {
+  protected void markTopmostModified(T component, boolean modified) {
     Property topmostParent = this;
     while (topmostParent.getParent() != null) {
       topmostParent = topmostParent.getParent();
@@ -132,7 +132,7 @@ public abstract class Property<T extends RadComponent, V> implements IProperty {
    * @param component
    */
   @Nonnull
-  public Property[] getChildren(final RadComponent component) {
+  public Property[] getChildren(RadComponent component) {
     return EMPTY_ARRAY;
   }
 
@@ -153,7 +153,7 @@ public abstract class Property<T extends RadComponent, V> implements IProperty {
     return true;
   }
 
-  public boolean isModified(final T component) {
+  public boolean isModified(T component) {
     return false;
   }
 

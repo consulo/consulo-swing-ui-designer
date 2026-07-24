@@ -35,10 +35,10 @@ public final class FormProperty {
   private final String myComponentPropertyClassName;
 
   public FormProperty(
-    final @Nonnull LwComponent component,
-    final @Nonnull @NonNls String componentPropertyGetterName,
-    final @Nonnull @NonNls String componentPropertySetterName,
-    final @Nonnull @NonNls String componentPropertyClassName
+    @Nonnull LwComponent component,
+    @Nonnull @NonNls String componentPropertyGetterName,
+    @Nonnull @NonNls String componentPropertySetterName,
+    @Nonnull @NonNls String componentPropertyClassName
   ) {
     if(
       !String.class.getName().equals(componentPropertyClassName) &&

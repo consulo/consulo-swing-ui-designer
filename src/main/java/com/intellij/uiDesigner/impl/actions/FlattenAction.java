@@ -40,10 +40,10 @@ public class FlattenAction extends AbstractGuiEditorAction {
     super(true);
   }
 
-  protected void actionPerformed(final GuiEditor editor, final List<RadComponent> selection, final AnActionEvent e) {
+  protected void actionPerformed(GuiEditor editor, List<RadComponent> selection, AnActionEvent e) {
     for(RadComponent c: selection) {
       RadContainer container = (RadContainer) c;
-      final RadContainer parent = container.getParent();
+      RadContainer parent = container.getParent();
       if (container.getLayoutManager().isGrid()) {
         flattenGrid(container);
       }
@@ -54,7 +54,7 @@ public class FlattenAction extends AbstractGuiEditorAction {
     }
   }
 
-  private static void flattenGrid(final RadContainer container) {
+  private static void flattenGrid(RadContainer container) {
     RadContainer parent = container.getParent();
     GridConstraints containerConstraints = (GridConstraints) container.getConstraints().clone();
     // ensure there will be enough rows and columns to fit the container contents
@@ -77,7 +77,7 @@ public class FlattenAction extends AbstractGuiEditorAction {
     
     FormEditingUtil.deleteComponents(Collections.singletonList(container), false);
     for(RadComponent child: contents) {
-      final GridConstraints childConstraints = child.getConstraints();
+      GridConstraints childConstraints = child.getConstraints();
       childConstraints.setRow(childConstraints.getRow() + containerConstraints.getRow());
       childConstraints.setColumn(childConstraints.getColumn() + containerConstraints.getColumn());
       parent.addComponent(child);
@@ -85,7 +85,7 @@ public class FlattenAction extends AbstractGuiEditorAction {
     }
   }
 
-  private static void flattenSimple(final RadContainer container) {
+  private static void flattenSimple(RadContainer container) {
     RadContainer parent = container.getParent();
     RadComponent child = null;
     Object childLayoutConstraints = null;
@@ -108,7 +108,7 @@ public class FlattenAction extends AbstractGuiEditorAction {
 
   @Override
   @RequiredUIAccess
-  protected void update(@Nonnull GuiEditor editor, List<RadComponent> selection, final AnActionEvent e) {
+  protected void update(@Nonnull GuiEditor editor, List<RadComponent> selection, AnActionEvent e) {
     for(RadComponent c: selection) {
       if (!canFlatten(c)) {
         e.getPresentation().setVisible(false);
@@ -117,7 +117,7 @@ public class FlattenAction extends AbstractGuiEditorAction {
     }
   }
 
-  private static boolean canFlatten(final RadComponent c) {
+  private static boolean canFlatten(RadComponent c) {
     if (!(c instanceof RadContainer)) {
       return false;
     }

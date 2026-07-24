@@ -78,19 +78,19 @@ public class AddComponentAction extends AnAction implements AnActionWithAsyncUpd
         }
 
         // Show dialog
-        final ComponentItem itemToBeAdded = new ComponentItem(
+        ComponentItem itemToBeAdded = new ComponentItem(
             project,
             className,
             null,
             null,
             new GridConstraints(),
-            new HashMap<String, StringDescriptor>(),
+            new HashMap<>(),
             true/*all user defined components are removable*/,
             false,
             false
         );
         Window parentWindow = TargetAWT.to(WindowManager.getInstance().suggestParentWindow(project));
-        final ComponentItemDialog dialog = new ComponentItemDialog(project, parentWindow, itemToBeAdded, false);
+        ComponentItemDialog dialog = new ComponentItemDialog(project, parentWindow, itemToBeAdded, false);
         dialog.setTitle(UIDesignerLocalize.titleAddComponent());
         dialog.showGroupChooser(groupItem);
         dialog.show();
@@ -108,18 +108,18 @@ public class AddComponentAction extends AnAction implements AnActionWithAsyncUpd
 
         // add to the group
 
-        final Palette palette = Palette.getInstance(project);
+        Palette palette = Palette.getInstance(project);
         palette.addItem(groupItem, itemToBeAdded);
         palette.fireGroupsChanged();
     }
 
-    private static void assignDefaultIcon(final Project project, final ComponentItem itemToBeAdded) {
+    private static void assignDefaultIcon(Project project, ComponentItem itemToBeAdded) {
         Palette palette = Palette.getInstance(project);
         if (itemToBeAdded.getIconPath() == null || itemToBeAdded.getIconPath().length() == 0) {
             PsiClass aClass =
                 JavaPsiFacade.getInstance(project).findClass(itemToBeAdded.getClassName().replace('$', '.'), (GlobalSearchScope) ProjectScopes.getAllScope(project));
             while (aClass != null) {
-                final ComponentItem item = palette.getItem(aClass.getQualifiedName());
+                ComponentItem item = palette.getItem(aClass.getQualifiedName());
                 if (item != null) {
                     String iconPath = item.getIconPath();
                     if (iconPath != null && iconPath.length() > 0) {
@@ -151,14 +151,14 @@ public class AddComponentAction extends AnAction implements AnActionWithAsyncUpd
 
     @Nullable
     @RequiredReadAction
-    private static PsiElement findElementToAdd(final PsiFile psiFile) {
+    private static PsiElement findElementToAdd(PsiFile psiFile) {
         if (psiFile.getFileType().equals(GuiFormFileType.INSTANCE)) {
             return psiFile;
         }
         else if (psiFile.getFileType().equals(JavaFileType.INSTANCE)) {
-            final PsiClass psiClass = PsiTreeUtil.getChildOfType(psiFile, PsiClass.class);
+            PsiClass psiClass = PsiTreeUtil.getChildOfType(psiFile, PsiClass.class);
             Project project = psiFile.getProject();
-            final PsiClass componentClass =
+            PsiClass componentClass =
                 JavaPsiFacade.getInstance(project).findClass(JComponent.class.getName(), (GlobalSearchScope) ProjectScopes.getAllScope(project));
             if (psiClass != null && componentClass != null && psiClass.isInheritor(componentClass, true) && psiClass.getQualifiedName() != null) {
                 return psiClass;

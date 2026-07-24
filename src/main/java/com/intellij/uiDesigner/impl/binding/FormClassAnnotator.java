@@ -47,14 +47,14 @@ public class FormClassAnnotator implements Annotator {
   public void annotate(@Nonnull PsiElement psiElement, @Nonnull AnnotationHolder holder) {
     if (psiElement instanceof PsiField) {
       PsiField field = (PsiField) psiElement;
-      final PsiFile boundForm = FormReferenceProvider.getFormFile(field);
+      PsiFile boundForm = FormReferenceProvider.getFormFile(field);
       if (boundForm != null) {
         annotateFormField(field, boundForm, holder);
       }
     }
     else if (psiElement instanceof PsiClass) {
       PsiClass aClass = (PsiClass) psiElement;
-      final List<PsiFile> formsBoundToClass = FormClassIndex.findFormsBoundToClass(aClass);
+      List<PsiFile> formsBoundToClass = FormClassIndex.findFormsBoundToClass(aClass);
       if (formsBoundToClass.size() > 0) {
         Annotation boundClassAnnotation = holder.createInfoAnnotation(aClass.getNameIdentifier(), null);
         boundClassAnnotation.setGutterIconRenderer(new BoundIconRenderer(aClass));
@@ -62,14 +62,14 @@ public class FormClassAnnotator implements Annotator {
     }
   }
 
-  private static void annotateFormField(final PsiField field, final PsiFile boundForm, final AnnotationHolder holder) {
+  private static void annotateFormField(final PsiField field, PsiFile boundForm, AnnotationHolder holder) {
     Annotation boundFieldAnnotation = holder.createInfoAnnotation(field, null);
     boundFieldAnnotation.setGutterIconRenderer(new BoundIconRenderer(field));
 
     LOG.assertTrue(boundForm instanceof PsiPlainTextFile);
-    final PsiType guiComponentType = FormReferenceProvider.getGUIComponentType((PsiPlainTextFile)boundForm, field.getName());
+    PsiType guiComponentType = FormReferenceProvider.getGUIComponentType((PsiPlainTextFile)boundForm, field.getName());
     if (guiComponentType != null) {
-      final PsiType fieldType = field.getType();
+      PsiType fieldType = field.getType();
       if (!fieldType.isAssignableFrom(guiComponentType)) {
         String message = UIDesignerLocalize.boundFieldTypeMismatch(guiComponentType.getCanonicalText(), fieldType.getCanonicalText()).get();
         Annotation annotation = holder.createErrorAnnotation(field.getTypeElement(), message);
@@ -98,7 +98,7 @@ public class FormClassAnnotator implements Annotator {
 
         public void invoke(@Nonnull Project project, Editor editor, PsiFile file) throws IncorrectOperationException {
           if (!FileModificationService.getInstance().preparePsiElementForWrite(field)) return;
-          final PsiExpression initializer = field.getInitializer();
+          PsiExpression initializer = field.getInitializer();
           LOG.assertTrue(initializer != null);
           initializer.delete();
         }

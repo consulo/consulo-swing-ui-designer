@@ -43,15 +43,15 @@ public class FormInspectionUtil
 	{
 	}
 
-	public static boolean isComponentClass(final consulo.module.Module module, final IComponent component,
-										   final Class componentClass)
+	public static boolean isComponentClass(consulo.module.Module module, IComponent component,
+                                           Class componentClass)
 	{
-		final GlobalSearchScope scope = GlobalSearchScope.moduleWithDependenciesAndLibrariesScope(module);
-		final PsiManager psiManager = PsiManager.getInstance(module.getProject());
-		final PsiClass aClass = JavaPsiFacade.getInstance(psiManager.getProject()).findClass(component.getComponentClassName(), scope);
+		GlobalSearchScope scope = GlobalSearchScope.moduleWithDependenciesAndLibrariesScope(module);
+		PsiManager psiManager = PsiManager.getInstance(module.getProject());
+		PsiClass aClass = JavaPsiFacade.getInstance(psiManager.getProject()).findClass(component.getComponentClassName(), scope);
 		if(aClass != null)
 		{
-			final PsiClass labelClass = JavaPsiFacade.getInstance(psiManager.getProject()).findClass(componentClass.getName(), scope);
+			PsiClass labelClass = JavaPsiFacade.getInstance(psiManager.getProject()).findClass(componentClass.getName(), scope);
 			if(labelClass != null && InheritanceUtil.isInheritorOrSelf(aClass, labelClass, true))
 			{
 				return true;
@@ -61,7 +61,7 @@ public class FormInspectionUtil
 	}
 
 	@Nullable
-	public static String getText(@Nonnull final Module module, final IComponent component)
+	public static String getText(@Nonnull Module module, IComponent component)
 	{
 		IProperty textProperty = findProperty(component, SwingProperties.TEXT);
 		if(textProperty != null)
@@ -93,7 +93,7 @@ public class FormInspectionUtil
 	}
 
 	@Nullable
-	public static IProperty findProperty(final IComponent component, final String name)
+	public static IProperty findProperty(IComponent component, String name)
 	{
 		IProperty[] props = component.getModifiedProperties();
 		for(IProperty prop : props)
@@ -118,7 +118,7 @@ public class FormInspectionUtil
 		}
 		else
 		{
-			final String newKeyName = StringEditorDialog.saveModifiedPropertyValue(editor.getModule(), descriptor,
+			String newKeyName = StringEditorDialog.saveModifiedPropertyValue(editor.getModule(), descriptor,
 					editor.getStringDescriptorLocale(), result,
 					editor.getPsiFile());
 			if(newKeyName != null)

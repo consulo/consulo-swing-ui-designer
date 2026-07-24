@@ -59,7 +59,7 @@ public final class ClassToBindProperty extends Property<RadRootContainer, String
   private final ClassToBindRenderer myRenderer;
   private final MyEditor myEditor;
 
-  public ClassToBindProperty(final Project project) {
+  public ClassToBindProperty(Project project) {
     super(null, "bind to class");
     myRenderer = new ClassToBindRenderer();
     myEditor = new MyEditor(project);
@@ -74,11 +74,11 @@ public final class ClassToBindProperty extends Property<RadRootContainer, String
     return myRenderer;
   }
 
-  public String getValue(final RadRootContainer component) {
+  public String getValue(RadRootContainer component) {
     return component.getClassToBind();
   }
 
-  protected void setValueImpl(final RadRootContainer component, final String value) throws Exception {
+  protected void setValueImpl(RadRootContainer component, String value) throws Exception {
     String className = value;
 
     if (className != null && className.length() == 0) {
@@ -104,7 +104,7 @@ public final class ClassToBindProperty extends Property<RadRootContainer, String
         }
       };
       myActionListener = new MyActionListener();
-      myTfWithButton = new ComponentWithBrowseButton<EditorTextField>(myEditorTextField, myActionListener);
+      myTfWithButton = new ComponentWithBrowseButton<>(myEditorTextField, myActionListener);
       myEditorTextField.setBorder(null);
       new MyCancelEditingAction().registerCustomShortcutSet(CommonShortcuts.ESCAPE, myTfWithButton);
       /*
@@ -119,24 +119,24 @@ public final class ClassToBindProperty extends Property<RadRootContainer, String
     }
 
     public String getValue() throws Exception {
-      final String value = myDocument.getText();
+      String value = myDocument.getText();
       if (value.length() == 0 && myInitialValue == null) {
         return null;
       }
       return value.replace('$', '.'); // PSI works only with dots
     }
 
-    public JComponent getComponent(final RadComponent component, final String value, final InplaceContext inplaceContext) {
+    public JComponent getComponent(RadComponent component, String value, InplaceContext inplaceContext) {
       myInitialValue = value;
       setEditorText(value != null ? value : "");
       myActionListener.setComponent(component);
       return myTfWithButton;
     }
 
-    private void setEditorText(final String s) {
-      final JavaCodeFragmentFactory factory = JavaCodeFragmentFactory.getInstance(myProject);
+    private void setEditorText(String s) {
+      JavaCodeFragmentFactory factory = JavaCodeFragmentFactory.getInstance(myProject);
       PsiJavaPackage defaultPackage = JavaPsiFacade.getInstance(myProject).findPackage("");
-      final PsiCodeFragment fragment = factory.createReferenceCodeFragment(s, defaultPackage, true, true);
+      PsiCodeFragment fragment = factory.createReferenceCodeFragment(s, defaultPackage, true, true);
       myDocument = PsiDocumentManager.getInstance(myProject).getDocument(fragment);
       myEditorTextField.setDocument(myDocument);
     }
@@ -152,18 +152,18 @@ public final class ClassToBindProperty extends Property<RadRootContainer, String
         myComponent = component;
       }
 
-      public void actionPerformed(final ActionEvent e){
-        final String className = myEditorTextField.getText();
-        final PsiClass aClass = FormEditingUtil.findClassToBind(myComponent.getModule(), className);
+      public void actionPerformed(ActionEvent e){
+        String className = myEditorTextField.getText();
+        PsiClass aClass = FormEditingUtil.findClassToBind(myComponent.getModule(), className);
 
-        final Project project = myComponent.getProject();
+        Project project = myComponent.getProject();
         final ProjectFileIndex fileIndex = ProjectRootManager.getInstance(project).getFileIndex();
-        final TreeClassChooser chooser = TreeClassChooserFactory.getInstance(project).createWithInnerClassesScopeChooser(
+        TreeClassChooser chooser = TreeClassChooserFactory.getInstance(project).createWithInnerClassesScopeChooser(
           UIDesignerBundle.message("title.choose.class.to.bind"),
           GlobalSearchScope.projectScope(project),
           new ClassFilter() { // we need show classes from the sources roots only
-            public boolean isAccepted(final PsiClass aClass) {
-              final VirtualFile vFile = aClass.getContainingFile().getVirtualFile();
+            public boolean isAccepted(PsiClass aClass) {
+              VirtualFile vFile = aClass.getContainingFile().getVirtualFile();
               return vFile != null && fileIndex.isInSource(vFile);
             }
           },
@@ -171,7 +171,7 @@ public final class ClassToBindProperty extends Property<RadRootContainer, String
         );
         chooser.showDialog();
 
-        final PsiClass result = chooser.getSelected();
+        PsiClass result = chooser.getSelected();
         if (result != null) {
           setEditorText(result.getQualifiedName());
         }
@@ -182,7 +182,7 @@ public final class ClassToBindProperty extends Property<RadRootContainer, String
 
     private final class MyCancelEditingAction extends AnAction
 	{
-      public void actionPerformed(final AnActionEvent e) {
+      public void actionPerformed(AnActionEvent e) {
         fireEditingCancelled();
       }
     }
