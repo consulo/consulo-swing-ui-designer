@@ -1,1139 +1,1123 @@
 action.delete.column:
-  text: Delete column
+    text: Delete column
 action.delete.columns:
-  text: Delete columns
+    text: Delete columns
 action.delete.row:
-  text: Delete row
+    text: Delete row
 action.delete.rows:
-  text: Delete rows
+    text: Delete rows
 action.insert.column.after.this:
-  text: Insert column after this
+    text: Insert column after this
 action.insert.row.after.this:
-  text: Insert row after this
+    text: Insert row after this
 action.insert.column.before.this:
-  text: Insert column before this
+    text: Insert column before this
 action.insert.row.before.this:
-  text: Insert row before this
+    text: Insert row before this
 action.split.column:
-  text: Split column
+    text: Split column
 action.split.row:
-  text: Split row
+    text: Split row
 error.class.does.not.exist:
-  text: Class "{0}" does not exist
+    text: Class "{0}" does not exist
 error.multiple.toplevel.components:
-  text: Form cannot be compiled because it contains more than one component at the top level
+    text: Form cannot be compiled because it contains more than one component at the top level
 error.panel.not.laid.out:
-  text: Form cannot be compiled until this panel is layed out in a grid
+    text: Form cannot be compiled until this panel is layed out in a grid
 error.no.field.in.class:
-  text: Field "{0}" does not exist in class "{1}"
+    text: Field "{0}" does not exist in class "{1}"
 error.cant.bind.to.static:
-  text: Cannot bind to static field "{0}"
+    text: Cannot bind to static field "{0}"
 error.bind.incompatible.types:
-  text: Incompatible types. Found "{0}", required "{1}"
+    text: Incompatible types. Found "{0}", required "{1}"
 error.binding.already.exists:
-  text: Binding to field "{0}" already exists
+    text: Binding to field "{0}" already exists
 error.class.not.found.N:
-  text: 'Class not found: {0}'
+    text: 'Class not found: {0}'
 error.class.not.found:
-  text: Class not found
+    text: Class not found
 error.required.class.not.found.N:
-  text: 'Required class not found: {0}'
+    text: 'Required class not found: {0}'
 error.required.class.not.found:
-  text: Required class not found
+    text: Required class not found
 chk.copy.form.runtime:
-  text: '&Automatically copy form runtime classes to the output directory'
+    text: Automatically copy form runtime classes to the output directory
 chk.copy.form:
-  text: '&Automatically copy form to the output directory'
+    text: Automatically copy form to the output directory
 label.generate.gui.into:
-  text: 'Generate GUI into:'
+    text: 'Generate GUI into:'
 radio.generate.into.java:
-  text: Java &source code
+    text: Java source code
 radio.generate.into.class:
-  text: Binary &class files
+    text: Binary class files
 progress.converting:
-  text: 'Converting: {0}'
+    text: 'Converting: {0}'
 title.add.component:
-  text: Add Component
+    text: Add Component
 message.enter.group.name:
-  text: 'Enter a new group name:'
+    text: 'Enter a new group name:'
 title.add.group:
-  text: Add Group
+    text: Add Group
 title.converting.project:
-  text: Converting project...
+    text: Converting project...
 tab.general:
-  text: General
+    text: General
 tab.palette:
-  text: Palette
+    text: Palette
 title.edit.component:
-  text: Edit Component
+    text: Edit Component
 edit.enter.group.name:
-  text: 'Enter a group name:'
+    text: 'Enter a group name:'
 title.edit.group:
-  text: Edit Group
+    text: Edit Group
 error.group.name.unique:
-  text: Group name should be unique
+    text: Group name should be unique
 error.component.should.be.unique:
-  text: A component with the same class as the edited component already exists in the palette.
+    text: A component with the same class as the edited component already exists in the palette.
 title.gui.designer:
-  text: GUI Designer
+    text: GUI Designer
 error.cannot.remove.default.palette:
-  text: You cannot remove a default palette component.
+    text: You cannot remove a default palette component.
 error.cannot.remove.default.group:
-  text: You cannot remove the group that contains default palette component(s).
+    text: You cannot remove the group that contains default palette component(s).
 error.form.file.is.invalid:
-  text: Form file is invalid
+    text: Form file is invalid
 error.form.file.is.invalid.message:
-  text: 'Form file is invalid: {0}'
+    text: 'Form file is invalid: {0}'
 error.class.cannot.be.instantiated:
-  text: Class "{0}" cannot be instantiated
+    text: Class "{0}" cannot be instantiated
 tab.untitled:
-  text: Untitled
+    text: Untitled
 error.cannot.load.class:
-  text: Cannot load class {0}
+    text: Cannot load class {0}
 action.create.dialog:
-  text: Create Dialog Class
+    text: Create Dialog Class
 action.description.create.dialog:
-  text: Create new class implementing javax.swing.JDialog
+    text: Create new class implementing javax.swing.JDialog
 title.new.dialog:
-  text: New Dialog
+    text: New Dialog
 command.create.class:
-  text: Create class
+    text: Create class
 error.cannot.create.dialog:
-  text: Cannot Create Dialog
+    text: Cannot Create Dialog
 progress.creating.class:
-  text: Creating class {0}.{1}
+    text: Creating class {0}.{1}
 comment.call.onCancel.cross:
-  text: // call onCancel() when cross is clicked
+    text: // call onCancel() when cross is clicked
 comment.call.onCancel.escape:
-  text: // call onCancel() on ESCAPE
+    text: // call onCancel() on ESCAPE
 comment.onok:
-  text: // add your code here
+    text: // add your code here
 comment.oncancel:
-  text: // add your code here if necessary
+    text: // add your code here if necessary
 edit.dialog.class.name:
-  text: 'Enter a new dialog class name:'
+    text: 'Enter a new dialog class name:'
 checkbox.generate.cancel:
-  text: Generate 'Cancel' handler
+    text: "Generate 'Cancel' handler"
 checkbox.generate.ok:
-  text: Generate 'OK' handler
+    text: "Generate 'OK' handler"
 checkbox.generate.main:
-  text: Generate main() method that creates and shows dialog
+    text: Generate main() method that creates and shows dialog
 info.form.not.bound:
-  text: Nothing to do. Form should be bound to a class.
+    text: Nothing to do. Form should be bound to a class.
 title.data.binding.wizard:
-  text: Data Binding Wizard
+    text: Data Binding Wizard
 error.bound.to.not.found.class:
-  text: Form is bound to class {0} that is not found.
+    text: Form is bound to class {0} that is not found.
 info.no.bound.components:
-  text: Nothing to do. Form should contain at least one bound component.
+    text: Nothing to do. Form should contain at least one bound component.
 action.alter.data.binding:
-  text: Alter Data Binding
+    text: Alter Data Binding
 action.bind.to.another.bean:
-  text: Bind to Another Bean
+    text: Bind to Another Bean
 info.data.binding.regenerate:
-  text: Data binding to {0} found. If you continue, generated methods will be re-generated.
+    text: Data binding to {0} found. If you continue, generated methods will be re-generated.
 title.data.binding:
-  text: Data Binding
+    text: Data Binding
 title.form.preview:
-  text: Form Preview
+    text: Form Preview
 error.cannot.preview.form:
-  text: |-
-    Cannot preview form ''{0}''
-    Reason: {1}
+    text: "Cannot preview form ''{0}''\nReason: {1}"
 error.cannot.read.form:
-  text: |-
-    Cannot read form file ''{0}''.
-    Reason: {1}
+    text: "Cannot read form file ''{0}''.\nReason: {1}"
 error.cannot.preview.empty.form:
-  text: Cannot preview an empty form ''{0}''
+    text: "Cannot preview an empty form ''{0}''"
 progress.preview.started:
-  text: '{0} preview started'
+    text: '{0} preview started'
 tab.getter:
-  text: Getter
+    text: Getter
 tab.setter:
-  text: Setter
+    text: Setter
 component.vertical.spacer:
-  text: Vertical Spacer
+    text: Vertical Spacer
 component.horizontal.spacer:
-  text: Horizontal Spacer
+    text: Horizontal Spacer
 component.form:
-  text: Form
+    text: Form
 component.no.binding:
-  text: no binding
+    text: no binding
 component.gui.designer.form.to.bytecode.compiler:
-  text: GUI Designer form to bytecode compiler
+    text: GUI Designer form to bytecode compiler
 component.gui.designer.form.to.source.compiler:
-  text: GUI Designer form to source compiler
+    text: GUI Designer form to source compiler
 progress.compiling.ui.forms:
-  text: Compiling UI forms...
+    text: Compiling UI forms...
 error.cannot.process.form.file:
-  text: 'Cannot process form file. Reason: {0}'
+    text: 'Cannot process form file. Reason: {0}'
 error.cannot.copy.gui.designer.form.runtime:
-  text: |-
-    Cannot copy GUI designer form runtime classes to the output directory of module {0}.
-    Reason: {1}
+    text: |-
+        Cannot copy GUI designer form runtime classes to the output directory of module {0}.
+        Reason: {1}
 error.class.to.bind.does.not.exist:
-  text: 'Class to bind does not exist: {0}'
+    text: 'Class to bind does not exist: {0}'
 error.duplicate.bind:
-  text: |-
-    The form is bound to the class {0}.
-    Another form {1} is also bound to this class.
+    text: |-
+        The form is bound to the class {0}.
+        Another form {1} is also bound to this class.
 editbox.icon:
-  text: '&Icon:'
+    text: 'Icon:'
 editbox.class:
-  text: '&Class:'
+    text: 'Class:'
 checkbox.want.grow.horz:
-  text: '&Want grow'
+    text: Want grow
 checkbox.can.grow.horz:
-  text: Can &grow
+    text: Can grow
 checkbox.can.shrink.horz:
-  text: Can &shrink
+    text: Can shrink
 checkbox.want.grow.vert:
-  text: W&ant grow
+    text: Want grow
 checkbox.can.grow.vert:
-  text: Can g&row
+    text: Can grow
 checkbox.can.shrink.vert:
-  text: Can s&hrink
+    text: Can shrink
 action.delete.selected.components:
-  text: Delete Selected Component(s)
+    text: Delete Selected Component(s)
 error.item.already.added:
-  text: 'GUI Designer palette: item for this class already is added: {0}'
+    text: 'GUI Designer palette: item for this class already is added: {0}'
 property.horizontal:
-  text: Horizontal
+    text: Horizontal
 property.vertical:
-  text: Vertical
+    text: Vertical
 property.always:
-  text: Always
+    text: Always
 property.as.needed:
-  text: As needed
+    text: As needed
 property.never:
-  text: Never
+    text: Never
 property.wrap:
-  text: Wrap
+    text: Wrap
 property.scroll:
-  text: Scroll
+    text: Scroll
 property.top:
-  text: Top
+    text: Top
 property.left:
-  text: Left
+    text: Left
 property.bottom:
-  text: Bottom
+    text: Bottom
 property.right:
-  text: Right
+    text: Right
 property.center:
-  text: Center
+    text: Center
 property.trailing:
-  text: Trailing
+    text: Trailing
 property.leading:
-  text: Leading
+    text: Leading
 property.horizontal.wrap:
-  text: Horizontal Wrap
+    text: Horizontal Wrap
 property.vertical.wrap:
-  text: Vertical Wrap
+    text: Vertical Wrap
 property.selection.single:
-  text: Single
+    text: Single
 property.selection.single.interval:
-  text: Single Interval
+    text: Single Interval
 property.selection.multiple.interval:
-  text: Multiple Interval
+    text: Multiple Interval
 property.resize.off:
-  text: 'Off'
+    text: 'Off'
 property.resize.next.column:
-  text: Next Column
+    text: Next Column
 property.resize.subsequent.columns:
-  text: Subsequent Columns
+    text: Subsequent Columns
 property.resize.last.column:
-  text: Last Column
+    text: Last Column
 property.resize.all.columns:
-  text: All Columns
+    text: All Columns
 property.focuslost.commit:
-  text: Commit
+    text: Commit
 property.focuslost.commit.or.revert:
-  text: Commit or Revert
+    text: Commit or Revert
 property.focuslost.persist:
-  text: Persist
+    text: Persist
 property.focuslost.revert:
-  text: Revert
+    text: Revert
 button.edit.group:
-  text: '&Edit Group'
+    text: Edit Group
 button.edit.component:
-  text: E&dit Component
+    text: Edit Component
 button.remove.component:
-  text: Remove Componen&t
+    text: Remove Component
 button.add.component:
-  text: Add &Component...
+    text: Add Component...
 button.remove.group:
-  text: Remove Grou&p
+    text: Remove Group
 button.add.group...:
-  text: Add &Group...
+    text: Add Group...
 action.pointer:
-  text: Pointer
+    text: Pointer
 title.choose.component.class:
-  text: Choose Component Class
+    text: Choose Component Class
 chk.show.expert.properties:
-  text: '&Show expert properties'
+    text: Show expert properties
 column.property:
-  text: Property
+    text: Property
 column.value:
-  text: Value
+    text: Value
 title.invalid.input:
-  text: Invalid Input
+    text: Invalid Input
 property.none:
-  text: None
+    text: None
 property.both:
-  text: Both
+    text: Both
 error.value.should.not.be.less:
-  text: Value should not be less than {0}
+    text: Value should not be less than {0}
 error.not.an.integer:
-  text: Entered value is not an integer number
+    text: Entered value is not an integer number
 title.chooser.value:
-  text: Choose Property Key
+    text: Choose Property Key
 column.key:
-  text: Key
+    text: Key
 editbox.bundle.name:
-  text: 'Bundle &name:'
+    text: 'Bundle name:'
 editbox.value:
-  text: 'Value:'
+    text: 'Value:'
 editbox.key:
-  text: '&Key:'
+    text: 'Key:'
 editbox.value.2:
-  text: '&Value:'
+    text: 'Value:'
 title.edit.text:
-  text: Edit Text
+    text: Edit Text
 radio.resource.bundle:
-  text: Resource &bundle
+    text: Resource bundle
 radio.string:
-  text: '&String'
+    text: String
 title.choose.properties.file:
-  text: Choose Properties File
+    text: Choose Properties File
 error.specify.bundle.name:
-  text: Please specify name of the resource bundle
+    text: Please specify name of the resource bundle
 error.bundle.does.not.exist:
-  text: Bundle "{0}" does not exist
+    text: Bundle "{0}" does not exist
 message.rename.field:
-  text: Do you want to rename field "{0}" to "{1}" as well?
+    text: Do you want to rename field "{0}" to "{1}" as well?
 title.rename:
-  text: Rename
+    text: Rename
 title.choose.class.to.bind:
-  text: Choose Class To Bind
+    text: Choose Class To Bind
 property.west:
-  text: West
+    text: West
 property.east:
-  text: East
+    text: East
 property.north:
-  text: North
+    text: North
 property.south:
-  text: South
+    text: South
 property.north.west:
-  text: North-West
+    text: North-West
 property.north.east:
-  text: North-East
+    text: North-East
 property.south.west:
-  text: South-West
+    text: South-West
 property.south.east:
-  text: South-East
+    text: South-East
 class.in.package:
-  text: '{0} in {1}'
+    text: '{0} in {1}'
 property.can.shrink:
-  text: Can Shrink
+    text: Can Shrink
 property.can.grow:
-  text: Can Grow
+    text: Can Grow
 property.want.grow:
-  text: Want Grow
+    text: Want Grow
 property.fixed:
-  text: Fixed
+    text: Fixed
 action.change.field.type:
-  text: Change field ''{0}'' type from ''{1}'' to ''{2}''
+    text: "Change field ''{0}'' type from ''{1}'' to ''{2}''"
 error.cannot.change.field.type:
-  text: |-
-    Cannot change field ''{0}'' type.
-    Reason: {1}
+    text: "Cannot change field ''{0}'' type.\nReason: {1}"
 action.create.class:
-  text: Create Class ''{0}''
+    text: "Create Class ''{0}''"
 error.cannot.create.class.not.in.source.root:
-  text: |-
-    Cannot create class because form file does not belong
-    to any source root
+    text: |-
+        Cannot create class because form file does not belong
+        to any source root
 error.cannot.create.package:
-  text: |-
-    Cannot create package ''{0}''.
-    Reason: {1}
+    text: "Cannot create package ''{0}''.\nReason: {1}"
 error.cannot.create.class:
-  text: |-
-    Cannot create class ''{0}''.
-    Reason: {1}
+    text: "Cannot create class ''{0}''.\nReason: {1}"
 action.create.field:
-  text: Create Field ''{0}''
+    text: "Create Field ''{0}''"
 error.cannot.create.field:
-  text: Cannot create field ''{0}''
+    text: "Cannot create field ''{0}''"
 error.cannot.create.field.no.class:
-  text: |-
-    Cannot create field ''{0}'' because
-    class ''{1}'' does not exist.
+    text: "Cannot create field ''{0}'' because\nclass ''{1}'' does not exist."
 command.create.field:
-  text: Create Field
+    text: Create Field
 error.cannot.create.field.reason:
-  text: |-
-    Cannot create field ''{0}''.
-    Reason: {1}
+    text: "Cannot create field ''{0}''.\nReason: {1}"
 tooltip.press.accelerator:
-  text: Click or press {0}
+    text: Click or press {0}
 property.not.defined:
-  text: <not defined>
+    text: <not defined>
 editbox.class.2:
-  text: 'C&lass:'
+    text: 'Class:'
 radio.bind.to.existing.bean:
-  text: Bind to existing &bean
+    text: Bind to existing bean
 editbox.package:
-  text: '&Package:'
+    text: 'Package:'
 radio.create.new.bean:
-  text: Cre&ate new bean
+    text: Create new bean
 column.form.field:
-  text: Form Field
+    text: Form Field
 column.bean.property:
-  text: Bean Property
+    text: Bean Property
 group.horizontal.size.policy:
-  text: Horizontal Size Policy
+    text: Horizontal Size Policy
 group.vertical.size.policy:
-  text: Vertical Size Policy
+    text: Vertical Size Policy
 group.methods.to.generate:
-  text: Methods to Generate
+    text: Methods to Generate
 title.choose.bean.class:
-  text: Choose Bean Class
+    text: Choose Bean Class
 title.choose.package:
-  text: Choose Package
+    text: Choose Package
 error.cannot.read:
-  text: Cannot read {0}
+    text: Cannot read {0}
 label.select.single.component.to.edit.its.properties:
-  text: |-
-    Select single component
-    to edit its properties
+    text: |-
+        Select single component
+        to edit its properties
 error.please.specify.class.name.of.the.bean.to.be.created:
-  text: Please specify class name of the bean to be created
+    text: Please specify class name of the bean to be created
 error.X.is.not.a.valid.class.name:
-  text: '"{0}" is not a valid class name'
+    text: '"{0}" is not a valid class name'
 error.package.with.name.X.does.not.exist:
-  text: Package with name "{0}" does not exist
+    text: Package with name "{0}" does not exist
 error.cannot.create.class.X.because.it.already.exists:
-  text: Cannot create class "{0}" because it already exists
+    text: Cannot create class "{0}" because it already exists
 error.please.specify.fully.qualified.name.of.bean.class:
-  text: Please specify fully qualified name of bean class
+    text: Please specify fully qualified name of bean class
 error.class.with.name.X.does.not.exist:
-  text: Class with name "{0}" does not exist
+    text: Class with name "{0}" does not exist
 error.X.is.not.a.valid.property.name:
-  text: '"{0}" is not a valid property name'
+    text: '"{0}" is not a valid property name'
 error.form.file.is.not.in.source.root:
-  text: Form file is not in source root
+    text: Form file is not in source root
 error.package.does.not.exist:
-  text: 'Package does not exist: {0}'
+    text: 'Package does not exist: {0}'
 error.cannot.find.package:
-  text: 'Cannot find package: {0}'
+    text: 'Cannot find package: {0}'
 error.form.is.not.bound.to.a.class:
-  text: Form is not bound to a class
+    text: Form is not bound to a class
 error.bound.class.does.not.exist:
-  text: Bound class {0} does not exist
+    text: Bound class {0} does not exist
 error.field.not.found.in.class:
-  text: Field {0} not found in class {1}
+    text: Field {0} not found in class {1}
 error.invalid.binding.field.type:
-  text: 'Invalid binding field type: field {0}, class {1}'
+    text: 'Invalid binding field type: field {0}, class {1}'
 uidesigner.string.no.i18n:
-  text: Value does not need &internationalization
+    text: Value does not need internationalization
 bind.to.bean.ismodified.checkbox:
-  text: isModified()
+    text: isModified()
 bind.to.bean.setdata.checkbox:
-  text: setData()
+    text: setData()
 bind.to.bean.getdata.checkbox:
-  text: getData()
+    text: getData()
 error.one.toplevel.component.required:
-  text: There should be only one component at the top level
+    text: There should be only one component at the top level
 error.nonempty.xy.panels.found:
-  text: There are non empty panels with XY layout. Please lay them out in a grid.
+    text: There are non empty panels with XY layout. Please lay them out in a grid.
 error.class.to.bind.not.found:
-  text: 'Class to bind not found: {0}'
+    text: 'Class to bind not found: {0}'
 command.change.row.column.span:
-  text: Change row/column span
+    text: Change row/column span
 tooltip.increase.row.span:
-  text: Increase Row Span
+    text: Increase Row Span
 tooltip.increase.column.span:
-  text: Increase Column Span
+    text: Increase Column Span
 tooltip.decrease.row.span:
-  text: Decrease Row Span
+    text: Decrease Row Span
 tooltip.decrease.column.span:
-  text: Decrease Column Span
+    text: Decrease Column Span
 checkbox.create.binding.automatically:
-  text: Create &binding automatically
+    text: Create binding automatically
 component.none:
-  text: <none>
+    text: <none>
 component.not.found:
-  text: <not found>
+    text: <not found>
 color.chooser.title:
-  text: Select Color for {0}
+    text: Select Color for {0}
 color.chooser.swing.palette:
-  text: Swing Palette
+    text: Swing Palette
 color.chooser.system.palette:
-  text: System Palette
+    text: System Palette
 color.chooser.awt.palette:
-  text: AWT Palette
+    text: AWT Palette
 font.chooser.title:
-  text: Select Font for {0}
+    text: Select Font for {0}
 font.chooser.font.tab:
-  text: Font Chooser
+    text: Font Chooser
 font.chooser.swing.tab:
-  text: Swing Fonts
+    text: Swing Fonts
 font.chooser.font:
-  text: '&Font'
+    text: Font
 font.chooser.style:
-  text: '&Style'
+    text: Style
 font.chooser.size:
-  text: Si&ze
+    text: Size
 font.chooser.preview.text:
-  text: Preview Text
+    text: Preview Text
 font.chooser.regular:
-  text: Regular
+    text: Regular
 font.chooser.bold:
-  text: Bold
+    text: Bold
 font.chooser.italic:
-  text: Italic
+    text: Italic
 font.chooser.bold.italic:
-  text: Bold Italic
+    text: Bold Italic
 title.choose.icon.file:
-  text: Choose Icon File
+    text: Choose Icon File
 remove.property.quickfix:
-  text: Remove Property
+    text: Remove Property
 form.inspections.group:
-  text: UI Form Problems
+    text: UI Form Problems
 inspection.duplicate.mnemonics:
-  text: Duplicate Mnemonics
+    text: Duplicate Mnemonics
 inspection.duplicate.mnemonics.message:
-  text: 'Duplicate mnemonic: {0}, {1}'
+    text: 'Duplicate mnemonic: {0}, {1}'
 inspection.missing.mnemonics:
-  text: Missing Mnemonics
+    text: Missing Mnemonics
 inspection.missing.mnemonics.message:
-  text: 'Missing mnemonic: {0}'
+    text: 'Missing mnemonic: {0}'
 edit.text.searching.references:
-  text: Searching for Property References
+    text: Searching for Property References
 edit.text.multiple.usages:
-  text: The property {0} has {1} usages. Are you sure you want to change its value?
+    text: The property {0} has {1} usages. Are you sure you want to change its value?
 edit.text.multiple.usages.title:
-  text: Change Property Value
+    text: Change Property Value
 inspections.missing.mnemonic.quickfix:
-  text: Assign mnemonic
+    text: Assign mnemonic
 inspection.missing.mnemonics.quickfix.prompt:
-  text: 'Select text with mnemonic:'
+    text: 'Select text with mnemonic:'
 inspection.missing.mnemonics.quickfix.title:
-  text: Assign Mnemonic
+    text: Assign Mnemonic
 inspection.duplicate.mnemonics.quickfix:
-  text: Assign unique mnemonic
+    text: Assign unique mnemonic
 inspection.no.label.for:
-  text: No label for component
+    text: No label for component
 inspection.no.label.for.error:
-  text: No label specified for component
+    text: No label specified for component
 inspection.no.label.for.quickfix:
-  text: Assign label ''{0}''
+    text: "Assign label ''{0}''"
 inspection.no.button.group:
-  text: Radio button not in a group
+    text: Radio button not in a group
 inspection.no.button.group.error:
-  text: Radio button not in a group
+    text: Radio button not in a group
 inspection.no.button.group.quickfix.create:
-  text: Group adjacent buttons
+    text: Group adjacent buttons
 key.chooser.new.property:
-  text: '&New Property...'
+    text: New Property...
 key.chooser.new.property.title:
-  text: Create Property
+    text: Create Property
 key.chooser.new.property.name:
-  text: 'Key &name:'
+    text: 'Key name:'
 key.chooser.new.property.value:
-  text: 'Key &value:'
+    text: 'Key value:'
 choose.locale.description:
-  text: Choose locale for displaying localized string properties
+    text: Choose locale for displaying localized string properties
 choose.locale.default:
-  text: <default>
+    text: <default>
 add.component.form:
-  text: 'Form:'
+    text: 'Form:'
 add.component.class:
-  text: 'Class:'
+    text: 'Class:'
 add.component.cannot.load.form:
-  text: Cannot load form file {0}
+    text: Cannot load form file {0}
 add.component.form.not.bound:
-  text: Forms added to palette must be bound to a class
+    text: Forms added to palette must be bound to a class
 add.component.root.not.bound:
-  text: Forms added to palette must have a binding for the top-level component
+    text: Forms added to palette must have a binding for the top-level component
 add.component.choose.form:
-  text: Choose Form File
+    text: Choose Form File
 add.component.choose.icon:
-  text: Choose Icon File
+    text: Choose Icon File
 inspection.no.scroll.pane:
-  text: Scrollable component not in JScrollPane
+    text: Scrollable component not in JScrollPane
 inspection.no.scroll.pane.quickfix:
-  text: Surround with JScrollPane
+    text: Surround with JScrollPane
 surround.with.popup.title:
-  text: Surround With
+    text: Surround With
 toolwindow.ui.designer.name:
-  text: UI Designer
+    text: UI Designer
 toolwindow.ui.designer.title:
-  text: Component Tree
+    text: Component Tree
 error.cannot.delete.unused.field:
-  text: 'Cannot delete unused field: {0}'
+    text: 'Cannot delete unused field: {0}'
 command.delete.unused.field:
-  text: Delete Unused Field
+    text: Delete Unused Field
 error.for.component:
-  text: 'Component {0}: {1}'
+    text: 'Component {0}: {1}'
 button.group.name.prompt:
-  text: 'Enter the name for the group:'
+    text: 'Enter the name for the group:'
 button.group.name.title:
-  text: Create Button Group
+    text: Create Button Group
 button.group.none:
-  text: <None>
+    text: <None>
 button.group.new:
-  text: New...
+    text: New...
 delete.row.nonempty:
-  text: The selected {1,choice,1#row contains|2#{1} rows contain} {0} components. Would you like to delete the components and the {1,choice,1#row|2#rows}?
+    text: The selected {1,choice,1#row contains|2#{1} rows contain} {0} components. Would you like to delete the components and the {1,choice,1#row|2#rows}?
 delete.column.nonempty:
-  text: The selected {1,choice,1#column contains|2#{1} columns contain} {0} components. Would you like to delete the components and the {1,choice,1#column|2#columns}?
+    text: The selected {1,choice,1#column contains|2#{1} columns contain} {0} components. Would you like to delete the components and the {1,choice,1#column|2#columns}?
 delete.row.title:
-  text: Delete Row
+    text: Delete Row
 delete.column.title:
-  text: Delete Column
+    text: Delete Column
 checkbox.auto.create.binding:
-  text: Create binding automatically
+    text: Create binding automatically
 checkbox.can.attach.label:
-  text: Can have attached label
+    text: Can have attached label
 command.create.dialog:
-  text: Create Dialog
+    text: Create Dialog
 command.create.form:
-  text: Create Form
+    text: Create Form
 error.cannot.create.form:
-  text: Cannot Create Form
+    text: Cannot Create Form
 action.gui.form.text:
-  text: GUI Form
+    text: GUI Form
 action.gui.form.description:
-  text: Create an empty GUI form
+    text: Create an empty GUI form
 title.new.gui.form:
-  text: New GUI Form
+    text: New GUI Form
 checkbox.create.bound.class:
-  text: Create &bound class
+    text: Create bound class
 new.form.class.name.label:
-  text: '&Class name:'
+    text: 'Class name:'
 new.form.form.name.label:
-  text: '&Form name:'
+    text: 'Form name:'
 paste.choose.destination.prompt:
-  text: Select paste destination. Click or press Enter to paste, press Esc to cancel
+    text: Select paste destination. Click or press Enter to paste, press Esc to cancel
 navigate.to.listener.title:
-  text: Navigate to Listener
+    text: Navigate to Listener
 navigate.to.listener.empty:
-  text: no listeners found
+    text: no listeners found
 palette.special.group:
-  text: Palette
+    text: Palette
 palette.non.palette.component:
-  text: Non-Palette Component...
+    text: Non-Palette Component...
 palette.non.palette.component.tooltip:
-  text: Add a component not present in palette
+    text: Add a component not present in palette
 palette.non.palette.component.title:
-  text: Add Non-Palette Component
+    text: Add Non-Palette Component
 default.layout.manager:
-  text: '&Default layout manager:'
+    text: 'Default layout manager:'
 snapshot.no.public.constructor:
-  text: "The class {0} does not have a public constructor.\r\nHow should instances of this class be handled?"
+    text: "The class {0} does not have a public constructor.\r\nHow should instances of this class be handled?"
 snapshot.title:
-  text: Create Form Snapshot
+    text: Create Form Snapshot
 swing.inspector.title:
-  text: Swing Inspector
+    text: Swing Inspector
 error.card.already.exists:
-  text: A card named ''{0}'' already exists in this container
+    text: "A card named ''{0}'' already exists in this container"
 create.component.title:
-  text: Choose Component to Insert
+    text: Choose Component to Insert
 error.no.custom.create.method:
-  text: Form contains components with Custom Create option but no createUIComponents() method
+    text: Form contains components with Custom Create option but no createUIComponents() method
 error.custom.create.no.binding:
-  text: Only components bound to fields can have custom creation code
+    text: Only components bound to fields can have custom creation code
 quickfix.generate.custom.create:
-  text: Generate createUIComponents() method
+    text: Generate createUIComponents() method
 error.custom.create.binding.required:
-  text: The component requires custom creation code and must thus have a non-empty binding
+    text: The component requires custom creation code and must thus have a non-empty binding
 custom.create.field.name.prompt:
-  text: 'A component with custom creation code needs to be bound to a field. Please enter the field name:'
+    text: 'A component with custom creation code needs to be bound to a field. Please enter the field name:'
 custom.create.title:
-  text: Custom Create
+    text: Custom Create
 client.property.name:
-  text: '&Property name:'
-client.property.type:
-  text: ''
+    text: 'Property name:'
 client.property.add.title:
-  text: Add Client Property
+    text: Add Client Property
 client.properties.class.not.found:
-  text: Class {0} not found
+    text: Class {0} not found
 client.properties.class.not.component:
-  text: 'Not a component class: {0}'
+    text: 'Not a component class: {0}'
 client.properties.already.defined:
-  text: Property {0} is already defined
+    text: Property {0} is already defined
 client.properties.title:
-  text: Configure Client Properties
+    text: Configure Client Properties
 client.properties.class.prompt:
-  text: 'Enter the full-qualified name of the class to configure client properties for:'
+    text: 'Enter the full-qualified name of the class to configure client properties for:'
 client.properties.name:
-  text: Name
+    text: Name
 client.properties.class:
-  text: Class
+    text: Class
 client.properties.configure:
-  text: (configure...)
+    text: (configure...)
 client.properties.add.class.tooltip:
-  text: Add component class
+    text: Add component class
 client.properties.remove.class.tooltip:
-  text: Remove component class
+    text: Remove component class
 client.properties.add.property.tooltip:
-  text: Add client property
+    text: Add client property
 client.properties.remove.property.tooltip:
-  text: Remove client property
+    text: Remove client property
 client.properties.type.header:
-  text: Property Type
+    text: Property Type
 label:
-  text: Label
+    text: Label
 morph.component.title:
-  text: Choose Component to Morph Into
+    text: Choose Component to Morph Into
 morph.component.command:
-  text: Morph Component
+    text: Morph Component
 inspection.bound.field.title:
-  text: Assignment to UI-bound field
+    text: Assignment to UI-bound field
 inspection.bound.field.message:
-  text: Assignment to UI-bound field will overwrite field generated by UI Designer
+    text: Assignment to UI-bound field will overwrite field generated by UI Designer
 snapshot.form.name.field:
-  text: '&Form Name:'
+    text: 'Form Name:'
 create.snapshot.button:
-  text: Create Snapshot
+    text: Create Snapshot
 error.form.already.exists:
-  text: File {0}.form already exists
+    text: File {0}.form already exists
 snapshot.components.label:
-  text: 'Root of the component tree to include in the snapshot:'
+    text: 'Root of the component tree to include in the snapshot:'
 snapshot.create.error:
-  text: 'Failed to create snapshot: {0}'
+    text: 'Failed to create snapshot: {0}'
 snapshot.save.error:
-  text: 'Failed to create form from snapshot: {0}'
+    text: 'Failed to create form from snapshot: {0}'
 snapshot.connection.error:
-  text: Failed to establish form snapshot connection to running application
+    text: Failed to establish form snapshot connection to running application
 snapshot.prepare.notice:
-  text: Please prepare the running application for taking a form snapshot
+    text: Please prepare the running application for taking a form snapshot
 snapshot.run.error:
-  text: 'Failed to prepare run profile: {0}'
+    text: 'Failed to prepare run profile: {0}'
 snapshot.run.prompt:
-  text: The application from which snapshots will be taken is not currently running. Would you like to run it?
+    text: The application from which snapshots will be taken is not currently running. Would you like to run it?
 snapshot.no.configuration.error:
-  text: No Application run configurations defined. Please define a run configuration to use for taking snapshots
+    text: No Application run configurations defined. Please define a run configuration to use for taking snapshots
 snapshot.confirm.configuration.prompt:
-  text: Taking form snapshots is not currently enabled. Enable taking form snapshots in configuration ''{0}''?
+    text: "Taking form snapshots is not currently enabled. Enable taking form snapshots in configuration ''{0}''?"
 snapshot.no.compatible.configuration.error:
-  text: Taking form snapshots requires JRE 5.0 or higher, while all existing Application configurations use an earlier JRE version. Please define a new Application run configuration using JRE 5.0 for taking form snapshots.
+    text: Taking form snapshots requires JRE 5.0 or higher, while all existing Application configurations use an earlier JRE version. Please define a new Application run configuration using JRE 5.0 for taking form snapshots.
 snapshot.choose.configuration.prompt:
-  text: 'Taking form snapshots is not currently enabled. Please choose the run configuration to use for taking form snapshots:'
+    text: 'Taking form snapshots is not currently enabled. Please choose the run configuration to use for taking form snapshots:'
 snapshot.connection.broken:
-  text: Form snapshot connection broken
+    text: Form snapshot connection broken
 snapshot.unknown.layout.prefix:
-  text: |
-    Unknown layout manager classes found.
+    text: |
+        Unknown layout manager classes found.
 snapshot.unknown.layout.prompt:
-  text: Components using these layout managers will be not included in the snapshot. Continue?
+    text: Components using these layout managers will be not included in the snapshot. Continue?
 property.default:
-  text: Default
+    text: Default
 property.above.top:
-  text: Above Top
+    text: Above Top
 property.below.top:
-  text: Below Top
+    text: Below Top
 property.above.bottom:
-  text: Above Bottom
+    text: Above Bottom
 property.below.bottom:
-  text: Below Bottom
+    text: Below Bottom
 border.title.editor.title:
-  text: Border Title
+    text: Border Title
 border.color.editor.title:
-  text: Border Color
+    text: Border Color
 property.javadoc.title:
-  text: Documentation for {0} property
+    text: Documentation for {0} property
 create.listener.title:
-  text: Create Listener
+    text: Create Listener
 create.listener.class.not.found:
-  text: Could not find listener class
+    text: Could not find listener class
 create.listener.command:
-  text: Create Listener
+    text: Create Listener
 list.editor.prompt:
-  text: '&Items in the model (one line per item):'
+    text: 'Items in the model (one line per item):'
 list.editor.title:
-  text: List Model for {0}
+    text: List Model for {0}
 add.module.dependency.prompt:
-  text: The class {0} is defined in the module {1}. Would you like to add a dependency from module {2} to that module?
+    text: The class {0} is defined in the module {1}. Would you like to add a dependency from module {2} to that module?
 add.module.dependency.title:
-  text: Add Module Dependency
+    text: Add Module Dependency
 add.library.dependency.prompt:
-  text: The class {0} is defined in the library {1}. Would you like to add a dependency from module {2} to that library?
+    text: The class {0} is defined in the library {1}. Would you like to add a dependency from module {2} to that library?
 add.library.dependency.title:
-  text: Add Library Dependency
+    text: Add Library Dependency
 i18n.quickfix.property:
-  text: I18nize property ''{0}''
+    text: "I18nize property ''{0}''"
 i18n.quickfix.border.title:
-  text: I18nize border title
+    text: I18nize border title
 i18n.quickfix.tab.title:
-  text: I18nize {0}
+    text: I18nize {0}
 inspection.one.button.group:
-  text: Button group with one button
+    text: Button group with one button
 inspection.one.button.group.error:
-  text: Button group with one button
+    text: Button group with one button
 inspection.no.button.group.quickfix.add:
-  text: Add to group ''{0}''
+    text: "Add to group ''{0}''"
 property.fill:
-  text: Fill
+    text: Fill
 action.group.columns:
-  text: Group Columns
+    text: Group Columns
 action.group.rows:
-  text: Group Rows
+    text: Group Rows
 action.ungroup.columns:
-  text: Ungroup Columns
+    text: Ungroup Columns
 action.ungroup.rows:
-  text: Ungroup Rows
+    text: Ungroup Rows
 title.default.alignment:
-  text: Default Alignment
+    text: Default Alignment
 alignment.left:
-  text: '&Left'
+    text: Left
 alignment.center:
-  text: '&Center'
+    text: Center
 alignment.right:
-  text: '&Right'
+    text: Right
 alignment.fill:
-  text: '&Fill'
+    text: Fill
 title.size:
-  text: Size
+    text: Size
 size.default:
-  text: '&Default'
+    text: Default
 size.preferred:
-  text: '&Preferred'
+    text: Preferred
 size.minimum:
-  text: '&Minimum'
+    text: Minimum
 size.constant:
-  text: Constan&t
+    text: Constant
 size.minimum.limit:
-  text: M&inimum
+    text: Minimum
 size.maximum.limit:
-  text: M&aximum
+    text: Maximum
 size.grow:
-  text: '&Grow:'
+    text: 'Grow:'
 alignment.top:
-  text: '&Top'
+    text: Top
 alignment.bottom:
-  text: '&Bottom'
+    text: Bottom
 title.row.properties:
-  text: Row {0} Properties
+    text: Row {0} Properties
 title.column.properties:
-  text: Column {0} Properties
+    text: Column {0} Properties
 title.multiple.rows.selected:
-  text: Multiple rows selected
+    text: Multiple rows selected
 title.multiple.columns.selected:
-  text: Multiple columns selected
+    text: Multiple columns selected
 title.no.rows.selected:
-  text: No rows selected
+    text: No rows selected
 title.no.columns.selected:
-  text: No columns selected
+    text: No columns selected
 unit.pixels:
-  text: pixels
+    text: pixels
 unit.dialog.units:
-  text: dialog units
+    text: dialog units
 unit.points:
-  text: points
+    text: points
 unit.inches:
-  text: inches
+    text: inches
 unit.centimeters:
-  text: centimeters
+    text: centimeters
 unit.millimeters:
-  text: millimeters
+    text: millimeters
 font.default:
-  text: <default>
+    text: <default>
 action.suppress.for.component:
-  text: Suppress for component
+    text: Suppress for component
 action.suppress.for.all.components:
-  text: Suppress for all components
+    text: Suppress for all components
 action.suppress.named.for.component:
-  text: Suppress ''{0}'' for component
+    text: "Suppress ''{0}'' for component"
 action.suppress.named.for.all.components:
-  text: Suppress ''{0}'' for all components
+    text: "Suppress ''{0}'' for all components"
 insert.feedback.before.col:
-  text: '{0} (row {1}, before col {2})'
+    text: '{0} (row {1}, before col {2})'
 insert.feedback.after.col:
-  text: '{0} (row {1}, after col {2})'
+    text: '{0} (row {1}, after col {2})'
 insert.feedback.before.row:
-  text: '{0} (col {1}, before row {2})'
+    text: '{0} (col {1}, before row {2})'
 insert.feedback.after.row:
-  text: '{0} (col {1}, after row {2})'
+    text: '{0} (col {1}, after row {2})'
 insert.feedback.top:
-  text: top
+    text: top
 insert.feedback.bottom:
-  text: bottom
+    text: bottom
 insert.feedback.left:
-  text: left
+    text: left
 insert.feedback.right:
-  text: right
+    text: right
 resize.feedback:
-  text: '{0}: {1} R x {2} C'
+    text: '{0}: {1} R x {2} C'
 command.update.property:
-  text: changing property value
+    text: changing property value
 command.create.property:
-  text: creating property value
+    text: creating property value
 title.height:
-  text: Height
+    text: Height
 title.width:
-  text: Width
+    text: Width
 tooltip.resize.row:
-  text: 'Row {0}: {1}'
+    text: 'Row {0}: {1}'
 tooltip.resize.column:
-  text: 'Column {0}: {1}'
+    text: 'Column {0}: {1}'
 edit.text.change.all:
-  text: Change All
+    text: Change All
 edit.text.make.unique:
-  text: Make Unique
+    text: Make Unique
 edit.text.unique.key.prompt:
-  text: 'Enter the name for the new property key:'
+    text: 'Enter the name for the new property key:'
 delete.component.prompt:
-  text: Remove component {0} from palette?
+    text: Remove component {0} from palette?
 delete.component.title:
-  text: Delete Component
+    text: Delete Component
 insert.feedback.fill:
-  text: fill
+    text: fill
 insert.feedback.add.tab:
-  text: 'Add tab: {0} ({1})'
+    text: 'Add tab: {0} ({1})'
 generate.main.title:
-  text: Generate main()
+    text: Generate main()
 generate.main.no.default.constructor:
-  text: The class does not have a default constructor
+    text: The class does not have a default constructor
 generate.main.empty.form:
-  text: The form bound to the class is empty
+    text: The form bound to the class is empty
 generate.main.no.root.binding:
-  text: The form bound to the class does not have a valid binding for the root component
+    text: The form bound to the class does not have a valid binding for the root component
 uidesigner.generated.code.folding.placeholder.text:
-  text: UI Designer generated code
+    text: UI Designer generated code
 node.button.groups:
-  text: Button Groups
+    text: Button Groups
 node.suppressed.inspections:
-  text: Suppressed Inspections
+    text: Suppressed Inspections
 button.group.name.label:
-  text: 'Name:'
+    text: 'Name:'
 button.group.bound.checkbox:
-  text: Bind to field
+    text: Bind to field
 error.binding.not.unique:
-  text: binding is not unique
+    text: binding is not unique
 new.form.base.layout.manager.label:
-  text: 'Base &layout manager:'
+    text: 'Base layout manager:'
 combobox.group:
-  text: 'Gr&oup:'
+    text: 'Group:'
 checkbox.is.container:
-  text: Is &container
+    text: Is container
 command.set.property.value:
-  text: Set Property Value
+    text: Set Property Value
 command.flatten:
-  text: Flatten
+    text: Flatten
 command.drop.components:
-  text: Drop Components
+    text: Drop Components
 command.insert.component:
-  text: Insert Component
+    text: Insert Component
 command.delete.selection:
-  text: Delete Selection
+    text: Delete Selection
 command.cut:
-  text: Cut
+    text: Cut
 command.delete.row:
-  text: Delete Row
+    text: Delete Row
 command.delete.column:
-  text: Delete Column
+    text: Delete Column
 command.edit.string.property:
-  text: Edit String Property
+    text: Edit String Property
 command.duplicate:
-  text: duplicate
+    text: duplicate
 group.buttons.title:
-  text: Group Buttons
+    text: Group Buttons
 group.buttons.name.prompt:
-  text: 'Enter the name for the button group:'
+    text: 'Enter the name for the button group:'
 inspection.no.label.for.command:
-  text: assign label to component
+    text: assign label to component
 error.recursive.form.nesting:
-  text: Form cannot be loaded because of recursive form nesting
+    text: Form cannot be loaded because of recursive form nesting
 error.instantiating.nested.form:
-  text: 'Error instantiating nested form {0}: {1}'
+    text: 'Error instantiating nested form {0}: {1}'
 progress.creating.snapshot:
-  text: Creating snapshot...
+    text: Creating snapshot...
 progress.validating.layout.managers:
-  text: Validating layout managers...
+    text: Validating layout managers...
 ui.is.bound.header:
-  text: UI is bound in<br>
+    text: UI is bound in<br>
 snapshooter.invalid.container:
-  text: Selected component is not a valid top-level container for a form
+    text: Selected component is not a valid top-level container for a form
 error.getting.value:
-  text: 'Error getting value: {0}'
+    text: 'Error getting value: {0}'
 error.setting.value:
-  text: 'Error setting value: {0}'
+    text: 'Error setting value: {0}'
 error.no.message:
-  text: No message
+    text: No message
 move.class.and.form.prompt:
-  text: Move class {0} and its bound form
+    text: Move class {0} and its bound form
 move.classes.and.forms.prompt:
-  text: Move specified classes and their bound forms
+    text: Move specified classes and their bound forms
 inspection.invalid.property.in.form.quickfix.error.bundle.not.specified:
-  text: Bundle not specified
+    text: Bundle not specified
 inspection.invalid.property.in.form.quickfix.error.property.key.not.specified:
-  text: Property key not specified
+    text: Property key not specified
 inspection.invalid.property.in.form.quickfix.error.bundle.not.found:
-  text: Bundle ''{0}'' not found
+    text: "Bundle ''{0}'' not found"
 inspection.invalid.property.in.form.quickfix.error.key.not.found:
-  text: Key ''{0}'' not found in bundle ''{1}'' for locale ''{2}''
+    text: "Key ''{0}'' not found in bundle ''{1}'' for locale ''{2}''"
 inspection.i18n.message.in.form:
-  text: 'Hard coded string literal in form: ''''{0}'''''
+    text: "Hard coded string literal in form: ''{0}''"
 command.paste:
-  text: Paste
+    text: Paste
 add.component.error.qualified.name.required:
-  text: Please enter a qualified class name
+    text: Please enter a qualified class name
 add.component.error.component.required:
-  text: Please select a class derived from JComponent
+    text: Please select a class derived from JComponent
 form.usage.type:
-  text: '{0} in GUI form'
+    text: '{0} in GUI form'
 unsupported.component.class.version:
-  text: Unsupported component class version
+    text: Unsupported component class version
 field.is.overwritten.by.generated.code:
-  text: Field ''{0}'' is overwritten by generated code
+    text: "Field ''{0}'' is overwritten by generated code"
 bound.field.type.mismatch:
-  text: Types of GUI component (''{0}'') and bound field (''{1}'') do not match
+    text: "Types of GUI component (''{0}'') and bound field (''{1}'') do not match"
 action.GuiDesigner.PreviewForm.text:
-  text: Preview
+    text: Preview
 action.GuiDesigner.PreviewForm.description:
-  text: Preview form
+    text: Preview form
 action.GuiDesigner.DataBindingWizard.text:
-  text: Data Binding Wizard...
+    text: Data Binding Wizard...
 action.GuiDesigner.ChooseLocale.text:
-  text: Choose UI Designer Form Locale
+    text: Choose UI Designer Form Locale
 action.GuiDesigner.LayOutHorizontally.text:
-  text: Lay Out Horizontally
+    text: Lay Out Horizontally
 action.GuiDesigner.LayOutVertically.text:
-  text: Lay Out Vertically
+    text: Lay Out Vertically
 action.GuiDesigner.LayOutInGrid.text:
-  text: Lay Out In a Grid
+    text: Lay Out In a Grid
 action.GuiDesigner.BreakLayout.text:
-  text: Break Layout
+    text: Break Layout
 action.GuiDesigner.ExpandSelection.text:
-  text: Expand Selection
+    text: Expand Selection
 action.GuiDesigner.ExpandSelection.description:
-  text: Expand selection structurally
+    text: Expand selection structurally
 action.GuiDesigner.ShrinkSelection.text:
-  text: Shrink Selection
+    text: Shrink Selection
 action.GuiDesigner.ShrinkSelection.description:
-  text: Shrink selection structurally
+    text: Shrink selection structurally
 action.GuiDesigner.IncreaseIndent.text:
-  text: Increase Indent
+    text: Increase Indent
 action.GuiDesigner.IncreaseIndent.description:
-  text: Increase indent of selected component
+    text: Increase indent of selected component
 action.GuiDesigner.DecreaseIndent.text:
-  text: Decrease Indent
+    text: Decrease Indent
 action.GuiDesigner.DecreaseIndent.description:
-  text: Decrease indent of selected component
+    text: Decrease indent of selected component
 action.GuiDesigner.GroupButtons.text:
-  text: Group Buttons
+    text: Group Buttons
 action.GuiDesigner.GroupButtons.description:
-  text: Add selected buttons to a ButtonGroup
+    text: Add selected buttons to a ButtonGroup
 action.GuiDesigner.UngroupButtons.text:
-  text: Ungroup Buttons
+    text: Ungroup Buttons
 action.GuiDesigner.UngroupButtons.description:
-  text: Remove selected buttons from a ButtonGroup
+    text: Remove selected buttons from a ButtonGroup
 action.GuiDesigner.QuickJavadoc.text:
-  text: _Quick JavaDoc
+    text: Quick JavaDoc
 action.GuiDesigner.QuickJavadoc.description:
-  text: Show a popup window with JavaDoc for selected property
+    text: Show a popup window with JavaDoc for selected property
 action.GuiDesigner.Pack.text:
-  text: Pack
+    text: Pack
 action.GuiDesigner.Pack.description:
-  text: Shrink container to minimum size
+    text: Shrink container to minimum size
 action.GuiDesigner.ShowGrid.text:
-  text: Show Grid
+    text: Show Grid
 action.GuiDesigner.ShowGrid.description:
-  text: Toggles visibility of the container layout grid
+    text: Toggles visibility of the container layout grid
 action.GuiDesigner.ShowComponentTags.text:
-  text: Show Component Tags
+    text: Show Component Tags
 action.GuiDesigner.ShowComponentTags.description:
-  text: Toggles visibility of tags on large components with no text
+    text: Toggles visibility of tags on large components with no text
 action.GuiDesigner.ResetValue.text:
-  text: Restore Default Value
+    text: Restore Default Value
 action.GuiDesigner.ResetValue.description:
-  text: Restore the default value of the selected property
+    text: Restore the default value of the selected property
 action.GuiDesigner.AddGroup.text:
-  text: Add Group
+    text: Add Group
 action.GuiDesigner.AddGroup.description:
-  text: Add Group
+    text: Add Group
 action.GuiDesigner.EditGroup.text:
-  text: Edit Group
+    text: Edit Group
 action.GuiDesigner.EditGroup.description:
-  text: Edit Group
+    text: Edit Group
 action.GuiDesigner.DeleteGroup.text:
-  text: Delete Group
+    text: Delete Group
 action.GuiDesigner.DeleteGroup.description:
-  text: Delete Group
+    text: Delete Group
 action.GuiDesigner.AddComponent.text:
-  text: Add Component to Palette...
+    text: Add Component to Palette...
 action.GuiDesigner.AddComponent.description:
-  text: Add Component
+    text: Add Component
 action.GuiDesigner.EditComponent.text:
-  text: Edit Component
+    text: Edit Component
 action.GuiDesigner.EditComponent.description:
-  text: Edit Component
+    text: Edit Component
 action.GuiDesigner.DeleteComponent.text:
-  text: Delete Component
+    text: Delete Component
 action.GuiDesigner.DeleteComponent.description:
-  text: Delete Component
+    text: Delete Component
 action.GuiDesigner.Duplicate.text:
-  text: Duplicate
+    text: Duplicate
 action.GuiDesigner.Duplicate.description:
-  text: Duplicate Components
+    text: Duplicate Components
 action.GuiDesigner.SurroundPopup.text:
-  text: Surround With...
+    text: Surround With...
 action.GuiDesigner.SurroundPopup.description:
-  text: Surround the selected controls with a container
+    text: Surround the selected controls with a container
 action.GuiDesigner.AddTab.text:
-  text: Add Tab
+    text: Add Tab
 action.GuiDesigner.AddTab.description:
-  text: Add a new tab to the selected tabbed pane
+    text: Add a new tab to the selected tabbed pane
 action.GuiDesigner.GoToListener.text:
-  text: Go to Listener
+    text: Go to Listener
 action.GuiDesigner.GoToListener.description:
-  text: Navigate to a listener class attached to the component
+    text: Navigate to a listener class attached to the component
 action.GuiDesigner.CreateListener.text:
-  text: Create Listener
+    text: Create Listener
 action.GuiDesigner.CreateListener.description:
-  text: Generate a listener class and attach it to the component
+    text: Generate a listener class and attach it to the component
 action.GuiDesigner.CreateComponent.text:
-  text: Create Component
+    text: Create Component
 action.GuiDesigner.CreateComponent.description:
-  text: Choose a component class and add the component to the form
+    text: Choose a component class and add the component to the form
 action.GuiDesigner.Flatten.text:
-  text: Flatten
+    text: Flatten
 action.GuiDesigner.Flatten.description:
-  text: Delete selected container and move its contents to its parent container
+    text: Delete selected container and move its contents to its parent container
 action.GuiDesigner.Morph.text:
-  text: Morph Component...
+    text: Morph Component...
 action.GuiDesigner.Morph.description:
-  text: Convert the component to a different class while preserving properties
+    text: Convert the component to a different class while preserving properties
 action.NewFormSnapshot.text:
-  text: Form Snapshot
+    text: Form Snapshot
 action.NewFormSnapshot.description:
-  text: Create a GUI form based on the UI of a running Java application
+    text: Create a GUI form based on the UI of a running Java application
 action.GuiDesigner.GenerateMain.text:
-  text: Form main()
+    text: Form main()
 action.GuiDesigner.GenerateMain.description:
-  text: Generate a main() method to show the UI form
+    text: Generate a main() method to show the UI form
 action.GuiDesigner.ReloadCustomComponents.text:
-  text: Reload Custom Components
+    text: Reload Custom Components
 action.GuiDesigner.ReloadCustomComponents.description:
-  text: Reload modified custom component classes and recreate forms
+    text: Reload modified custom component classes and recreate forms
 action.GuiDesigner.FormSource.text:
-  text: Form Source
+    text: Form Source
 action.GuiDesigner.FormSource.description:
-  text: Show form XML content
+    text: Show form XML content
 action.NewDialog.text:
-  text: Dialog
+    text: Dialog
 action.NewForm.text:
-  text: GUI Form
+    text: GUI Form
 default.field.accessibility:
-  text: 'Default accessibility &for UI-bound fields:'
+    text: 'Default accessibility for UI-bound fields:'
 plugin.com.intellij.uiDesigner.description:
-  text: Provides visual editing support for Swing UI forms
+    text: Provides visual editing support for Swing UI forms
 group.GuiDesigner.MainToolbarActions.text:
-  text: UI Designer Toolbar Actions
+    text: UI Designer Toolbar Actions
 group.GuiDesigner.NewActions.text:
-  text: New GUI Designer Actions
+    text: New GUI Designer Actions

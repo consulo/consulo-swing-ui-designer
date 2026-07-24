@@ -1,0 +1,19 @@
+{
+  "lockVersion" : 1,
+  "project" : "consulo-swing-ui-designer",
+  "projectVersion" : "master",
+  "sourceLocale" : "en-US",
+  "generatedAt" : "2026-07-24T07:27:46.152522158Z",
+  "documents" : {
+    "consulo.uiDesigner.impl.UIDesignerLocalize" : {
+      "source" : {
+        "sig" : "89902c47476f4564a5dad93cbb9e0dbe"
+      },
+      "translations" : {
+        "en-US" : {
+          "sig" : "40d77c3f2e9894130a8d1e03aa6d873d"
+        }
+      }
+    }
+  }
+}
