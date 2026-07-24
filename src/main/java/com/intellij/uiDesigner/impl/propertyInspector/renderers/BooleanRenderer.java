@@ -26,6 +26,7 @@ import javax.swing.*;
  * @author Vladimir Kondratyev
  */
 public class BooleanRenderer extends JCheckBox implements PropertyRenderer<Boolean> {
+  @Override
   public JComponent getComponent(final RadRootContainer rootContainer, final Boolean value, final boolean selected, final boolean hasFocus){
     // Background and foreground
     if(selected){
@@ -36,7 +37,7 @@ public class BooleanRenderer extends JCheckBox implements PropertyRenderer<Boole
       setBackground(UIUtil.getTableBackground());
     }
 
-    setSelected(value != null && value.booleanValue());
+    setSelected(value != null && value);
 
     return this;
   }

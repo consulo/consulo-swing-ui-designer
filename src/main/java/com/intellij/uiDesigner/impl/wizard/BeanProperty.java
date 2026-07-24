@@ -16,8 +16,7 @@
 package com.intellij.uiDesigner.impl.wizard;
 
 import jakarta.annotation.Nonnull;
-
-import org.jetbrains.annotations.NonNls;
+import jakarta.annotation.Nullable;
 
 /**
  * @author Anton Katilin
@@ -40,7 +39,7 @@ final class BeanProperty implements Comparable<BeanProperty>{
   @Nonnull
   public final String myType;
 
-  public BeanProperty(@Nonnull final String name, @NonNls @Nonnull final String type) {
+  public BeanProperty(@Nonnull final String name, @Nonnull final String type) {
     if(!"java.lang.String".equals(type) && !"boolean".equals(type)){
       throw new IllegalArgumentException("unknown type: " + type);
     }
@@ -49,6 +48,7 @@ final class BeanProperty implements Comparable<BeanProperty>{
     myType = type;
   }
 
+  @Override
   public int compareTo(final BeanProperty property) {
     if(property == null){
       return 1;
@@ -61,16 +61,19 @@ final class BeanProperty implements Comparable<BeanProperty>{
   /**
    * This method is used by ComboBox editor of {@link BindToExistingBeanStep.MyTableCellEditor}
    */
+  @Override
   public String toString() {
     return myName;
   }
 
-  public boolean equals(final Object obj) {
+  @Override
+  public boolean equals(@Nullable Object obj) {
     if (this == obj) return true;
-    if (!(obj instanceof BeanProperty)) return false;
-    return myName.equals(((BeanProperty)obj).myName);
+    return obj instanceof BeanProperty that
+        && myName.equals(that.myName);
   }
 
+  @Override
   public int hashCode() {
     return myName.hashCode();
   }

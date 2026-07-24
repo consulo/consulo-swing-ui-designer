@@ -15,11 +15,13 @@
  */
 package com.intellij.uiDesigner.impl.propertyInspector.editors;
 
-import com.intellij.java.language.psi.*;
-import com.intellij.uiDesigner.impl.FormEditingUtil;
+import com.intellij.java.language.psi.JavaPsiFacade;
+import com.intellij.java.language.psi.PsiClass;
+import com.intellij.java.language.psi.PsiField;
+import com.intellij.java.language.psi.PsiType;
 import com.intellij.uiDesigner.core.Spacer;
+import com.intellij.uiDesigner.impl.FormEditingUtil;
 import com.intellij.uiDesigner.impl.inspections.FormInspectionUtil;
-import com.intellij.uiDesigner.lw.IRootContainer;
 import com.intellij.uiDesigner.impl.propertyInspector.DesignerToolWindowManager;
 import com.intellij.uiDesigner.impl.propertyInspector.InplaceContext;
 import com.intellij.uiDesigner.impl.propertyInspector.properties.BindingProperty;
@@ -27,8 +29,10 @@ import com.intellij.uiDesigner.impl.radComponents.RadComponent;
 import com.intellij.uiDesigner.impl.radComponents.RadErrorComponent;
 import com.intellij.uiDesigner.impl.radComponents.RadHSpacer;
 import com.intellij.uiDesigner.impl.radComponents.RadVSpacer;
+import com.intellij.uiDesigner.lw.IRootContainer;
 import consulo.language.util.IncorrectOperationException;
 import consulo.project.Project;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.action.AnAction;
 import consulo.ui.ex.action.AnActionEvent;
 import consulo.ui.ex.action.CommonShortcuts;
@@ -36,10 +40,9 @@ import consulo.util.collection.ArrayUtil;
 import consulo.util.lang.Comparing;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Anton Katilin
@@ -47,39 +50,27 @@ import java.util.Arrays;
  */
 public final class BindingEditor extends ComboBoxPropertyEditor<String>
 {
-
 	public BindingEditor(final Project project)
 	{
 		myCbx.setEditable(true);
 		final JComponent editorComponent = (JComponent) myCbx.getEditor().getEditorComponent();
 		editorComponent.setBorder(null);
 
-		myCbx.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(final ActionEvent e)
-			{
-				fireValueCommitted(true, false);
-			}
-		});
+		myCbx.addActionListener(e -> fireValueCommitted(true, false));
 
 		new AnAction()
 		{
 			@Override
+            @RequiredUIAccess
 			public void actionPerformed(final AnActionEvent e)
 			{
 				if(!myCbx.isPopupVisible())
 				{
 					fireEditingCancelled();
-					SwingUtilities.invokeLater(new Runnable()
-					{
-						@Override
-						public void run()
-						{
-							DesignerToolWindowManager.getInstance(DesignerToolWindowManager.getInstance(project).getActiveFormEditor())
-									.getPropertyInspector().requestFocus();
-						}
-					});
+					SwingUtilities.invokeLater(
+					    () -> DesignerToolWindowManager.getInstance(DesignerToolWindowManager.getInstance(project).getActiveFormEditor())
+                            .getPropertyInspector().requestFocus()
+                    );
 				}
 			}
 		}.registerCustomShortcutSet(CommonShortcuts.ESCAPE, myCbx);
@@ -87,7 +78,7 @@ public final class BindingEditor extends ComboBoxPropertyEditor<String>
 
 	private static String[] getFieldNames(final RadComponent component, final String currentName)
 	{
-		final ArrayList<String> result = new ArrayList<String>();
+		List<String> result = new ArrayList<>();
 		if(currentName != null)
 		{
 			result.add(currentName);
@@ -110,7 +101,7 @@ public final class BindingEditor extends ComboBoxPropertyEditor<String>
 
 		for(final PsiField field : fields)
 		{
-			if(field.hasModifierProperty(PsiModifier.STATIC))
+			if(field.isStatic())
 			{
 				continue;
 			}
@@ -186,7 +177,7 @@ public final class BindingEditor extends ComboBoxPropertyEditor<String>
 	public JComponent getComponent(final RadComponent component, final String value, final InplaceContext inplaceContext)
 	{
 		final String[] fieldNames = getFieldNames(component, value);
-		myCbx.setModel(new DefaultComboBoxModel(fieldNames));
+		myCbx.setModel(new DefaultComboBoxModel<>(fieldNames));
 		myCbx.setSelectedItem(value);
 		return myCbx;
 	}

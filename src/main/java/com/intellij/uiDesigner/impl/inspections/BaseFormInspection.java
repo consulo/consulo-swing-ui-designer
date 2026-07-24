@@ -26,6 +26,7 @@ import com.intellij.uiDesigner.impl.radComponents.RadComponent;
 import com.intellij.uiDesigner.lw.IComponent;
 import com.intellij.uiDesigner.lw.IRootContainer;
 import com.intellij.uiDesigner.lw.LwRootContainer;
+import consulo.annotation.access.RequiredReadAction;
 import consulo.language.editor.inspection.ProblemDescriptor;
 import consulo.language.editor.inspection.scheme.InspectionManager;
 import consulo.language.editor.inspection.scheme.InspectionProfile;
@@ -40,7 +41,6 @@ import consulo.uiDesigner.impl.localize.UIDesignerLocalize;
 import consulo.virtualFileSystem.VirtualFile;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
-import org.jetbrains.annotations.NonNls;
 
 /**
  * @author yole
@@ -48,22 +48,25 @@ import org.jetbrains.annotations.NonNls;
 public abstract class BaseFormInspection extends BaseJavaLocalInspectionTool implements FormInspectionTool {
   private final String myInspectionKey;
 
-  public BaseFormInspection(@NonNls @Nonnull String inspectionKey) {
+  public BaseFormInspection(@Nonnull String inspectionKey) {
     myInspectionKey = inspectionKey;
   }
 
   @Nonnull
+  @Override
   public LocalizeValue getDisplayName() {
     return LocalizeValue.empty();
   }
 
   @Nonnull
+  @Override
   public LocalizeValue getGroupDisplayName() {
     return UIDesignerLocalize.formInspectionsGroup();
   }
 
   @Nonnull
-  @NonNls public String getShortName() {
+  @Override
+  public String getShortName() {
     return myInspectionKey;
   }
 
@@ -71,6 +74,7 @@ public abstract class BaseFormInspection extends BaseJavaLocalInspectionTool imp
     return true;
   }
 
+  @Override
   public boolean isActive(PsiElement psiRoot) {
     final InspectionProfile profile = InspectionProjectProfileManager.getInstance(psiRoot.getProject()).getInspectionProfile();
     HighlightDisplayKey key = HighlightDisplayKey.find(myInspectionKey);
@@ -78,6 +82,8 @@ public abstract class BaseFormInspection extends BaseJavaLocalInspectionTool imp
   }
 
   @Nullable
+  @Override
+  @RequiredReadAction
   public ProblemDescriptor[] checkFile(@Nonnull PsiFile file, @Nonnull InspectionManager manager, boolean isOnTheFly, Object state) {
     if (file.getFileType().equals(GuiFormFileType.INSTANCE)) {
       final VirtualFile virtualFile = file.getVirtualFile();
@@ -102,13 +108,11 @@ public abstract class BaseFormInspection extends BaseJavaLocalInspectionTool imp
       }
       final FormFileErrorCollector collector = new FormFileErrorCollector(file, manager, isOnTheFly);
       startCheckForm(rootContainer);
-      FormEditingUtil.iterate(rootContainer, new FormEditingUtil.ComponentVisitor() {
-        public boolean visit(final IComponent component) {
-          if (!rootContainer.isInspectionSuppressed(getShortName(), component.getId())) {
-            checkComponentProperties(module, component, collector);
-          }
-          return true;
+      FormEditingUtil.iterate(rootContainer, component -> {
+        if (!rootContainer.isInspectionSuppressed(getShortName(), component.getId())) {
+          checkComponentProperties(module, component, collector);
         }
+        return true;
       });
       doneCheckForm(rootContainer);
       return collector.result();
@@ -116,13 +120,16 @@ public abstract class BaseFormInspection extends BaseJavaLocalInspectionTool imp
     return null;
   }
 
+  @Override
   public void startCheckForm(IRootContainer rootContainer) {
   }
 
+  @Override
   public void doneCheckForm(IRootContainer rootContainer) {
   }
 
   @Nullable
+  @Override
   public ErrorInfo[] checkComponent(@Nonnull GuiEditor editor, @Nonnull RadComponent component) {
     FormEditorErrorCollector collector = new FormEditorErrorCollector(editor, component);
     checkComponentProperties(component.getModule(), component, collector);

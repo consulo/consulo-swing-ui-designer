@@ -15,9 +15,9 @@
  */
 package com.intellij.uiDesigner.impl.wizard;
 
-import consulo.ui.ex.awt.ColoredTableCellRenderer;
 import consulo.ui.ex.SimpleTextAttributes;
-import com.intellij.uiDesigner.impl.UIDesignerBundle;
+import consulo.ui.ex.awt.ColoredTableCellRenderer;
+import consulo.uiDesigner.impl.localize.UIDesignerLocalize;
 
 import javax.swing.*;
 import java.awt.*;
@@ -37,6 +37,7 @@ final class BeanPropertyTableCellRenderer extends ColoredTableCellRenderer{
     myAttrs3 = new SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, Color.GRAY);
   }
 
+  @Override
   protected void customizeCellRenderer(
     final JTable table,
     final Object value,
@@ -47,7 +48,7 @@ final class BeanPropertyTableCellRenderer extends ColoredTableCellRenderer{
   ) {
     final BeanProperty property = (BeanProperty)value;
     if(property == null){
-      append(UIDesignerBundle.message("property.not.defined"), myAttrs2);
+      append(UIDesignerLocalize.propertyNotDefined(), myAttrs2);
     }
     else{
       append(property.myName, myAttrs1);

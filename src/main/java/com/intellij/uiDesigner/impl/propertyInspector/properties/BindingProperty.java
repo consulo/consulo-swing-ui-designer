@@ -21,10 +21,9 @@ import com.intellij.java.language.psi.PsiField;
 import com.intellij.java.language.psi.PsiMethod;
 import com.intellij.java.language.psi.codeStyle.JavaCodeStyleManager;
 import com.intellij.java.language.psi.codeStyle.VariableKind;
+import com.intellij.uiDesigner.compiler.AsmCodeGenerator;
 import com.intellij.uiDesigner.impl.FormEditingUtil;
 import com.intellij.uiDesigner.impl.GuiFormFileType;
-import com.intellij.uiDesigner.impl.UIDesignerBundle;
-import com.intellij.uiDesigner.compiler.AsmCodeGenerator;
 import com.intellij.uiDesigner.impl.designSurface.GuiEditor;
 import com.intellij.uiDesigner.impl.designSurface.InsertComponentProcessor;
 import com.intellij.uiDesigner.impl.inspections.FormInspectionUtil;
@@ -37,31 +36,28 @@ import com.intellij.uiDesigner.impl.propertyInspector.renderers.LabelPropertyRen
 import com.intellij.uiDesigner.impl.quickFixes.CreateFieldFix;
 import com.intellij.uiDesigner.impl.radComponents.RadComponent;
 import com.intellij.uiDesigner.impl.radComponents.RadRootContainer;
-import consulo.application.ApplicationManager;
-import consulo.application.CommonBundle;
 import consulo.application.dumb.IndexNotReadyException;
-import consulo.application.util.function.Processor;
 import consulo.language.editor.refactoring.rename.RenameProcessor;
 import consulo.language.editor.refactoring.util.CommonRefactoringUtil;
 import consulo.language.psi.PsiDocumentManager;
 import consulo.language.psi.PsiFile;
 import consulo.language.psi.PsiManager;
-import consulo.language.psi.PsiReference;
 import consulo.language.psi.scope.GlobalSearchScope;
 import consulo.language.psi.search.ReferencesSearch;
 import consulo.language.psi.util.PsiTreeUtil;
 import consulo.language.util.IncorrectOperationException;
-import consulo.logging.Logger;
+import consulo.platform.base.localize.CommonLocalize;
 import consulo.project.Project;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.awt.Messages;
+import consulo.ui.ex.awt.UIUtil;
+import consulo.uiDesigner.impl.localize.UIDesignerLocalize;
 import consulo.undoRedo.CommandProcessor;
 import consulo.util.lang.Comparing;
 import consulo.util.lang.StringUtil;
-import org.jetbrains.annotations.NonNls;
-
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
-import java.text.MessageFormat;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -71,34 +67,38 @@ import java.util.regex.Pattern;
  * @author Vladimir Kondratyev
  */
 public final class BindingProperty extends Property<RadComponent, String> {
-  private static final Logger LOG = Logger.getInstance(BindingProperty.class);
-
-  private final PropertyRenderer<String> myRenderer = new LabelPropertyRenderer<String>() {
+  private final PropertyRenderer<String> myRenderer = new LabelPropertyRenderer<>() {
+    @Override
     protected void customize(@Nonnull final String value) {
       setText(value);
     }
   };
   private final BindingEditor myEditor;
-  @NonNls private static final String PREFIX_HTML = "<html>";
+  private static final String PREFIX_HTML = "<html>";
 
   public BindingProperty(final Project project){
     super(null, "field name");
     myEditor = new BindingEditor(project);
   }
 
+  @Override
   public PropertyEditor<String> getEditor(){
     return myEditor;
   }
 
   @Nonnull
+  @Override
   public PropertyRenderer<String> getRenderer(){
     return myRenderer;
   }
 
+  @Override
   public String getValue(final RadComponent component){
     return component.getBinding();
   }
 
+  @Override
+  @RequiredUIAccess
   protected void setValueImpl(final RadComponent component, final String value) throws Exception {
     if (Comparing.strEqual(value, component.getBinding(), true)) {
       return;
@@ -115,7 +115,7 @@ public final class BindingProperty extends Property<RadComponent, String> {
 
     if (value.length() > 0) {
       if (!FormEditingUtil.isBindingUnique(component, value, root)) {
-        throw new Exception(UIDesignerBundle.message("error.binding.not.unique"));
+        throw new Exception(UIDesignerLocalize.errorBindingNotUnique().get());
       }
 
       component.setBinding(value);
@@ -123,7 +123,7 @@ public final class BindingProperty extends Property<RadComponent, String> {
     }
     else {
       if (component.isCustomCreateRequired()) {
-        throw new Exception(UIDesignerBundle.message("error.custom.create.binding.required"));
+        throw new Exception(UIDesignerLocalize.errorCustomCreateBindingRequired().get());
       }
       component.setBinding(null);
       component.setCustomCreate(false);
@@ -136,6 +136,7 @@ public final class BindingProperty extends Property<RadComponent, String> {
     updateBoundFieldName(root, oldBinding, value, component.getComponentClassName());
   }
 
+  @RequiredUIAccess
   public static void updateBoundFieldName(final RadRootContainer root, final String oldName, final String newName, final String fieldClassName) {
     final String classToBind = root.getClassToBind();
     if (classToBind == null) return;
@@ -172,10 +173,11 @@ public final class BindingProperty extends Property<RadComponent, String> {
     // Show question to the user
 
     if (!isFieldUnreferenced(oldField)) {
-      final int option = Messages.showYesNoDialog(project,
-        MessageFormat.format(UIDesignerBundle.message("message.rename.field"), oldName, newName),
-        UIDesignerBundle.message("title.rename"),
-        Messages.getQuestionIcon()
+      int option = Messages.showYesNoDialog(
+        project,
+        UIDesignerLocalize.messageRenameField(oldName, newName).get(),
+        UIDesignerLocalize.titleRename().get(),
+        UIUtil.getQuestionIcon()
       );
 
       if(option != 0/*Yes*/){
@@ -205,6 +207,7 @@ public final class BindingProperty extends Property<RadComponent, String> {
   }
 
   @Override
+  @RequiredUIAccess
   public void resetValue(final RadComponent component) throws Exception {
     setValueImpl(component, "");
   }
@@ -231,6 +234,7 @@ public final class BindingProperty extends Property<RadComponent, String> {
     return null;
   }
 
+  @RequiredUIAccess
   public static void checkRemoveUnusedField(final RadRootContainer rootContainer, final String fieldName, final Object undoGroupId) {
     final PsiField oldBindingField = findBoundField(rootContainer, fieldName);
     if (oldBindingField == null) {
@@ -242,44 +246,38 @@ public final class BindingProperty extends Property<RadComponent, String> {
       if (!CommonRefactoringUtil.checkReadOnlyStatus(project, aClass)) {
         return;
       }
-      ApplicationManager.getApplication().runWriteAction(
-        new Runnable() {
-          public void run() {
-            CommandProcessor.getInstance().executeCommand(
+      CommandProcessor.getInstance().newCommand()
+        .project(project)
+        .groupId(undoGroupId)
+        .name(UIDesignerLocalize.commandDeleteUnusedField())
+        .inWriteAction()
+        .run(() -> {
+          try {
+            oldBindingField.delete();
+          }
+          catch (IncorrectOperationException e) {
+            Messages.showErrorDialog(
               project,
-              new Runnable() {
-                public void run() {
-                  try {
-                    oldBindingField.delete();
-                  }
-                  catch (IncorrectOperationException e) {
-                    Messages.showErrorDialog(project, UIDesignerBundle.message("error.cannot.delete.unused.field", e.getMessage()),
-                                             CommonBundle.getErrorTitle());
-                  }
-                }
-              },
-              UIDesignerBundle.message("command.delete.unused.field"), undoGroupId
+              UIDesignerLocalize.errorCannotDeleteUnusedField(e.getMessage()).get(),
+              CommonLocalize.titleError().get()
             );
           }
-        }
-      );
+        });
     }
   }
 
   private static boolean isFieldUnreferenced(final PsiField field) {
     try {
-      return ReferencesSearch.search(field).forEach(new Processor<PsiReference>() {
-        public boolean process(final PsiReference t) {
-          PsiFile f = t.getElement().getContainingFile();
-          if (f != null && f.getFileType().equals(GuiFormFileType.INSTANCE)) {
-            return true;
-          }
-          PsiMethod method = PsiTreeUtil.getParentOfType(t.getElement(), PsiMethod.class);
-          if (method != null && method.getName().equals(AsmCodeGenerator.SETUP_METHOD_NAME)) {
-            return true;
-          }
-          return false;
+      return ReferencesSearch.search(field).forEach(t -> {
+        PsiFile f = t.getElement().getContainingFile();
+        if (f != null && f.getFileType().equals(GuiFormFileType.INSTANCE)) {
+          return true;
         }
+        PsiMethod method = PsiTreeUtil.getParentOfType(t.getElement(), PsiMethod.class);
+        if (method != null && method.getName().equals(AsmCodeGenerator.SETUP_METHOD_NAME)) {
+          return true;
+        }
+        return false;
       });
     }
     catch (IndexNotReadyException e) {
@@ -310,7 +308,7 @@ public final class BindingProperty extends Property<RadComponent, String> {
     if (StringUtil.startsWithIgnoreCase(text, PREFIX_HTML)) {
       text = Pattern.compile("<.+?>").matcher(text).replaceAll("");
     }
-    ArrayList<String> words = new ArrayList<String>(StringUtil.getWordsIn(text));
+    List<String> words = new ArrayList<>(StringUtil.getWordsIn(text));
     if (words.size() > 0) {
       StringBuilder nameBuilder = new StringBuilder(StringUtil.decapitalize(words.get(0)));
       for(int i=1; i<words.size() && i < 4; i++) {

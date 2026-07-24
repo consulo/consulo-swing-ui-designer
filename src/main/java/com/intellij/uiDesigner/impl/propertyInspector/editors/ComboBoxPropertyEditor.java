@@ -28,14 +28,15 @@ import java.awt.*;
  * @author Vladimir Kondratyev
  */
 public abstract class ComboBoxPropertyEditor<V> extends PropertyEditor<V> {
-  protected final ComboBox myCbx;
+  protected final ComboBox<V> myCbx;
 
   public ComboBoxPropertyEditor() {
-    myCbx = new ComboBox(-1);
+    myCbx = new ComboBox<>(-1);
     myCbx.setBorder(null);
     myCbx.addPopupMenuListener(new MyPopupMenuListener());
   }
 
+  @Override
   public final void updateUI() {
     SwingUtilities.updateComponentTreeUI(myCbx);
     final ListCellRenderer renderer = myCbx.getRenderer();
@@ -44,6 +45,7 @@ public abstract class ComboBoxPropertyEditor<V> extends PropertyEditor<V> {
     }
   }
 
+  @Override
   public V getValue() throws Exception {
     if (myCbx.isEditable()) {
       final Component editorComponent = myCbx.getEditor().getEditorComponent();
@@ -59,16 +61,19 @@ public abstract class ComboBoxPropertyEditor<V> extends PropertyEditor<V> {
   private final class MyPopupMenuListener implements PopupMenuListener{
     private boolean myCancelled;
 
+    @Override
     public void popupMenuWillBecomeVisible(final PopupMenuEvent e){
       myCancelled=false;
     }
 
+    @Override
     public void popupMenuWillBecomeInvisible(final PopupMenuEvent e){
       if(!myCancelled){
         fireValueCommitted(true, true);
       }
     }
 
+    @Override
     public void popupMenuCanceled(final PopupMenuEvent e){
       myCancelled=true;
     }

@@ -40,25 +40,30 @@ import jakarta.annotation.Nullable;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author yole
  */
 public class RadBorderLayoutManager extends RadLayoutManager {
+  @Override
   public String getName() {
     return UIFormXmlConstants.LAYOUT_BORDER;
   }
 
+  @Override
   public LayoutManager createLayout() {
     return new BorderLayout();
   }
 
+  @Override
   public void writeLayout(final XmlWriter writer, final RadContainer radContainer) {
     BorderLayout layout = (BorderLayout) radContainer.getLayout();
     writer.addAttribute(UIFormXmlConstants.ATTRIBUTE_HGAP, layout.getHgap());
     writer.addAttribute(UIFormXmlConstants.ATTRIBUTE_VGAP, layout.getVgap());
   }
 
+  @Override
   public void addComponentToContainer(final RadContainer container, final RadComponent component, final int index) {
     if (component.getCustomLayoutConstraints() == null) {
       if (container.getDelegee().getComponentCount() == 0) {
@@ -71,6 +76,7 @@ public class RadBorderLayoutManager extends RadLayoutManager {
     container.getDelegee().add(component.getDelegee(), component.getCustomLayoutConstraints(), index);
   }
 
+  @Override
   public void writeChildConstraints(final XmlWriter writer, final RadComponent child) {
     writer.addAttribute(UIFormXmlConstants.ATTRIBUTE_BORDER_CONSTRAINT, (String) child.getCustomLayoutConstraints());
   }
@@ -106,7 +112,7 @@ public class RadBorderLayoutManager extends RadLayoutManager {
 
   @Override public void changeContainerLayout(RadContainer container) throws consulo.language.util.IncorrectOperationException
   {
-    ArrayList<RadComponent> componentsInBorder = new ArrayList<RadComponent>();
+    List<RadComponent> componentsInBorder = new ArrayList<>();
 
     boolean borderHorz = true;
     if (container.getComponentCount() == 1) {
@@ -155,7 +161,7 @@ public class RadBorderLayoutManager extends RadLayoutManager {
     }
   }
 
-  private static void copyGridLine(final RadContainer container, final ArrayList<RadComponent> componentsInBorder, boolean isRow) {
+  private static void copyGridLine(RadContainer container, List<RadComponent> componentsInBorder, boolean isRow) {
     int cell = 0;
     while(cell < container.getGridCellCount(!isRow)) {
       RadComponent c = container.getComponentAtGrid(isRow, 0, cell);
@@ -177,12 +183,14 @@ public class RadBorderLayoutManager extends RadLayoutManager {
     };
   }
 
+  @Override
   public Property[] getComponentProperties(final Project project, final RadComponent component) {
     return new Property[] {
       BorderSideProperty.INSTANCE
     };
   }
 
+  @Override
   public boolean canMoveComponent(final RadComponent c, final int rowDelta, final int colDelta, final int rowSpanDelta, final int colSpanDelta) {
     if (rowSpanDelta != 0 || colSpanDelta != 0) {
       return false;
@@ -192,6 +200,7 @@ public class RadBorderLayoutManager extends RadLayoutManager {
     return adjSide != null && c.getParent().findComponentWithConstraints(adjSide) == null;
   }
 
+  @Override
   public void moveComponent(final RadComponent c, final int rowDelta, final int colDelta, final int rowSpanDelta, final int colSpanDelta) {
     String side = (String) c.getCustomLayoutConstraints();
     String adjSide = getAdjacentSide(side, rowDelta, colDelta);
@@ -259,15 +268,18 @@ public class RadBorderLayoutManager extends RadLayoutManager {
       myContainer = container;
     }
 
+    @Override
     public RadContainer getContainer() {
       return myContainer;
     }
 
+    @Override
     public boolean canDrop(ComponentDragObject dragObject) {
       return dragObject.getComponentCount() == 1 &&
              ((BorderLayout) myContainer.getLayout()).getLayoutComponent(myQuadrant) == null;
     }
 
+    @Override
     public void placeFeedback(FeedbackLayer feedbackLayer, ComponentDragObject dragObject) {
       Dimension initialSize = dragObject.getInitialSize(myContainer);
       feedbackLayer.putFeedback(myContainer.getDelegee(), getFeedbackRect(myQuadrant, initialSize),
@@ -306,6 +318,7 @@ public class RadBorderLayoutManager extends RadLayoutManager {
       return c.getBounds().height;
     }
 
+    @Override
     public void processDrop(GuiEditor editor,
                             RadComponent[] components,
                             GridConstraints[] constraintsToAdjust,
@@ -315,6 +328,7 @@ public class RadBorderLayoutManager extends RadLayoutManager {
     }
 
     @Nullable
+    @Override
     public ComponentDropLocation getAdjacentLocation(Direction direction) {
       String side = null;
       switch (direction) {
@@ -348,10 +362,12 @@ public class RadBorderLayoutManager extends RadLayoutManager {
       super(null, "Border Side");
     }
 
+    @Override
     public String getValue(RadComponent component) {
       return (String) component.getCustomLayoutConstraints();
     }
 
+    @Override
     protected void setValueImpl(RadComponent component, String value) throws Exception {
       if (!value.equals(component.getCustomLayoutConstraints())) {
         if (component.getParent().findComponentWithConstraints(value) != null) {
@@ -362,13 +378,15 @@ public class RadBorderLayoutManager extends RadLayoutManager {
     }
 
     @Nonnull
+    @Override
     public PropertyRenderer<String> getRenderer() {
       if (myRenderer == null) {
-        myRenderer = new LabelPropertyRenderer<String>();
+        myRenderer = new LabelPropertyRenderer<>();
       }
       return myRenderer;
     }
 
+    @Override
     public PropertyEditor<String> getEditor() {
       if (myEditor == null) {
         myEditor = new BorderSideEditor();
@@ -383,9 +401,10 @@ public class RadBorderLayoutManager extends RadLayoutManager {
         BorderLayout.CENTER, BorderLayout.NORTH, BorderLayout.SOUTH, BorderLayout.WEST, BorderLayout.EAST,
         BorderLayout.PAGE_START, BorderLayout.PAGE_END, BorderLayout.LINE_START, BorderLayout.LINE_END
       };
-      myCbx.setModel(new DefaultComboBoxModel(sides));
+      myCbx.setModel(new DefaultComboBoxModel<>(sides));
     }
 
+    @Override
     public JComponent getComponent(RadComponent component, String value, InplaceContext inplaceContext) {
       myCbx.setSelectedItem(value);
       return myCbx;

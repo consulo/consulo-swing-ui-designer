@@ -13,10 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.intellij.uiDesigner.impl.actions;
 
+import com.intellij.uiDesigner.impl.FormEditingUtil;
+import com.intellij.uiDesigner.impl.designSurface.GuiEditor;
+import com.intellij.uiDesigner.impl.radComponents.RadComponent;
 import consulo.application.dumb.DumbAware;
+import consulo.localize.LocalizeValue;
 import consulo.ui.UIAction;
 import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.action.AnAction;
@@ -24,13 +27,8 @@ import consulo.ui.ex.action.AnActionEvent;
 import consulo.ui.ex.action.AnActionWithAsyncUpdate;
 import consulo.undoRedo.CommandProcessor;
 import consulo.util.concurrent.coroutine.Coroutine;
-import com.intellij.uiDesigner.impl.FormEditingUtil;
-import com.intellij.uiDesigner.impl.designSurface.GuiEditor;
-import com.intellij.uiDesigner.impl.radComponents.RadComponent;
 import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -48,23 +46,26 @@ public abstract class AbstractGuiEditorAction extends AnAction implements DumbAw
     myModifying = modifying;
   }
 
+  @Override
+  @RequiredUIAccess
   public final void actionPerformed(final AnActionEvent e) {
     final GuiEditor editor = FormEditingUtil.getEditorFromContext(e.getDataContext());
     if (editor != null) {
-      final ArrayList<RadComponent> selection = FormEditingUtil.getSelectedComponents(editor);
+      List<RadComponent> selection = FormEditingUtil.getSelectedComponents(editor);
       if (myModifying) {
         if (!editor.ensureEditable()) return;
       }
-      Runnable runnable = new Runnable() {
-        public void run() {
-          actionPerformed(editor, selection, e);
-          if (myModifying) {
-            editor.refreshAndSave(true);
-          }
+      Runnable runnable = () -> {
+        actionPerformed(editor, selection, e);
+        if (myModifying) {
+          editor.refreshAndSave(true);
         }
       };
-      if (getCommandName() != null) {
-        CommandProcessor.getInstance().executeCommand(editor.getProject(), runnable, getCommandName(), null);
+      if (getCommandName().isNotEmpty()) {
+        CommandProcessor.getInstance().newCommand()
+          .project(editor.getProject())
+          .name(getCommandName())
+          .run(runnable);
       }
       else {
         runnable.run();
@@ -85,7 +86,7 @@ public abstract class AbstractGuiEditorAction extends AnAction implements DumbAw
       else {
         e.getPresentation().setVisible(true);
         e.getPresentation().setEnabled(true);
-        final ArrayList<RadComponent> selection = FormEditingUtil.getSelectedComponents(editor);
+        List<RadComponent> selection = FormEditingUtil.getSelectedComponents(editor);
         update(editor, selection, e);
       }
       return input;
@@ -93,11 +94,10 @@ public abstract class AbstractGuiEditorAction extends AnAction implements DumbAw
   }
 
   @RequiredUIAccess
-  protected void update(@Nonnull GuiEditor editor, final ArrayList<RadComponent> selection, final AnActionEvent e) {
+  protected void update(@Nonnull GuiEditor editor, List<RadComponent> selection, AnActionEvent e) {
   }
 
-  @Nullable
-  protected String getCommandName() {
-    return null;
+  protected LocalizeValue getCommandName() {
+    return LocalizeValue.empty();
   }
 }

@@ -13,18 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.intellij.uiDesigner.impl.propertyInspector.properties;
 
-import jakarta.annotation.Nonnull;
-
-import com.intellij.uiDesigner.impl.radComponents.RadComponent;
 import com.intellij.uiDesigner.impl.propertyInspector.Property;
-import com.intellij.uiDesigner.impl.propertyInspector.PropertyRenderer;
 import com.intellij.uiDesigner.impl.propertyInspector.PropertyEditor;
+import com.intellij.uiDesigner.impl.propertyInspector.PropertyRenderer;
 import com.intellij.uiDesigner.impl.propertyInspector.editors.BooleanEditor;
 import com.intellij.uiDesigner.impl.propertyInspector.renderers.BooleanRenderer;
-import org.jetbrains.annotations.NonNls;
+import com.intellij.uiDesigner.impl.radComponents.RadComponent;
+import jakarta.annotation.Nonnull;
 
 /**
  * @author yole
@@ -34,12 +31,13 @@ public abstract class AbstractBooleanProperty<T extends RadComponent> extends Pr
   private BooleanEditor myEditor;
   private final boolean myDefaultValue;
 
-  protected AbstractBooleanProperty(final Property parent, @NonNls final String name, final boolean defaultValue) {
+  protected AbstractBooleanProperty(Property parent, String name, boolean defaultValue) {
     super(parent, name);
     myDefaultValue = defaultValue;
   }
 
   @Nonnull
+  @Override
   public PropertyRenderer<Boolean> getRenderer() {
     if (myRenderer == null) {
       myRenderer = new BooleanRenderer();
@@ -47,6 +45,7 @@ public abstract class AbstractBooleanProperty<T extends RadComponent> extends Pr
     return myRenderer;
   }
 
+  @Override
   public PropertyEditor<Boolean> getEditor() {
     if (myEditor == null) {
       myEditor = new BooleanEditor();
@@ -54,16 +53,18 @@ public abstract class AbstractBooleanProperty<T extends RadComponent> extends Pr
     return myEditor;
   }
 
-  @Override public boolean isModified(final T component) {
+  @Override
+  public boolean isModified(T component) {
     Boolean intValue = getValue(component);
-    return intValue != null && intValue.booleanValue() != getDefaultValue(component);
+    return intValue != null && intValue != getDefaultValue(component);
   }
 
-  @Override public void resetValue(T component) throws Exception {
+  @Override
+  public void resetValue(T component) throws Exception {
     setValue(component, getDefaultValue(component));
   }
 
-  protected boolean getDefaultValue(final T component) {
+  protected boolean getDefaultValue(T component) {
     return myDefaultValue;
   }
 }

@@ -13,21 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.intellij.uiDesigner.impl.propertyInspector.properties;
 
-import jakarta.annotation.Nonnull;
-
-import com.intellij.uiDesigner.impl.radComponents.RadComponent;
+import com.intellij.uiDesigner.compiler.Utils;
+import com.intellij.uiDesigner.core.GridConstraints;
+import com.intellij.uiDesigner.impl.palette.ComponentItem;
 import com.intellij.uiDesigner.impl.propertyInspector.Property;
-import com.intellij.uiDesigner.impl.propertyInspector.PropertyRenderer;
 import com.intellij.uiDesigner.impl.propertyInspector.PropertyEditor;
+import com.intellij.uiDesigner.impl.propertyInspector.PropertyRenderer;
 import com.intellij.uiDesigner.impl.propertyInspector.editors.IntEnumEditor;
 import com.intellij.uiDesigner.impl.propertyInspector.renderers.IntEnumRenderer;
-import com.intellij.uiDesigner.core.GridConstraints;
-import com.intellij.uiDesigner.impl.UIDesignerBundle;
-import com.intellij.uiDesigner.compiler.Utils;
-import com.intellij.uiDesigner.impl.palette.ComponentItem;
+import com.intellij.uiDesigner.impl.radComponents.RadComponent;
+import consulo.uiDesigner.impl.localize.UIDesignerLocalize;
+import jakarta.annotation.Nonnull;
 
 /**
  * @author yole
@@ -42,6 +40,7 @@ public abstract class AlignProperty extends Property<RadComponent, Integer> {
     myHorizontal = horizontal;
   }
 
+  @Override
   public Integer getValue(final RadComponent component) {
     AlignPropertyProvider provider = getAlignPropertyProvider(component);
     if (provider != null) {
@@ -57,12 +56,13 @@ public abstract class AlignProperty extends Property<RadComponent, Integer> {
     return null;
   }
 
+  @Override
   protected void setValueImpl(final RadComponent component, final Integer value) throws Exception {
     int anchorMask = myHorizontal ? 0x0C : 3;
     int fillMask = myHorizontal ? 1 : 2;
     int anchor = 0;
     int fill = 0;
-    switch(value.intValue()) {
+    switch(value) {
       case GridConstraints.ALIGN_FILL:
         fill = myHorizontal ? GridConstraints.FILL_HORIZONTAL : GridConstraints.FILL_VERTICAL;
         break;
@@ -79,7 +79,7 @@ public abstract class AlignProperty extends Property<RadComponent, Integer> {
     gc.setFill((gc.getFill() & ~fillMask) | fill);
     AlignPropertyProvider provider = getAlignPropertyProvider(component);
     if (provider != null) {
-      provider.setAlignment(component, myHorizontal, value.intValue());
+      provider.setAlignment(component, myHorizontal, value);
     }
     component.fireConstraintsChanged(oldGC);
   }
@@ -111,6 +111,7 @@ public abstract class AlignProperty extends Property<RadComponent, Integer> {
   }
 
   @Nonnull
+  @Override
   public PropertyRenderer<Integer> getRenderer() {
     if (myRenderer == null) {
       myRenderer = new IntEnumRenderer(getPairs());
@@ -120,15 +121,20 @@ public abstract class AlignProperty extends Property<RadComponent, Integer> {
 
   private IntEnumEditor.Pair[] getPairs() {
     return new IntEnumEditor.Pair[] {
-      new IntEnumEditor.Pair(GridConstraints.ALIGN_LEFT,
-                             myHorizontal ? UIDesignerBundle.message("property.left") : UIDesignerBundle.message("property.top")),
-      new IntEnumEditor.Pair(GridConstraints.ALIGN_CENTER, UIDesignerBundle.message("property.center")),
-      new IntEnumEditor.Pair(GridConstraints.ALIGN_RIGHT,
-                             myHorizontal ? UIDesignerBundle.message("property.right") : UIDesignerBundle.message("property.bottom")),
-      new IntEnumEditor.Pair(GridConstraints.ALIGN_FILL, UIDesignerBundle.message("property.fill"))
+      new IntEnumEditor.Pair(
+        GridConstraints.ALIGN_LEFT,
+        myHorizontal ? UIDesignerLocalize.propertyLeft().get() : UIDesignerLocalize.propertyTop().get()
+      ),
+      new IntEnumEditor.Pair(GridConstraints.ALIGN_CENTER, UIDesignerLocalize.propertyCenter().get()),
+      new IntEnumEditor.Pair(
+        GridConstraints.ALIGN_RIGHT,
+        myHorizontal ? UIDesignerLocalize.propertyRight().get() : UIDesignerLocalize.propertyBottom().get()
+      ),
+      new IntEnumEditor.Pair(GridConstraints.ALIGN_FILL, UIDesignerLocalize.propertyFill().get())
     };
   }
 
+  @Override
   public PropertyEditor<Integer> getEditor() {
     if (myEditor == null) {
       myEditor = new IntEnumEditor(getPairs());

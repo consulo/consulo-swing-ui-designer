@@ -24,13 +24,14 @@ import com.intellij.uiDesigner.impl.palette.ComponentItem;
 import com.intellij.uiDesigner.impl.radComponents.RadComponent;
 import com.intellij.uiDesigner.impl.radComponents.RadContainer;
 import com.intellij.uiDesigner.impl.radComponents.RadRootContainer;
-import consulo.application.util.function.Processor;
 import consulo.ui.ex.action.AnActionEvent;
 import consulo.ui.ex.popup.JBPopupFactory;
 import consulo.ui.ex.popup.ListPopup;
+import consulo.uiDesigner.impl.localize.UIDesignerLocalize;
 
 import java.awt.*;
 import java.util.List;
+import java.util.function.Predicate;
 
 /**
  * @author yole
@@ -39,23 +40,24 @@ public class CreateComponentAction extends AbstractGuiEditorAction
 {
 	private ComponentItem myLastCreatedComponent = null;
 
-	protected void actionPerformed(final GuiEditor editor, final List<RadComponent> selection, final AnActionEvent e)
+	@Override
+    protected void actionPerformed(final GuiEditor editor, final List<RadComponent> selection, final AnActionEvent e)
 	{
-		Processor<ComponentItem> processor = new Processor<ComponentItem>()
-		{
-			public boolean process(final ComponentItem selectedValue)
-			{
-				if(selectedValue != null)
-				{
-					myLastCreatedComponent = selectedValue;
-					editor.getMainProcessor().startInsertProcessor(selectedValue, getCreateLocation(editor, selection));
-				}
-				return true;
-			}
-		};
+        Predicate<ComponentItem> processor = selectedValue -> {
+            if(selectedValue != null)
+            {
+                myLastCreatedComponent = selectedValue;
+                editor.getMainProcessor().startInsertProcessor(selectedValue, getCreateLocation(editor, selection));
+            }
+            return true;
+        };
 
-		PaletteListPopupStep step = new PaletteListPopupStep(editor, myLastCreatedComponent, processor,
-				UIDesignerBundle.message("create.component.title"));
+		PaletteListPopupStep step = new PaletteListPopupStep(
+		    editor,
+            myLastCreatedComponent,
+            processor,
+            UIDesignerLocalize.createComponentTitle()
+        );
 		final ListPopup listPopup = JBPopupFactory.getInstance().createListPopup(step);
 
 		if(selection.size() > 0)

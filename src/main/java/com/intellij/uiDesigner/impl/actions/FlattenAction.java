@@ -13,20 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.intellij.uiDesigner.impl.actions;
 
+import consulo.localize.LocalizeValue;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.action.AnActionEvent;
 import com.intellij.uiDesigner.impl.FormEditingUtil;
 import com.intellij.uiDesigner.impl.GridChangeUtil;
-import com.intellij.uiDesigner.impl.UIDesignerBundle;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.impl.designSurface.GuiEditor;
 import com.intellij.uiDesigner.impl.radComponents.RadComponent;
 import com.intellij.uiDesigner.impl.radComponents.RadContainer;
 import com.intellij.uiDesigner.impl.radComponents.RadRootContainer;
+import consulo.uiDesigner.impl.localize.UIDesignerLocalize;
 import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -65,7 +65,7 @@ public class FlattenAction extends AbstractGuiEditorAction {
       GridChangeUtil.splitColumn(parent, containerConstraints.getColumn());
     }
 
-    ArrayList<RadComponent> contents = new ArrayList<RadComponent>();
+    List<RadComponent> contents = new ArrayList<>();
     for(int i=container.getComponentCount()-1; i >= 0; i--) {
       contents.add(0, container.getComponent(i));
       container.removeComponent(container.getComponent(i));
@@ -107,7 +107,8 @@ public class FlattenAction extends AbstractGuiEditorAction {
   }
 
   @Override
-  protected void update(@Nonnull GuiEditor editor, final ArrayList<RadComponent> selection, final AnActionEvent e) {
+  @RequiredUIAccess
+  protected void update(@Nonnull GuiEditor editor, List<RadComponent> selection, final AnActionEvent e) {
     for(RadComponent c: selection) {
       if (!canFlatten(c)) {
         e.getPresentation().setVisible(false);
@@ -133,8 +134,8 @@ public class FlattenAction extends AbstractGuiEditorAction {
     return false;
   }
 
-  @Override @Nullable
-  protected String getCommandName() {
-    return UIDesignerBundle.message("command.flatten");
+  @Override
+  protected LocalizeValue getCommandName() {
+    return UIDesignerLocalize.commandFlatten();
   }
 }

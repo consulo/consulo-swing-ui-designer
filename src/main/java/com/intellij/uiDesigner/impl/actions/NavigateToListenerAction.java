@@ -13,28 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.intellij.uiDesigner.impl.actions;
 
 import com.intellij.uiDesigner.impl.designSurface.GuiEditor;
 import com.intellij.uiDesigner.impl.designSurface.ListenerNavigateButton;
 import com.intellij.uiDesigner.impl.radComponents.RadComponent;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.action.AnActionEvent;
 
 import jakarta.annotation.Nonnull;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author yole
  */
 public class NavigateToListenerAction extends AbstractGuiEditorAction {
-  protected void actionPerformed(final GuiEditor editor, final List<RadComponent> selection, final AnActionEvent e) {
-    ListenerNavigateButton.showNavigatePopup(selection.get(0), true);
-  }
+    @Override
+    protected void actionPerformed(GuiEditor editor, List<RadComponent> selection, AnActionEvent e) {
+        ListenerNavigateButton.showNavigatePopup(selection.get(0), true);
+    }
 
-  @Override protected void update(@Nonnull GuiEditor editor, final ArrayList<RadComponent> selection, final AnActionEvent e) {
-    e.getPresentation().setEnabled(selection.size() > 0);
-  }
+    @Override
+    @RequiredUIAccess
+    protected void update(@Nonnull GuiEditor editor, List<RadComponent> selection, AnActionEvent e) {
+        e.getPresentation().setEnabled(selection.size() > 0);
+    }
 }

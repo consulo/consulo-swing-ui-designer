@@ -15,9 +15,7 @@
  */
 package com.intellij.uiDesigner.impl.propertyInspector.properties;
 
-import consulo.ui.ex.awt.ListCellRendererWrapper;
 import com.intellij.uiDesigner.impl.FormEditingUtil;
-import com.intellij.uiDesigner.impl.UIDesignerBundle;
 import com.intellij.uiDesigner.impl.propertyInspector.InplaceContext;
 import com.intellij.uiDesigner.impl.propertyInspector.Property;
 import com.intellij.uiDesigner.impl.propertyInspector.PropertyEditor;
@@ -27,18 +25,18 @@ import com.intellij.uiDesigner.impl.propertyInspector.renderers.LabelPropertyRen
 import com.intellij.uiDesigner.impl.radComponents.RadButtonGroup;
 import com.intellij.uiDesigner.impl.radComponents.RadComponent;
 import com.intellij.uiDesigner.impl.radComponents.RadRootContainer;
-
+import consulo.ui.ex.awt.ListCellRendererWrapper;
+import consulo.uiDesigner.impl.localize.UIDesignerLocalize;
 import jakarta.annotation.Nonnull;
 
 import javax.swing.*;
 import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 
 /**
  * @author yole
  */
 public class ButtonGroupProperty extends Property<RadComponent, RadButtonGroup> {
-  private final LabelPropertyRenderer<RadButtonGroup> myRenderer = new LabelPropertyRenderer<RadButtonGroup>() {
+  private final LabelPropertyRenderer<RadButtonGroup> myRenderer = new LabelPropertyRenderer<>() {
     @Override protected void customize(@Nonnull final RadButtonGroup value) {
       setText(value.getName());
     }
@@ -50,11 +48,13 @@ public class ButtonGroupProperty extends Property<RadComponent, RadButtonGroup> 
     super(null, "Button Group");
   }
 
+  @Override
   public RadButtonGroup getValue(RadComponent component) {
     final RadRootContainer rootContainer = (RadRootContainer) FormEditingUtil.getRoot(component);
     return rootContainer == null ? null : (RadButtonGroup) FormEditingUtil.findGroupForComponent(rootContainer, component);
   }
 
+  @Override
   protected void setValueImpl(RadComponent component, RadButtonGroup value) throws Exception {
     final RadRootContainer radRootContainer = (RadRootContainer) FormEditingUtil.getRoot(component);
     assert radRootContainer != null;
@@ -62,10 +62,12 @@ public class ButtonGroupProperty extends Property<RadComponent, RadButtonGroup> 
   }
 
   @Nonnull
+  @Override
   public PropertyRenderer<RadButtonGroup> getRenderer() {
     return myRenderer;
   }
 
+  @Override
   public PropertyEditor<RadButtonGroup> getEditor() {
     return myEditor;
   }
@@ -83,14 +85,14 @@ public class ButtonGroupProperty extends Property<RadComponent, RadButtonGroup> 
     private RadComponent myComponent;
 
     public MyPropertyEditor() {
-      myCbx.setRenderer(new ListCellRendererWrapper<RadButtonGroup>() {
+      myCbx.setRenderer(new ListCellRendererWrapper<>() {
         @Override
         public void customize(JList list, RadButtonGroup value, int index, boolean selected, boolean hasFocus) {
           if (value == null) {
-            setText(UIDesignerBundle.message("button.group.none"));
+            setText(UIDesignerLocalize.buttonGroupNone().get());
           }
           else if (value == RadButtonGroup.NEW_GROUP) {
-            setText(UIDesignerBundle.message("button.group.new"));
+            setText(UIDesignerLocalize.buttonGroupNew().get());
           }
           else {
             setText(value.getName());
@@ -98,25 +100,28 @@ public class ButtonGroupProperty extends Property<RadComponent, RadButtonGroup> 
         }
       });
 
-      myCbx.addItemListener(new ItemListener() {
-        public void itemStateChanged(ItemEvent e) {
-          if (e.getStateChange() == ItemEvent.SELECTED && e.getItem() == RadButtonGroup.NEW_GROUP) {
-            String newGroupName = myRootContainer.suggestGroupName();
-            newGroupName = (String)JOptionPane.showInputDialog(myCbx,
-                                                               UIDesignerBundle.message("button.group.name.prompt"),
-                                                               UIDesignerBundle.message("button.group.name.title"),
-                                                               JOptionPane.QUESTION_MESSAGE, null, null, newGroupName);
-            if (newGroupName != null) {
-              RadButtonGroup group = myRootContainer.createGroup(newGroupName);
-              myRootContainer.setGroupForComponent(myComponent, group);
-              updateModel();
-            }
+      myCbx.addItemListener(e -> {
+        if (e.getStateChange() == ItemEvent.SELECTED && e.getItem() == RadButtonGroup.NEW_GROUP) {
+          String newGroupName = myRootContainer.suggestGroupName();
+          newGroupName = (String)JOptionPane.showInputDialog(
+            myCbx,
+            UIDesignerLocalize.buttonGroupNamePrompt().get(),
+            UIDesignerLocalize.buttonGroupNameTitle().get(),
+            JOptionPane.QUESTION_MESSAGE,
+            null,
+            null,
+            newGroupName
+          );
+          if (newGroupName != null) {
+            RadButtonGroup group = myRootContainer.createGroup(newGroupName);
+            myRootContainer.setGroupForComponent(myComponent, group);
+            updateModel();
           }
         }
       });
     }
 
-
+    @Override
     public JComponent getComponent(RadComponent component, RadButtonGroup value, InplaceContext inplaceContext) {
       myComponent = component;
       myRootContainer = (RadRootContainer) FormEditingUtil.getRoot(myComponent);
@@ -129,7 +134,7 @@ public class ButtonGroupProperty extends Property<RadComponent, RadButtonGroup> 
       RadButtonGroup[] allGroups = new RadButtonGroup[groups.length+2];
       System.arraycopy(groups, 0, allGroups, 1, groups.length);
       allGroups [allGroups.length-1] = RadButtonGroup.NEW_GROUP;
-      myCbx.setModel(new DefaultComboBoxModel(allGroups));
+      myCbx.setModel(new DefaultComboBoxModel<>(allGroups));
       myCbx.setSelectedItem(FormEditingUtil.findGroupForComponent(myRootContainer, myComponent));
     }
   }

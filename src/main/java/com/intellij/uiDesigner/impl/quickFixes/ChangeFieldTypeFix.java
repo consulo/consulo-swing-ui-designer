@@ -18,59 +18,67 @@ package com.intellij.uiDesigner.impl.quickFixes;
 import com.intellij.java.language.psi.JavaPsiFacade;
 import com.intellij.java.language.psi.PsiField;
 import com.intellij.java.language.psi.PsiType;
-import com.intellij.uiDesigner.impl.UIDesignerBundle;
 import com.intellij.uiDesigner.impl.designSurface.GuiEditor;
-import consulo.application.ApplicationManager;
-import consulo.application.CommonBundle;
+import consulo.application.Application;
 import consulo.language.editor.FileModificationService;
 import consulo.language.psi.PsiFile;
 import consulo.language.psi.PsiManager;
-import consulo.ui.ex.awt.Messages;
-import consulo.undoRedo.CommandProcessor;
 import consulo.language.util.IncorrectOperationException;
+import consulo.localize.LocalizeValue;
+import consulo.platform.base.localize.CommonLocalize;
+import consulo.ui.ex.awt.Messages;
+import consulo.uiDesigner.impl.localize.UIDesignerLocalize;
+import consulo.undoRedo.CommandProcessor;
+import consulo.util.lang.StringUtil;
 
 /**
  * @author Eugene Zhuravlev
- *         Date: Jun 14, 2005
+ * @since 2005-06-14
  */
 public class ChangeFieldTypeFix extends QuickFix {
-  private final PsiField myField;
-  private final PsiType myNewType;
+    private final PsiField myField;
+    private final PsiType myNewType;
 
-  public ChangeFieldTypeFix(GuiEditor uiEditor, PsiField field, PsiType uiComponentType) {
-    super(uiEditor, gettext(field, uiComponentType), null);
-    myField = field;
-    myNewType = uiComponentType;
-  }
+    public ChangeFieldTypeFix(GuiEditor uiEditor, PsiField field, PsiType uiComponentType) {
+        super(uiEditor, getText(field, uiComponentType).get(), null);
+        myField = field;
+        myNewType = uiComponentType;
+    }
 
-  private static String gettext(PsiField field, PsiType uiComponentType) {
-    return UIDesignerBundle.message("action.change.field.type",
-                                         field.getName(), field.getType().getCanonicalText(), uiComponentType.getCanonicalText());
-  }
+    private static LocalizeValue getText(PsiField field, PsiType uiComponentType) {
+        return UIDesignerLocalize.actionChangeFieldType(
+            StringUtil.notNullize(field.getName()),
+            field.getType().getCanonicalText(),
+            uiComponentType.getCanonicalText()
+        );
+    }
 
-  public void run() {
-    final PsiFile psiFile = myField.getContainingFile();
-    if (psiFile == null) return;
-    if (!FileModificationService.getInstance().preparePsiElementForWrite(psiFile)) return;
-    ApplicationManager.getApplication().runWriteAction(new Runnable() {
-      public void run() {
-        CommandProcessor.getInstance().executeCommand(myField.getProject(), new Runnable() {
-          public void run() {
-            try {
-              final PsiManager manager = myField.getManager();
-              myField.getTypeElement().replace(JavaPsiFacade.getInstance(manager.getProject()).getElementFactory().createTypeElement(myNewType));
-            }
-            catch (final IncorrectOperationException e) {
-              ApplicationManager.getApplication().invokeLater(new Runnable() {
-                public void run() {
-                  Messages.showErrorDialog(myEditor, UIDesignerBundle.message("error.cannot.change.field.type", myField.getName(), e.getMessage()),
-                                           CommonBundle.getErrorTitle());
+    @Override
+    public void run() {
+        PsiFile psiFile = myField.getContainingFile();
+        if (psiFile == null) {
+            return;
+        }
+        if (!FileModificationService.getInstance().preparePsiElementForWrite(psiFile)) {
+            return;
+        }
+        CommandProcessor.getInstance().newCommand()
+            .project(myField.getProject())
+            .name(LocalizeValue.ofNullable(getName()))
+            .inWriteAction()
+            .run(() -> {
+                try {
+                    PsiManager manager = myField.getManager();
+                    myField.getTypeElement()
+                        .replace(JavaPsiFacade.getInstance(manager.getProject()).getElementFactory().createTypeElement(myNewType));
                 }
-              });
-            }
-          }
-        }, getName(), null);
-      }
-    });
-  }
+                catch (IncorrectOperationException e) {
+                    Application.get().invokeLater(() -> Messages.showErrorDialog(
+                        myEditor,
+                        UIDesignerLocalize.errorCannotChangeFieldType(myField.getName(), e.getMessage()).get(),
+                        CommonLocalize.titleError().get()
+                    ));
+                }
+        });
+    }
 }

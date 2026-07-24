@@ -22,15 +22,17 @@ import com.intellij.uiDesigner.impl.radComponents.RadComponent;
 import com.intellij.uiDesigner.impl.radComponents.RadContainer;
 import consulo.application.dumb.DumbAware;
 import consulo.logging.Logger;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.action.AnAction;
 import consulo.ui.ex.action.AnActionEvent;
 import consulo.ui.ex.action.AnActionWithSyncUpdate;
-import consulo.util.lang.ref.Ref;
+import consulo.util.lang.ref.SimpleReference;
 import jakarta.annotation.Nonnull;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Anton Katilin
@@ -49,8 +51,10 @@ abstract class AbstractMoveSelectionAction extends AnAction implements DumbAware
         myMoveToLast = moveToLast;
     }
 
+    @Override
+    @RequiredUIAccess
     public final void actionPerformed(final AnActionEvent e) {
-        final ArrayList<RadComponent> selectedComponents = FormEditingUtil.getSelectedComponents(myEditor);
+        List<RadComponent> selectedComponents = FormEditingUtil.getSelectedComponents(myEditor);
         final JComponent rootContainerDelegee = myEditor.getRootContainer().getDelegee();
         if (selectedComponents.size() == 0) {
             moveToFirstComponent(rootContainerDelegee);
@@ -68,12 +72,13 @@ abstract class AbstractMoveSelectionAction extends AnAction implements DumbAware
         // 1. We need to get coordinates of all editor's component in the same
         // coordinate system. For example, in the RadRootContainer rootContainerDelegee's coordinate system.
 
-        final ArrayList<RadComponent> components = new ArrayList<RadComponent>();
-        final ArrayList<Point> points = new ArrayList<Point>();
+        final List<RadComponent> components = new ArrayList<>();
+        final List<Point> points = new ArrayList<>();
         final RadComponent selectedComponent1 = selectedComponent;
         FormEditingUtil.iterate(
             myEditor.getRootContainer(),
             new FormEditingUtil.ComponentVisitor<RadComponent>() {
+                @Override
                 public boolean visit(final RadComponent component) {
                     if (component instanceof RadAtomicComponent) {
                         if (selectedComponent1.equals(component)) {
@@ -139,10 +144,11 @@ abstract class AbstractMoveSelectionAction extends AnAction implements DumbAware
     private void moveToFirstComponent(final JComponent rootContainerDelegee) {
         final int[] minX = new int[]{Integer.MAX_VALUE};
         final int[] minY = new int[]{Integer.MAX_VALUE};
-        final Ref<RadComponent> componentToBeSelected = new Ref<RadComponent>();
+        final SimpleReference<RadComponent> componentToBeSelected = new SimpleReference<>();
         FormEditingUtil.iterate(
             myEditor.getRootContainer(),
             new FormEditingUtil.ComponentVisitor<RadComponent>() {
+                @Override
                 public boolean visit(final RadComponent component) {
                     if (component instanceof RadAtomicComponent) {
                         final JComponent _delegee = component.getDelegee();

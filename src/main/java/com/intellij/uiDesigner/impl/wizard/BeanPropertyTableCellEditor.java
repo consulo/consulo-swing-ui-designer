@@ -31,6 +31,7 @@ final class BeanPropertyTableCellEditor extends AbstractCellEditor implements Ta
     myEditorComponent.setBorder(null);
   }
 
+  @Override
   public Object getCellEditorValue() {
     final String propertyName = myEditorComponent.getText().trim();
     if(propertyName.length() != 0){
@@ -41,6 +42,7 @@ final class BeanPropertyTableCellEditor extends AbstractCellEditor implements Ta
     }
   }
 
+  @Override
   public Component getTableCellEditorComponent(
     final JTable table,
     final Object value,

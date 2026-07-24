@@ -18,28 +18,29 @@ package com.intellij.uiDesigner.impl.binding;
 import com.intellij.java.language.psi.PsiClass;
 import com.intellij.java.language.psi.PsiClassType;
 import com.intellij.java.language.psi.PsiField;
-import com.intellij.java.language.psi.PsiType;
-import com.intellij.uiDesigner.impl.UIDesignerBundle;
 import com.intellij.uiDesigner.impl.editor.UIFormEditor;
 import com.intellij.uiDesigner.impl.palette.ComponentItem;
 import com.intellij.uiDesigner.impl.palette.Palette;
-import consulo.application.AllIcons;
+import consulo.annotation.access.RequiredReadAction;
 import consulo.codeEditor.markup.GutterIconRenderer;
 import consulo.fileEditor.FileEditor;
 import consulo.fileEditor.FileEditorManager;
 import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiFile;
+import consulo.platform.base.icon.PlatformIconGroup;
 import consulo.project.Project;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.action.AnAction;
 import consulo.ui.ex.action.AnActionEvent;
 import consulo.ui.image.Image;
+import consulo.uiDesigner.impl.localize.UIDesignerLocalize;
 import consulo.virtualFileSystem.VirtualFile;
-import org.jetbrains.annotations.NonNls;
-
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
+
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author yole
@@ -54,13 +55,11 @@ public class BoundIconRenderer extends GutterIconRenderer
 	public BoundIconRenderer(@Nonnull final PsiElement element)
 	{
 		myElement = element;
-		if(myElement instanceof PsiField)
+		if(myElement instanceof PsiField field)
 		{
-			final PsiField field = (PsiField) myElement;
-			final PsiType type = field.getType();
-			if(type instanceof PsiClassType)
+            if(field.getType() instanceof PsiClassType classType)
 			{
-				PsiClass componentClass = ((PsiClassType) type).resolve();
+				PsiClass componentClass = classType.resolve();
 				if(componentClass != null)
 				{
 					String qName = componentClass.getQualifiedName();
@@ -83,26 +82,31 @@ public class BoundIconRenderer extends GutterIconRenderer
 	}
 
 	@Nonnull
+    @Override
 	public Image getIcon()
 	{
 		if(myIcon != null)
 		{
 			return myIcon;
 		}
-		return AllIcons.FileTypes.UiForm;
+		return PlatformIconGroup.filetypesUiform();
 	}
 
-	public boolean isNavigateAction()
+	@Override
+    public boolean isNavigateAction()
 	{
 		return true;
 	}
 
 	@Nullable
-	public AnAction getClickAction()
+    @Override
+    public AnAction getClickAction()
 	{
 		return new AnAction()
 		{
-			public void actionPerformed(AnActionEvent e)
+            @Override
+            @RequiredUIAccess
+            public void actionPerformed(AnActionEvent e)
 			{
 				List<PsiFile> formFiles = getBoundFormFiles();
 				if(formFiles.size() > 0)
@@ -114,13 +118,13 @@ public class BoundIconRenderer extends GutterIconRenderer
 					}
 					Project project = myElement.getProject();
 					FileEditor[] editors = FileEditorManager.getInstance(project).openFile(virtualFile, true);
-					if(myElement instanceof PsiField)
+					if(myElement instanceof PsiField field)
 					{
 						for(FileEditor editor : editors)
 						{
-							if(editor instanceof UIFormEditor)
+							if(editor instanceof UIFormEditor formEditor)
 							{
-								((UIFormEditor) editor).selectComponent(((PsiField) myElement).getName());
+								formEditor.selectComponent(field.getName());
 							}
 						}
 					}
@@ -129,8 +133,10 @@ public class BoundIconRenderer extends GutterIconRenderer
 		};
 	}
 
-	@Nullable
-	public String getTooltipText()
+    @Nullable
+    @Override
+    @RequiredReadAction
+    public String getTooltipText()
 	{
 		List<PsiFile> formFiles = getBoundFormFiles();
 
@@ -145,9 +151,9 @@ public class BoundIconRenderer extends GutterIconRenderer
 	{
 		List<PsiFile> formFiles = Collections.emptyList();
 		PsiClass aClass;
-		if(myElement instanceof PsiField)
+		if(myElement instanceof PsiField field)
 		{
-			aClass = ((PsiField) myElement).getContainingClass();
+			aClass = field.getContainingClass();
 		}
 		else
 		{
@@ -160,11 +166,12 @@ public class BoundIconRenderer extends GutterIconRenderer
 		return formFiles;
 	}
 
-	private static String composeText(final List<PsiFile> formFiles)
+	@RequiredReadAction
+    private static String composeText(final List<PsiFile> formFiles)
 	{
-		@NonNls StringBuilder result = new StringBuilder("<html><body>");
-		result.append(UIDesignerBundle.message("ui.is.bound.header"));
-		@NonNls String sep = "";
+		StringBuilder result = new StringBuilder("<html><body>");
+		result.append(UIDesignerLocalize.uiIsBoundHeader().get());
+		String sep = "";
 		for(PsiFile file : formFiles)
 		{
 			result.append(sep);
@@ -177,7 +184,7 @@ public class BoundIconRenderer extends GutterIconRenderer
 	}
 
 	@Override
-	public boolean equals(Object o)
+	public boolean equals(@Nullable Object o)
 	{
 		if(this == o)
 		{
@@ -190,23 +197,13 @@ public class BoundIconRenderer extends GutterIconRenderer
 
 		BoundIconRenderer that = (BoundIconRenderer) o;
 
-		if(!myQName.equals(that.myQName))
-		{
-			return false;
-		}
-		if(myIcon != null ? !myIcon.equals(that.myIcon) : that.myIcon != null)
-		{
-			return false;
-		}
-
-		return true;
-	}
+        return myQName.equals(that.myQName)
+            && Objects.equals(myIcon, that.myIcon);
+    }
 
 	@Override
 	public int hashCode()
 	{
-		int result = myElement.hashCode();
-		result = 31 * result + (myIcon != null ? myIcon.hashCode() : 0);
-		return result;
+        return 31 * myElement.hashCode() + Objects.hashCode(myIcon);
 	}
 }

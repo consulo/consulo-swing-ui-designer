@@ -16,9 +16,10 @@
 package com.intellij.uiDesigner.impl.clientProperties;
 
 import consulo.project.Project;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.awt.DialogWrapper;
 import consulo.ui.ex.awt.IdeBorderFactory;
-import com.intellij.uiDesigner.impl.UIDesignerBundle;
+import consulo.uiDesigner.impl.localize.UIDesignerLocalize;
 import jakarta.annotation.Nullable;
 
 import javax.swing.*;
@@ -38,17 +39,18 @@ public class AddClientPropertyDialog extends DialogWrapper {
   public AddClientPropertyDialog(Project project) {
     super(project, false);
     init();
-    setTitle(UIDesignerBundle.message("client.property.add.title"));
-    myGroupPanel.setBorder(IdeBorderFactory.createTitledBorder(UIDesignerBundle.message("client.properties.type.header"),
-                                                               true));
+    setTitle(UIDesignerLocalize.clientPropertyAddTitle());
+    myGroupPanel.setBorder(IdeBorderFactory.createTitledBorder(UIDesignerLocalize.clientPropertiesTypeHeader().get(), true));
   }
 
   @Nullable
+  @Override
   protected JComponent createCenterPanel() {
     return myRootPanel;
   }
 
   @Override
+  @RequiredUIAccess
   public JComponent getPreferredFocusedComponent() {
     return myPropertyNameTextField;
   }

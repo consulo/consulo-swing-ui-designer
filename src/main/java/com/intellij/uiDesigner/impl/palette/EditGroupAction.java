@@ -13,28 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.intellij.uiDesigner.impl.palette;
 
-import com.intellij.uiDesigner.impl.UIDesignerBundle;
-import consulo.application.CommonBundle;
+import consulo.platform.base.localize.CommonLocalize;
 import consulo.project.Project;
 import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.action.AnAction;
 import consulo.ui.ex.action.AnActionEvent;
 import consulo.ui.ex.action.AnActionWithSyncUpdate;
 import consulo.ui.ex.awt.Messages;
+import consulo.ui.ex.awt.UIUtil;
 import consulo.uiDesigner.impl.localize.UIDesignerLocalize;
 import jakarta.annotation.Nonnull;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author yole
  */
 public class EditGroupAction extends AnAction implements AnActionWithSyncUpdate {
-    @RequiredUIAccess
     @Override
+    @RequiredUIAccess
     public void actionPerformed(@Nonnull AnActionEvent e) {
         Project project = e.getData(Project.KEY);
         GroupItem groupToBeEdited = e.getData(GroupItem.DATA_KEY);
@@ -43,17 +42,23 @@ public class EditGroupAction extends AnAction implements AnActionWithSyncUpdate 
         }
 
         // Ask group name
-        final String groupName = Messages.showInputDialog(project, UIDesignerLocalize.editEnterGroupName().get(), UIDesignerLocalize.titleEditGroup().get(), Messages.getQuestionIcon(),
-            groupToBeEdited.getName(), null);
+        String groupName = Messages.showInputDialog(
+            project,
+            UIDesignerLocalize.editEnterGroupName().get(),
+            UIDesignerLocalize.titleEditGroup().get(),
+            UIUtil.getQuestionIcon(),
+            groupToBeEdited.getName(),
+            null
+        );
         if (groupName == null || groupName.equals(groupToBeEdited.getName())) {
             return;
         }
 
         Palette palette = Palette.getInstance(project);
-        final ArrayList<GroupItem> groups = palette.getGroups();
+        List<GroupItem> groups = palette.getGroups();
         for (int i = groups.size() - 1; i >= 0; i--) {
             if (groupName.equals(groups.get(i).getName())) {
-                Messages.showErrorDialog(project, UIDesignerLocalize.errorGroupNameUnique().get(), CommonBundle.getErrorTitle());
+                Messages.showErrorDialog(project, UIDesignerLocalize.errorGroupNameUnique().get(), CommonLocalize.titleError().get());
                 return;
             }
         }

@@ -27,19 +27,20 @@ import javax.swing.*;
  * @author Vladimir Kondratyev
  */
 public final class BorderTypeEditor extends ComboBoxPropertyEditor<BorderType> {
-  public BorderTypeEditor(){
-    myCbx.setModel(new DefaultComboBoxModel(BorderType.getAllTypes()));
-    myCbx.setRenderer(new ListCellRendererWrapper<BorderType>() {
-      @Override
-      public void customize(JList list, BorderType value, int index, boolean selected, boolean hasFocus) {
-        final BorderType type = value != null ? value : BorderType.NONE;
-        setText(type.getName());
-      }
-    });
-  }
+    public BorderTypeEditor() {
+        myCbx.setModel(new DefaultComboBoxModel<>(BorderType.getAllTypes()));
+        myCbx.setRenderer(new ListCellRendererWrapper<>() {
+            @Override
+            public void customize(JList list, BorderType value, int index, boolean selected, boolean hasFocus) {
+                BorderType type = value != null ? value : BorderType.NONE;
+                setText(type.getName());
+            }
+        });
+    }
 
-  public JComponent getComponent(final RadComponent ignored, final BorderType value, final InplaceContext inplaceContext){
-    myCbx.setSelectedItem(value);
-    return myCbx;
-  }
+    @Override
+    public JComponent getComponent(RadComponent ignored, BorderType value, InplaceContext inplaceContext) {
+        myCbx.setSelectedItem(value);
+        return myCbx;
+    }
 }

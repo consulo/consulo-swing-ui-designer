@@ -15,17 +15,17 @@
  */
 package com.intellij.uiDesigner.impl.actions;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import consulo.logging.Logger;
 import com.intellij.uiDesigner.impl.designSurface.GuiEditor;
 import com.intellij.uiDesigner.impl.propertyInspector.DesignerToolWindowManager;
 import com.intellij.uiDesigner.impl.propertyInspector.Property;
 import com.intellij.uiDesigner.impl.propertyInspector.PropertyInspector;
 import com.intellij.uiDesigner.impl.propertyInspector.PropertyInspectorTable;
 import com.intellij.uiDesigner.impl.radComponents.RadComponent;
+import consulo.logging.Logger;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.action.AnActionEvent;
+
+import java.util.List;
 
 /**
  * @author yole
@@ -78,7 +78,8 @@ public class ResetValueAction extends AbstractGuiEditorAction
 	}
 
 	@Override
-	protected void update(final GuiEditor editor, final ArrayList<RadComponent> selection, final AnActionEvent e)
+    @RequiredUIAccess
+	protected void update(GuiEditor editor, List<RadComponent> selection, AnActionEvent e)
 	{
 		PropertyInspectorTable inspector = e.getData(PropertyInspectorTable.DATA_KEY);
 		if(inspector != null)

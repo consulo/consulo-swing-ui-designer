@@ -13,41 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.intellij.uiDesigner.impl.actions;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import jakarta.annotation.Nonnull;
-
-import consulo.application.util.function.Processor;
-import consulo.ui.ex.popup.*;
-import consulo.ui.ex.popup.PopupStep;
-import consulo.ui.ex.popup.SpeedSearchFilter;
-import com.intellij.uiDesigner.impl.UIDesignerBundle;
 import com.intellij.uiDesigner.impl.designSurface.GuiEditor;
 import com.intellij.uiDesigner.impl.designSurface.InsertComponentProcessor;
 import com.intellij.uiDesigner.impl.palette.ComponentItem;
 import com.intellij.uiDesigner.impl.palette.GroupItem;
 import com.intellij.uiDesigner.impl.palette.Palette;
+import consulo.localize.LocalizeValue;
 import consulo.project.Project;
-import consulo.ui.ex.popup.ListSeparator;
-import consulo.ui.ex.popup.MnemonicNavigationFilter;
+import consulo.ui.ex.popup.*;
 import consulo.ui.image.Image;
+import consulo.uiDesigner.impl.localize.UIDesignerLocalize;
+import jakarta.annotation.Nonnull;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Predicate;
 
 /**
  * @author yole
  */
 class PaletteListPopupStep implements ListPopupStep<ComponentItem>, SpeedSearchFilter<ComponentItem> {
-  private final ArrayList<ComponentItem> myItems = new ArrayList<ComponentItem>();
+  private final List<ComponentItem> myItems = new ArrayList<>();
   private final ComponentItem myInitialSelection;
-  private final Processor<ComponentItem> myRunnable;
-  private final String myTitle;
+  private final Predicate<ComponentItem> myRunnable;
+  private final LocalizeValue myTitle;
   private final Project myProject;
 
-  PaletteListPopupStep(GuiEditor editor, ComponentItem initialSelection, final Processor<ComponentItem> runnable, final String title) {
+  PaletteListPopupStep(GuiEditor editor, ComponentItem initialSelection, Predicate<ComponentItem> runnable, LocalizeValue title) {
     myInitialSelection = initialSelection;
     myRunnable = runnable;
     myProject = editor.getProject();
@@ -59,30 +54,36 @@ class PaletteListPopupStep implements ListPopupStep<ComponentItem>, SpeedSearchF
   }
 
   @Nonnull
+  @Override
   public List<ComponentItem> getValues() {
     return myItems;
   }
 
+  @Override
   public boolean isSelectable(final ComponentItem value) {
     return true;
   }
 
+  @Override
   public Image getIconFor(final ComponentItem aValue) {
     return aValue.getSmallIcon();
   }
 
   @Nonnull
+  @Override
   public String getTextFor(final ComponentItem value) {
     if (value.isAnyComponent()) {
-      return UIDesignerBundle.message("palette.non.palette.component");
+      return UIDesignerLocalize.paletteNonPaletteComponent().get();
     }
     return value.getClassShortName();
   }
 
+  @Override
   public ListSeparator getSeparatorAbove(final ComponentItem value) {
     return null;
   }
 
+  @Override
   public int getDefaultOptionIndex() {
     if (myInitialSelection != null) {
       int index = myItems.indexOf(myInitialSelection);
@@ -93,50 +94,62 @@ class PaletteListPopupStep implements ListPopupStep<ComponentItem>, SpeedSearchF
     return 0;
   }
 
+  @Override
   public String getTitle() {
-    return myTitle;
+    return myTitle.get();
   }
 
+  @Override
   public PopupStep onChosen(final ComponentItem selectedValue, final boolean finalChoice) {
-    myRunnable.process(selectedValue);
+    myRunnable.test(selectedValue);
     return PopupStep.FINAL_CHOICE;
   }
 
+  @Override
   public Runnable getFinalRunnable() {
     return null;
   }
 
+  @Override
   public boolean hasSubstep(final ComponentItem selectedValue) {
     return false;
   }
 
+  @Override
   public void canceled() {
   }
 
+  @Override
   public boolean isMnemonicsNavigationEnabled() {
     return false;
   }
 
+  @Override
   public MnemonicNavigationFilter<ComponentItem> getMnemonicNavigationFilter() {
     return null;
   }
 
+  @Override
   public boolean isSpeedSearchEnabled() {
     return true;
   }
 
+  @Override
   public boolean isAutoSelectionEnabled() {
     return false;
   }
 
+  @Override
   public SpeedSearchFilter<ComponentItem> getSpeedSearchFilter() {
     return this;
   }
 
+  @Override
   public boolean canBeHidden(final ComponentItem value) {
     return true;
   }
 
+  @Override
   public String getIndexedString(final ComponentItem value) {
     if (value.isAnyComponent()) {
       return "";
