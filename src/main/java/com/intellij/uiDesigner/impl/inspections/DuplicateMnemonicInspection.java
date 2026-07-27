@@ -15,20 +15,17 @@
  */
 package com.intellij.uiDesigner.impl.inspections;
 
+import com.intellij.uiDesigner.core.SupportCode;
 import com.intellij.uiDesigner.impl.FormEditingUtil;
 import com.intellij.uiDesigner.impl.StringDescriptorManager;
 import com.intellij.uiDesigner.impl.SwingProperties;
-import com.intellij.uiDesigner.impl.UIDesignerBundle;
-import com.intellij.uiDesigner.core.SupportCode;
-import com.intellij.uiDesigner.impl.designSurface.GuiEditor;
-import com.intellij.uiDesigner.lw.*;
-import com.intellij.uiDesigner.impl.quickFixes.QuickFix;
 import com.intellij.uiDesigner.impl.radComponents.RadComponent;
+import com.intellij.uiDesigner.lw.*;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.localize.LocalizeValue;
 import consulo.module.Module;
-
 import consulo.uiDesigner.impl.localize.UIDesignerLocalize;
+import consulo.util.lang.StringUtil;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 
@@ -67,6 +64,7 @@ public class DuplicateMnemonicInspection extends BaseFormInspection {
     myContainerMnemonicMap.get().remove(rootContainer);
   }
 
+  @Override
   protected void checkComponentProperties(consulo.module.Module module, IComponent component, FormErrorCollector collector) {
     SupportCode.TextWithMnemonic twm = getTextWithMnemonic(module, component);
     if (twm != null) {
@@ -109,16 +107,20 @@ public class DuplicateMnemonicInspection extends BaseFormInspection {
     if (map.containsKey(key)) {
       IProperty prop = FormInspectionUtil.findProperty(component, SwingProperties.TEXT);
       IComponent oldComponent = map.get(key);
-      collector.addError(getID(), component, prop,
-                         UIDesignerBundle.message("inspection.duplicate.mnemonics.message",
-                                                  FormInspectionUtil.getText(module, oldComponent),
-                                                  FormInspectionUtil.getText(module, component)),
-                         new EditorQuickFixProvider() {
-                           public QuickFix createQuickFix(GuiEditor editor, RadComponent component) {
-                             return new AssignMnemonicFix(editor, component,
-                                                          UIDesignerBundle.message("inspection.duplicate.mnemonics.quickfix"));
-                           }
-                         });
+      collector.addError(
+          getID(),
+          component,
+          prop,
+          UIDesignerLocalize.inspectionDuplicateMnemonicsMessage(
+              StringUtil.notNullize(FormInspectionUtil.getText(module, oldComponent)),
+                  StringUtil.notNullize(FormInspectionUtil.getText(module, component))
+          ).get(),
+          (EditorQuickFixProvider) (editor, component1) -> new AssignMnemonicFix(
+              editor,
+              component1,
+              UIDesignerLocalize.inspectionDuplicateMnemonicsQuickfix().get()
+          )
+      );
     }
     else {
       map.put(key, component);
@@ -148,18 +150,18 @@ public class DuplicateMnemonicInspection extends BaseFormInspection {
       myExclusiveContainerStack = exclusiveContainerStack;
     }
 
-    public boolean equals(Object o) {
+    @Override
+    public boolean equals(@Nullable Object o) {
       if (this == o) return true;
       if (o == null || getClass() != o.getClass()) return false;
 
       MnemonicKey that = (MnemonicKey)o;
 
-      if (myMnemonicChar != that.myMnemonicChar) return false;
-      if (!myExclusiveContainerStack.equals(that.myExclusiveContainerStack)) return false;
-
-      return true;
+      return myMnemonicChar == that.myMnemonicChar
+        && myExclusiveContainerStack.equals(that.myExclusiveContainerStack);
     }
 
+    @Override
     public int hashCode() {
       int result;
       result = (int)myMnemonicChar;

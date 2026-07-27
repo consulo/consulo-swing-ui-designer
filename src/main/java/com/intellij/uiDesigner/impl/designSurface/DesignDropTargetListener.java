@@ -15,33 +15,26 @@
  */
 package com.intellij.uiDesigner.impl.designSurface;
 
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.dnd.DnDConstants;
-import java.awt.dnd.DropTargetDragEvent;
-import java.awt.dnd.DropTargetDropEvent;
-import java.awt.dnd.DropTargetEvent;
-import java.awt.dnd.DropTargetListener;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.JComponent;
-import javax.swing.SwingUtilities;
-
 import com.intellij.ide.palette.impl.PaletteToolWindowManager;
-import consulo.application.ApplicationManager;
-import consulo.logging.Logger;
+import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.impl.CutCopyPasteSupport;
 import com.intellij.uiDesigner.impl.FormEditingUtil;
 import com.intellij.uiDesigner.impl.SimpleTransferable;
-import com.intellij.uiDesigner.impl.UIDesignerBundle;
 import com.intellij.uiDesigner.impl.componentTree.ComponentTree;
-import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.impl.palette.ComponentItem;
 import com.intellij.uiDesigner.impl.propertyInspector.DesignerToolWindowManager;
 import com.intellij.uiDesigner.impl.radComponents.RadComponent;
 import com.intellij.uiDesigner.impl.radComponents.RadContainer;
+import consulo.application.Application;
+import consulo.logging.Logger;
+import consulo.uiDesigner.impl.localize.UIDesignerLocalize;
 import consulo.undoRedo.CommandProcessor;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.dnd.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author yole
@@ -64,7 +57,8 @@ class DesignDropTargetListener implements DropTargetListener
 		myGridInsertProcessor = new GridInsertProcessor(editor);
 	}
 
-	public void dragEnter(DropTargetDragEvent dtde)
+	@Override
+    public void dragEnter(DropTargetDragEvent dtde)
 	{
 		try
 		{
@@ -149,7 +143,8 @@ class DesignDropTargetListener implements DropTargetListener
 		}
 	}
 
-	public void dragOver(DropTargetDragEvent dtde)
+	@Override
+    public void dragOver(DropTargetDragEvent dtde)
 	{
 		try
 		{
@@ -199,7 +194,8 @@ class DesignDropTargetListener implements DropTargetListener
 		}
 	}
 
-	public void dropActionChanged(DropTargetDragEvent dtde)
+	@Override
+    public void dropActionChanged(DropTargetDragEvent dtde)
 	{
 		DraggedComponentList dcl = DraggedComponentList.fromTransferable(dtde.getTransferable());
 		if(dcl != null)
@@ -208,7 +204,8 @@ class DesignDropTargetListener implements DropTargetListener
 		}
 	}
 
-	public void dragExit(DropTargetEvent dte)
+	@Override
+    public void dragExit(DropTargetEvent dte)
 	{
 		try
 		{
@@ -234,7 +231,8 @@ class DesignDropTargetListener implements DropTargetListener
 		}
 	}
 
-	public void drop(final DropTargetDropEvent dtde)
+	@Override
+    public void drop(DropTargetDropEvent dtde)
 	{
 		try
 		{
@@ -244,21 +242,19 @@ class DesignDropTargetListener implements DropTargetListener
 				componentTree.setDropTargetComponent(null);
 			}
 
-
-			final DraggedComponentList dcl = DraggedComponentList.fromTransferable(dtde.getTransferable());
+			DraggedComponentList dcl = DraggedComponentList.fromTransferable(dtde.getTransferable());
 			if(dcl != null)
 			{
-				CommandProcessor.getInstance().executeCommand(myEditor.getProject(), new Runnable()
-				{
-					public void run()
-					{
-						if(processDrop(dcl, dtde.getLocation(), dtde.getDropAction()))
-						{
-							myEditor.refreshAndSave(true);
-						}
-					}
-				}, UIDesignerBundle.message("command.drop.components"), null);
-			}
+                CommandProcessor.getInstance().newCommand()
+                    .project(myEditor.getProject())
+                    .name(UIDesignerLocalize.commandDropComponents())
+                    .run(() -> {
+                        if (processDrop(dcl, dtde.getLocation(), dtde.getDropAction()))
+                        {
+                            myEditor.refreshAndSave(true);
+                        }
+                    });
+            }
 			else
 			{
 				ComponentItem componentItem = SimpleTransferable.getData(dtde.getTransferable(), ComponentItem.class);
@@ -266,17 +262,13 @@ class DesignDropTargetListener implements DropTargetListener
 				{
 					myEditor.getMainProcessor().setInsertFeedbackEnabled(false);
 					new InsertComponentProcessor(myEditor).processComponentInsert(dtde.getLocation(), componentItem);
-					ApplicationManager.getApplication().invokeLater(new Runnable()
-					{
-						public void run()
-						{
-							PaletteToolWindowManager.getInstance(myEditor).clearActiveItem();
-							myEditor.getActiveDecorationLayer().removeFeedback();
-							myEditor.getLayeredPane().setCursor(null);
-							myEditor.getGlassLayer().requestFocus();
-							myEditor.getMainProcessor().setInsertFeedbackEnabled(true);
-						}
-					});
+					Application.get().invokeLater(() -> {
+                        PaletteToolWindowManager.getInstance(myEditor).clearActiveItem();
+                        myEditor.getActiveDecorationLayer().removeFeedback();
+                        myEditor.getLayeredPane().setCursor(null);
+                        myEditor.getGlassLayer().requestFocus();
+                        myEditor.getMainProcessor().setInsertFeedbackEnabled(true);
+                    });
 				}
 			}
 			myDraggedComponentsCopy = null;

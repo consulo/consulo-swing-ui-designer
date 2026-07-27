@@ -29,14 +29,14 @@ final class DragLayer extends PassiveDecorationLayer {
     super(editor);
   }
 
+  @Override
   public void paint(Graphics g){
     ((Graphics2D)g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 0.3f));
 
     // Paint passive decoration of dragged components
-    for(int i = getComponentCount() - 1; i >= 0; i--){
-      Component child = getComponent(i);
-      if(child instanceof JComponent){
-        Object prop = ((JComponent)child).getClientProperty(RadComponent.CLIENT_PROP_RAD_COMPONENT);
+    for(int i = getComponentCount(); --i >= 0; ){
+      if(getComponent(i) instanceof JComponent component){
+        Object prop = component.getClientProperty(RadComponent.CLIENT_PROP_RAD_COMPONENT);
         if(prop != null){
           RadComponent radComponent = (RadComponent)prop;
           paintPassiveDecoration(radComponent, g);

@@ -15,6 +15,7 @@
  */
 package com.intellij.uiDesigner.impl.inspections;
 
+import consulo.annotation.access.RequiredReadAction;
 import consulo.language.editor.rawHighlight.HighlightDisplayKey;
 import consulo.language.editor.inspection.scheme.InspectionProfile;
 import consulo.language.editor.inspection.scheme.InspectionProjectProfileManager;
@@ -43,6 +44,7 @@ public class FormEditorErrorCollector extends FormErrorCollector {
   private final InspectionProfile myProfile;
   private final PsiFile myFormPsiFile;
 
+  @RequiredReadAction
   public FormEditorErrorCollector(GuiEditor editor, RadComponent component) {
     myEditor = editor;
     myComponent = component;
@@ -56,6 +58,7 @@ public class FormEditorErrorCollector extends FormErrorCollector {
     return myResults == null ? null : myResults.toArray(new ErrorInfo[myResults.size()]);
   }
 
+  @Override
   public void addError(@Nonnull String inspectionId, IComponent component, @Nullable IProperty prop,
                        @Nonnull String errorMessage,
                        EditorQuickFixProvider... editorQuickFixProviders) {

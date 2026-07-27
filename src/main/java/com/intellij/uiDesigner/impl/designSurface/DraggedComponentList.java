@@ -15,11 +15,11 @@
  */
 package com.intellij.uiDesigner.impl.designSurface;
 
-import consulo.logging.Logger;
-import com.intellij.uiDesigner.impl.FormEditingUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
+import com.intellij.uiDesigner.impl.FormEditingUtil;
 import com.intellij.uiDesigner.impl.radComponents.RadComponent;
 import com.intellij.uiDesigner.impl.radComponents.RadContainer;
+import consulo.logging.Logger;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 
@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 
 /**
  * @author yole
@@ -71,17 +70,15 @@ public class DraggedComponentList implements Transferable, ComponentDragObject {
     mySelection = FormEditingUtil.getSelectedComponents(editor);
 
     // sort selection in correct grid order
-    Collections.sort(mySelection, new Comparator<>() {
-      public int compare(RadComponent o1, RadComponent o2) {
-        if (o1.getParent() == o2.getParent()) {
-          int result = o1.getConstraints().getRow() - o2.getConstraints().getRow();
-          if (result == 0) {
-            result = o1.getConstraints().getColumn() - o2.getConstraints().getColumn();
-          }
-          return result;
+    Collections.sort(mySelection, (o1, o2) -> {
+      if (o1.getParent() == o2.getParent()) {
+        int result = o1.getConstraints().getRow() - o2.getConstraints().getRow();
+        if (result == 0) {
+          result = o1.getConstraints().getColumn() - o2.getConstraints().getColumn();
         }
-        return 0;
+        return result;
       }
+      return 0;
     });
 
     RadComponent componentUnderMouse = null;
@@ -184,6 +181,7 @@ public class DraggedComponentList implements Transferable, ComponentDragObject {
     return mySelection;
   }
 
+  @Override
   public int getComponentCount() {
     return mySelection.size();
   }
@@ -211,18 +209,22 @@ public class DraggedComponentList implements Transferable, ComponentDragObject {
     return myOriginalBounds [mySelection.indexOf(c)];
   }
 
+  @Override
   public DataFlavor[] getTransferDataFlavors() {
     return new DataFlavor[] { ourDataFlavor };
   }
 
+  @Override
   public boolean isDataFlavorSupported(DataFlavor flavor) {
     return flavor.equals(ourDataFlavor);
   }
 
+  @Override
   public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
     return this;
   }
 
+  @Override
   public boolean isHGrow() {
     for(GridConstraints c: myOriginalConstraints) {
       if ((c.getHSizePolicy() & GridConstraints.SIZEPOLICY_WANT_GROW) != 0) return true;
@@ -230,6 +232,7 @@ public class DraggedComponentList implements Transferable, ComponentDragObject {
     return false;
   }
 
+  @Override
   public boolean isVGrow() {
     for(GridConstraints c: myOriginalConstraints) {
       if ((c.getVSizePolicy() & GridConstraints.SIZEPOLICY_WANT_GROW) != 0) return true;
@@ -237,27 +240,33 @@ public class DraggedComponentList implements Transferable, ComponentDragObject {
     return false;
   }
 
+  @Override
   public int getRelativeRow(int componentIndex) {
     return myOriginalConstraints [componentIndex].getRow() - myComponentUnderMouseRow;
   }
 
+  @Override
   public int getRelativeCol(int componentIndex) {
     return myOriginalConstraints [componentIndex].getColumn() - myComponentUnderMouseColumn;
   }
 
+  @Override
   public int getRowSpan(int componentIndex) {
     return myOriginalConstraints [componentIndex].getRowSpan();
   }
 
+  @Override
   public int getColSpan(int componentIndex) {
     return myOriginalConstraints [componentIndex].getColSpan();
   }
 
+  @Override
   public Point getDelta(int componentIndex) {
     return null;
   }
 
   @Nonnull
+  @Override
   public Dimension getInitialSize(RadContainer targetContainer) {
     if (myOriginalBounds.length == 1) {
       return myOriginalBounds [0].getSize();

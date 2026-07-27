@@ -15,7 +15,10 @@
  */
 package com.intellij.uiDesigner.impl;
 
-import com.intellij.java.language.psi.*;
+import com.intellij.java.language.psi.JavaPsiFacade;
+import com.intellij.java.language.psi.PsiClass;
+import com.intellij.java.language.psi.PsiField;
+import com.intellij.java.language.psi.PsiType;
 import com.intellij.uiDesigner.impl.designSurface.GuiEditor;
 import com.intellij.uiDesigner.impl.inspections.FormInspectionTool;
 import com.intellij.uiDesigner.impl.quickFixes.*;
@@ -36,11 +39,12 @@ import consulo.language.util.IncorrectOperationException;
 import consulo.logging.Logger;
 import consulo.module.Module;
 import consulo.project.Project;
+import consulo.uiDesigner.impl.localize.UIDesignerLocalize;
 import consulo.util.lang.ControlFlowException;
+import consulo.util.lang.StringUtil;
 import consulo.virtualFileSystem.VirtualFile;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
-import org.jetbrains.annotations.NonNls;
 
 import javax.swing.*;
 import java.util.*;
@@ -55,15 +59,12 @@ public final class ErrorAnalyzer {
     /**
      * Value {@link ErrorInfo}
      */
-    @NonNls
     public static final String CLIENT_PROP_CLASS_TO_BIND_ERROR = "classToBindError";
     /**
      * Value {@link ErrorInfo}
      */
-    @NonNls
     public static final String CLIENT_PROP_BINDING_ERROR = "bindingError";
 
-    @NonNls
     public static final String CLIENT_PROP_ERROR_ARRAY = "errorArray";
 
     private ErrorAnalyzer() {
@@ -76,7 +77,7 @@ public final class ErrorAnalyzer {
     /**
      * @param editor if null, no quick fixes are created. This is used in form to source compiler.
      */
-    public static void analyzeErrors(@Nonnull final Module module,
+    public static void analyzeErrors(@Nonnull Module module,
                                      @Nonnull VirtualFile formFile,
                                      @Nullable final GuiEditor editor,
                                      @Nonnull final IRootContainer rootContainer,
@@ -87,13 +88,18 @@ public final class ErrorAnalyzer {
 
         // 1. Validate class to bind
         String classToBind = rootContainer.getClassToBind();
-        final PsiClass psiClass;
+        PsiClass psiClass;
         if (classToBind != null) {
             psiClass = FormEditingUtil.findClassToBind(module, classToBind);
             if (psiClass == null) {
                 QuickFix[] fixes = editor != null ? new QuickFix[]{new CreateClassToBindFix(editor, classToBind)} : QuickFix.EMPTY_ARRAY;
-                ErrorInfo errorInfo = new ErrorInfo(null, null, UIDesignerBundle.message("error.class.does.not.exist", classToBind),
-                    HighlightDisplayLevel.ERROR, fixes);
+                ErrorInfo errorInfo = new ErrorInfo(
+                    null,
+                    null,
+                    UIDesignerLocalize.errorClassDoesNotExist(classToBind).get(),
+                    HighlightDisplayLevel.ERROR,
+                    fixes
+                );
                 rootContainer.putClientProperty(CLIENT_PROP_CLASS_TO_BIND_ERROR, errorInfo);
             }
             else {
@@ -107,56 +113,56 @@ public final class ErrorAnalyzer {
 
         // 2. Validate bindings to fields
         // field name -> error message
-        final ArrayList<String> usedBindings = new ArrayList<>(); // for performance reasons
-        final Set<IButtonGroup> processedGroups = new HashSet<>();
+        List<String> usedBindings = new ArrayList<>(); // for performance reasons
+        Set<IButtonGroup> processedGroups = new HashSet<>();
         FormEditingUtil.iterate(
             rootContainer,
-            new FormEditingUtil.ComponentVisitor<>() {
-                public boolean visit(IComponent component) {
-                    if (progress != null && progress.isCanceled()) {
-                        return false;
-                    }
-
-                    // Reset previous error (if any)
-                    component.putClientProperty(CLIENT_PROP_BINDING_ERROR, null);
-
-                    String binding = component.getBinding();
-
-                    // a. Check that field exists and field is not static
-                    if (psiClass != null && binding != null) {
-                        if (validateFieldInClass(component, binding, component.getComponentClassName(), psiClass, editor, module)) {
-                            return true;
-                        }
-                    }
-
-                    // b. Check that binding is unique
-                    if (binding != null) {
-                        if (usedBindings.contains(binding)) {
-                            // TODO[vova] implement
-                            component.putClientProperty(
-                                CLIENT_PROP_BINDING_ERROR,
-                                new ErrorInfo(
-                                    component, null, UIDesignerBundle.message("error.binding.already.exists", binding),
-                                    HighlightDisplayLevel.ERROR,
-                                    QuickFix.EMPTY_ARRAY
-                                )
-                            );
-                            return true;
-                        }
-
-                        usedBindings.add(binding);
-                    }
-
-                    IButtonGroup group = FormEditingUtil.findGroupForComponent(rootContainer, component);
-                    if (group != null && !processedGroups.contains(group)) {
-                        processedGroups.add(group);
-                        if (group.isBound()) {
-                            validateFieldInClass(component, group.getName(), ButtonGroup.class.getName(), psiClass, editor, module);
-                        }
-                    }
-
-                    return true;
+            component -> {
+                if (progress != null && progress.isCanceled()) {
+                    return false;
                 }
+
+                // Reset previous error (if any)
+                component.putClientProperty(CLIENT_PROP_BINDING_ERROR, null);
+
+                String binding = component.getBinding();
+
+                // a. Check that field exists and field is not static
+                if (psiClass != null && binding != null) {
+                    if (validateFieldInClass(component, binding, component.getComponentClassName(), psiClass, editor, module)) {
+                        return true;
+                    }
+                }
+
+                // b. Check that binding is unique
+                if (binding != null) {
+                    if (usedBindings.contains(binding)) {
+                        // TODO[vova] implement
+                        component.putClientProperty(
+                            CLIENT_PROP_BINDING_ERROR,
+                            new ErrorInfo(
+                                component,
+                                null,
+                                UIDesignerLocalize.errorBindingAlreadyExists(binding).get(),
+                                HighlightDisplayLevel.ERROR,
+                                QuickFix.EMPTY_ARRAY
+                            )
+                        );
+                        return true;
+                    }
+
+                    usedBindings.add(binding);
+                }
+
+                IButtonGroup group = FormEditingUtil.findGroupForComponent(rootContainer, component);
+                if (group != null && !processedGroups.contains(group)) {
+                    processedGroups.add(group);
+                    if (group.isBound()) {
+                        validateFieldInClass(component, group.getName(), ButtonGroup.class.getName(), psiClass, editor, module);
+                    }
+                }
+
+                return true;
             }
         );
         if (progress != null) {
@@ -166,42 +172,47 @@ public final class ErrorAnalyzer {
         // Check that there are no panels in XY with children
         FormEditingUtil.iterate(
             rootContainer,
-            new FormEditingUtil.ComponentVisitor<>() {
-                public boolean visit(IComponent component) {
-                    if (progress != null && progress.isCanceled()) {
-                        return false;
-                    }
+            component -> {
+                if (progress != null && progress.isCanceled()) {
+                    return false;
+                }
 
-                    // Clear previous error (if any)
-                    component.putClientProperty(CLIENT_PROP_ERROR_ARRAY, null);
+                // Clear previous error (if any)
+                component.putClientProperty(CLIENT_PROP_ERROR_ARRAY, null);
 
-                    if (!(component instanceof IContainer)) {
-                        return true;
-                    }
+                if (!(component instanceof IContainer container)) {
+                    return true;
+                }
 
-                    IContainer container = (IContainer) component;
-                    if (container instanceof IRootContainer) {
-                        IRootContainer rootContainer = (IRootContainer) container;
-                        if (rootContainer.getComponentCount() > 1) {
-                            // TODO[vova] implement
-                            putError(component, new ErrorInfo(
-                                component, null, UIDesignerBundle.message("error.multiple.toplevel.components"),
-                                HighlightDisplayLevel.ERROR,
-                                QuickFix.EMPTY_ARRAY
-                            ));
-                        }
-                    }
-                    else if (container.isXY() && container.getComponentCount() > 0) {
+                if (container instanceof IRootContainer rootContainer1) {
+                    if (rootContainer1.getComponentCount() > 1) {
                         // TODO[vova] implement
-                        putError(component, new ErrorInfo(
-                                component, null, UIDesignerBundle.message("error.panel.not.laid.out"),
+                        putError(
+                            component,
+                            new ErrorInfo(
+                                component,
+                                null,
+                                UIDesignerLocalize.errorMultipleToplevelComponents().get(),
                                 HighlightDisplayLevel.ERROR,
                                 QuickFix.EMPTY_ARRAY
                             )
                         );
                     }
-                    return true;
                 }
+                else if (container.isXY() && container.getComponentCount() > 0) {
+                    // TODO[vova] implement
+                    putError(
+                        component,
+                        new ErrorInfo(
+                            component,
+                            null,
+                            UIDesignerLocalize.errorPanelNotLaidOut().get(),
+                            HighlightDisplayLevel.ERROR,
+                            QuickFix.EMPTY_ARRAY
+                        )
+                    );
+                }
+                return true;
             }
         );
         if (progress != null) {
@@ -229,6 +240,7 @@ public final class ErrorAnalyzer {
                     FormEditingUtil.iterate(
                         rootContainer,
                         new FormEditingUtil.ComponentVisitor<RadComponent>() {
+                            @Override
                             public boolean visit(RadComponent component) {
                                 if (progress != null && progress.isCanceled()) {
                                     return false;
@@ -283,18 +295,22 @@ public final class ErrorAnalyzer {
             component.putClientProperty(
                 CLIENT_PROP_BINDING_ERROR,
                 new ErrorInfo(
-                    component, null, UIDesignerBundle.message("error.no.field.in.class", fieldName, psiClass.getQualifiedName()),
+                    component,
+                    null,
+                    UIDesignerLocalize.errorNoFieldInClass(fieldName, StringUtil.notNullize(psiClass.getQualifiedName())).get(),
                     HighlightDisplayLevel.ERROR,
                     fixes
                 )
             );
             return true;
         }
-        else if (field.hasModifierProperty(PsiModifier.STATIC)) {
+        else if (field.isStatic()) {
             component.putClientProperty(
                 CLIENT_PROP_BINDING_ERROR,
                 new ErrorInfo(
-                    component, null, UIDesignerBundle.message("error.cant.bind.to.static", fieldName),
+                    component,
+                    null,
+                    UIDesignerLocalize.errorCantBindToStatic(fieldName).get(),
                     HighlightDisplayLevel.ERROR,
                     QuickFix.EMPTY_ARRAY
                 )
@@ -317,7 +333,9 @@ public final class ErrorAnalyzer {
                 component.putClientProperty(
                     CLIENT_PROP_BINDING_ERROR,
                     new ErrorInfo(
-                        component, null, UIDesignerBundle.message("error.bind.incompatible.types", fieldType.getPresentableText(), className),
+                        component,
+                        null,
+                        UIDesignerLocalize.errorBindIncompatibleTypes(fieldType.getPresentableText(), className).get(),
                         HighlightDisplayLevel.ERROR,
                         fixes
                     )
@@ -325,7 +343,7 @@ public final class ErrorAnalyzer {
                 return true;
             }
         }
-        catch (IncorrectOperationException e) {
+        catch (IncorrectOperationException ignored) {
         }
 
         if (component.isCustomCreate() && FormEditingUtil.findCreateComponentsMethod(psiClass) == null) {
@@ -335,9 +353,12 @@ public final class ErrorAnalyzer {
             component.putClientProperty(
                 CLIENT_PROP_BINDING_ERROR,
                 new ErrorInfo(
-                    component, "Custom Create",
-                    UIDesignerBundle.message("error.no.custom.create.method"), HighlightDisplayLevel.ERROR,
-                    fixes));
+                    component,
+                    "Custom Create",
+                    UIDesignerLocalize.errorNoCustomCreateMethod().get(),
+                    HighlightDisplayLevel.ERROR,
+                    fixes
+                ));
             return true;
         }
         return false;

@@ -29,11 +29,12 @@ import jakarta.annotation.Nullable;
 import javax.swing.*;
 
 /**
- * This renderer is used both as PropertyRenderer and as cell renderer in the ComponentEditor
- * combo box.
+ * This renderer is used both as PropertyRenderer and as cell renderer in the ComponentEditor combo box.
+ *
  * @author yole
  */
 public class ComponentRenderer extends ColoredListCellRenderer implements PropertyRenderer<String> {
+  @Override
   public JComponent getComponent(RadRootContainer rootContainer, String value, boolean selected, boolean hasFocus) {
     clear();
     setBackground(selected ? UIUtil.getTableSelectionBackground() : UIUtil.getTableBackground());

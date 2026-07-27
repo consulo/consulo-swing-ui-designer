@@ -13,10 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.intellij.uiDesigner.impl.propertyInspector.properties;
 
-import com.intellij.uiDesigner.impl.UIDesignerBundle;
 import com.intellij.uiDesigner.impl.clientProperties.ClientPropertiesManager;
 import com.intellij.uiDesigner.impl.clientProperties.ConfigureClientPropertiesDialog;
 import com.intellij.uiDesigner.impl.propertyInspector.*;
@@ -27,16 +25,16 @@ import consulo.annotation.component.ServiceAPI;
 import consulo.annotation.component.ServiceImpl;
 import consulo.ide.ServiceManager;
 import consulo.project.Project;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.JBColor;
 import consulo.ui.ex.awt.DialogWrapper;
 import consulo.ui.ex.awt.TextFieldWithBrowseButton;
+import consulo.uiDesigner.impl.localize.UIDesignerLocalize;
+import jakarta.annotation.Nonnull;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 
-import jakarta.annotation.Nonnull;
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.List;
 
 /**
@@ -54,7 +52,7 @@ public class ClientPropertiesProperty extends ReadOnlyProperty
 		return ServiceManager.getService(project, ClientPropertiesProperty.class);
 	}
 
-	private final PropertyRenderer myRenderer = new LabelPropertyRenderer(UIDesignerBundle.message("client.properties.configure"));
+	private final PropertyRenderer myRenderer = new LabelPropertyRenderer(UIDesignerLocalize.clientPropertiesConfigure().get());
 
 	private final PropertyEditor myEditor = new MyPropertyEditor();
 
@@ -65,13 +63,15 @@ public class ClientPropertiesProperty extends ReadOnlyProperty
 		myProject = project;
 	}
 
-	@Nonnull
+    @Nonnull
+    @Override
 	public PropertyRenderer getRenderer()
 	{
 		return myRenderer;
 	}
 
-	public PropertyEditor getEditor()
+	@Override
+    public PropertyEditor getEditor()
 	{
 		return myEditor;
 	}
@@ -96,20 +96,15 @@ public class ClientPropertiesProperty extends ReadOnlyProperty
 
 		public MyPropertyEditor()
 		{
-			myTf.setText(UIDesignerBundle.message("client.properties.configure"));
+			myTf.setText(UIDesignerLocalize.clientPropertiesConfigure().get());
 			myTf.getTextField().setEditable(false);
 			myTf.getTextField().setBorder(null);
 			myTf.getTextField().setForeground(JBColor.foreground());
-			myTf.addActionListener(new ActionListener()
-			{
-				public void actionPerformed(ActionEvent e)
-				{
-					showClientPropertiesDialog();
-				}
-			});
+			myTf.addActionListener(e -> showClientPropertiesDialog());
 		}
 
-		private void showClientPropertiesDialog()
+		@RequiredUIAccess
+        private void showClientPropertiesDialog()
 		{
 			ConfigureClientPropertiesDialog dlg = new ConfigureClientPropertiesDialog(myProject);
 			dlg.show();
@@ -120,17 +115,20 @@ public class ClientPropertiesProperty extends ReadOnlyProperty
 			}
 		}
 
-		public Object getValue() throws Exception
+		@Override
+        public Object getValue() throws Exception
 		{
 			return null;
 		}
 
-		public JComponent getComponent(RadComponent component, Object value, InplaceContext inplaceContext)
+		@Override
+        public JComponent getComponent(RadComponent component, Object value, InplaceContext inplaceContext)
 		{
 			return myTf;
 		}
 
-		public void updateUI()
+		@Override
+        public void updateUI()
 		{
 			SwingUtilities.updateComponentTreeUI(myTf);
 		}

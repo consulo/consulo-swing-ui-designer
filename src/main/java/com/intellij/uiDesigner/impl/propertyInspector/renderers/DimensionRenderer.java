@@ -24,6 +24,7 @@ import jakarta.annotation.Nonnull;
  * @author Vladimir Kondratyev
  */
 public final class DimensionRenderer extends LabelPropertyRenderer<Dimension> {
+  @Override
   protected void customize(@Nonnull Dimension value) {
     setText("[" + value.width + ", " + value.height + "]");
   }

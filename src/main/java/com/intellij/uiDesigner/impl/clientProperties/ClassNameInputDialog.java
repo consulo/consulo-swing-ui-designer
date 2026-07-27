@@ -13,21 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.intellij.uiDesigner.impl.clientProperties;
 
 import com.intellij.java.language.impl.JavaFileType;
 import com.intellij.java.language.psi.JavaCodeFragmentFactory;
 import com.intellij.java.language.psi.JavaPsiFacade;
 import com.intellij.java.language.psi.PsiJavaPackage;
-import com.intellij.uiDesigner.impl.UIDesignerBundle;
 import consulo.language.editor.ui.awt.EditorTextField;
 import consulo.language.psi.PsiCodeFragment;
 import consulo.language.psi.PsiDocumentManager;
 import consulo.project.Project;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.awt.DialogWrapper;
-
+import consulo.uiDesigner.impl.localize.UIDesignerLocalize;
 import jakarta.annotation.Nullable;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -45,7 +45,7 @@ public class ClassNameInputDialog extends DialogWrapper
 		super(parent, false);
 		myProject = project;
 		init();
-		setTitle(UIDesignerBundle.message("client.properties.title"));
+		setTitle(UIDesignerLocalize.clientPropertiesTitle());
 	}
 
 	private void createUIComponents()
@@ -57,13 +57,15 @@ public class ClassNameInputDialog extends DialogWrapper
 		myEditorTextField1.setDocument(PsiDocumentManager.getInstance(myProject).getDocument(fragment));
 	}
 
-	@Override
+    @Override
+    @RequiredUIAccess
 	public JComponent getPreferredFocusedComponent()
 	{
 		return myEditorTextField1;
 	}
 
 	@Nullable
+    @Override
 	protected JComponent createCenterPanel()
 	{
 		return myRootPanel;

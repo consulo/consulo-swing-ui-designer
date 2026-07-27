@@ -19,6 +19,8 @@ import com.intellij.java.language.psi.PsiClass;
 import com.intellij.java.language.psi.PsiExpression;
 import com.intellij.java.language.psi.PsiField;
 import com.intellij.java.language.psi.PsiType;
+import consulo.annotation.access.RequiredReadAction;
+import consulo.annotation.access.RequiredWriteAction;
 import consulo.codeEditor.Editor;
 import consulo.language.editor.FileModificationService;
 import consulo.language.editor.annotation.Annotation;
@@ -32,11 +34,12 @@ import consulo.language.util.IncorrectOperationException;
 import consulo.localize.LocalizeValue;
 import consulo.logging.Logger;
 import consulo.project.Project;
-import consulo.ui.ex.localize.UILocalize;
 import consulo.uiDesigner.impl.localize.UIDesignerLocalize;
+import consulo.util.lang.StringUtil;
 import jakarta.annotation.Nonnull;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author yole
@@ -44,6 +47,8 @@ import java.util.List;
 public class FormClassAnnotator implements Annotator {
   private static final Logger LOG = Logger.getInstance(FormClassAnnotator.class);
 
+  @Override
+  @RequiredReadAction
   public void annotate(@Nonnull PsiElement psiElement, @Nonnull AnnotationHolder holder) {
     if (psiElement instanceof PsiField) {
       PsiField field = (PsiField) psiElement;
@@ -62,6 +67,7 @@ public class FormClassAnnotator implements Annotator {
     }
   }
 
+  @RequiredReadAction
   private static void annotateFormField(final PsiField field, PsiFile boundForm, AnnotationHolder holder) {
     Annotation boundFieldAnnotation = holder.createInfoAnnotation(field, null);
     boundFieldAnnotation.setGutterIconRenderer(new BoundIconRenderer(field));
@@ -71,42 +77,43 @@ public class FormClassAnnotator implements Annotator {
     if (guiComponentType != null) {
       PsiType fieldType = field.getType();
       if (!fieldType.isAssignableFrom(guiComponentType)) {
-        String message = UIDesignerLocalize.boundFieldTypeMismatch(guiComponentType.getCanonicalText(), fieldType.getCanonicalText()).get();
-        Annotation annotation = holder.createErrorAnnotation(field.getTypeElement(), message);
-        annotation.registerFix(new ChangeFormComponentTypeFix((PsiPlainTextFile)boundForm, field.getName(), field.getType()), null, null);
-        annotation.registerFix(new ChangeBoundFieldTypeFix(field, guiComponentType), null, null);
+        holder.newError(UIDesignerLocalize.boundFieldTypeMismatch(guiComponentType.getCanonicalText(), fieldType.getCanonicalText()))
+          .range(field.getTypeElement())
+          .withFix(new ChangeFormComponentTypeFix((PsiPlainTextFile)boundForm, field.getName(), field.getType()))
+          .withFix(new ChangeBoundFieldTypeFix(field, guiComponentType))
+          .create();
       }
     }
 
     if (field.hasInitializer()) {
-      final LocalizeValue message = UIDesignerLocalize.fieldIsOverwrittenByGeneratedCode(field.getName());
-      Annotation annotation = holder.createWarningAnnotation(field.getInitializer(), message.get());
-      annotation.registerFix(new IntentionAction() {
-        @Nonnull
-        public LocalizeValue getText() {
-          return message;
-        }
+      holder.newWarn(UIDesignerLocalize.fieldIsOverwrittenByGeneratedCode(StringUtil.notNullize(field.getName())))
+        .range(field.getInitializer())
+        .withFix(new IntentionAction() {
+          @Nonnull
+          @Override
+          public LocalizeValue getText() {
+            return UIDesignerLocalize.fieldIsOverwrittenByGeneratedCode(field.getName());
+          }
 
-        @Nonnull
-        public LocalizeValue getFamilyName() {
-          return UILocalize.removeFieldInitializerQuickFix();
-        }
+          @Override
+          public boolean isAvailable(@Nonnull Project project, Editor editor, PsiFile file) {
+            return field.getInitializer() != null;
+          }
 
-        public boolean isAvailable(@Nonnull Project project, Editor editor, PsiFile file) {
-          return field.getInitializer() != null;
-        }
+          @Override
+          @RequiredWriteAction
+          public void invoke(@Nonnull Project project, Editor editor, PsiFile file) throws IncorrectOperationException {
+            if (!FileModificationService.getInstance().preparePsiElementForWrite(field)) return;
+            PsiExpression initializer = Objects.requireNonNull(field.getInitializer());
+            initializer.delete();
+          }
 
-        public void invoke(@Nonnull Project project, Editor editor, PsiFile file) throws IncorrectOperationException {
-          if (!FileModificationService.getInstance().preparePsiElementForWrite(field)) return;
-          PsiExpression initializer = field.getInitializer();
-          LOG.assertTrue(initializer != null);
-          initializer.delete();
-        }
-
-        public boolean startInWriteAction() {
-          return true;
-        }
-      });
+          @Override
+          public boolean startInWriteAction() {
+            return true;
+          }
+        })
+        .create();
     }
   }
 }

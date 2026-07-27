@@ -19,7 +19,6 @@ import com.intellij.java.impl.codeInsight.generation.OverrideImplementUtil;
 import com.intellij.java.language.psi.*;
 import com.intellij.java.language.psi.codeStyle.JavaCodeStyleManager;
 import com.intellij.uiDesigner.impl.FormEditingUtil;
-import com.intellij.uiDesigner.impl.UIDesignerBundle;
 import com.intellij.uiDesigner.impl.designSurface.GuiEditor;
 import com.intellij.uiDesigner.impl.propertyInspector.properties.BindingProperty;
 import com.intellij.uiDesigner.impl.radComponents.RadComponent;
@@ -48,7 +47,7 @@ import consulo.ui.ex.popup.JBPopupFactory;
 import consulo.ui.ex.popup.ListPopup;
 import consulo.uiDesigner.impl.localize.UIDesignerLocalize;
 import consulo.undoRedo.CommandProcessor;
-import consulo.util.lang.ref.Ref;
+import consulo.util.lang.ref.SimpleReference;
 import jakarta.annotation.Nonnull;
 
 import javax.swing.*;
@@ -150,7 +149,7 @@ public class CreateListenerAction extends AbstractGuiEditorAction {
       for (int i = 0; i < mySelection.size(); i++) {
         boundFields[i] = BindingProperty.findBoundField(root, mySelection.get(i).getBinding());
       }
-      final PsiClass myClass = boundFields[0].getContainingClass();
+      PsiClass myClass = boundFields[0].getContainingClass();
 
       if (!FileModificationService.getInstance().preparePsiElementForWrite(myClass)) return;
 
@@ -225,7 +224,7 @@ public class CreateListenerAction extends AbstractGuiEditorAction {
           }
         }
 
-        final Ref<PsiClass> newClassRef = new Ref<>();
+        final SimpleReference<PsiClass> newClassRef = new SimpleReference<>();
         stmt.accept(new JavaRecursiveElementWalkingVisitor() {
           @Override
           public void visitClass(PsiClass aClass) {
@@ -233,24 +232,22 @@ public class CreateListenerAction extends AbstractGuiEditorAction {
           }
         });
         PsiClass newClass = newClassRef.get();
-        final SmartPsiElementPointer ptr = SmartPointerManager.getInstance(myClass.getProject()).createSmartPsiElementPointer(newClass);
+        SmartPsiElementPointer ptr = SmartPointerManager.getInstance(myClass.getProject()).createSmartPsiElementPointer(newClass);
         newClass.navigate(true);
-        IdeFocusManager.findInstance().doWhenFocusSettlesDown(new Runnable() {
-          public void run() {
-            PsiClass newClass = (PsiClass)ptr.getElement();
-            Editor editor = DataManager.getInstance().getDataContext().getData(PlatformDataKeys.EDITOR);
-            if (editor != null && newClass != null) {
-              CommandProcessor.getInstance().newCommand()
-                .project(myClass.getProject())
-                .run(() -> {
-                  if (!OverrideImplementUtil.getMethodSignaturesToImplement(newClass).isEmpty()) {
-                    OverrideImplementUtil.chooseAndImplementMethods(newClass.getProject(), editor, newClass);
-                  }
-                  else {
-                    OverrideImplementUtil.chooseAndOverrideMethods(newClass.getProject(), editor, newClass);
-                  }
-                });
-            }
+        IdeFocusManager.findInstance().doWhenFocusSettlesDown(() -> {
+          PsiClass newClass1 = (PsiClass)ptr.getElement();
+          Editor editor = DataManager.getInstance().getDataContext().getData(PlatformDataKeys.EDITOR);
+          if (editor != null && newClass1 != null) {
+            CommandProcessor.getInstance().newCommand()
+              .project(myClass.getProject())
+              .run(() -> {
+                if (!OverrideImplementUtil.getMethodSignaturesToImplement(newClass1).isEmpty()) {
+                  OverrideImplementUtil.chooseAndImplementMethods(newClass1.getProject(), editor, newClass1);
+                }
+                else {
+                  OverrideImplementUtil.chooseAndOverrideMethods(newClass1.getProject(), editor, newClass1);
+                }
+              });
           }
         });
       }

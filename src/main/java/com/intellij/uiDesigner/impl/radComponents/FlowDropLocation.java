@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.intellij.uiDesigner.impl.radComponents;
 
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -77,17 +76,20 @@ public class FlowDropLocation implements ComponentDropLocation
 		}
 	}
 
-	public RadContainer getContainer()
+	@Override
+    public RadContainer getContainer()
 	{
 		return myContainer;
 	}
 
-	public boolean canDrop(ComponentDragObject dragObject)
+	@Override
+    public boolean canDrop(ComponentDragObject dragObject)
 	{
 		return true;
 	}
 
-	public void placeFeedback(FeedbackLayer feedbackLayer, ComponentDragObject dragObject)
+	@Override
+    public void placeFeedback(FeedbackLayer feedbackLayer, ComponentDragObject dragObject)
 	{
 		if(myContainer.getComponentCount() == 0)
 		{
@@ -166,10 +168,11 @@ public class FlowDropLocation implements ComponentDropLocation
 		return myAlignment == FlowLayout.RIGHT || myAlignment == FlowLayout.TRAILING;
 	}
 
-	public void processDrop(GuiEditor editor,
-							RadComponent[] components,
-							GridConstraints[] constraintsToAdjust,
-							ComponentDragObject dragObject)
+	@Override
+    public void processDrop(GuiEditor editor,
+                            RadComponent[] components,
+                            GridConstraints[] constraintsToAdjust,
+                            ComponentDragObject dragObject)
 	{
 		for(int i = 0; i < myContainer.getComponentCount(); i++)
 		{
@@ -191,6 +194,7 @@ public class FlowDropLocation implements ComponentDropLocation
 	}
 
 	@Nullable
+    @Override
 	public ComponentDropLocation getAdjacentLocation(Direction direction)
 	{
 		return null;
