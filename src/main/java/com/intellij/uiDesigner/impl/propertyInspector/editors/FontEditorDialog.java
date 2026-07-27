@@ -116,7 +116,7 @@ public class FontEditorDialog extends DialogWrapper {
       result.append(" ").append(UIDesignerLocalize.fontChooserBold().get());
     }
     if ((font.getStyle() & Font.ITALIC) != 0) {
-      result.append(" ").append(UIDesignerLocalize.fontChooserBold().get());
+      result.append(" ").append(UIDesignerLocalize.fontChooserItalic().get());
     }
     return result.toString();
   }

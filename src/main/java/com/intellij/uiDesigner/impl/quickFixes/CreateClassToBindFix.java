@@ -107,7 +107,7 @@ public final class CreateClassToBindFix extends QuickFix {
                 catch (IncorrectOperationException e) {
                     Application.get().invokeLater(() -> Messages.showErrorDialog(
                         myEditor,
-                        UIDesignerLocalize.errorCannotCreateClass(packageName, e.getMessage()).get(),
+                        UIDesignerLocalize.errorCannotCreateClass(myClassName, e.getMessage()).get(),
                         CommonLocalize.titleError().get()
                     ));
                 }

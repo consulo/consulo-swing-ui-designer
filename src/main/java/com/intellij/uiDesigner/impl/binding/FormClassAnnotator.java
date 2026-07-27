@@ -34,8 +34,8 @@ import consulo.language.util.IncorrectOperationException;
 import consulo.localize.LocalizeValue;
 import consulo.logging.Logger;
 import consulo.project.Project;
-import consulo.ui.ex.localize.UILocalize;
 import consulo.uiDesigner.impl.localize.UIDesignerLocalize;
+import consulo.util.lang.StringUtil;
 import jakarta.annotation.Nonnull;
 
 import java.util.List;
@@ -86,7 +86,7 @@ public class FormClassAnnotator implements Annotator {
     }
 
     if (field.hasInitializer()) {
-      holder.newWarn(UIDesignerLocalize.fieldIsOverwrittenByGeneratedCode(field.getName()))
+      holder.newWarn(UIDesignerLocalize.fieldIsOverwrittenByGeneratedCode(StringUtil.notNullize(field.getName())))
         .range(field.getInitializer())
         .withFix(new IntentionAction() {
           @Nonnull
