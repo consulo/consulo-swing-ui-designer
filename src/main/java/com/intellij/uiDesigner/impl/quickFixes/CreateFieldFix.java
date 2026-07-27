@@ -18,21 +18,23 @@ package com.intellij.uiDesigner.impl.quickFixes;
 import com.intellij.java.language.psi.*;
 import com.intellij.uiDesigner.impl.FormEditingUtil;
 import com.intellij.uiDesigner.impl.GuiDesignerConfiguration;
-import com.intellij.uiDesigner.impl.UIDesignerBundle;
 import com.intellij.uiDesigner.impl.designSurface.GuiEditor;
-import com.intellij.uiDesigner.lw.IContainer;
 import com.intellij.uiDesigner.impl.radComponents.RadContainer;
-import consulo.application.ApplicationManager;
-import consulo.application.CommonBundle;
+import com.intellij.uiDesigner.lw.IContainer;
+import consulo.annotation.access.RequiredWriteAction;
+import consulo.application.Application;
 import consulo.language.editor.refactoring.util.CommonRefactoringUtil;
 import consulo.language.psi.PsiDocumentManager;
 import consulo.language.psi.scope.GlobalSearchScope;
 import consulo.language.util.IncorrectOperationException;
 import consulo.logging.Logger;
+import consulo.platform.base.localize.CommonLocalize;
 import consulo.project.Project;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.awt.Messages;
+import consulo.uiDesigner.impl.localize.UIDesignerLocalize;
 import consulo.undoRedo.CommandProcessor;
-
+import consulo.undoRedo.builder.RunnableCommandBuilder;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 
@@ -53,7 +55,7 @@ public final class CreateFieldFix extends QuickFix{
     @Nonnull String fieldClass,
     @Nonnull String fieldName
   ) {
-    super(editor, UIDesignerBundle.message("action.create.field", fieldName), null);
+    super(editor, UIDesignerLocalize.actionCreateField(fieldName).get(), null);
     myClass = aClass;
     myFieldClassName = fieldClass;
     myFieldName = fieldName;
@@ -63,14 +65,17 @@ public final class CreateFieldFix extends QuickFix{
    * @param showErrors if <code>true</code> the error messages will be shown to the
    * @param undoGroupId the group used to undo the action together with some other action.
    */
-  public static void runImpl(@Nonnull final Project project,
-                             @Nonnull final RadContainer rootContainer,
-                             @Nonnull final PsiClass boundClass,
-                             @Nonnull String fieldClassName,
-                             @Nonnull final String fieldName,
-                             final boolean showErrors,
-                             @Nullable Object undoGroupId) {
-    ApplicationManager.getApplication().assertReadAccessAllowed();
+  @RequiredUIAccess
+  public static void runImpl(
+    @Nonnull Project project,
+    @Nonnull RadContainer rootContainer,
+    @Nonnull PsiClass boundClass,
+    @Nonnull String fieldClassName,
+    @Nonnull String fieldName,
+    boolean showErrors,
+    @Nullable Object undoGroupId
+  ) {
+    Application.get().assertReadAccessAllowed();
 
     PsiDocumentManager.getInstance(project).commitAllDocuments();
 
@@ -81,50 +86,48 @@ public final class CreateFieldFix extends QuickFix{
 
     if(!boundClass.isWritable()){
       if(showErrors) {
-        if (!CommonRefactoringUtil.checkReadOnlyStatus(boundClass, project,
-                                                       UIDesignerBundle.message("error.cannot.create.field", fieldClassName))) {
+        if (!CommonRefactoringUtil.checkReadOnlyStatus(
+            boundClass,
+            project,
+            UIDesignerLocalize.errorCannotCreateField(fieldClassName)
+        )) {
           return;
         }
       } else return;
     }
 
-    final PsiClass fieldClass = JavaPsiFacade.getInstance(project)
+    PsiClass fieldClass = JavaPsiFacade.getInstance(project)
       .findClass(fieldClassName.replace('$', '.'), GlobalSearchScope.moduleWithDependenciesAndLibrariesScope(rootContainer.getModule()));
     if(fieldClass == null){
       if(showErrors){
         Messages.showErrorDialog(
           project,
-          UIDesignerBundle.message("error.cannot.create.field.no.class", fieldName, fieldClassName),
-          CommonBundle.getErrorTitle()
+          UIDesignerLocalize.errorCannotCreateFieldNoClass(fieldName, fieldClassName).get(),
+          CommonLocalize.titleError().get()
         );
       }
       return;
     }
 
-    CommandProcessor.getInstance().executeCommand(
-      project,
-      new Runnable() {
-        public void run() {
-          ApplicationManager.getApplication().runWriteAction(
-            new Runnable() {
-              public void run() {
-                createField(project, fieldClass, fieldName, boundClass, showErrors, rootContainer);
-              }
-            }
-          );
-        }
-      },
-      UIDesignerBundle.message("command.create.field"),
-      undoGroupId
-    );
+    RunnableCommandBuilder<?, ?> builder = CommandProcessor.getInstance().newCommand()
+      .project(project);
+    if (undoGroupId != null) {
+        builder = builder.groupId(undoGroupId);
+    }
+    builder.name(UIDesignerLocalize.commandCreateField())
+      .inWriteAction()
+      .run(() -> createField(project, fieldClass, fieldName, boundClass, showErrors, rootContainer));
   }
 
-  private static void createField(final Project project,
-                                  PsiClass fieldClass,
-                                  final String fieldName,
-                                  PsiClass boundClass,
-                                  boolean showErrors,
-                                  IContainer rootContainer) {
+  @RequiredWriteAction
+  private static void createField(
+    Project project,
+    PsiClass fieldClass,
+    String fieldName,
+    PsiClass boundClass,
+    boolean showErrors,
+    IContainer rootContainer
+  ) {
     // 1. Create field
     PsiElementFactory factory = JavaPsiFacade.getInstance(project).getElementFactory();
     PsiType type = factory.createType(fieldClass);
@@ -150,23 +153,19 @@ public final class CreateFieldFix extends QuickFix{
         boundClass.add(field);
       }
     }
-    catch (final IncorrectOperationException exc) {
+    catch (IncorrectOperationException exc) {
       if (showErrors) {
-        ApplicationManager.getApplication().invokeLater(
-          new Runnable() {
-            public void run() {
-              Messages.showErrorDialog(
-                project,
-                UIDesignerBundle.message("error.cannot.create.field.reason", fieldName, exc.getMessage()),
-                CommonBundle.getErrorTitle()
-              );
-            }
-          }
-        );
+        Application.get().invokeLater(() -> Messages.showErrorDialog(
+          project,
+          UIDesignerLocalize.errorCannotCreateFieldReason(fieldName, exc.getMessage()).get(),
+          CommonLocalize.titleError().get()
+        ));
       }
     }
   }
 
+  @Override
+  @RequiredUIAccess
   public void run() {
     runImpl(myEditor.getProject(), myEditor.getRootContainer(), myClass, myFieldClassName, myFieldName, true, null);
   }

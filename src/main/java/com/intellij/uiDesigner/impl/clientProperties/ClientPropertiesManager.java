@@ -87,8 +87,8 @@ public class ClientPropertiesManager implements PersistentStateComponent<Element
 		myPropertyMap.putAll(propertyMap);
 	}
 
-	@SuppressWarnings("MethodDoesntCallSuperMethod")
 	@Override
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
 	public ClientPropertiesManager clone()
 	{
 		return new ClientPropertiesManager(myPropertyMap);
@@ -128,7 +128,8 @@ public class ClientPropertiesManager implements PersistentStateComponent<Element
 			return myName.compareTo(prop.getName());
 		}
 
-		public boolean equals(Object o)
+		@Override
+        public boolean equals(@Nullable Object o)
 		{
 			if(this == o)
 			{
@@ -141,19 +142,12 @@ public class ClientPropertiesManager implements PersistentStateComponent<Element
 
 			ClientProperty that = (ClientProperty) o;
 
-			if(!myClass.equals(that.myClass))
-			{
-				return false;
-			}
-			if(!myName.equals(that.myName))
-			{
-				return false;
-			}
+            return myClass.equals(that.myClass)
+                && myName.equals(that.myName);
+        }
 
-			return true;
-		}
-
-		public int hashCode()
+		@Override
+        public int hashCode()
 		{
 			int result;
 			result = myName.hashCode();

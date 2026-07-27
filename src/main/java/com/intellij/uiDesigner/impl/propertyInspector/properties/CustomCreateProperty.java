@@ -20,7 +20,6 @@ import com.intellij.java.language.psi.*;
 import com.intellij.uiDesigner.compiler.AsmCodeGenerator;
 import com.intellij.uiDesigner.compiler.Utils;
 import com.intellij.uiDesigner.impl.FormEditingUtil;
-import com.intellij.uiDesigner.impl.UIDesignerBundle;
 import com.intellij.uiDesigner.impl.propertyInspector.InplaceContext;
 import com.intellij.uiDesigner.impl.propertyInspector.Property;
 import com.intellij.uiDesigner.impl.propertyInspector.PropertyEditor;
@@ -32,7 +31,6 @@ import com.intellij.uiDesigner.lw.IRootContainer;
 import consulo.annotation.component.ComponentScope;
 import consulo.annotation.component.ServiceAPI;
 import consulo.annotation.component.ServiceImpl;
-import consulo.application.ApplicationManager;
 import consulo.ide.ServiceManager;
 import consulo.language.codeStyle.CodeStyleManager;
 import consulo.language.editor.FileModificationService;
@@ -45,13 +43,16 @@ import consulo.language.util.IncorrectOperationException;
 import consulo.logging.Logger;
 import consulo.navigation.OpenFileDescriptorFactory;
 import consulo.project.Project;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.awt.Messages;
+import consulo.ui.ex.awt.UIUtil;
+import consulo.uiDesigner.impl.localize.UIDesignerLocalize;
 import consulo.undoRedo.CommandProcessor;
-import consulo.util.lang.ref.Ref;
+import consulo.util.lang.ref.SimpleReference;
 import consulo.virtualFileSystem.VirtualFile;
+import jakarta.annotation.Nonnull;
 import jakarta.inject.Singleton;
 
-import jakarta.annotation.Nonnull;
 import javax.swing.*;
 import java.util.List;
 
@@ -97,18 +98,21 @@ public class CustomCreateProperty extends Property<RadComponent, Boolean>
 		super(null, "Custom Create");
 	}
 
-	public Boolean getValue(RadComponent component)
+	@Override
+    public Boolean getValue(RadComponent component)
 	{
 		return component.isCustomCreate();
 	}
 
 	@Nonnull
+    @Override
 	public PropertyRenderer<Boolean> getRenderer()
 	{
 		return myRenderer;
 	}
 
-	public PropertyEditor<Boolean> getEditor()
+	@Override
+    public PropertyEditor<Boolean> getEditor()
 	{
 		return myEditor;
 	}
@@ -130,16 +134,21 @@ public class CustomCreateProperty extends Property<RadComponent, Boolean>
 		return true;
 	}
 
-	protected void setValueImpl(RadComponent component, Boolean value) throws Exception
+	@Override
+    @RequiredUIAccess
+    protected void setValueImpl(RadComponent component, Boolean value) throws Exception
 	{
-		if(value.booleanValue() && component.getBinding() == null)
+		if(value && component.getBinding() == null)
 		{
 			String initialBinding = BindingProperty.getDefaultBinding(component);
-			String binding = Messages.showInputDialog(
-					component.getProject(),
-					UIDesignerBundle.message("custom.create.field.name.prompt"),
-					UIDesignerBundle.message("custom.create.title"), Messages.getQuestionIcon(),
-					initialBinding, new IdentifierValidator(component.getProject()));
+            String binding = Messages.showInputDialog(
+				component.getProject(),
+                UIDesignerLocalize.customCreateFieldNamePrompt().get(),
+                UIDesignerLocalize.customCreateTitle().get(),
+                UIUtil.getQuestionIcon(),
+				initialBinding,
+                new IdentifierValidator(component.getProject())
+            );
 			if(binding == null)
 			{
 				return;
@@ -153,8 +162,8 @@ public class CustomCreateProperty extends Property<RadComponent, Boolean>
 				LOG.error(e1);
 			}
 		}
-		component.setCustomCreate(value.booleanValue());
-		if(value.booleanValue())
+		component.setCustomCreate(value);
+		if(value)
 		{
 			IRootContainer root = FormEditingUtil.getRoot(component);
 			if(root.getClassToBind() != null && Utils.getCustomCreateComponentCount(root) == 1)
@@ -168,14 +177,14 @@ public class CustomCreateProperty extends Property<RadComponent, Boolean>
 		}
 	}
 
-	public static void generateCreateComponentsMethod(final PsiClass aClass)
+	public static void generateCreateComponentsMethod(PsiClass aClass)
 	{
 		PsiFile psiFile = aClass.getContainingFile();
 		if(psiFile == null)
 		{
 			return;
 		}
-		final VirtualFile vFile = psiFile.getVirtualFile();
+		VirtualFile vFile = psiFile.getVirtualFile();
 		if(vFile == null)
 		{
 			return;
@@ -185,57 +194,45 @@ public class CustomCreateProperty extends Property<RadComponent, Boolean>
 			return;
 		}
 
-		final Ref<SmartPsiElementPointer> refMethod = new Ref<>();
-		CommandProcessor.getInstance().executeCommand(
-				aClass.getProject(),
-				new Runnable()
-				{
-					public void run()
-					{
-						ApplicationManager.getApplication().runWriteAction(new Runnable()
-						{
-							public void run()
-							{
-								PsiElementFactory factory = JavaPsiFacade.getInstance(aClass.getProject()).getElementFactory();
-								try
-								{
-									PsiMethod method = factory.createMethodFromText("private void " +
-											AsmCodeGenerator.CREATE_COMPONENTS_METHOD_NAME +
-											"() { \n // TODO: place custom component creation code here \n }", aClass);
-									PsiMethod psiMethod = (PsiMethod) aClass.add(method);
-									refMethod.set(SmartPointerManager.getInstance(aClass.getProject()).createSmartPsiElementPointer(psiMethod));
-									CodeStyleManager.getInstance(aClass.getProject()).reformat(psiMethod);
-								}
-								catch(IncorrectOperationException e)
-								{
-									LOG.error(e);
-								}
-							}
-						});
-					}
-				}, null, null
-		);
+		SimpleReference<SmartPsiElementPointer> refMethod = new SimpleReference<>();
+        CommandProcessor.getInstance().newCommand()
+            .project(aClass.getProject())
+            .inWriteAction()
+            .run(() -> {
+                PsiElementFactory factory = JavaPsiFacade.getInstance(aClass.getProject()).getElementFactory();
+                try
+                {
+                    PsiMethod method = factory.createMethodFromText(
+                        "private void " + AsmCodeGenerator.CREATE_COMPONENTS_METHOD_NAME + "() { \n" +
+                            " // TODO: place custom component creation code here \n" +
+                            " }",
+                        aClass
+                    );
+                    PsiMethod psiMethod = (PsiMethod) aClass.add(method);
+                    refMethod.set(SmartPointerManager.getInstance(aClass.getProject()).createSmartPsiElementPointer(psiMethod));
+                    CodeStyleManager.getInstance(aClass.getProject()).reformat(psiMethod);
+                }
+                catch(IncorrectOperationException e)
+                {
+                    LOG.error(e);
+                }
+            });
 
-		if(!refMethod.isNull())
+        if(!refMethod.isNull())
 		{
-			SwingUtilities.invokeLater(new Runnable()
-			{
-				public void run()
-				{
-					PsiMethod element = (PsiMethod) refMethod.get().getElement();
-					if(element != null)
-					{
-						PsiCodeBlock body = element.getBody();
-						assert body != null;
-						PsiComment comment = PsiTreeUtil.getChildOfType(body, PsiComment.class);
-						if(comment != null)
-						{
-							OpenFileDescriptorFactory.getInstance(comment.getProject()).builder(vFile).offset(comment.getTextOffset()).build().navigate(true);
-						}
-					}
-				}
-			});
+			SwingUtilities.invokeLater(() -> {
+                PsiMethod element = (PsiMethod) refMethod.get().getElement();
+                if(element != null)
+                {
+                    PsiCodeBlock body = element.getBody();
+                    assert body != null;
+                    PsiComment comment = PsiTreeUtil.getChildOfType(body, PsiComment.class);
+                    if(comment != null)
+                    {
+                        OpenFileDescriptorFactory.getInstance(comment.getProject()).builder(vFile).offset(comment.getTextOffset()).build().navigate(true);
+                    }
+                }
+            });
 		}
 	}
-
 }

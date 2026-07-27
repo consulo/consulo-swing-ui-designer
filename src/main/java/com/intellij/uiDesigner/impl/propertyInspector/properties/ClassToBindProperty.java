@@ -20,11 +20,9 @@ import com.intellij.java.language.psi.JavaCodeFragmentFactory;
 import com.intellij.java.language.psi.JavaPsiFacade;
 import com.intellij.java.language.psi.PsiClass;
 import com.intellij.java.language.psi.PsiJavaPackage;
-import com.intellij.java.language.util.ClassFilter;
 import com.intellij.java.language.util.TreeClassChooser;
 import com.intellij.java.language.util.TreeClassChooserFactory;
 import com.intellij.uiDesigner.impl.FormEditingUtil;
-import com.intellij.uiDesigner.impl.UIDesignerBundle;
 import com.intellij.uiDesigner.impl.propertyInspector.InplaceContext;
 import com.intellij.uiDesigner.impl.propertyInspector.Property;
 import com.intellij.uiDesigner.impl.propertyInspector.PropertyEditor;
@@ -40,13 +38,15 @@ import consulo.language.psi.scope.GlobalSearchScope;
 import consulo.module.content.ProjectFileIndex;
 import consulo.module.content.ProjectRootManager;
 import consulo.project.Project;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.action.AnAction;
 import consulo.ui.ex.action.AnActionEvent;
 import consulo.ui.ex.action.CommonShortcuts;
 import consulo.ui.ex.awt.ComponentWithBrowseButton;
+import consulo.uiDesigner.impl.localize.UIDesignerLocalize;
 import consulo.virtualFileSystem.VirtualFile;
-
 import jakarta.annotation.Nonnull;
+
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -65,19 +65,23 @@ public final class ClassToBindProperty extends Property<RadRootContainer, String
     myEditor = new MyEditor(project);
   }
 
+  @Override
   public PropertyEditor<String> getEditor(){
     return myEditor;
   }
 
   @Nonnull
+  @Override
   public PropertyRenderer<String> getRenderer(){
     return myRenderer;
   }
 
+  @Override
   public String getValue(RadRootContainer component) {
     return component.getClassToBind();
   }
 
+  @Override
   protected void setValueImpl(RadRootContainer component, String value) throws Exception {
     String className = value;
 
@@ -99,6 +103,7 @@ public final class ClassToBindProperty extends Property<RadRootContainer, String
     public MyEditor(final Project project) {
       myProject = project;
       myEditorTextField = new EditorTextField("", project, JavaFileType.INSTANCE) {
+        @Override
         protected boolean shouldHaveBorder() {
           return false;
         }
@@ -118,6 +123,7 @@ public final class ClassToBindProperty extends Property<RadRootContainer, String
       */
     }
 
+    @Override
     public String getValue() throws Exception {
       String value = myDocument.getText();
       if (value.length() == 0 && myInitialValue == null) {
@@ -126,6 +132,7 @@ public final class ClassToBindProperty extends Property<RadRootContainer, String
       return value.replace('$', '.'); // PSI works only with dots
     }
 
+    @Override
     public JComponent getComponent(RadComponent component, String value, InplaceContext inplaceContext) {
       myInitialValue = value;
       setEditorText(value != null ? value : "");
@@ -141,6 +148,7 @@ public final class ClassToBindProperty extends Property<RadRootContainer, String
       myEditorTextField.setDocument(myDocument);
     }
 
+    @Override
     public void updateUI() {
       SwingUtilities.updateComponentTreeUI(myTfWithButton);
     }
@@ -152,20 +160,20 @@ public final class ClassToBindProperty extends Property<RadRootContainer, String
         myComponent = component;
       }
 
+      @Override
+      @RequiredUIAccess
       public void actionPerformed(ActionEvent e){
         String className = myEditorTextField.getText();
         PsiClass aClass = FormEditingUtil.findClassToBind(myComponent.getModule(), className);
 
         Project project = myComponent.getProject();
-        final ProjectFileIndex fileIndex = ProjectRootManager.getInstance(project).getFileIndex();
+        ProjectFileIndex fileIndex = ProjectRootManager.getInstance(project).getFileIndex();
         TreeClassChooser chooser = TreeClassChooserFactory.getInstance(project).createWithInnerClassesScopeChooser(
-          UIDesignerBundle.message("title.choose.class.to.bind"),
+          UIDesignerLocalize.titleChooseClassToBind().get(),
           GlobalSearchScope.projectScope(project),
-          new ClassFilter() { // we need show classes from the sources roots only
-            public boolean isAccepted(PsiClass aClass) {
-              VirtualFile vFile = aClass.getContainingFile().getVirtualFile();
-              return vFile != null && fileIndex.isInSource(vFile);
-            }
+          thisClass -> { // we need show classes from the sources roots only
+            VirtualFile vFile = thisClass.getContainingFile().getVirtualFile();
+            return vFile != null && fileIndex.isInSource(vFile);
           },
           aClass
         );
@@ -182,6 +190,8 @@ public final class ClassToBindProperty extends Property<RadRootContainer, String
 
     private final class MyCancelEditingAction extends AnAction
 	{
+      @Override
+      @RequiredUIAccess
       public void actionPerformed(AnActionEvent e) {
         fireEditingCancelled();
       }

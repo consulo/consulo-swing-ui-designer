@@ -25,10 +25,9 @@ import jakarta.annotation.Nonnull;
  * @author yole
  */
 @ExtensionImpl
-public class FormFileTypeFactory extends FileTypeFactory
-{
-	public void createFileTypes(@Nonnull FileTypeConsumer consumer)
-	{
-		consumer.consume(GuiFormFileType.INSTANCE);
-	}
+public class FormFileTypeFactory extends FileTypeFactory {
+    @Override
+    public void createFileTypes(@Nonnull FileTypeConsumer consumer) {
+        consumer.consume(GuiFormFileType.INSTANCE);
+    }
 }

@@ -13,20 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.intellij.uiDesigner.impl.make;
 
 import com.intellij.uiDesigner.compiler.FormLayoutCodeGenerator;
-import com.intellij.uiDesigner.compiler.Utils;
 import com.intellij.uiDesigner.compiler.FormLayoutUtils;
+import com.intellij.uiDesigner.compiler.Utils;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.lw.LwComponent;
 import com.intellij.uiDesigner.lw.LwContainer;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-import org.jetbrains.annotations.NonNls;
 
-import java.awt.Insets;
+import java.awt.*;
 
 /**
  * @author yole
@@ -51,12 +49,12 @@ public class FormLayoutSourceGenerator extends LayoutSourceGenerator {
   }
 
   private static void generateGroups(FormSourceCodeGenerator generator, String variable,
-                                     @NonNls String methodName, int[][] groups) {
+                                     String methodName, int[][] groups) {
     if (groups.length == 0) return;
     generator.startMethodCall("((com.jgoodies.forms.layout.FormLayout) " + variable + ".getLayout())",
                               methodName);
 
-    @NonNls StringBuilder groupBuilder = new StringBuilder("new int[][] {");
+    StringBuilder groupBuilder = new StringBuilder("new int[][] {");
     for(int i=0; i<groups.length; i++) {
       if (i > 0) groupBuilder.append(", ");
       groupBuilder.append("new int[] { ");
@@ -72,6 +70,7 @@ public class FormLayoutSourceGenerator extends LayoutSourceGenerator {
     generator.endMethod();
   }
 
+  @Override
   public void generateComponentLayout(LwComponent component, FormSourceCodeGenerator generator, String variable, String parentVariable) {
     if (!myHaveCc) {
       generator.append("com.jgoodies.forms.layout.CellConstraints cc = new com.jgoodies.forms.layout.CellConstraints();\n");
@@ -107,10 +106,10 @@ public class FormLayoutSourceGenerator extends LayoutSourceGenerator {
     }
 
     if (cc.hAlign != CellConstraints.DEFAULT || cc.vAlign != CellConstraints.DEFAULT || haveInsets) {
-      @NonNls String hAlign = (cc.hAlign == CellConstraints.DEFAULT)
+      String hAlign = (cc.hAlign == CellConstraints.DEFAULT)
                               ? "DEFAULT"
                               : FormLayoutCodeGenerator.HORZ_ALIGN_FIELDS [Utils.alignFromConstraints(constraints, true)];
-      @NonNls String vAlign = (cc.vAlign == CellConstraints.DEFAULT)
+      String vAlign = (cc.vAlign == CellConstraints.DEFAULT)
                               ? "DEFAULT"
                               : FormLayoutCodeGenerator.VERT_ALIGN_FIELDS [Utils.alignFromConstraints(constraints, false)];
       generator.pushVar("com.jgoodies.forms.layout.CellConstraints." + hAlign);

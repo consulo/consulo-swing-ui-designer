@@ -33,10 +33,12 @@ public class EnumEditor extends PropertyEditor<Enum> {
     myCbx.setBorder(BorderFactory.createEmptyBorder());
   }
 
+  @Override
   public Enum getValue() throws Exception {
     return (Enum) myCbx.getSelectedItem();
   }
 
+  @Override
   public JComponent getComponent(RadComponent component, Enum value, InplaceContext inplaceContext) {
     if (value == null) {
       return myCbx;
@@ -51,6 +53,7 @@ public class EnumEditor extends PropertyEditor<Enum> {
     throw new IllegalArgumentException("unknown value: " + value);
   }
 
+  @Override
   public void updateUI() {
     SwingUtilities.updateComponentTreeUI(myCbx);
     SwingUtilities.updateComponentTreeUI((JComponent)myCbx.getRenderer());

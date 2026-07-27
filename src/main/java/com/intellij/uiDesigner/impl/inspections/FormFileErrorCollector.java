@@ -15,17 +15,16 @@
  */
 package com.intellij.uiDesigner.impl.inspections;
 
-import consulo.language.editor.inspection.LocalQuickFix;
-import consulo.language.editor.inspection.ProblemDescriptor;
-import consulo.language.editor.inspection.ProblemDescriptorBase;
-import consulo.language.psi.PsiFile;
+import com.intellij.uiDesigner.impl.make.FormElementNavigatable;
 import com.intellij.uiDesigner.lw.IComponent;
 import com.intellij.uiDesigner.lw.IProperty;
-import com.intellij.uiDesigner.impl.make.FormElementNavigatable;
-import consulo.language.editor.inspection.ProblemHighlightType;
+import consulo.annotation.access.RequiredReadAction;
+import consulo.language.editor.inspection.ProblemDescriptor;
+import consulo.language.editor.inspection.ProblemDescriptorBase;
 import consulo.language.editor.inspection.scheme.InspectionManager;
+import consulo.language.psi.PsiFile;
+import consulo.localize.LocalizeValue;
 import consulo.util.jdom.JDOMUtil;
-
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 
@@ -47,15 +46,17 @@ public class FormFileErrorCollector extends FormErrorCollector {
     myOnTheFly = onTheFly;
   }
 
+  @Override
+  @RequiredReadAction
   public void addError(String inspectionId, IComponent component, @Nullable IProperty prop,
                        @Nonnull String errorMessage,
                        EditorQuickFixProvider... editorQuickFixProviders) {
-    ProblemDescriptor problemDescriptor = myManager.createProblemDescriptor(myFile, JDOMUtil.escapeText(errorMessage),
-                                                                                  (LocalQuickFix)null,
-                                                                                  ProblemHighlightType.GENERIC_ERROR_OR_WARNING, myOnTheFly);
+    ProblemDescriptor problemDescriptor = myManager.newProblemDescriptor(LocalizeValue.of(JDOMUtil.escapeText(errorMessage)))
+      .range(myFile)
+      .onTheFly(myOnTheFly)
+      .create();
     if (problemDescriptor instanceof ProblemDescriptorBase && component != null) {
-      FormElementNavigatable navigatable = new FormElementNavigatable(myFile.getProject(), myFile.getVirtualFile(),
-                                                                      component.getId());
+      FormElementNavigatable navigatable = new FormElementNavigatable(myFile.getProject(), myFile.getVirtualFile(), component.getId());
       ((ProblemDescriptorBase) problemDescriptor).setNavigatable(navigatable);
     }
     myProblems.add(problemDescriptor);

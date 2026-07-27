@@ -15,15 +15,15 @@
  */
 package com.intellij.uiDesigner.impl.wizard;
 
-import consulo.application.ApplicationManager;
 import consulo.ide.impl.idea.ide.wizard.AbstractWizard;
-import consulo.project.Project;
-import consulo.undoRedo.CommandProcessor;
-import consulo.application.CommonBundle;
 import consulo.logging.Logger;
+import consulo.platform.base.localize.CommonLocalize;
+import consulo.project.Project;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.awt.Messages;
+import consulo.uiDesigner.impl.localize.UIDesignerLocalize;
+import consulo.undoRedo.CommandProcessor;
 import consulo.virtualFileSystem.VirtualFile;
-import com.intellij.uiDesigner.impl.UIDesignerBundle;
 import jakarta.annotation.Nonnull;
 
 import javax.swing.*;
@@ -39,7 +39,7 @@ public final class DataBindingWizard extends AbstractWizard{
   private final BeanStep myBeanStep;
 
   public DataBindingWizard(@Nonnull Project project, @Nonnull VirtualFile formFile, @Nonnull WizardData data) {
-    super(UIDesignerBundle.message("title.data.binding.wizard"), project);
+    super(UIDesignerLocalize.titleDataBindingWizard().get(), project);
     myProject = project;
     myData = data;
 
@@ -54,39 +54,34 @@ public final class DataBindingWizard extends AbstractWizard{
     }
   }
 
+  @Override
+  @RequiredUIAccess
   public JComponent getPreferredFocusedComponent() {
     return myBeanStep.myTfShortClassName; 
   }
 
+  @Override
+  @RequiredUIAccess
   protected void doOKAction() {
-    CommandProcessor.getInstance().executeCommand(
-      myProject,
-      new Runnable() {
-        public void run() {
-          ApplicationManager.getApplication().runWriteAction(
-            new Runnable() {
-              public void run() {
-                try {
-                  Generator.generateDataBindingMethods(myData);
-                  DataBindingWizard.super.doOKAction();
-                }
-                catch (Generator.MyException exc) {
-                  Messages.showErrorDialog(
-                    getContentPane(),
-                    exc.getMessage(),
-                    CommonBundle.getErrorTitle()
-                  );
-                }
-              }
-            }
+    CommandProcessor.getInstance().newCommand()
+      .project(myProject)
+      .inWriteAction()
+      .run(() -> {
+        try {
+          Generator.generateDataBindingMethods(myData);
+          DataBindingWizard.super.doOKAction();
+        }
+        catch (Generator.MyException exc) {
+          Messages.showErrorDialog(
+            getContentPane(),
+            exc.getMessage(),
+            CommonLocalize.titleError().get()
           );
         }
-      },
-      "",
-      null
-    );
+      });
   }
 
+  @Override
   protected String getHelpID() {
     return "guiDesigner.formCode.dataBind";
   }

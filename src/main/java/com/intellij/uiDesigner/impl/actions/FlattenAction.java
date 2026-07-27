@@ -40,6 +40,7 @@ public class FlattenAction extends AbstractGuiEditorAction {
     super(true);
   }
 
+  @Override
   protected void actionPerformed(GuiEditor editor, List<RadComponent> selection, AnActionEvent e) {
     for(RadComponent c: selection) {
       RadContainer container = (RadContainer) c;

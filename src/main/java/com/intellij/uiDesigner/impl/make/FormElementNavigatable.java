@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.intellij.uiDesigner.impl.make;
 
 import com.intellij.uiDesigner.impl.editor.UIFormEditor;
+import consulo.annotation.access.RequiredReadAction;
 import consulo.fileEditor.FileEditor;
 import consulo.fileEditor.FileEditorManager;
 import consulo.navigation.Navigatable;
@@ -46,7 +46,9 @@ public class FormElementNavigatable implements Navigatable
 		myComponentId = componentId;
 	}
 
-	public void navigate(boolean requestFocus)
+	@Override
+    @RequiredReadAction
+    public void navigate(boolean requestFocus)
 	{
 		if(!myVirtualFile.isValid())
 		{
@@ -67,12 +69,16 @@ public class FormElementNavigatable implements Navigatable
 		}
 	}
 
-	public boolean canNavigate()
+	@Override
+    @RequiredReadAction
+    public boolean canNavigate()
 	{
 		return myVirtualFile.isValid();
 	}
 
-	public boolean canNavigateToSource()
+	@Override
+    @RequiredReadAction
+    public boolean canNavigateToSource()
 	{
 		return myVirtualFile.isValid();
 	}

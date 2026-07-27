@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.intellij.uiDesigner.impl.propertyInspector.properties;
 
 import com.intellij.uiDesigner.impl.propertyInspector.Property;
@@ -61,7 +60,8 @@ public class ClientPropertyProperty extends Property
 			{
 				myEditor = new AbstractTextFieldEditor<String>()
 				{
-					public String getValue() throws Exception
+					@Override
+                    public String getValue() throws Exception
 					{
 						return myTf.getText();
 					}
@@ -70,12 +70,14 @@ public class ClientPropertyProperty extends Property
 		}
 	}
 
-	public Object getValue(RadComponent component)
+	@Override
+    public Object getValue(RadComponent component)
 	{
 		return component.getDelegee().getClientProperty(getName());
 	}
 
-	protected void setValueImpl(RadComponent component, Object value) throws Exception
+	@Override
+    protected void setValueImpl(RadComponent component, Object value) throws Exception
 	{
 		component.getDelegee().putClientProperty(getName(), value);
 	}
@@ -93,12 +95,14 @@ public class ClientPropertyProperty extends Property
 	}
 
 	@Nonnull
+    @Override
 	public PropertyRenderer getRenderer()
 	{
 		return myRenderer;
 	}
 
-	public PropertyEditor getEditor()
+	@Override
+    public PropertyEditor getEditor()
 	{
 		return myEditor;
 	}

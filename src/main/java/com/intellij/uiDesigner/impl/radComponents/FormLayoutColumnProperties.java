@@ -13,17 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.intellij.uiDesigner.impl.radComponents;
 
-import com.intellij.uiDesigner.impl.UIDesignerBundle;
 import com.jgoodies.forms.layout.*;
+import consulo.localize.LocalizeValue;
 import consulo.ui.ex.awt.ColoredListCellRenderer;
 import consulo.ui.ex.awt.IdeBorderFactory;
+import consulo.uiDesigner.impl.localize.UIDesignerLocalize;
 import consulo.util.collection.Lists;
-import org.jetbrains.annotations.NonNls;
-
 import jakarta.annotation.Nonnull;
+
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -31,7 +30,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -40,26 +38,23 @@ import java.util.Map;
  */
 public class FormLayoutColumnProperties implements CustomPropertiesPanel
 {
-	private static final Map<Object, String> UNITS_MAP;
+	private static final Map<Object, LocalizeValue> UNITS_MAP = Map.of(
+        "px", UIDesignerLocalize.unitPixels(),
+        "dlu", UIDesignerLocalize.unitDialogUnits(),
+        "pt", UIDesignerLocalize.unitPoints(),
+        "in", UIDesignerLocalize.unitInches(),
+        "cm", UIDesignerLocalize.unitCentimeters(),
+        "mm", UIDesignerLocalize.unitMillimeters()
+    );
 
-	static
-	{
-		UNITS_MAP = new HashMap<>();
-		UNITS_MAP.put("px", UIDesignerBundle.message("unit.pixels"));
-		UNITS_MAP.put("dlu", UIDesignerBundle.message("unit.dialog.units"));
-		UNITS_MAP.put("pt", UIDesignerBundle.message("unit.points"));
-		UNITS_MAP.put("in", UIDesignerBundle.message("unit.inches"));
-		UNITS_MAP.put("cm", UIDesignerBundle.message("unit.centimeters"));
-		UNITS_MAP.put("mm", UIDesignerBundle.message("unit.millimeters"));
-	}
 
-	private static class UnitRender extends ColoredListCellRenderer
+    private static class UnitRender extends ColoredListCellRenderer
 	{
 		@Override
 		protected void customizeCellRenderer(@Nonnull JList jList, Object o, int i, boolean b, boolean b1)
 		{
-			String s = UNITS_MAP.get(o);
-			if(s != null)
+			LocalizeValue s = o != null ? UNITS_MAP.getOrDefault(o, LocalizeValue.empty()) : LocalizeValue.empty();
+			if(s.isNotEmpty())
 			{
 				append(s);
 			}
@@ -71,12 +66,12 @@ public class FormLayoutColumnProperties implements CustomPropertiesPanel
 	private JRadioButton myPreferredRadioButton;
 	private JRadioButton myMinimumRadioButton;
 	private JRadioButton myConstantRadioButton;
-	private JComboBox myConstantSizeUnitsCombo;
+	private JComboBox<String> myConstantSizeUnitsCombo;
 	private JCheckBox myMinimumCheckBox;
 	private JCheckBox myMaximumCheckBox;
 	private JSpinner myMaxSizeSpinner;
-	private JComboBox myMinSizeUnitsCombo;
-	private JComboBox myMaxSizeUnitsCombo;
+	private JComboBox<String> myMinSizeUnitsCombo;
+	private JComboBox<String> myMaxSizeUnitsCombo;
 	private JSpinner myConstantSizeSpinner;
 	private JSpinner myMinSizeSpinner;
 	private JCheckBox myGrowCheckBox;
@@ -97,7 +92,7 @@ public class FormLayoutColumnProperties implements CustomPropertiesPanel
 
 	public FormLayoutColumnProperties()
 	{
-		@NonNls String[] unitNames = new String[]{
+		String[] unitNames = new String[]{
 				"px",
 				"dlu",
 				"pt",
@@ -105,9 +100,9 @@ public class FormLayoutColumnProperties implements CustomPropertiesPanel
 				"cm",
 				"mm"
 		};
-		myConstantSizeUnitsCombo.setModel(new DefaultComboBoxModel(unitNames));
-		myMinSizeUnitsCombo.setModel(new DefaultComboBoxModel(unitNames));
-		myMaxSizeUnitsCombo.setModel(new DefaultComboBoxModel(unitNames));
+		myConstantSizeUnitsCombo.setModel(new DefaultComboBoxModel<>(unitNames));
+		myMinSizeUnitsCombo.setModel(new DefaultComboBoxModel<>(unitNames));
+		myMaxSizeUnitsCombo.setModel(new DefaultComboBoxModel<>(unitNames));
 		myConstantSizeUnitsCombo.setRenderer(new UnitRender());
 		myMinSizeUnitsCombo.setRenderer(new UnitRender());
 		myMaxSizeUnitsCombo.setRenderer(new UnitRender());
@@ -123,14 +118,10 @@ public class FormLayoutColumnProperties implements CustomPropertiesPanel
 
 		updateOnRadioChange();
 
-		myGrowCheckBox.addChangeListener(new ChangeListener()
-		{
-			public void stateChanged(ChangeEvent e)
-			{
-				myGrowSpinner.setEnabled(myGrowCheckBox.isSelected());
-				updateSpec();
-			}
-		});
+		myGrowCheckBox.addChangeListener(e -> {
+            myGrowSpinner.setEnabled(myGrowCheckBox.isSelected());
+            updateSpec();
+        });
 		MyChangeListener changeListener = new MyChangeListener();
 		myGrowSpinner.setModel(new SpinnerNumberModel(1.0, 0.0, 10.0, 0.1));
 		myGrowSpinner.addChangeListener(changeListener);
@@ -148,17 +139,20 @@ public class FormLayoutColumnProperties implements CustomPropertiesPanel
 		myConstantSizeUnitsCombo.addItemListener(itemListener);
 	}
 
-	public JPanel getComponent()
+	@Override
+    public JPanel getComponent()
 	{
 		return myRootPanel;
 	}
 
-	public void addChangeListener(ChangeListener listener)
+	@Override
+    public void addChangeListener(ChangeListener listener)
 	{
 		myListeners.add(listener);
 	}
 
-	public void removeChangeListener(ChangeListener listener)
+	@Override
+    public void removeChangeListener(ChangeListener listener)
 	{
 		myListeners.remove(listener);
 	}
@@ -179,10 +173,17 @@ public class FormLayoutColumnProperties implements CustomPropertiesPanel
 				myIndex = selectedIndices[0] + 1;
 				myIsRow = row;
 
-				myTitleLabel.setText(myIsRow ? UIDesignerBundle.message("title.row.properties", myIndex) : UIDesignerBundle.message("title.column.properties", myIndex));
-				myLeftRadioButton.setText(row ? UIDesignerBundle.message("alignment.top") : UIDesignerBundle.message("alignment.left"));
-				myRightRadioButton.setText(row ? UIDesignerBundle.message("alignment.bottom") : UIDesignerBundle.message("alignment.right"));
-				mySizePanel.setBorder(IdeBorderFactory.createTitledBorder(myIsRow ? UIDesignerBundle.message("title.height") : UIDesignerBundle.message("title.width"), true));
+				myTitleLabel.setText(
+				    myIsRow
+                        ? UIDesignerLocalize.titleRowProperties(myIndex).get()
+                        : UIDesignerLocalize.titleColumnProperties(myIndex).get()
+                );
+				myLeftRadioButton.setText(row ? UIDesignerLocalize.alignmentTop().get() : UIDesignerLocalize.alignmentLeft().get());
+				myRightRadioButton.setText(row ? UIDesignerLocalize.alignmentBottom().get() : UIDesignerLocalize.alignmentRight().get());
+                mySizePanel.setBorder(IdeBorderFactory.createTitledBorder(
+                    myIsRow ? UIDesignerLocalize.titleHeight().get() : UIDesignerLocalize.titleWidth().get(),
+                    true
+                ));
 
 				FormSpec formSpec = row ? myLayout.getRowSpec(myIndex) : myLayout.getColumnSpec(myIndex);
 				showAlignment(formSpec.getDefaultAlignment());
@@ -208,11 +209,15 @@ public class FormLayoutColumnProperties implements CustomPropertiesPanel
 			showControls(false);
 			if(selectedIndices.length > 1)
 			{
-				myTitleLabel.setText(myIsRow ? UIDesignerBundle.message("title.multiple.rows.selected") : UIDesignerBundle.message("title.multiple.columns.selected"));
-			}
+                myTitleLabel.setText(
+                    myIsRow ? UIDesignerLocalize.titleMultipleRowsSelected().get() : UIDesignerLocalize.titleMultipleColumnsSelected().get()
+                );
+            }
 			else
 			{
-				myTitleLabel.setText(myIsRow ? UIDesignerBundle.message("title.no.rows.selected") : UIDesignerBundle.message("title.no.columns.selected"));
+				myTitleLabel.setText(
+				    myIsRow ? UIDesignerLocalize.titleNoRowsSelected().get() : UIDesignerLocalize.titleNoColumnsSelected().get()
+                );
 			}
 		}
 	}
@@ -268,7 +273,7 @@ public class FormLayoutColumnProperties implements CustomPropertiesPanel
 		}
 		else
 		{
-			@NonNls String s = size.toString();
+			String s = size.toString();
 			if(s.startsWith("m"))
 			{
 				myMinimumRadioButton.setSelected(true);
@@ -444,7 +449,8 @@ public class FormLayoutColumnProperties implements CustomPropertiesPanel
 
 	private class MyRadioListener implements ActionListener
 	{
-		public void actionPerformed(ActionEvent e)
+		@Override
+        public void actionPerformed(ActionEvent e)
 		{
 			updateOnRadioChange();
 		}
@@ -465,14 +471,15 @@ public class FormLayoutColumnProperties implements CustomPropertiesPanel
 			myWasSelected = myButton.isSelected();
 		}
 
-		public void stateChanged(ChangeEvent e)
+		@Override
+        public void stateChanged(ChangeEvent e)
 		{
 			if(myWasSelected != myButton.isSelected())
 			{
 				myWasSelected = myButton.isSelected();
 				myUnitsCombo.setEnabled(myButton.isSelected());
 				mySpinner.setEnabled(myButton.isSelected());
-				if(myButton.isSelected() && mySpinner.getValue().equals(Integer.valueOf(0)))
+				if(myButton.isSelected() && mySpinner.getValue().equals(0))
 				{
 					mySpinner.setValue(100);
 				}
@@ -483,7 +490,8 @@ public class FormLayoutColumnProperties implements CustomPropertiesPanel
 
 	private class MyChangeListener implements ChangeListener
 	{
-		public void stateChanged(ChangeEvent e)
+		@Override
+        public void stateChanged(ChangeEvent e)
 		{
 			updateSpec();
 		}
@@ -491,7 +499,8 @@ public class FormLayoutColumnProperties implements CustomPropertiesPanel
 
 	private class MyItemListener implements ItemListener
 	{
-		public void itemStateChanged(ItemEvent e)
+		@Override
+        public void itemStateChanged(ItemEvent e)
 		{
 			updateSpec();
 		}

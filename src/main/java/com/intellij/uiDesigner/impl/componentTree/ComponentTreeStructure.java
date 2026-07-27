@@ -46,10 +46,12 @@ final class ComponentTreeStructure extends AbstractTreeStructure{
     myEditor = editor;
   }
 
+  @Override
   public Object getRootElement(){
     return myRootElement;
   }
 
+  @Override
   public Object[] getChildElements(Object element){
     if(element==myRootElement){
       ArrayList<Object> elements = new ArrayList<>();
@@ -65,12 +67,9 @@ final class ComponentTreeStructure extends AbstractTreeStructure{
       }
       return elements.toArray();
     }
-    else if(element instanceof ComponentPtr){
-      ComponentPtr ptr=(ComponentPtr)element;
+    else if(element instanceof ComponentPtr ptr){
       LOG.assertTrue(ptr.isValid()); // pointer must be valid
-      RadComponent component=ptr.getComponent();
-      if(component instanceof RadContainer){
-        RadContainer container=(RadContainer)component;
+        if(ptr.getComponent() instanceof RadContainer container){
         ComponentPtr[] ptrs=new ComponentPtr[container.getComponentCount()];
         for(int i=0;i<ptrs.length;i++){
           ptrs[i]=new ComponentPtr(myEditor,container.getComponent(i));
@@ -101,6 +100,7 @@ final class ComponentTreeStructure extends AbstractTreeStructure{
     }
   }
 
+  @Override
   public Object getParentElement(Object element){
     if (element instanceof ComponentTreeStructureRoot) {
       return null;
@@ -131,6 +131,7 @@ final class ComponentTreeStructure extends AbstractTreeStructure{
   }
 
   @Nonnull
+  @Override
   public NodeDescriptor createDescriptor(Object element, NodeDescriptor parentDescriptor){
     if(element==myRootElement){
       return new RootDescriptor(parentDescriptor,myRootElement);
@@ -167,11 +168,13 @@ final class ComponentTreeStructure extends AbstractTreeStructure{
     return element==myRootElement || element==myEditor.getRootContainer();
   }
 
+  @Override
   public void commit(){}
 
   /**
    * Nothing to commit
    */
+  @Override
   public boolean hasSomethingToCommit(){
     return false;
   }
