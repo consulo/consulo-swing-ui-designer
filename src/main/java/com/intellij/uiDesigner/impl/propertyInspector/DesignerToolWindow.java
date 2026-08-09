@@ -15,19 +15,20 @@
  */
 package com.intellij.uiDesigner.impl.propertyInspector;
 
-import consulo.ide.impl.idea.designer.LightToolWindowContent;
-import consulo.dataContext.DataProvider;
-import consulo.project.Project;
-import consulo.ui.ex.awt.*;
-import consulo.ui.ex.awt.IdeBorderFactory;
 import com.intellij.uiDesigner.impl.componentTree.ComponentTree;
 import com.intellij.uiDesigner.impl.componentTree.ComponentTreeBuilder;
 import com.intellij.uiDesigner.impl.designSurface.GuiEditor;
+import consulo.dataContext.DataProvider;
 import consulo.disposer.Disposer;
+import consulo.ide.impl.idea.designer.LightToolWindowContent;
+import consulo.project.Project;
+import consulo.ui.ex.awt.IdeBorderFactory;
+import consulo.ui.ex.awt.ScrollPaneFactory;
+import consulo.ui.ex.awt.SideBorder;
+import consulo.ui.ex.awt.Splitter;
 import consulo.util.dataholder.Key;
-import org.jetbrains.annotations.NonNls;
-
 import jakarta.annotation.Nullable;
+
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -147,7 +148,8 @@ public class DesignerToolWindow implements LightToolWindowContent
 		}
 
 		@Nullable
-		public Object getData(@NonNls Key dataId)
+        @Override
+		public Object getData(Key dataId)
 		{
 			if(GuiEditor.DATA_KEY == dataId && myComponentTree != null)
 			{

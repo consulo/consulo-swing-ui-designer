@@ -37,6 +37,7 @@ public class ColorRenderer extends ColoredListCellRenderer implements PropertyRe
     setOpaque(true);
   }
 
+  @Override
   public JComponent getComponent(RadRootContainer rootContainer, ColorDescriptor value, boolean selected, boolean hasFocus) {
     prepareComponent(value, selected);
     return this;
@@ -66,6 +67,7 @@ public class ColorRenderer extends ColoredListCellRenderer implements PropertyRe
     }
   }
 
+  @Override
   protected void customizeCellRenderer(JList list, Object value, int index, boolean selected, boolean hasFocus) {
     prepareComponent((ColorDescriptor) value, selected);
   }

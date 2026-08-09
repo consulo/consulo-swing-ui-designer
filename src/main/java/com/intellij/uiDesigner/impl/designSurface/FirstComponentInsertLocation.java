@@ -13,24 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.intellij.uiDesigner.impl.designSurface;
 
+import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.impl.HSpacer;
 import com.intellij.uiDesigner.impl.VSpacer;
-import com.intellij.uiDesigner.impl.UIDesignerBundle;
-import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.impl.palette.ComponentItem;
 import com.intellij.uiDesigner.impl.palette.Palette;
+import com.intellij.uiDesigner.impl.radComponents.RadAbstractGridLayoutManager;
 import com.intellij.uiDesigner.impl.radComponents.RadComponent;
 import com.intellij.uiDesigner.impl.radComponents.RadContainer;
-import com.intellij.uiDesigner.impl.radComponents.RadAbstractGridLayoutManager;
+import consulo.uiDesigner.impl.localize.UIDesignerLocalize;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.Dimension;
+import java.awt.*;
 
 /**
  * @author yole
@@ -119,23 +116,23 @@ public class FirstComponentInsertLocation extends GridDropLocation {
     StringBuilder result = new StringBuilder(myContainer.getDisplayName());
     result.append(" (");
     if (myXPart == 1 && myYPart == 1) {
-      result.append(UIDesignerBundle.message("insert.feedback.fill"));
+      result.append(UIDesignerLocalize.insertFeedbackFill().get());
     }
     else {
       if (myYPart == 0) {
-        result.append(UIDesignerBundle.message("insert.feedback.top"));
+        result.append(UIDesignerLocalize.insertFeedbackTop().get());
       }
       else if (myYPart == 2) {
-        result.append(UIDesignerBundle.message("insert.feedback.bottom"));
+        result.append(UIDesignerLocalize.insertFeedbackBottom().get());
       }
       if (myYPart != 1 && myXPart != 1) {
         result.append(" ");
       }
       if (myXPart == 0) {
-        result.append(UIDesignerBundle.message("insert.feedback.left"));
+        result.append(UIDesignerLocalize.insertFeedbackLeft().get());
       }
       else if (myXPart == 2) {
-        result.append(UIDesignerBundle.message("insert.feedback.right"));
+        result.append(UIDesignerLocalize.insertFeedbackRight().get());
       }
     }
     result.append(")");
@@ -200,6 +197,7 @@ public class FirstComponentInsertLocation extends GridDropLocation {
   }
 
   @Nullable
+  @Override
   public ComponentDropLocation getAdjacentLocation(Direction direction) {
     if (direction == Direction.DOWN && myYPart < 2) {
       return createAdjacentLocation(myXPart, myYPart+1);

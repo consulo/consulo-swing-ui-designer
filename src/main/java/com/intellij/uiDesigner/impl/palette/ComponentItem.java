@@ -19,7 +19,6 @@ import com.intellij.ide.palette.PaletteItem;
 import com.intellij.java.language.psi.JavaPsiFacade;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.impl.HSpacer;
-import com.intellij.uiDesigner.impl.UIDesignerBundle;
 import com.intellij.uiDesigner.impl.UIDesignerIcons;
 import com.intellij.uiDesigner.impl.VSpacer;
 import com.intellij.uiDesigner.impl.binding.FormClassIndex;
@@ -39,18 +38,19 @@ import consulo.ui.ex.awt.ColoredListCellRenderer;
 import consulo.ui.ex.awt.dnd.DnDDragStartBean;
 import consulo.ui.image.Image;
 import consulo.ui.image.ImageKey;
+import consulo.uiDesigner.impl.localize.UIDesignerLocalize;
 import consulo.util.dataholder.Key;
 import consulo.util.lang.StringUtil;
 import consulo.virtualFileSystem.VirtualFile;
-import org.jetbrains.annotations.NonNls;
-
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author Anton Katilin
@@ -64,10 +64,12 @@ public final class ComponentItem implements Cloneable, PaletteItem
 
 	private String myClassName;
 	private final GridConstraints myDefaultConstraints;
+
 	/**
 	 * Do not use this member directly. Use {@link #getIcon()} instead.
 	 */
 	private consulo.ui.image.Image myIcon;
+
 	/**
 	 * Do not use this member directly. Use {@link #getSmallIcon()} instead.
 	 */
@@ -77,11 +79,14 @@ public final class ComponentItem implements Cloneable, PaletteItem
 	 * @see #setIconPath(String)
 	 */
 	private String myIconPath;
+
 	/**
 	 * Do not access this field directly. Use {@link #getToolTipText()} instead.
 	 */
 	final String myToolTipText;
+
 	private final Map<String, StringDescriptor> myPropertyName2initialValue;
+
 	/**
 	 * Whether item is removable or not
 	 */
@@ -276,9 +281,9 @@ public final class ComponentItem implements Cloneable, PaletteItem
 	}
 
 	/**
-	 * @param className name of the class that will be instanteated when user drop
+	 * @param className name of the class that will be instantiated when user drop
 	 *                  item on the form. Cannot be <code>null</code>. If the class does not exist or
-	 *                  could not be instanteated (for example, class has no default constructor,
+	 *                  could not be instantiated (for example, class has no default constructor,
 	 *                  it's not a subclass of JComponent, etc) then placeholder component will be
 	 *                  added to the form.
 	 */
@@ -304,9 +309,9 @@ public final class ComponentItem implements Cloneable, PaletteItem
 	 * all its properties are set into initial values.
 	 * The method returns <code>null</code> if the
 	 * initial property is not defined. Unfortunately we cannot
-	 * put this method into the constuctor of <code>RadComponent</code>.
+	 * put this method into the constructor of <code>RadComponent</code>.
 	 * The problem is that <code>RadComponent</code> is used in the
-	 * code genaration and code generation doesn't depend on any
+	 * code generation and code generation doesn't depend on any
 	 * <code>ComponentItem</code>, so we need to initialize <code>RadComponent</code>
 	 * in all places where it's needed explicitly.
 	 */
@@ -354,61 +359,41 @@ public final class ComponentItem implements Cloneable, PaletteItem
 		myIsContainer = isContainer;
 	}
 
-	public boolean equals(Object o)
+	@Override
+	public boolean equals(@Nullable Object o)
 	{
-		if(this == o)
-		{
-			return true;
-		}
-		if(!(o instanceof ComponentItem))
-		{
-			return false;
-		}
-
-		ComponentItem componentItem = (ComponentItem) o;
-
-		if(myClassName != null ? !myClassName.equals(componentItem.myClassName) : componentItem.myClassName != null)
-		{
-			return false;
-		}
-		if(myDefaultConstraints != null ? !myDefaultConstraints.equals(componentItem.myDefaultConstraints) : componentItem.myDefaultConstraints != null)
-		{
-			return false;
-		}
-		if(myIconPath != null ? !myIconPath.equals(componentItem.myIconPath) : componentItem.myIconPath != null)
-		{
-			return false;
-		}
-		if(myPropertyName2initialValue != null ? !myPropertyName2initialValue.equals(componentItem.myPropertyName2initialValue) : componentItem.myPropertyName2initialValue != null)
-		{
-			return false;
-		}
-		if(myToolTipText != null ? !myToolTipText.equals(componentItem.myToolTipText) : componentItem.myToolTipText != null)
-		{
-			return false;
-		}
-
-		return true;
+        if (this == o)
+        {
+            return true;
+        }
+        return o instanceof ComponentItem that
+            && Objects.equals(myClassName, that.myClassName)
+            && Objects.equals(myDefaultConstraints, that.myDefaultConstraints)
+            && Objects.equals(myIconPath, that.myIconPath)
+            && Objects.equals(myPropertyName2initialValue, that.myPropertyName2initialValue)
+            && Objects.equals(myToolTipText, that.myToolTipText);
 	}
 
+	@Override
 	public int hashCode()
 	{
-		int result;
-		result = (myClassName != null ? myClassName.hashCode() : 0);
-		result = 29 * result + (myDefaultConstraints != null ? myDefaultConstraints.hashCode() : 0);
-		result = 29 * result + (myIconPath != null ? myIconPath.hashCode() : 0);
-		result = 29 * result + (myToolTipText != null ? myToolTipText.hashCode() : 0);
-		result = 29 * result + (myPropertyName2initialValue != null ? myPropertyName2initialValue.hashCode() : 0);
+        int result;
+		result = Objects.hashCode(myClassName);
+		result = 29 * result + Objects.hashCode(myDefaultConstraints);
+		result = 29 * result + Objects.hashCode(myIconPath);
+		result = 29 * result + Objects.hashCode(myToolTipText);
+		result = 29 * result + Objects.hashCode(myPropertyName2initialValue);
 		return result;
 	}
 
-	public void customizeCellRenderer(ColoredListCellRenderer cellRenderer, boolean selected, boolean hasFocus)
+	@Override
+    public void customizeCellRenderer(ColoredListCellRenderer cellRenderer, boolean selected, boolean hasFocus)
 	{
 		cellRenderer.setIcon(getSmallIcon());
 		if(myAnyComponent)
 		{
-			cellRenderer.append(UIDesignerBundle.message("palette.non.palette.component"), SimpleTextAttributes.REGULAR_ATTRIBUTES);
-			cellRenderer.setToolTipText(UIDesignerBundle.message("palette.non.palette.component.tooltip"));
+			cellRenderer.append(UIDesignerLocalize.paletteNonPaletteComponent(), SimpleTextAttributes.REGULAR_ATTRIBUTES);
+			cellRenderer.setToolTipText(UIDesignerLocalize.paletteNonPaletteComponentTooltip().get());
 		}
 		else
 		{
@@ -418,6 +403,7 @@ public final class ComponentItem implements Cloneable, PaletteItem
 	}
 
 	@Nullable
+    @Override
 	public DnDDragStartBean startDragging()
 	{
 		if(isAnyComponent())
@@ -428,12 +414,14 @@ public final class ComponentItem implements Cloneable, PaletteItem
 	}
 
 	@Nullable
+    @Override
 	public ActionGroup getPopupActionGroup()
 	{
 		return (ActionGroup) ActionManager.getInstance().getAction("GuiDesigner.PaletteComponentPopupMenu");
 	}
 
 	@Nullable
+    @Override
 	public Object getData(Project project, Key<?> dataId)
 	{
 		if(LangDataKeys.PSI_ELEMENT == dataId)

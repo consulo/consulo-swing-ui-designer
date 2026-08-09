@@ -17,11 +17,13 @@ package com.intellij.uiDesigner.impl.projectView;
 
 import com.intellij.java.language.psi.PsiClass;
 import com.intellij.uiDesigner.impl.binding.FormClassIndex;
+import consulo.annotation.access.RequiredReadAction;
 import consulo.language.psi.PsiFile;
 import consulo.language.psi.PsiUtilCore;
 import consulo.navigation.Navigatable;
 import consulo.util.dataholder.Key;
 import consulo.virtualFileSystem.VirtualFile;
+import jakarta.annotation.Nullable;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -42,19 +44,19 @@ public class Form implements Navigatable {
     myFormFiles = new HashSet<>(formFiles);
   }
 
-  public boolean equals(Object object) {
-    if (object instanceof Form){
-      Form form = (Form)object;
-      return myFormFiles.equals(form.myFormFiles) && myClassToBind.equals(form.myClassToBind);
-    } else {
-      return false;
-    }
+  @Override
+  public boolean equals(@Nullable Object object) {
+    return object instanceof Form that
+      && myFormFiles.equals(that.myFormFiles)
+      && myClassToBind.equals(that.myClassToBind);
   }
 
+  @Override
   public int hashCode() {
     return myFormFiles.hashCode() ^ myClassToBind.hashCode();
   }
 
+  @RequiredReadAction
   public String getName() {
     return myClassToBind.getName();
   }
@@ -67,6 +69,8 @@ public class Form implements Navigatable {
     return PsiUtilCore.toPsiFileArray(myFormFiles);
   }
 
+  @Override
+  @RequiredReadAction
   public void navigate(boolean requestFocus) {
     for (PsiFile psiFile : myFormFiles) {
       if (psiFile != null && psiFile.canNavigate()) {
@@ -75,6 +79,8 @@ public class Form implements Navigatable {
     }
   }
 
+  @Override
+  @RequiredReadAction
   public boolean canNavigateToSource() {
     for (PsiFile psiFile : myFormFiles) {
       if (psiFile != null && psiFile.canNavigateToSource()) return true;
@@ -82,6 +88,8 @@ public class Form implements Navigatable {
     return false;
   }
 
+  @Override
+  @RequiredReadAction
   public boolean canNavigate() {
     for (PsiFile psiFile : myFormFiles) {
       if (psiFile != null && psiFile.canNavigate()) return true;
@@ -89,6 +97,7 @@ public class Form implements Navigatable {
     return false;
   }
 
+  @RequiredReadAction
   public boolean isValid() {
     if (myFormFiles.size() == 0) return false;
     for (PsiFile psiFile : myFormFiles) {
@@ -96,10 +105,7 @@ public class Form implements Navigatable {
         return false;
       }
     }
-    if (!myClassToBind.isValid()) {
-      return false;
-    }
-    return true;
+    return myClassToBind.isValid();
   }
 
   public boolean containsFile(VirtualFile vFile) {

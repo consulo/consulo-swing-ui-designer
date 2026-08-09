@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.intellij.uiDesigner.impl.propertyInspector.renderers;
 
 import com.intellij.uiDesigner.lw.FontDescriptor;
@@ -23,6 +22,7 @@ import com.intellij.uiDesigner.impl.propertyInspector.properties.IntroFontProper
  * @author yole
  */
 public class FontRenderer extends LabelPropertyRenderer<FontDescriptor> {
+  @Override
   protected void customize(FontDescriptor value) {
     setText(IntroFontProperty.descriptorToString(value));
   }

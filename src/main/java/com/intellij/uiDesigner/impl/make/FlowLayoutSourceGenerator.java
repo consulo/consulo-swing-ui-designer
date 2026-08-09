@@ -53,6 +53,7 @@ public class FlowLayoutSourceGenerator extends LayoutSourceGenerator {
     generator.endMethod();
   }
 
+  @Override
   public void generateComponentLayout(LwComponent component,
                                       FormSourceCodeGenerator generator,
                                       String variable,

@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.intellij.uiDesigner.impl.designSurface;
 
 import com.intellij.uiDesigner.impl.palette.ComponentItem;
@@ -39,40 +38,49 @@ public class ComponentItemDragObject implements ComponentDragObject {
     return myItem;
   }
 
+  @Override
   public int getComponentCount() {
     return 1;
   }
 
+  @Override
   public boolean isHGrow() {
     return (myItem.getDefaultConstraints().getHSizePolicy() & GridConstraints.SIZEPOLICY_WANT_GROW) != 0;
   }
 
+  @Override
   public boolean isVGrow() {
     return (myItem.getDefaultConstraints().getVSizePolicy() & GridConstraints.SIZEPOLICY_WANT_GROW) != 0;
   }
 
+  @Override
   public int getRelativeRow(int componentIndex) {
     return 0;
   }
 
+  @Override
   public int getRelativeCol(int componentIndex) {
     return 0;
   }
 
+  @Override
   public int getRowSpan(int componentIndex) {
     return 1;
   }
 
+  @Override
   public int getColSpan(int componentIndex) {
     return 1;
   }
 
   @Nullable
+  @Override
   public Point getDelta(int componentIndex) {
     return null;
   }
 
   @Nonnull
+  @Override
   public Dimension getInitialSize(RadContainer targetContainer) {
     ClassLoader loader = LoaderFactory.getInstance(targetContainer.getProject()).getLoader(targetContainer.getModule());
     return myItem.getInitialSize(targetContainer.getDelegee(), loader);

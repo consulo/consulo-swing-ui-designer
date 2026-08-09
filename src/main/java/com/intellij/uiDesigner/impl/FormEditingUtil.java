@@ -19,14 +19,13 @@ import com.intellij.java.language.psi.*;
 import com.intellij.lang.properties.PropertiesReferenceManager;
 import com.intellij.lang.properties.psi.PropertiesFile;
 import com.intellij.uiDesigner.compiler.AsmCodeGenerator;
-import com.intellij.uiDesigner.impl.componentTree.ComponentTreeBuilder;
 import com.intellij.uiDesigner.core.GridConstraints;
+import com.intellij.uiDesigner.impl.componentTree.ComponentTreeBuilder;
 import com.intellij.uiDesigner.impl.designSurface.ComponentDropLocation;
 import com.intellij.uiDesigner.impl.designSurface.DraggedComponentList;
 import com.intellij.uiDesigner.impl.designSurface.GuiEditor;
 import com.intellij.uiDesigner.impl.designSurface.Painter;
 import com.intellij.uiDesigner.impl.editor.UIFormEditor;
-import com.intellij.uiDesigner.lw.*;
 import com.intellij.uiDesigner.impl.palette.ComponentItem;
 import com.intellij.uiDesigner.impl.palette.Palette;
 import com.intellij.uiDesigner.impl.propertyInspector.DesignerToolWindowManager;
@@ -36,32 +35,36 @@ import com.intellij.uiDesigner.impl.radComponents.RadAbstractGridLayoutManager;
 import com.intellij.uiDesigner.impl.radComponents.RadComponent;
 import com.intellij.uiDesigner.impl.radComponents.RadContainer;
 import com.intellij.uiDesigner.impl.radComponents.RadRootContainer;
+import com.intellij.uiDesigner.lw.*;
+import consulo.annotation.access.RequiredReadAction;
 import consulo.component.ProcessCanceledException;
 import consulo.dataContext.DataContext;
 import consulo.fileEditor.FileEditor;
-import consulo.language.editor.CommonDataKeys;
-import consulo.language.editor.PlatformDataKeys;
 import consulo.language.psi.PsiDirectory;
 import consulo.language.psi.PsiFile;
 import consulo.language.psi.PsiPackage;
 import consulo.language.psi.scope.GlobalSearchScope;
 import consulo.language.util.IncorrectOperationException;
+import consulo.localize.LocalizeValue;
 import consulo.module.Module;
 import consulo.project.Project;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.RelativePoint;
 import consulo.ui.ex.awt.Messages;
+import consulo.ui.ex.awt.UIUtil;
 import consulo.ui.ex.popup.JBPopup;
+import consulo.uiDesigner.impl.localize.UIDesignerLocalize;
 import consulo.undoRedo.CommandProcessor;
 import consulo.util.collection.ArrayUtil;
-import consulo.util.lang.ref.Ref;
-
+import consulo.util.lang.ref.SimpleReference;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
+
 import javax.swing.*;
 import java.awt.*;
 import java.lang.reflect.InvocationTargetException;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 
 /**
  * @author Anton Katilin
@@ -81,12 +84,8 @@ public final class FormEditingUtil
 			return false;
 		}
 		RadRootContainer rootContainer = editor.getRootContainer();
-		if(rootContainer.getComponentCount() > 0 && selection.contains(rootContainer.getComponent(0)))
-		{
-			return false;
-		}
-		return true;
-	}
+        return rootContainer.getComponentCount() <= 0 || !selection.contains(rootContainer.getComponent(0));
+    }
 
 	/**
 	 * <b>This method must be executed in command</b>
@@ -106,8 +105,8 @@ public final class FormEditingUtil
 		{
 			return;
 		}
-		final RadRootContainer rootContainer = (RadRootContainer) getRoot(selection.iterator().next());
-		final Set<String> deletedComponentIds = new HashSet<>();
+		RadRootContainer rootContainer = (RadRootContainer) getRoot(selection.iterator().next());
+		Set<String> deletedComponentIds = new HashSet<>();
 		for(RadComponent component : selection)
 		{
 			boolean wasSelected = component.isSelected();
@@ -122,17 +121,12 @@ public final class FormEditingUtil
 				wasPackedVert = parent.getHeight() == minSize.height;
 			}
 
-			iterate(component, new ComponentVisitor()
-			{
-				public boolean visit(IComponent c)
-				{
-					RadComponent rc = (RadComponent) c;
-					BindingProperty.checkRemoveUnusedField(rootContainer, rc.getBinding(), null);
-					deletedComponentIds.add(rc.getId());
-					return true;
-				}
-			});
-
+			iterate(component, c -> {
+                RadComponent rc = (RadComponent) c;
+                BindingProperty.checkRemoveUnusedField(rootContainer, rc.getBinding(), null);
+                deletedComponentIds.add(rc.getId());
+                return true;
+            });
 
 			GridConstraints delConstraints = parent.getLayoutManager().isGrid() ? component.getConstraints() : null;
 
@@ -174,33 +168,28 @@ public final class FormEditingUtil
 			}
 		}
 
-		iterate(rootContainer, new ComponentVisitor()
-		{
-			public boolean visit(IComponent component)
-			{
-				RadComponent rc = (RadComponent) component;
-				for(IProperty p : component.getModifiedProperties())
-				{
-					if(p instanceof IntroComponentProperty)
-					{
-						IntroComponentProperty icp = (IntroComponentProperty) p;
-						String value = icp.getValue(rc);
-						if(deletedComponentIds.contains(value))
-						{
-							try
-							{
-								icp.resetValue(rc);
-							}
-							catch(Exception e)
-							{
-								// ignore
-							}
-						}
-					}
-				}
-				return true;
-			}
-		});
+		iterate(rootContainer, component -> {
+            RadComponent rc = (RadComponent) component;
+            for(IProperty p : component.getModifiedProperties())
+            {
+                if(p instanceof IntroComponentProperty icp)
+                {
+                    String value = icp.getValue(rc);
+                    if(deletedComponentIds.contains(value))
+                    {
+                        try
+                        {
+                            icp.resetValue(rc);
+                        }
+                        catch(Exception e)
+                        {
+                            // ignore
+                        }
+                    }
+                }
+            }
+            return true;
+        });
 	}
 
 	public static void deleteEmptyGridCells(RadContainer parent, GridConstraints delConstraints)
@@ -313,16 +302,17 @@ public final class FormEditingUtil
 	}
 
 	/**
-	 * @return component which has dragger. There is only one component with the dargger
+	 * @return component which has dragger. There is only one component with the dragger
 	 * at a time.
 	 */
 	@Nullable
 	public static RadComponent getDraggerHost(@Nonnull GuiEditor editor)
 	{
-		final Ref<RadComponent> result = new Ref<>();
+		final SimpleReference<RadComponent> result = new SimpleReference<>();
 		iterate(editor.getRootContainer(), new ComponentVisitor<RadComponent>()
 		{
-			public boolean visit(RadComponent component)
+			@Override
+            public boolean visit(RadComponent component)
 			{
 				if(component.hasDragger())
 				{
@@ -424,7 +414,8 @@ public final class FormEditingUtil
 		final ArrayList<RadComponent> result = new ArrayList<>();
 		iterate(editor.getRootContainer(), new ComponentVisitor<RadComponent>()
 		{
-			public boolean visit(RadComponent component)
+			@Override
+            public boolean visit(RadComponent component)
 			{
 				if(component.isSelected())
 				{
@@ -457,13 +448,15 @@ public final class FormEditingUtil
 		String message = ex.getMessage();
 		if(ex instanceof ClassNotFoundException)
 		{
-			message = message != null ? UIDesignerBundle.message("error.class.not.found.N", message) : UIDesignerBundle.message("error.class.not" +
-					".found");
+			message = message != null
+                ? UIDesignerLocalize.errorClassNotFoundN(message).get()
+                : UIDesignerLocalize.errorClassNotFound().get();
 		}
 		else if(ex instanceof NoClassDefFoundError)
 		{
-			message = message != null ? UIDesignerBundle.message("error.required.class.not.found.N", message) : UIDesignerBundle.message("error" +
-					".required.class.not.found");
+			message = message != null
+                ? UIDesignerLocalize.errorRequiredClassNotFoundN(message).get()
+                : UIDesignerLocalize.errorRequiredClassNotFound().get();
 		}
 		return message;
 	}
@@ -473,22 +466,18 @@ public final class FormEditingUtil
 		return findComponentWithBinding(component, binding, null);
 	}
 
-	public static IComponent findComponentWithBinding(IComponent component, final String binding, @Nullable final IComponent exceptComponent)
+	public static IComponent findComponentWithBinding(IComponent component, String binding, @Nullable IComponent exceptComponent)
 	{
 		// Check that binding is unique
-		final Ref<IComponent> boundComponent = new Ref<>();
-		iterate(component, new ComponentVisitor()
-		{
-			public boolean visit(IComponent component)
-			{
-				if(component != exceptComponent && binding.equals(component.getBinding()))
-				{
-					boundComponent.set(component);
-					return false;
-				}
-				return true;
-			}
-		});
+		SimpleReference<IComponent> boundComponent = new SimpleReference<>();
+		iterate(component, thisComponent -> {
+            if(thisComponent != exceptComponent && binding.equals(thisComponent.getBinding()))
+            {
+                boundComponent.set(thisComponent);
+                return false;
+            }
+            return true;
+        });
 
 		return boundComponent.get();
 	}
@@ -596,22 +585,19 @@ public final class FormEditingUtil
 
 	public static Set<String> collectUsedBundleNames(IRootContainer rootContainer)
 	{
-		final Set<String> bundleNames = new HashSet<>();
-		iterateStringDescriptors(rootContainer, new StringDescriptorVisitor<>()
-		{
-			public boolean visit(IComponent component, StringDescriptor descriptor)
-			{
-				if(descriptor.getBundleName() != null && !bundleNames.contains(descriptor.getBundleName()))
-				{
-					bundleNames.add(descriptor.getBundleName());
-				}
-				return true;
-			}
-		});
+		Set<String> bundleNames = new HashSet<>();
+		iterateStringDescriptors(rootContainer, (component, descriptor) -> {
+            if(descriptor.getBundleName() != null && !bundleNames.contains(descriptor.getBundleName()))
+            {
+                bundleNames.add(descriptor.getBundleName());
+            }
+            return true;
+        });
 		return bundleNames;
 	}
 
-	public static Locale[] collectUsedLocales(consulo.module.Module module, IRootContainer rootContainer)
+	@RequiredReadAction
+    public static Locale[] collectUsedLocales(consulo.module.Module module, IRootContainer rootContainer)
 	{
 		Set<Locale> locales = new HashSet<>();
 		PropertiesReferenceManager propManager = PropertiesReferenceManager.getInstance(module.getProject());
@@ -626,61 +612,65 @@ public final class FormEditingUtil
 		return locales.toArray(new Locale[locales.size()]);
 	}
 
-	public static void deleteRowOrColumn(final GuiEditor editor, final RadContainer container, int[] cellsToDelete, final boolean isRow)
+	public static void deleteRowOrColumn(GuiEditor editor, RadContainer container, int[] cellsToDelete, boolean isRow)
 	{
 		Arrays.sort(cellsToDelete);
-		final int[] cells = ArrayUtil.reverseArray(cellsToDelete);
+		int[] cells = ArrayUtil.reverseArray(cellsToDelete);
 		if(!editor.ensureEditable())
 		{
 			return;
 		}
 
-		Runnable runnable = new Runnable()
-		{
-			public void run()
-			{
-				if(!GridChangeUtil.canDeleteCells(container, cells, isRow))
-				{
-					Set<RadComponent> componentsInColumn = new HashSet<>();
-					for(RadComponent component : container.getComponents())
-					{
-						GridConstraints c = component.getConstraints();
-						for(int cell : cells)
-						{
-							if(c.contains(isRow, cell))
-							{
-								componentsInColumn.add(component);
-								break;
-							}
-						}
-					}
+        @RequiredUIAccess
+		Runnable runnable = () -> {
+            if(!GridChangeUtil.canDeleteCells(container, cells, isRow))
+            {
+                Set<RadComponent> componentsInColumn = new HashSet<>();
+                for(RadComponent component : container.getComponents())
+                {
+                    GridConstraints c = component.getConstraints();
+                    for(int cell : cells)
+                    {
+                        if(c.contains(isRow, cell))
+                        {
+                            componentsInColumn.add(component);
+                            break;
+                        }
+                    }
+                }
 
-					if(componentsInColumn.size() > 0)
-					{
-						String message = isRow ? UIDesignerBundle.message("delete.row.nonempty", componentsInColumn.size(),
-								cells.length) : UIDesignerBundle.message("delete.column.nonempty", componentsInColumn.size(), cells.length);
+                if(componentsInColumn.size() > 0)
+                {
+                    LocalizeValue message = isRow
+                        ? UIDesignerLocalize.deleteRowNonempty(componentsInColumn.size(), cells.length)
+                        : UIDesignerLocalize.deleteColumnNonempty(componentsInColumn.size(), cells.length);
 
-						int rc = Messages.showYesNoDialog(editor, message, isRow ? UIDesignerBundle.message("delete.row.title") :
-								UIDesignerBundle.message("delete.column.title"), Messages.getQuestionIcon());
-						if(rc != Messages.YES)
-						{
-							return;
-						}
+                    int rc = Messages.showYesNoDialog(
+                        editor,
+                        message.get(),
+                        isRow ? UIDesignerLocalize.deleteRowTitle().get() : UIDesignerLocalize.deleteColumnTitle().get(),
+                        UIUtil.getQuestionIcon()
+                    );
+                    if(rc != Messages.YES)
+                    {
+                        return;
+                    }
 
-						deleteComponents(componentsInColumn, false);
-					}
-				}
+                    deleteComponents(componentsInColumn, false);
+                }
+            }
 
-				for(int cell : cells)
-				{
-					container.getGridLayoutManager().deleteGridCells(container, cell, isRow);
-				}
-				editor.refreshAndSave(true);
-			}
-		};
-		CommandProcessor.getInstance().executeCommand(editor.getProject(), runnable, isRow ? UIDesignerBundle.message("command.delete.row") :
-				UIDesignerBundle.message("command.delete.column"), null);
-	}
+            for(int cell : cells)
+            {
+                container.getGridLayoutManager().deleteGridCells(container, cell, isRow);
+            }
+            editor.refreshAndSave(true);
+        };
+        CommandProcessor.getInstance().newCommand()
+            .project(editor.getProject())
+            .name(isRow ? UIDesignerLocalize.commandDeleteRow() : UIDesignerLocalize.commandDeleteColumn())
+            .run(runnable);
+    }
 
 	/**
 	 * @param rootContainer
@@ -704,10 +694,10 @@ public final class FormEditingUtil
 	@Nullable
 	public static GuiEditor getEditorFromContext(@Nonnull DataContext context)
 	{
-		FileEditor editor = context.getData(PlatformDataKeys.FILE_EDITOR);
-		if(editor instanceof UIFormEditor)
+		FileEditor editor = context.getData(FileEditor.KEY);
+		if(editor instanceof UIFormEditor formEditor)
 		{
-			return ((UIFormEditor) editor).getEditor();
+			return formEditor.getEditor();
 		}
 		else
 		{
@@ -718,7 +708,7 @@ public final class FormEditingUtil
 	@Nullable
 	public static GuiEditor getActiveEditor(DataContext context)
 	{
-		Project project = context.getData(CommonDataKeys.PROJECT);
+		Project project = context.getData(Project.KEY);
 		if(project == null)
 		{
 			return null;
@@ -742,7 +732,8 @@ public final class FormEditingUtil
 		return findComponentWithBinding(component, binding, componentToAssignBinding) == null;
 	}
 
-	@Nullable
+    @Nullable
+    @RequiredReadAction
 	public static String buildResourceName(PsiFile file)
 	{
 		PsiDirectory directory = file.getContainingDirectory();
@@ -750,7 +741,7 @@ public final class FormEditingUtil
 		{
 			PsiPackage pkg = JavaDirectoryService.getInstance().getPackage(directory);
 			String packageName = pkg != null ? pkg.getQualifiedName() : "";
-			if(packageName.length() == 0)
+			if(packageName.isEmpty())
 			{
 				return file.getName();
 			}
@@ -1012,50 +1003,47 @@ public final class FormEditingUtil
 	}
 
 
-	public static void iterateStringDescriptors(IComponent component, final StringDescriptorVisitor<IComponent> visitor)
+	public static void iterateStringDescriptors(IComponent component, StringDescriptorVisitor<IComponent> visitor)
 	{
-		iterate(component, new ComponentVisitor<>()
-		{
-
-			public boolean visit(IComponent component)
-			{
-				for(IProperty prop : component.getModifiedProperties())
-				{
-					Object value = prop.getPropertyValue(component);
-					if(value instanceof StringDescriptor)
-					{
-						if(!visitor.visit(component, (StringDescriptor) value))
-						{
-							return false;
-						}
-					}
-				}
-				if(component.getParentContainer() instanceof ITabbedPane)
-				{
-					StringDescriptor tabTitle = ((ITabbedPane) component.getParentContainer()).getTabProperty(component,
-							ITabbedPane.TAB_TITLE_PROPERTY);
-					if(tabTitle != null && !visitor.visit(component, tabTitle))
-					{
-						return false;
-					}
-					StringDescriptor tabToolTip = ((ITabbedPane) component.getParentContainer()).getTabProperty(component,
-							ITabbedPane.TAB_TOOLTIP_PROPERTY);
-					if(tabToolTip != null && !visitor.visit(component, tabToolTip))
-					{
-						return false;
-					}
-				}
-				if(component instanceof IContainer)
-				{
-					StringDescriptor borderTitle = ((IContainer) component).getBorderTitle();
-					if(borderTitle != null && !visitor.visit(component, borderTitle))
-					{
-						return false;
-					}
-				}
-				return true;
-			}
-		});
+		iterate(component, thisComponent -> {
+            for(IProperty prop : thisComponent.getModifiedProperties())
+            {
+                Object value = prop.getPropertyValue(thisComponent);
+                if(value instanceof StringDescriptor)
+                {
+                    if(!visitor.visit(thisComponent, (StringDescriptor) value))
+                    {
+                        return false;
+                    }
+                }
+            }
+            if(thisComponent.getParentContainer() instanceof ITabbedPane)
+            {
+                StringDescriptor tabTitle = ((ITabbedPane) thisComponent.getParentContainer()).getTabProperty(
+                    thisComponent,
+                        ITabbedPane.TAB_TITLE_PROPERTY);
+                if(tabTitle != null && !visitor.visit(thisComponent, tabTitle))
+                {
+                    return false;
+                }
+                StringDescriptor tabToolTip = ((ITabbedPane) thisComponent.getParentContainer()).getTabProperty(
+                    thisComponent,
+                        ITabbedPane.TAB_TOOLTIP_PROPERTY);
+                if(tabToolTip != null && !visitor.visit(thisComponent, tabToolTip))
+                {
+                    return false;
+                }
+            }
+            if(thisComponent instanceof IContainer)
+            {
+                StringDescriptor borderTitle = ((IContainer) thisComponent).getBorderTitle();
+                if(borderTitle != null && !visitor.visit(thisComponent, borderTitle))
+                {
+                    return false;
+                }
+            }
+            return true;
+        });
 	}
 
 	public static void clearSelection(@Nonnull RadContainer container)
@@ -1080,7 +1068,7 @@ public final class FormEditingUtil
 	 * Finds component with the specified <code>id</code> starting from the
 	 * <code>container</code>. The method goes recursively through the hierarchy
 	 * of components. Note, that if <code>container</code> itself has <code>id</code>
-	 * then the method immediately retuns it.
+	 * then the method immediately returns it.
 	 *
 	 * @return the found component.
 	 */

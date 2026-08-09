@@ -17,6 +17,7 @@ package com.intellij.uiDesigner.impl.componentTree;
 
 import com.intellij.uiDesigner.impl.radComponents.RadComponent;
 import com.intellij.uiDesigner.impl.radComponents.RadRootContainer;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.tree.NodeDescriptor;
 import consulo.util.lang.Comparing;
 
@@ -43,7 +44,9 @@ final class ComponentPtrDescriptor extends NodeDescriptor<ComponentPtr>
 		myPtr = ptr;
 	}
 
-	public boolean update()
+	@Override
+    @RequiredUIAccess
+    public boolean update()
 	{
 		myPtr.validate();
 		if(!myPtr.isValid())
@@ -77,7 +80,8 @@ final class ComponentPtrDescriptor extends NodeDescriptor<ComponentPtr>
 		return myPtr != null ? myPtr.getComponent() : null;
 	}
 
-	public ComponentPtr getElement()
+	@Override
+    public ComponentPtr getElement()
 	{
 		return myPtr;
 	}

@@ -13,25 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.intellij.uiDesigner.impl.clientProperties;
 
-import com.intellij.uiDesigner.impl.UIDesignerBundle;
-import consulo.application.util.SystemInfo;
 import consulo.ide.impl.idea.ide.util.PropertiesComponent;
+import consulo.platform.Platform;
 import consulo.project.Project;
 import consulo.ui.ex.SimpleTextAttributes;
 import consulo.ui.ex.action.ActionToolbarPosition;
-import consulo.ui.ex.awt.*;
+import consulo.ui.ex.awt.DialogWrapper;
+import consulo.ui.ex.awt.Messages;
+import consulo.ui.ex.awt.Splitter;
+import consulo.ui.ex.awt.ToolbarDecorator;
 import consulo.ui.ex.awt.table.JBTable;
 import consulo.ui.ex.awt.tree.ColoredTreeCellRenderer;
 import consulo.ui.ex.awt.tree.Tree;
-import org.jetbrains.annotations.NonNls;
-
+import consulo.uiDesigner.impl.localize.UIDesignerLocalize;
 import jakarta.annotation.Nullable;
+
 import javax.swing.*;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -57,7 +56,7 @@ public class ConfigureClientPropertiesDialog extends DialogWrapper {
   public ConfigureClientPropertiesDialog(Project project) {
     super(project, true);
     myProject = project;
-    setTitle(UIDesignerBundle.message("client.properties.title"));
+    setTitle(UIDesignerLocalize.clientPropertiesTitle());
     myManager = ClientPropertiesManager.getInstance(project).clone();
     init();
   }
@@ -78,20 +77,20 @@ public class ConfigureClientPropertiesDialog extends DialogWrapper {
   }
 
   @Nullable
+  @Override
   protected JComponent createCenterPanel() {
     myClassTree = new Tree();
     myClassTree.setRootVisible(false);
-    myClassTree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
-      public void valueChanged(TreeSelectionEvent e) {
-        TreePath leadSelectionPath = e.getNewLeadSelectionPath();
-        if (leadSelectionPath == null) return;
-        DefaultMutableTreeNode node = (DefaultMutableTreeNode)leadSelectionPath.getLastPathComponent();
-        mySelectedClass = (Class)node.getUserObject();
-        updateSelectedProperties();
-      }
+    myClassTree.getSelectionModel().addTreeSelectionListener(e -> {
+      TreePath leadSelectionPath = e.getNewLeadSelectionPath();
+      if (leadSelectionPath == null) return;
+      DefaultMutableTreeNode node = (DefaultMutableTreeNode)leadSelectionPath.getLastPathComponent();
+      mySelectedClass = (Class)node.getUserObject();
+      updateSelectedProperties();
     });
 
     myClassTree.setCellRenderer(new ColoredTreeCellRenderer() {
+      @Override
       public void customizeCellRenderer(JTree tree,
                                         Object value,
                                         boolean selected,
@@ -117,69 +116,67 @@ public class ConfigureClientPropertiesDialog extends DialogWrapper {
     mySplitter = new Splitter(false, Float.valueOf(myPropertiesComponent.getValue(SPLITTER_PROPORTION_PROPERTY, "0.5f")));
     mySplitter.setFirstComponent(
       ToolbarDecorator.createDecorator(myClassTree)
-        .setAddAction(new AnActionButtonRunnable() {
-          @Override
-          public void run(AnActionButton button) {
-            ClassNameInputDialog dlg = new ClassNameInputDialog(myProject, mySplitter);
-            dlg.show();
-            if (dlg.getExitCode() == OK_EXIT_CODE) {
-              String className = dlg.getClassName();
-              if (className.length() == 0) return;
-              Class aClass;
-              try {
-                aClass = Class.forName(className);
-              }
-              catch (ClassNotFoundException ex) {
-                Messages.showErrorDialog(mySplitter,
-                                         UIDesignerBundle.message("client.properties.class.not.found", className),
-                                         UIDesignerBundle.message("client.properties.title"));
-                return;
-              }
-              if (!JComponent.class.isAssignableFrom(aClass)) {
-                Messages.showErrorDialog(mySplitter,
-                                         UIDesignerBundle
-                                           .message("client.properties.class.not.component", className),
-                                         UIDesignerBundle.message("client.properties.title"));
-                return;
-              }
-              myManager.addClientPropertyClass(className);
-              fillClassTree();
+        .setAddAction(button -> {
+          ClassNameInputDialog dlg = new ClassNameInputDialog(myProject, mySplitter);
+          dlg.show();
+          if (dlg.getExitCode() == OK_EXIT_CODE) {
+            String className = dlg.getClassName();
+            if (className.length() == 0) return;
+            Class aClass;
+            try {
+              aClass = Class.forName(className);
             }
+            catch (ClassNotFoundException ex) {
+              Messages.showErrorDialog(
+                mySplitter,
+                UIDesignerLocalize.clientPropertiesClassNotFound(className).get(),
+                UIDesignerLocalize.clientPropertiesTitle().get()
+              );
+              return;
+            }
+            if (!JComponent.class.isAssignableFrom(aClass)) {
+              Messages.showErrorDialog(
+                mySplitter,
+                UIDesignerLocalize.clientPropertiesClassNotComponent(className).get(),
+                UIDesignerLocalize.clientPropertiesTitle().get()
+              );
+              return;
+            }
+            myManager.addClientPropertyClass(className);
+            fillClassTree();
           }
-        }).setRemoveAction(new AnActionButtonRunnable() {
-        @Override
-        public void run(AnActionButton button) {
+        })
+        .setRemoveAction(button -> {
           if (mySelectedClass != null) {
             myManager.removeClientPropertyClass(mySelectedClass);
             fillClassTree();
           }
-        }
-      }).setToolbarPosition(SystemInfo.isMac ? ActionToolbarPosition.BOTTOM : ActionToolbarPosition.RIGHT).createPanel());
+        })
+        .setToolbarPosition(Platform.current().os().isMac() ? ActionToolbarPosition.BOTTOM : ActionToolbarPosition.RIGHT)
+        .createPanel());
 
     mySplitter.setSecondComponent(
       ToolbarDecorator.createDecorator(myPropertiesTable).disableUpDownActions()
-        .setAddAction(new AnActionButtonRunnable() {
-          @Override
-          public void run(AnActionButton button) {
-            AddClientPropertyDialog dlg = new AddClientPropertyDialog(myProject);
-            dlg.show();
-            if (dlg.getExitCode() == OK_EXIT_CODE) {
-              List<ClientPropertiesManager.ClientProperty> props = myManager.getClientProperties(mySelectedClass);
-              for (ClientPropertiesManager.ClientProperty prop : props) {
-                if (prop.getName().equalsIgnoreCase(dlg.getEnteredProperty().getName())) {
-                  Messages.showErrorDialog(mySplitter,
-                                           UIDesignerBundle.message("client.properties.already.defined", prop.getName()),
-                                           UIDesignerBundle.message("client.properties.title"));
-                  return;
-                }
+        .setAddAction(button -> {
+          AddClientPropertyDialog dlg = new AddClientPropertyDialog(myProject);
+          dlg.show();
+          if (dlg.getExitCode() == OK_EXIT_CODE) {
+            List<ClientPropertiesManager.ClientProperty> props = myManager.getClientProperties(mySelectedClass);
+            for (ClientPropertiesManager.ClientProperty prop : props) {
+              if (prop.getName().equalsIgnoreCase(dlg.getEnteredProperty().getName())) {
+                Messages.showErrorDialog(
+                  mySplitter,
+                  UIDesignerLocalize.clientPropertiesAlreadyDefined(prop.getName()).get(),
+                  UIDesignerLocalize.clientPropertiesTitle().get()
+                );
+                return;
               }
-              myManager.addConfiguredProperty(mySelectedClass, dlg.getEnteredProperty());
-              updateSelectedProperties();
             }
+            myManager.addConfiguredProperty(mySelectedClass, dlg.getEnteredProperty());
+            updateSelectedProperties();
           }
-        }).setRemoveAction(new AnActionButtonRunnable() {
-        @Override
-        public void run(AnActionButton button) {
+        })
+        .setRemoveAction(button -> {
           int row = myPropertiesTable.getSelectedRow();
           if (row >= 0 && row < mySelectedProperties.size()) {
             myManager.removeConfiguredProperty(mySelectedClass, mySelectedProperties.get(row).getName());
@@ -189,8 +186,9 @@ public class ConfigureClientPropertiesDialog extends DialogWrapper {
               myPropertiesTable.getSelectionModel().setSelectionInterval(row, row);
             }
           }
-        }
-      }).createPanel());
+        })
+        .createPanel()
+    );
 
     return mySplitter;
   }
@@ -198,6 +196,7 @@ public class ConfigureClientPropertiesDialog extends DialogWrapper {
   private void fillClassTree() {
     List<Class> configuredClasses = myManager.getConfiguredClasses(myProject);
     Collections.sort(configuredClasses, new Comparator<>() {
+      @Override
       public int compare(Class o1, Class o2) {
         return getInheritanceLevel(o1) - getInheritanceLevel(o2);
       }
@@ -236,37 +235,35 @@ public class ConfigureClientPropertiesDialog extends DialogWrapper {
   }
 
   @Override
-  @NonNls
   protected String getDimensionServiceKey() {
     return "ConfigureClientPropertiesDialog";
   }
 
   private class MyTableModel extends AbstractTableModel {
+    @Override
     public int getRowCount() {
       return mySelectedProperties.size();
     }
 
+    @Override
     public int getColumnCount() {
       return 2;
     }
 
+    @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-      switch (columnIndex) {
-        case 0:
-          return mySelectedProperties.get(rowIndex).getName();
-        default:
-          return mySelectedProperties.get(rowIndex).getValueClass();
-      }
+        return switch (columnIndex) {
+            case 0 -> mySelectedProperties.get(rowIndex).getName();
+            default -> mySelectedProperties.get(rowIndex).getValueClass();
+        };
     }
 
     @Override
     public String getColumnName(int column) {
-      switch (column) {
-        case 0:
-          return UIDesignerBundle.message("client.properties.name");
-        default:
-          return UIDesignerBundle.message("client.properties.class");
-      }
+        return switch (column) {
+            case 0 -> UIDesignerLocalize.clientPropertiesName().get();
+            default -> UIDesignerLocalize.clientPropertiesClass().get();
+        };
     }
   }
 }

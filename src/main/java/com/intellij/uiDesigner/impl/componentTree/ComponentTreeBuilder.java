@@ -15,18 +15,6 @@
  */
 package com.intellij.uiDesigner.impl.componentTree;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Set;
-
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.DefaultTreeModel;
-
-import jakarta.annotation.Nonnull;
-import consulo.ui.ex.awt.tree.AbstractTreeBuilder;
-import consulo.ui.ex.tree.NodeDescriptor;
-import consulo.application.progress.ProgressIndicator;
 import com.intellij.uiDesigner.impl.FormEditingUtil;
 import com.intellij.uiDesigner.impl.HierarchyChangeListener;
 import com.intellij.uiDesigner.impl.SelectionWatcher;
@@ -36,7 +24,18 @@ import com.intellij.uiDesigner.impl.propertyInspector.PropertyInspector;
 import com.intellij.uiDesigner.impl.radComponents.RadComponent;
 import com.intellij.uiDesigner.impl.radComponents.RadContainer;
 import consulo.logging.Logger;
+import consulo.ui.ex.awt.tree.AbstractTreeBuilder;
+import consulo.ui.ex.tree.NodeDescriptor;
 import consulo.util.lang.Comparing;
+import jakarta.annotation.Nonnull;
+
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultTreeModel;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author Anton Katilin
@@ -72,8 +71,8 @@ public final class ComponentTreeBuilder extends AbstractTreeBuilder
 		editor.addHierarchyChangeListener(myHierarchyChangeListener);
 	}
 
-
-	public void dispose()
+	@Override
+    public void dispose()
 	{
 		myEditor.removeHierarchyChangeListener(myHierarchyChangeListener);
 		if(myTreeSelectionListener != null)
@@ -90,12 +89,14 @@ public final class ComponentTreeBuilder extends AbstractTreeBuilder
 		return (ComponentTreeStructure) getTreeStructure();
 	}
 
-	protected boolean isAlwaysShowPlus(NodeDescriptor descriptor)
+	@Override
+    protected boolean isAlwaysShowPlus(NodeDescriptor descriptor)
 	{
 		return false;
 	}
 
-	protected boolean isAutoExpandNode(NodeDescriptor descriptor)
+	@Override
+    protected boolean isAutoExpandNode(NodeDescriptor descriptor)
 	{
 		return getComponentTreeStructure().isAutoExpandNode(descriptor);
 	}
@@ -119,10 +120,11 @@ public final class ComponentTreeBuilder extends AbstractTreeBuilder
 	{
 		// Found selected components
 		RadContainer rootContainer = myEditor.getRootContainer();
-		final ArrayList<RadComponent> selection = new ArrayList<>();
+		List<RadComponent> selection = new ArrayList<>();
 		FormEditingUtil.iterate(rootContainer, new FormEditingUtil.ComponentVisitor<RadComponent>()
 		{
-			public boolean visit(RadComponent component)
+			@Override
+            public boolean visit(RadComponent component)
 			{
 				if(component.isSelected())
 				{
@@ -173,7 +175,8 @@ public final class ComponentTreeBuilder extends AbstractTreeBuilder
 			return -1;
 		}
 
-		public int compare(NodeDescriptor descriptor1, NodeDescriptor descriptor2)
+		@Override
+        public int compare(NodeDescriptor descriptor1, NodeDescriptor descriptor2)
 		{
 			if(descriptor1 instanceof ComponentPtrDescriptor && descriptor2 instanceof ComponentPtrDescriptor)
 			{
@@ -206,7 +209,8 @@ public final class ComponentTreeBuilder extends AbstractTreeBuilder
 	 */
 	private final class MyHierarchyChangeListener implements HierarchyChangeListener
 	{
-		public void hierarchyChanged()
+		@Override
+        public void hierarchyChanged()
 		{
 			if(myInsideChange > 0)
 			{
@@ -216,16 +220,9 @@ public final class ComponentTreeBuilder extends AbstractTreeBuilder
 			myInsideChange++;
 			try
 			{
-				queueUpdate().doWhenDone(new Runnable()
-				{
-					@Override
-					public void run()
-					{
-						// After updating the tree we have to synchronize the selection in the tree
-						// with selected element in the hierarchy
-						syncSelection();
-					}
-				});
+                // After updating the tree we have to synchronize the selection in the tree
+                // with selected element in the hierarchy
+				queueUpdate().doWhenDone(ComponentTreeBuilder.this::syncSelection);
 			}
 			finally
 			{
@@ -244,7 +241,8 @@ public final class ComponentTreeBuilder extends AbstractTreeBuilder
 			super(editor);
 		}
 
-		protected void selectionChanged(RadComponent component, boolean ignored)
+		@Override
+        protected void selectionChanged(RadComponent component, boolean ignored)
 		{
 			updateSelection();
 		}
@@ -279,7 +277,8 @@ public final class ComponentTreeBuilder extends AbstractTreeBuilder
 	 */
 	private final class MyTreeSelectionListener implements TreeSelectionListener
 	{
-		public void valueChanged(TreeSelectionEvent e)
+		@Override
+        public void valueChanged(TreeSelectionEvent e)
 		{
 			if(myInsideChange > 0)
 			{

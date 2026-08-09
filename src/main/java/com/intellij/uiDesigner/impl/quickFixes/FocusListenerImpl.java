@@ -34,12 +34,14 @@ final class FocusListenerImpl extends FocusAdapter{
     myManager = manager;
   }
 
+  @Override
   public void focusGained(FocusEvent e) {
     if(!e.isTemporary()){
       myManager.updateIntentionHintVisibility();
     }
   }
 
+  @Override
   public void focusLost(FocusEvent e) {
     if(!(e.isTemporary())){
       myManager.hideIntentionHint();

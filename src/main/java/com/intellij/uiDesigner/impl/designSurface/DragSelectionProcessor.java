@@ -15,15 +15,12 @@
  */
 package com.intellij.uiDesigner.impl.designSurface;
 
-import consulo.logging.Logger;
 import com.intellij.uiDesigner.impl.FormEditingUtil;
 import com.intellij.uiDesigner.impl.radComponents.RadComponent;
 import consulo.ui.ex.awt.UIUtil;
-
 import jakarta.annotation.Nonnull;
 
-import java.awt.Component;
-import java.awt.Point;
+import java.awt.*;
 import java.awt.dnd.*;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
@@ -35,8 +32,6 @@ import java.util.ArrayList;
  * @author Vladimir Kondratyev
  */
 public final class DragSelectionProcessor extends EventProcessor {
-  private static final Logger LOG = Logger.getInstance(DragSelectionProcessor.class);
-
   /**
    * We have not start drag/cancel drop if mouse pointer trembles in small area
    */
@@ -58,10 +53,12 @@ public final class DragSelectionProcessor extends EventProcessor {
                                                           DnDConstants.ACTION_COPY_OR_MOVE);
   }
 
+  @Override
   public boolean isDragActive() {
     return myDragStarted;
   }
 
+  @Override
   protected boolean cancelOperation() {
     if (!myDragStarted) {
       return true;
@@ -74,9 +71,11 @@ public final class DragSelectionProcessor extends EventProcessor {
     return true;
   }
 
+  @Override
   protected void processKeyEvent(KeyEvent e) {
   }
 
+  @Override
   protected void processMouseEvent(MouseEvent e) {
     if (e.getID() == MouseEvent.MOUSE_PRESSED) {
       myPressPoint = e.getPoint();
@@ -116,9 +115,11 @@ public final class DragSelectionProcessor extends EventProcessor {
       super(ds, c, sa);
     }
 
+    @Override
     protected void registerListeners() {
     }
 
+    @Override
     protected void unregisterListeners() {
     }
 
@@ -129,6 +130,7 @@ public final class DragSelectionProcessor extends EventProcessor {
   }
 
   private class MyDragSourceListener extends DragSourceAdapter {
+    @Override
     public void dropActionChanged(DragSourceDragEvent dsde) {
       int shiftDownMask = (dsde.getGestureModifiersEx() & KeyEvent.SHIFT_DOWN_MASK);
       if (shiftDownMask != 0) {
@@ -139,6 +141,7 @@ public final class DragSelectionProcessor extends EventProcessor {
       }
     }
 
+    @Override
     public void dragDropEnd(DragSourceDropEvent dsde) {
       myDragStarted = false;
       myEditor.getDropTargetListener().setUseDragDelta(false);

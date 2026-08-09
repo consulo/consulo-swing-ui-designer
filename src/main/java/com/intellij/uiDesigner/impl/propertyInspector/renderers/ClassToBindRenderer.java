@@ -16,13 +16,14 @@
 package com.intellij.uiDesigner.impl.propertyInspector.renderers;
 
 import com.intellij.java.language.psi.PsiNameHelper;
-import com.intellij.uiDesigner.impl.UIDesignerBundle;
+import consulo.uiDesigner.impl.localize.UIDesignerLocalize;
 
 /**
  * @author Anton Katilin
  * @author Vladimir Kondratyev
  */
 public final class ClassToBindRenderer extends LabelPropertyRenderer<String> {
+  @Override
   public void customize(String value){
     String className = PsiNameHelper.getShortClassName(value);
     if(value.length() == className.length()){ // class in default package
@@ -30,7 +31,7 @@ public final class ClassToBindRenderer extends LabelPropertyRenderer<String> {
     }
     else{
       String packageName = value.substring(0, value.length() - className.length() - 1);
-      setText(UIDesignerBundle.message("class.in.package", className, packageName));
+      setText(UIDesignerLocalize.classInPackage(className, packageName).get());
     }
   }
 }
