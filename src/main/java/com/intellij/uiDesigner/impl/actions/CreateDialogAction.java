@@ -91,7 +91,13 @@ public final class CreateDialogAction extends AbstractCreateFormAction {
             }
         };
 
-        dialog.showAsync().doWhenDone(() -> consumer.accept(validator.getCreatedElements()));
+        dialog.showAsync().whenComplete((v, e) -> {
+            if (e != null) {
+                return;
+            }
+            
+            consumer.accept(validator.getCreatedElements());
+        });
     }
 
     @Override

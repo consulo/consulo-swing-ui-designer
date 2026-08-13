@@ -68,7 +68,13 @@ public class CreateFormAction extends AbstractCreateFormAction {
 
         DialogWrapper dialog = new MyDialog(project, validator);
 
-        dialog.showAsync().doWhenDone(() -> consumer.accept(validator.getCreatedElements()));
+        dialog.showAsync().whenComplete((e, t) -> {
+            if (t != null) {
+                return;
+            }
+            
+            consumer.accept(validator.getCreatedElements());
+        });
     }
 
     @Override
