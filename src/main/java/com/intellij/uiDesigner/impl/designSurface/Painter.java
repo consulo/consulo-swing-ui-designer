@@ -20,6 +20,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 
+import consulo.ui.ex.awt.AWTConstants;
 import jakarta.annotation.Nonnull;
 import javax.swing.SwingUtilities;
 
@@ -326,7 +327,7 @@ public final class Painter {
     return x >= r.x - R && x <= r.x + R && y >= r.y - R && y <= r.y + R;
   }
 
-  @JdkConstants.CursorType
+  @AWTConstants.CursorType
   public static int getResizeCursor(int resizeMask) {
     if (resizeMask == (WEST_MASK | NORTH_MASK)) {
       return Cursor.NW_RESIZE_CURSOR;
