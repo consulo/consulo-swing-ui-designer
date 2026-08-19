@@ -36,13 +36,17 @@ import consulo.component.persist.PersistentStateComponent;
 import consulo.component.persist.State;
 import consulo.component.persist.Storage;
 import consulo.disposer.Disposable;
-import consulo.ide.impl.idea.ide.ui.LafManager;
-import consulo.ide.impl.idea.ide.ui.LafManagerListener;
+import consulo.disposer.Disposer;
 import consulo.logging.Logger;
 import consulo.project.Project;
 import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.awt.Messages;
 import consulo.ui.ex.awt.UIUtil;
+import consulo.ui.ex.awt.internal.laf.LafManager;
+import consulo.ui.ex.awt.internal.laf.LafManagerListener;
+import consulo.ui.style.Style;
+import consulo.ui.style.StyleChangeListener;
+import consulo.ui.style.StyleManager;
 import consulo.uiDesigner.impl.localize.UIDesignerLocalize;
 import consulo.util.collection.Lists;
 import consulo.util.jdom.JDOMUtil;
@@ -74,889 +78,762 @@ import java.util.Map;
 @Singleton
 @ServiceAPI(ComponentScope.PROJECT)
 @ServiceImpl
-public final class Palette implements PersistentStateComponent<Element>, Disposable
-{
-	private static final Logger LOG = Logger.getInstance(Palette.class);
+public final class Palette implements PersistentStateComponent<Element>, Disposable {
+    private static final Logger LOG = Logger.getInstance(Palette.class);
 
-	private final MyLafManagerListener myLafManagerListener;
-	private final Map<Class, IntrospectedProperty[]> myClass2Properties;
-	private final Map<String, ComponentItem> myClassName2Item;
-	/*All groups in the palette*/
-	private final List<GroupItem> myGroups;
-	/*Listeners, etc*/
-	private final List<Listener> myListeners = Lists.newLockFreeCopyOnWriteList();
-	private final Project myProject;
-	private final GroupItem mySpecialGroup = new GroupItem(true);
+    private final StyleChangeListener myLafManagerListener;
+    private final Map<Class, IntrospectedProperty[]> myClass2Properties;
+    private final Map<String, ComponentItem> myClassName2Item;
+    /*All groups in the palette*/
+    private final List<GroupItem> myGroups;
+    /*Listeners, etc*/
+    private final List<Listener> myListeners = Lists.newLockFreeCopyOnWriteList();
+    private final Project myProject;
+    private final GroupItem mySpecialGroup = new GroupItem(true);
 
-	/**
-	 * Predefined item for javax.swing.JPanel
-	 */
-	private ComponentItem myPanelItem;
-	private static final String ATTRIBUTE_VSIZE_POLICY = "vsize-policy";
-	private static final String ATTRIBUTE_HSIZE_POLICY = "hsize-policy";
-	private static final String ATTRIBUTE_ANCHOR = "anchor";
-	private static final String ATTRIBUTE_FILL = "fill";
-	private static final String ELEMENT_MINIMUM_SIZE = "minimum-size";
-	private static final String ATTRIBUTE_WIDTH = "width";
-	private static final String ATTRIBUTE_HEIGHT = "height";
-	private static final String ELEMENT_PREFERRED_SIZE = "preferred-size";
-	private static final String ELEMENT_MAXIMUM_SIZE = "maximum-size";
-	private static final String ATTRIBUTE_CLASS = "class";
-	private static final String ATTRIBUTE_ICON = "icon";
-	private static final String ATTRIBUTE_TOOLTIP_TEXT = "tooltip-text";
-	private static final String ELEMENT_DEFAULT_CONSTRAINTS = "default-constraints";
-	private static final String ELEMENT_INITIAL_VALUES = "initial-values";
-	private static final String ELEMENT_PROPERTY = "property";
-	private static final String ATTRIBUTE_NAME = "name";
-	private static final String ATTRIBUTE_VALUE = "value";
-	private static final String ATTRIBUTE_REMOVABLE = "removable";
-	private static final String ELEMENT_ITEM = "item";
-	private static final String ELEMENT_GROUP = "group";
-	private static final String ATTRIBUTE_VERSION = "version";
-	private static final String ATTRIBUTE_SINCE_VERSION = "since-version";
-	private static final String ATTRIBUTE_AUTO_CREATE_BINDING = "auto-create-binding";
-	private static final String ATTRIBUTE_CAN_ATTACH_LABEL = "can-attach-label";
-	private static final String ATTRIBUTE_IS_CONTAINER = "is-container";
+    /**
+     * Predefined item for javax.swing.JPanel
+     */
+    private ComponentItem myPanelItem;
+    private static final String ATTRIBUTE_VSIZE_POLICY = "vsize-policy";
+    private static final String ATTRIBUTE_HSIZE_POLICY = "hsize-policy";
+    private static final String ATTRIBUTE_ANCHOR = "anchor";
+    private static final String ATTRIBUTE_FILL = "fill";
+    private static final String ELEMENT_MINIMUM_SIZE = "minimum-size";
+    private static final String ATTRIBUTE_WIDTH = "width";
+    private static final String ATTRIBUTE_HEIGHT = "height";
+    private static final String ELEMENT_PREFERRED_SIZE = "preferred-size";
+    private static final String ELEMENT_MAXIMUM_SIZE = "maximum-size";
+    private static final String ATTRIBUTE_CLASS = "class";
+    private static final String ATTRIBUTE_ICON = "icon";
+    private static final String ATTRIBUTE_TOOLTIP_TEXT = "tooltip-text";
+    private static final String ELEMENT_DEFAULT_CONSTRAINTS = "default-constraints";
+    private static final String ELEMENT_INITIAL_VALUES = "initial-values";
+    private static final String ELEMENT_PROPERTY = "property";
+    private static final String ATTRIBUTE_NAME = "name";
+    private static final String ATTRIBUTE_VALUE = "value";
+    private static final String ATTRIBUTE_REMOVABLE = "removable";
+    private static final String ELEMENT_ITEM = "item";
+    private static final String ELEMENT_GROUP = "group";
+    private static final String ATTRIBUTE_VERSION = "version";
+    private static final String ATTRIBUTE_SINCE_VERSION = "since-version";
+    private static final String ATTRIBUTE_AUTO_CREATE_BINDING = "auto-create-binding";
+    private static final String ATTRIBUTE_CAN_ATTACH_LABEL = "can-attach-label";
+    private static final String ATTRIBUTE_IS_CONTAINER = "is-container";
 
-	public static Palette getInstance(@Nonnull Project project)
-	{
-		return project.getComponent(Palette.class);
-	}
+    public static Palette getInstance(@Nonnull Project project) {
+        return project.getComponent(Palette.class);
+    }
 
-	@Inject
-	public Palette(Project project)
-	{
-		myProject = project;
-		myLafManagerListener = new MyLafManagerListener();
-		myClass2Properties = new HashMap<>();
-		myClassName2Item = new HashMap<>();
-		myGroups = new ArrayList<>();
+    @Inject
+    public Palette(Project project) {
+        myProject = project;
+        myLafManagerListener = new MyLafManagerListener();
+        myClass2Properties = new HashMap<>();
+        myClassName2Item = new HashMap<>();
+        myGroups = new ArrayList<>();
 
-		if(project != null)
-		{
-			mySpecialGroup.setReadOnly(true);
-			mySpecialGroup.addItem(ComponentItem.createAnyComponentItem(project));
-		}
+        if (project != null) {
+            mySpecialGroup.setReadOnly(true);
+            mySpecialGroup.addItem(ComponentItem.createAnyComponentItem(project));
+        }
 
-		LafManager.getInstance().addLafManagerListener(myLafManagerListener, this);
-	}
+        Disposable unReg = StyleManager.get().addChangeListener(myLafManagerListener);
 
-	@Override
-	public void dispose()
-	{
+        Disposer.register(this, unReg);
+    }
 
-	}
+    @Override
+    public void dispose() {
 
-	@Override
-    public Element getState()
-	{
-		Element e = new Element("state");
-		writeExternal(e);
-		return e;
-	}
+    }
 
-	@Override
-    public void loadState(Element state)
-	{
-		readExternal(state);
-	}
+    @Override
+    public Element getState() {
+        Element e = new Element("state");
+        writeExternal(e);
+        return e;
+    }
 
-	/**
-	 * Adds specified listener.
-	 */
-	public void addListener(@Nonnull Listener l)
-	{
-		LOG.assertTrue(!myListeners.contains(l));
-		myListeners.add(l);
-	}
+    @Override
+    public void loadState(Element state) {
+        readExternal(state);
+    }
 
-	/**
-	 * Removes specified listener.
-	 */
-	public void removeListener(@Nonnull Listener l)
-	{
-		LOG.assertTrue(myListeners.contains(l));
-		myListeners.remove(l);
-	}
+    /**
+     * Adds specified listener.
+     */
+    public void addListener(@Nonnull Listener l) {
+        LOG.assertTrue(!myListeners.contains(l));
+        myListeners.add(l);
+    }
 
-	void fireGroupsChanged()
-	{
-		for(Listener listener : myListeners)
-		{
-			listener.groupsChanged(this);
-		}
-	}
+    /**
+     * Removes specified listener.
+     */
+    public void removeListener(@Nonnull Listener l) {
+        LOG.assertTrue(myListeners.contains(l));
+        myListeners.remove(l);
+    }
 
-	public void readExternal(@Nonnull Element element)
-	{
-	/*
+    void fireGroupsChanged() {
+        for (Listener listener : myListeners) {
+            listener.groupsChanged(this);
+        }
+    }
+
+    public void readExternal(@Nonnull Element element) {
+    /*
 	ApplicationManager.getApplication().assertIsDispatchThread();
     */
 
-		// It seems that IDEA inokes readExternal twice: first time for node in defaults XML
-		// the second time for node in project file. Stupidity... :(
-		myClass2Properties.clear();
-		myClassName2Item.clear();
-		myGroups.clear();
+        // It seems that IDEA inokes readExternal twice: first time for node in defaults XML
+        // the second time for node in project file. Stupidity... :(
+        myClass2Properties.clear();
+        myClassName2Item.clear();
+        myGroups.clear();
 
-		// Parse XML
-		List groupElements = element.getChildren(ELEMENT_GROUP);
-		processGroups(groupElements);
+        // Parse XML
+        List groupElements = element.getChildren(ELEMENT_GROUP);
+        processGroups(groupElements);
 
-		// Ensure that all predefined items are loaded
-		LOG.assertTrue(myPanelItem != null);
+        // Ensure that all predefined items are loaded
+        LOG.assertTrue(myPanelItem != null);
 
-		if(!element.getAttributeValue(ATTRIBUTE_VERSION, "1").equals("2"))
-		{
-			upgradePalette();
-		}
-	}
+        if (!element.getAttributeValue(ATTRIBUTE_VERSION, "1").equals("2")) {
+            upgradePalette();
+        }
+    }
 
-	private void upgradePalette()
-	{
-		// load new components from the predefined Palette2.xml
-		try
-		{
-			//noinspection HardCodedStringLiteral
-			Document document = JDOMUtil.loadDocument(getClass().getResourceAsStream("/defaultState/Palette2.xml"));
-			for(Element o : document.getRootElement().getChildren(ELEMENT_GROUP))
-			{
-				for(GroupItem group : myGroups)
-				{
-					if(group.getName().equals(o.getAttributeValue(ATTRIBUTE_NAME)))
-					{
-						upgradeGroup(group, o);
-						break;
-					}
-				}
-			}
-		}
-		catch(Exception e)
-		{
-			LOG.error(e);
-		}
-	}
+    private void upgradePalette() {
+        // load new components from the predefined Palette2.xml
+        try {
+            //noinspection HardCodedStringLiteral
+            Document document = JDOMUtil.loadDocument(getClass().getResourceAsStream("/defaultState/Palette2.xml"));
+            for (Element o : document.getRootElement().getChildren(ELEMENT_GROUP)) {
+                for (GroupItem group : myGroups) {
+                    if (group.getName().equals(o.getAttributeValue(ATTRIBUTE_NAME))) {
+                        upgradeGroup(group, o);
+                        break;
+                    }
+                }
+            }
+        }
+        catch (Exception e) {
+            LOG.error(e);
+        }
+    }
 
-	private void upgradeGroup(GroupItem group, Element groupElement)
-	{
-		for(Element itemElement : groupElement.getChildren(ELEMENT_ITEM))
-		{
-			if(itemElement.getAttributeValue(ATTRIBUTE_SINCE_VERSION, "").equals("2"))
-			{
-				processItemElement(itemElement, group, true);
-			}
-			String className = LwXmlReader.getRequiredString(itemElement, ATTRIBUTE_CLASS);
-			ComponentItem item = getItem(className);
-			if(item != null)
-			{
-				if(LwXmlReader.getOptionalBoolean(itemElement, ATTRIBUTE_AUTO_CREATE_BINDING, false))
-				{
-					item.setAutoCreateBinding(true);
-				}
-				if(LwXmlReader.getOptionalBoolean(itemElement, ATTRIBUTE_CAN_ATTACH_LABEL, false))
-				{
-					item.setCanAttachLabel(true);
-				}
-			}
-		}
-	}
+    private void upgradeGroup(GroupItem group, Element groupElement) {
+        for (Element itemElement : groupElement.getChildren(ELEMENT_ITEM)) {
+            if (itemElement.getAttributeValue(ATTRIBUTE_SINCE_VERSION, "").equals("2")) {
+                processItemElement(itemElement, group, true);
+            }
+            String className = LwXmlReader.getRequiredString(itemElement, ATTRIBUTE_CLASS);
+            ComponentItem item = getItem(className);
+            if (item != null) {
+                if (LwXmlReader.getOptionalBoolean(itemElement, ATTRIBUTE_AUTO_CREATE_BINDING, false)) {
+                    item.setAutoCreateBinding(true);
+                }
+                if (LwXmlReader.getOptionalBoolean(itemElement, ATTRIBUTE_CAN_ATTACH_LABEL, false)) {
+                    item.setCanAttachLabel(true);
+                }
+            }
+        }
+    }
 
-	public void writeExternal(@Nonnull Element element)
-	{
-		writeGroups(element);
-	}
+    public void writeExternal(@Nonnull Element element) {
+        writeGroups(element);
+    }
 
-	/**
-	 * @return a predefined palette item which corresponds to the JPanel.
-	 */
-	@Nonnull
-	public ComponentItem getPanelItem()
-	{
-		return myPanelItem;
-	}
+    /**
+     * @return a predefined palette item which corresponds to the JPanel.
+     */
+    @Nonnull
+    public ComponentItem getPanelItem() {
+        return myPanelItem;
+    }
 
-	/**
-	 * @return <code>ComponentItem</code> for the UI bean with the specified <code>componentClassName</code>.
-	 * The method returns <code>null</code> if palette has no information about the specified
-	 * class.
-	 */
-	@Nullable
-	public ComponentItem getItem(@Nonnull String componentClassName)
-	{
-		return myClassName2Item.get(componentClassName);
-	}
+    /**
+     * @return <code>ComponentItem</code> for the UI bean with the specified <code>componentClassName</code>.
+     * The method returns <code>null</code> if palette has no information about the specified
+     * class.
+     */
+    @Nullable
+    public ComponentItem getItem(@Nonnull String componentClassName) {
+        return myClassName2Item.get(componentClassName);
+    }
 
-	/**
-	 * @return read-only list of all groups in the palette.
-	 * <em>DO NOT MODIFY OR CACHE THIS LIST</em>.
-	 */
-	public List<GroupItem> getGroups()
-	{
-		return myGroups;
-	}
+    /**
+     * @return read-only list of all groups in the palette.
+     * <em>DO NOT MODIFY OR CACHE THIS LIST</em>.
+     */
+    public List<GroupItem> getGroups() {
+        return myGroups;
+    }
 
-	public GroupItem[] getToolWindowGroups()
-	{
-		GroupItem[] groups = new GroupItem[myGroups.size() + 1];
-		for(int i = 0; i < myGroups.size(); i++)
-		{
-			groups[i] = myGroups.get(i);
-		}
-		groups[myGroups.size()] = mySpecialGroup;
-		return groups;
-	}
+    public GroupItem[] getToolWindowGroups() {
+        GroupItem[] groups = new GroupItem[myGroups.size() + 1];
+        for (int i = 0; i < myGroups.size(); i++) {
+            groups[i] = myGroups.get(i);
+        }
+        groups[myGroups.size()] = mySpecialGroup;
+        return groups;
+    }
 
-	/**
-	 * @param groups list of new groups.
-	 */
-	public void setGroups(@Nonnull List<GroupItem> groups)
-	{
-		myGroups.clear();
-		myGroups.addAll(groups);
+    /**
+     * @param groups list of new groups.
+     */
+    public void setGroups(@Nonnull List<GroupItem> groups) {
+        myGroups.clear();
+        myGroups.addAll(groups);
 
-		fireGroupsChanged();
-	}
+        fireGroupsChanged();
+    }
 
-	/**
-	 * Adds specified <code>item</code> to the palette.
-	 *
-	 * @param item item to be added
-	 * @throws IllegalArgumentException if an item for the same class
-	 *                                  is already exists in the palette
-	 */
-	@RequiredUIAccess
-    public void addItem(@Nonnull GroupItem group, @Nonnull ComponentItem item)
-	{
-		// class -> item
-		String componentClassName = item.getClassName();
-		if(getItem(componentClassName) != null)
-		{
+    /**
+     * Adds specified <code>item</code> to the palette.
+     *
+     * @param item item to be added
+     * @throws IllegalArgumentException if an item for the same class
+     *                                  is already exists in the palette
+     */
+    @RequiredUIAccess
+    public void addItem(@Nonnull GroupItem group, @Nonnull ComponentItem item) {
+        // class -> item
+        String componentClassName = item.getClassName();
+        if (getItem(componentClassName) != null) {
             Messages.showMessageDialog(
                 UIDesignerLocalize.errorItemAlreadyAdded(componentClassName).get(),
-				Application.get().getName().get(),
+                Application.get().getName().get(),
                 UIUtil.getErrorIcon()
-			);
-			return;
-		}
-		myClassName2Item.put(componentClassName, item);
+            );
+            return;
+        }
+        myClassName2Item.put(componentClassName, item);
 
-		// group -> items
-		group.addItem(item);
+        // group -> items
+        group.addItem(item);
 
-		// Process special predefined item for JPanel
-		if("javax.swing.JPanel".equals(item.getClassName()))
-		{
-			myPanelItem = item;
-		}
-	}
+        // Process special predefined item for JPanel
+        if ("javax.swing.JPanel".equals(item.getClassName())) {
+            myPanelItem = item;
+        }
+    }
 
-	public void replaceItem(GroupItem group, ComponentItem oldItem, ComponentItem newItem)
-	{
-		group.replaceItem(oldItem, newItem);
-		myClassName2Item.put(oldItem.getClassName(), newItem);
-	}
+    public void replaceItem(GroupItem group, ComponentItem oldItem, ComponentItem newItem) {
+        group.replaceItem(oldItem, newItem);
+        myClassName2Item.put(oldItem.getClassName(), newItem);
+    }
 
-	public void removeItem(GroupItem group, ComponentItem selectedItem)
-	{
-		group.removeItem(selectedItem);
-		myClassName2Item.remove(selectedItem.getClassName());
-	}
+    public void removeItem(GroupItem group, ComponentItem selectedItem) {
+        group.removeItem(selectedItem);
+        myClassName2Item.remove(selectedItem.getClassName());
+    }
 
-	public GroupItem findGroup(ComponentItem componentItem)
-	{
-		for(GroupItem group : myGroups)
-		{
-			if(group.contains(componentItem))
-			{
-				return group;
-			}
-		}
-		return null;
-	}
+    public GroupItem findGroup(ComponentItem componentItem) {
+        for (GroupItem group : myGroups) {
+            if (group.contains(componentItem)) {
+                return group;
+            }
+        }
+        return null;
+    }
 
-	/**
-	 * Helper method.
-	 */
-	private static GridConstraints processDefaultConstraintsElement(@Nonnull Element element)
-	{
-		GridConstraints constraints = new GridConstraints();
+    /**
+     * Helper method.
+     */
+    private static GridConstraints processDefaultConstraintsElement(@Nonnull Element element) {
+        GridConstraints constraints = new GridConstraints();
 
-		// grid related attributes
-		constraints.setVSizePolicy(LwXmlReader.getRequiredInt(element, ATTRIBUTE_VSIZE_POLICY));
-		constraints.setHSizePolicy(LwXmlReader.getRequiredInt(element, ATTRIBUTE_HSIZE_POLICY));
-		constraints.setAnchor(LwXmlReader.getRequiredInt(element, ATTRIBUTE_ANCHOR));
-		constraints.setFill(LwXmlReader.getRequiredInt(element, ATTRIBUTE_FILL));
+        // grid related attributes
+        constraints.setVSizePolicy(LwXmlReader.getRequiredInt(element, ATTRIBUTE_VSIZE_POLICY));
+        constraints.setHSizePolicy(LwXmlReader.getRequiredInt(element, ATTRIBUTE_HSIZE_POLICY));
+        constraints.setAnchor(LwXmlReader.getRequiredInt(element, ATTRIBUTE_ANCHOR));
+        constraints.setFill(LwXmlReader.getRequiredInt(element, ATTRIBUTE_FILL));
 
-		// minimum size
-		Element minSizeElement = element.getChild(ELEMENT_MINIMUM_SIZE);
-		if(minSizeElement != null)
-		{
-			constraints.myMinimumSize.width = LwXmlReader.getRequiredInt(minSizeElement, ATTRIBUTE_WIDTH);
-			constraints.myMinimumSize.height = LwXmlReader.getRequiredInt(minSizeElement, ATTRIBUTE_HEIGHT);
-		}
+        // minimum size
+        Element minSizeElement = element.getChild(ELEMENT_MINIMUM_SIZE);
+        if (minSizeElement != null) {
+            constraints.myMinimumSize.width = LwXmlReader.getRequiredInt(minSizeElement, ATTRIBUTE_WIDTH);
+            constraints.myMinimumSize.height = LwXmlReader.getRequiredInt(minSizeElement, ATTRIBUTE_HEIGHT);
+        }
 
-		// preferred size
-		Element prefSizeElement = element.getChild(ELEMENT_PREFERRED_SIZE);
-		if(prefSizeElement != null)
-		{
-			constraints.myPreferredSize.width = LwXmlReader.getRequiredInt(prefSizeElement, ATTRIBUTE_WIDTH);
-			constraints.myPreferredSize.height = LwXmlReader.getRequiredInt(prefSizeElement, ATTRIBUTE_HEIGHT);
-		}
+        // preferred size
+        Element prefSizeElement = element.getChild(ELEMENT_PREFERRED_SIZE);
+        if (prefSizeElement != null) {
+            constraints.myPreferredSize.width = LwXmlReader.getRequiredInt(prefSizeElement, ATTRIBUTE_WIDTH);
+            constraints.myPreferredSize.height = LwXmlReader.getRequiredInt(prefSizeElement, ATTRIBUTE_HEIGHT);
+        }
 
-		// maximum size
-		Element maxSizeElement = element.getChild(ELEMENT_MAXIMUM_SIZE);
-		if(maxSizeElement != null)
-		{
-			constraints.myMaximumSize.width = LwXmlReader.getRequiredInt(maxSizeElement, ATTRIBUTE_WIDTH);
-			constraints.myMaximumSize.height = LwXmlReader.getRequiredInt(maxSizeElement, ATTRIBUTE_HEIGHT);
-		}
+        // maximum size
+        Element maxSizeElement = element.getChild(ELEMENT_MAXIMUM_SIZE);
+        if (maxSizeElement != null) {
+            constraints.myMaximumSize.width = LwXmlReader.getRequiredInt(maxSizeElement, ATTRIBUTE_WIDTH);
+            constraints.myMaximumSize.height = LwXmlReader.getRequiredInt(maxSizeElement, ATTRIBUTE_HEIGHT);
+        }
 
-		return constraints;
-	}
+        return constraints;
+    }
 
-	private void processItemElement(@Nonnull Element itemElement, @Nonnull GroupItem group, boolean skipExisting)
-	{
-		// Class name. It's OK if class does not exist.
-		String className = LwXmlReader.getRequiredString(itemElement, ATTRIBUTE_CLASS);
-		if(skipExisting && getItem(className) != null)
-		{
-			return;
-		}
+    private void processItemElement(@Nonnull Element itemElement, @Nonnull GroupItem group, boolean skipExisting) {
+        // Class name. It's OK if class does not exist.
+        String className = LwXmlReader.getRequiredString(itemElement, ATTRIBUTE_CLASS);
+        if (skipExisting && getItem(className) != null) {
+            return;
+        }
 
-		// Icon (optional)
-		String iconPath = LwXmlReader.getString(itemElement, ATTRIBUTE_ICON);
+        // Icon (optional)
+        String iconPath = LwXmlReader.getString(itemElement, ATTRIBUTE_ICON);
 
-		// Tooltip text (optional)
-		String toolTipText = LwXmlReader.getString(itemElement, ATTRIBUTE_TOOLTIP_TEXT); // can be null
+        // Tooltip text (optional)
+        String toolTipText = LwXmlReader.getString(itemElement, ATTRIBUTE_TOOLTIP_TEXT); // can be null
 
-		boolean autoCreateBinding = LwXmlReader.getOptionalBoolean(itemElement, ATTRIBUTE_AUTO_CREATE_BINDING, false);
-		boolean canAttachLabel = LwXmlReader.getOptionalBoolean(itemElement, ATTRIBUTE_CAN_ATTACH_LABEL, false);
-		boolean isContainer = LwXmlReader.getOptionalBoolean(itemElement, ATTRIBUTE_IS_CONTAINER, false);
+        boolean autoCreateBinding = LwXmlReader.getOptionalBoolean(itemElement, ATTRIBUTE_AUTO_CREATE_BINDING, false);
+        boolean canAttachLabel = LwXmlReader.getOptionalBoolean(itemElement, ATTRIBUTE_CAN_ATTACH_LABEL, false);
+        boolean isContainer = LwXmlReader.getOptionalBoolean(itemElement, ATTRIBUTE_IS_CONTAINER, false);
 
-		// Default constraint
-		GridConstraints constraints;
-		Element defaultConstraints = itemElement.getChild(ELEMENT_DEFAULT_CONSTRAINTS);
-		if(defaultConstraints != null)
-		{
-			constraints = processDefaultConstraintsElement(defaultConstraints);
-		}
-		else
-		{
-			constraints = new GridConstraints();
-		}
+        // Default constraint
+        GridConstraints constraints;
+        Element defaultConstraints = itemElement.getChild(ELEMENT_DEFAULT_CONSTRAINTS);
+        if (defaultConstraints != null) {
+            constraints = processDefaultConstraintsElement(defaultConstraints);
+        }
+        else {
+            constraints = new GridConstraints();
+        }
 
-		Map<String, StringDescriptor> propertyName2initialValue = new HashMap<>();
-		{
-			Element initialValues = itemElement.getChild(ELEMENT_INITIAL_VALUES);
-			if(initialValues != null)
-			{
-				for(Object o : initialValues.getChildren(ELEMENT_PROPERTY))
-				{
-					Element e = (Element) o;
-					String name = LwXmlReader.getRequiredString(e, ATTRIBUTE_NAME);
-					// TODO[all] currently all initial values are strings
-					StringDescriptor value = StringDescriptor.create(LwXmlReader.getRequiredString(e, ATTRIBUTE_VALUE));
-					propertyName2initialValue.put(name, value);
-				}
-			}
-		}
+        Map<String, StringDescriptor> propertyName2initialValue = new HashMap<>();
+        {
+            Element initialValues = itemElement.getChild(ELEMENT_INITIAL_VALUES);
+            if (initialValues != null) {
+                for (Object o : initialValues.getChildren(ELEMENT_PROPERTY)) {
+                    Element e = (Element) o;
+                    String name = LwXmlReader.getRequiredString(e, ATTRIBUTE_NAME);
+                    // TODO[all] currently all initial values are strings
+                    StringDescriptor value = StringDescriptor.create(LwXmlReader.getRequiredString(e, ATTRIBUTE_VALUE));
+                    propertyName2initialValue.put(name, value);
+                }
+            }
+        }
 
-		boolean removable = LwXmlReader.getOptionalBoolean(itemElement, ATTRIBUTE_REMOVABLE, true);
+        boolean removable = LwXmlReader.getOptionalBoolean(itemElement, ATTRIBUTE_REMOVABLE, true);
 
-		ComponentItem item = new ComponentItem(
-				myProject,
-				className,
-				iconPath,
-				toolTipText,
-				constraints,
-				propertyName2initialValue,
-				removable,
-				autoCreateBinding,
-				canAttachLabel
-		);
-		item.setIsContainer(isContainer);
-		addItem(group, item);
-	}
+        ComponentItem item = new ComponentItem(
+            myProject,
+            className,
+            iconPath,
+            toolTipText,
+            constraints,
+            propertyName2initialValue,
+            removable,
+            autoCreateBinding,
+            canAttachLabel
+        );
+        item.setIsContainer(isContainer);
+        addItem(group, item);
+    }
 
-	/**
-	 * Reads PaletteElements from
-	 */
-	private void processGroups(List groupElements)
-	{
-		for(Object groupElement1 : groupElements)
-		{
-			Element groupElement = (Element) groupElement1;
-			String groupName = LwXmlReader.getRequiredString(groupElement, ATTRIBUTE_NAME);
-			GroupItem group = new GroupItem(groupName);
-			myGroups.add(group);
-			for(Object o : groupElement.getChildren(ELEMENT_ITEM))
-			{
-				Element itemElement = (Element) o;
-				try
-				{
-					processItemElement(itemElement, group, false);
-				}
-				catch(Exception ex)
-				{
-					LOG.error(ex);
-				}
-			}
-		}
-	}
+    /**
+     * Reads PaletteElements from
+     */
+    private void processGroups(List groupElements) {
+        for (Object groupElement1 : groupElements) {
+            Element groupElement = (Element) groupElement1;
+            String groupName = LwXmlReader.getRequiredString(groupElement, ATTRIBUTE_NAME);
+            GroupItem group = new GroupItem(groupName);
+            myGroups.add(group);
+            for (Object o : groupElement.getChildren(ELEMENT_ITEM)) {
+                Element itemElement = (Element) o;
+                try {
+                    processItemElement(itemElement, group, false);
+                }
+                catch (Exception ex) {
+                    LOG.error(ex);
+                }
+            }
+        }
+    }
 
-	/**
-	 * Helper method
-	 */
-	private static void writeDefaultConstraintsElement(@Nonnull Element itemElement, @Nonnull GridConstraints c)
-	{
-		LOG.assertTrue(ELEMENT_ITEM.equals(itemElement.getName()));
+    /**
+     * Helper method
+     */
+    private static void writeDefaultConstraintsElement(@Nonnull Element itemElement, @Nonnull GridConstraints c) {
+        LOG.assertTrue(ELEMENT_ITEM.equals(itemElement.getName()));
 
-		Element element = new Element(ELEMENT_DEFAULT_CONSTRAINTS);
-		itemElement.addContent(element);
+        Element element = new Element(ELEMENT_DEFAULT_CONSTRAINTS);
+        itemElement.addContent(element);
 
-		// grid related attributes
-		{
-			element.setAttribute(ATTRIBUTE_VSIZE_POLICY, Integer.toString(c.getVSizePolicy()));
-			element.setAttribute(ATTRIBUTE_HSIZE_POLICY, Integer.toString(c.getHSizePolicy()));
-			element.setAttribute(ATTRIBUTE_ANCHOR, Integer.toString(c.getAnchor()));
-			element.setAttribute(ATTRIBUTE_FILL, Integer.toString(c.getFill()));
-		}
+        // grid related attributes
+        {
+            element.setAttribute(ATTRIBUTE_VSIZE_POLICY, Integer.toString(c.getVSizePolicy()));
+            element.setAttribute(ATTRIBUTE_HSIZE_POLICY, Integer.toString(c.getHSizePolicy()));
+            element.setAttribute(ATTRIBUTE_ANCHOR, Integer.toString(c.getAnchor()));
+            element.setAttribute(ATTRIBUTE_FILL, Integer.toString(c.getFill()));
+        }
 
-		// minimum size
-		{
-			if(c.myMinimumSize.width != -1 || c.myMinimumSize.height != -1)
-			{
-				Element _element = new Element(ELEMENT_MINIMUM_SIZE);
-				element.addContent(_element);
-				_element.setAttribute(ATTRIBUTE_WIDTH, Integer.toString(c.myMinimumSize.width));
-				_element.setAttribute(ATTRIBUTE_HEIGHT, Integer.toString(c.myMinimumSize.height));
-			}
-		}
+        // minimum size
+        {
+            if (c.myMinimumSize.width != -1 || c.myMinimumSize.height != -1) {
+                Element _element = new Element(ELEMENT_MINIMUM_SIZE);
+                element.addContent(_element);
+                _element.setAttribute(ATTRIBUTE_WIDTH, Integer.toString(c.myMinimumSize.width));
+                _element.setAttribute(ATTRIBUTE_HEIGHT, Integer.toString(c.myMinimumSize.height));
+            }
+        }
 
-		// preferred size
-		{
-			if(c.myPreferredSize.width != -1 || c.myPreferredSize.height != -1)
-			{
-				Element _element = new Element(ELEMENT_PREFERRED_SIZE);
-				element.addContent(_element);
-				_element.setAttribute(ATTRIBUTE_WIDTH, Integer.toString(c.myPreferredSize.width));
-				_element.setAttribute(ATTRIBUTE_HEIGHT, Integer.toString(c.myPreferredSize.height));
-			}
-		}
+        // preferred size
+        {
+            if (c.myPreferredSize.width != -1 || c.myPreferredSize.height != -1) {
+                Element _element = new Element(ELEMENT_PREFERRED_SIZE);
+                element.addContent(_element);
+                _element.setAttribute(ATTRIBUTE_WIDTH, Integer.toString(c.myPreferredSize.width));
+                _element.setAttribute(ATTRIBUTE_HEIGHT, Integer.toString(c.myPreferredSize.height));
+            }
+        }
 
-		// maximum size
-		{
-			if(c.myMaximumSize.width != -1 || c.myMaximumSize.height != -1)
-			{
-				Element _element = new Element(ELEMENT_MAXIMUM_SIZE);
-				element.addContent(_element);
-				_element.setAttribute(ATTRIBUTE_WIDTH, Integer.toString(c.myMaximumSize.width));
-				_element.setAttribute(ATTRIBUTE_HEIGHT, Integer.toString(c.myMaximumSize.height));
-			}
-		}
-	}
+        // maximum size
+        {
+            if (c.myMaximumSize.width != -1 || c.myMaximumSize.height != -1) {
+                Element _element = new Element(ELEMENT_MAXIMUM_SIZE);
+                element.addContent(_element);
+                _element.setAttribute(ATTRIBUTE_WIDTH, Integer.toString(c.myMaximumSize.width));
+                _element.setAttribute(ATTRIBUTE_HEIGHT, Integer.toString(c.myMaximumSize.height));
+            }
+        }
+    }
 
-	/**
-	 * Helper method
-	 */
-	private static void writeInitialValuesElement(
-			@Nonnull Element itemElement,
-			@Nonnull Map<String, StringDescriptor> name2value
-	)
-	{
-		LOG.assertTrue(ELEMENT_ITEM.equals(itemElement.getName()));
+    /**
+     * Helper method
+     */
+    private static void writeInitialValuesElement(
+        @Nonnull Element itemElement,
+        @Nonnull Map<String, StringDescriptor> name2value
+    ) {
+        LOG.assertTrue(ELEMENT_ITEM.equals(itemElement.getName()));
 
-		if(name2value.size() == 0)
-		{ // do not append 'initial-values' subtag
-			return;
-		}
+        if (name2value.size() == 0) { // do not append 'initial-values' subtag
+            return;
+        }
 
-		Element initialValuesElement = new Element(ELEMENT_INITIAL_VALUES);
-		itemElement.addContent(initialValuesElement);
+        Element initialValuesElement = new Element(ELEMENT_INITIAL_VALUES);
+        itemElement.addContent(initialValuesElement);
 
-		for(Map.Entry<String, StringDescriptor> entry : name2value.entrySet())
-		{
-			Element propertyElement = new Element(ELEMENT_PROPERTY);
-			initialValuesElement.addContent(propertyElement);
-			propertyElement.setAttribute(ATTRIBUTE_NAME, entry.getKey());
-			propertyElement.setAttribute(ATTRIBUTE_VALUE, entry.getValue().getValue()/*descriptor is always trivial*/);
-		}
-	}
+        for (Map.Entry<String, StringDescriptor> entry : name2value.entrySet()) {
+            Element propertyElement = new Element(ELEMENT_PROPERTY);
+            initialValuesElement.addContent(propertyElement);
+            propertyElement.setAttribute(ATTRIBUTE_NAME, entry.getKey());
+            propertyElement.setAttribute(ATTRIBUTE_VALUE, entry.getValue().getValue()/*descriptor is always trivial*/);
+        }
+    }
 
-	/**
-	 * Helper method
-	 */
-	private static void writeComponentItem(@Nonnull Element groupElement, @Nonnull ComponentItem item)
-	{
-		LOG.assertTrue(ELEMENT_GROUP.equals(groupElement.getName()));
+    /**
+     * Helper method
+     */
+    private static void writeComponentItem(@Nonnull Element groupElement, @Nonnull ComponentItem item) {
+        LOG.assertTrue(ELEMENT_GROUP.equals(groupElement.getName()));
 
-		Element itemElement = new Element(ELEMENT_ITEM);
-		groupElement.addContent(itemElement);
+        Element itemElement = new Element(ELEMENT_ITEM);
+        groupElement.addContent(itemElement);
 
-		// Class
-		itemElement.setAttribute(ATTRIBUTE_CLASS, item.getClassName());
+        // Class
+        itemElement.setAttribute(ATTRIBUTE_CLASS, item.getClassName());
 
-		// Tooltip text (if any)
-		if(item.myToolTipText != null)
-		{
-			itemElement.setAttribute(ATTRIBUTE_TOOLTIP_TEXT, item.myToolTipText);
-		}
+        // Tooltip text (if any)
+        if (item.myToolTipText != null) {
+            itemElement.setAttribute(ATTRIBUTE_TOOLTIP_TEXT, item.myToolTipText);
+        }
 
-		// Icon (if any)
-		String iconPath = item.getIconPath();
-		if(iconPath != null)
-		{
-			itemElement.setAttribute(ATTRIBUTE_ICON, iconPath);
-		}
+        // Icon (if any)
+        String iconPath = item.getIconPath();
+        if (iconPath != null) {
+            itemElement.setAttribute(ATTRIBUTE_ICON, iconPath);
+        }
 
-		// Removable
-		itemElement.setAttribute(ATTRIBUTE_REMOVABLE, Boolean.toString(item.isRemovable()));
-		itemElement.setAttribute(ATTRIBUTE_AUTO_CREATE_BINDING, Boolean.toString(item.isAutoCreateBinding()));
-		itemElement.setAttribute(ATTRIBUTE_CAN_ATTACH_LABEL, Boolean.toString(item.isCanAttachLabel()));
-		if(item.isContainer())
-		{
-			itemElement.setAttribute(ATTRIBUTE_IS_CONTAINER, Boolean.toString(item.isContainer()));
-		}
+        // Removable
+        itemElement.setAttribute(ATTRIBUTE_REMOVABLE, Boolean.toString(item.isRemovable()));
+        itemElement.setAttribute(ATTRIBUTE_AUTO_CREATE_BINDING, Boolean.toString(item.isAutoCreateBinding()));
+        itemElement.setAttribute(ATTRIBUTE_CAN_ATTACH_LABEL, Boolean.toString(item.isCanAttachLabel()));
+        if (item.isContainer()) {
+            itemElement.setAttribute(ATTRIBUTE_IS_CONTAINER, Boolean.toString(item.isContainer()));
+        }
 
-		// Default constraints
-		writeDefaultConstraintsElement(itemElement, item.getDefaultConstraints());
+        // Default constraints
+        writeDefaultConstraintsElement(itemElement, item.getDefaultConstraints());
 
-		// Initial values (if any)
-		writeInitialValuesElement(itemElement, item.getInitialValues());
-	}
+        // Initial values (if any)
+        writeInitialValuesElement(itemElement, item.getInitialValues());
+    }
 
-	/**
-	 * @param parentElement element to which all "group" elements will be appended
-	 */
-	private void writeGroups(@Nonnull Element parentElement)
-	{
-		for(GroupItem group : myGroups)
-		{
-			Element groupElement = new Element(ELEMENT_GROUP);
-			parentElement.addContent(groupElement);
-			groupElement.setAttribute(ATTRIBUTE_NAME, group.getName());
+    /**
+     * @param parentElement element to which all "group" elements will be appended
+     */
+    private void writeGroups(@Nonnull Element parentElement) {
+        for (GroupItem group : myGroups) {
+            Element groupElement = new Element(ELEMENT_GROUP);
+            parentElement.addContent(groupElement);
+            groupElement.setAttribute(ATTRIBUTE_NAME, group.getName());
 
-			ComponentItem[] itemList = group.getItems();
-			for(ComponentItem aItemList : itemList)
-			{
-				writeComponentItem(groupElement, aItemList);
-			}
-		}
-	}
+            ComponentItem[] itemList = group.getItems();
+            for (ComponentItem aItemList : itemList) {
+                writeComponentItem(groupElement, aItemList);
+            }
+        }
+    }
 
-	/**
-	 * Helper method
-	 */
-	private static IntroIntProperty createIntEnumProperty(
-			String name,
-			Method readMethod,
-			Method writeMethod,
-			IntEnumEditor.Pair[] pairs
-	)
-	{
-		return new IntroIntProperty(
-				name,
-				readMethod,
-				writeMethod,
-				new IntEnumRenderer(pairs),
-				new IntEnumEditor(pairs), false);
-	}
+    /**
+     * Helper method
+     */
+    private static IntroIntProperty createIntEnumProperty(
+        String name,
+        Method readMethod,
+        Method writeMethod,
+        IntEnumEditor.Pair[] pairs
+    ) {
+        return new IntroIntProperty(
+            name,
+            readMethod,
+            writeMethod,
+            new IntEnumRenderer(pairs),
+            new IntEnumEditor(pairs), false);
+    }
 
-	@Nonnull
-	public IntrospectedProperty[] getIntrospectedProperties(@Nonnull RadComponent component)
-	{
-		return getIntrospectedProperties(component.getComponentClass(), component.getDelegee().getClass());
-	}
+    @Nonnull
+    public IntrospectedProperty[] getIntrospectedProperties(@Nonnull RadComponent component) {
+        return getIntrospectedProperties(component.getComponentClass(), component.getDelegee().getClass());
+    }
 
-	/**
-	 * @return arrys of all properties that can be introspected from the
-	 * specified class. Only properties with getter and setter methods are
-	 * returned.
-	 */
-	@Nonnull
-	public IntrospectedProperty[] getIntrospectedProperties(@Nonnull Class aClass, @Nonnull Class delegeeClass)
-	{
-		// Try the cache first
-		// TODO[vova, anton] update cache after class reloading (its properties caould be hanged).
-		if(myClass2Properties.containsKey(aClass))
-		{
-			return myClass2Properties.get(aClass);
-		}
+    /**
+     * @return arrys of all properties that can be introspected from the
+     * specified class. Only properties with getter and setter methods are
+     * returned.
+     */
+    @Nonnull
+    public IntrospectedProperty[] getIntrospectedProperties(@Nonnull Class aClass, @Nonnull Class delegeeClass) {
+        // Try the cache first
+        // TODO[vova, anton] update cache after class reloading (its properties caould be hanged).
+        if (myClass2Properties.containsKey(aClass)) {
+            return myClass2Properties.get(aClass);
+        }
 
-		List<IntrospectedProperty> result = new ArrayList<>();
-		try
-		{
-			BeanInfo beanInfo = Introspector.getBeanInfo(aClass);
-			PropertyDescriptor[] descriptors = beanInfo.getPropertyDescriptors();
-			for(PropertyDescriptor descriptor : descriptors)
-			{
-				Method readMethod = descriptor.getReadMethod();
-				Method writeMethod = descriptor.getWriteMethod();
-				Class propertyType = descriptor.getPropertyType();
-				if(writeMethod == null || readMethod == null || propertyType == null)
-				{
-					continue;
-				}
+        List<IntrospectedProperty> result = new ArrayList<>();
+        try {
+            BeanInfo beanInfo = Introspector.getBeanInfo(aClass);
+            PropertyDescriptor[] descriptors = beanInfo.getPropertyDescriptors();
+            for (PropertyDescriptor descriptor : descriptors) {
+                Method readMethod = descriptor.getReadMethod();
+                Method writeMethod = descriptor.getWriteMethod();
+                Class propertyType = descriptor.getPropertyType();
+                if (writeMethod == null || readMethod == null || propertyType == null) {
+                    continue;
+                }
 
-				boolean storeAsClient = false;
-				try
-				{
-					delegeeClass.getMethod(readMethod.getName(), readMethod.getParameterTypes());
-					delegeeClass.getMethod(writeMethod.getName(), writeMethod.getParameterTypes());
-				}
-				catch(NoSuchMethodException e)
-				{
-					storeAsClient = true;
-				}
+                boolean storeAsClient = false;
+                try {
+                    delegeeClass.getMethod(readMethod.getName(), readMethod.getParameterTypes());
+                    delegeeClass.getMethod(writeMethod.getName(), writeMethod.getParameterTypes());
+                }
+                catch (NoSuchMethodException e) {
+                    storeAsClient = true;
+                }
 
-				String name = descriptor.getName();
+                String name = descriptor.getName();
 
-				IntrospectedProperty property;
+                IntrospectedProperty property;
 
-				Properties properties = (myProject == null) ? new Properties() : Properties.getInstance();
-				if(int.class.equals(propertyType))
-				{ // int
-					IntEnumEditor.Pair[] enumPairs = properties.getEnumPairs(aClass, name);
-					if(enumPairs != null)
-					{
-						property = createIntEnumProperty(name, readMethod, writeMethod, enumPairs);
-					}
-					else if(JLabel.class.isAssignableFrom(aClass))
-					{ // special handling for javax.swing.JLabel
-						if(JLabel.class.isAssignableFrom(aClass) && ("displayedMnemonic".equals(name) || "displayedMnemonicIndex".equals(name)))
-						{ // skip JLabel#displayedMnemonic and JLabel#displayedMnemonicIndex
-							continue;
-						}
-						else
-						{
-							property = new IntroIntProperty(name, readMethod, writeMethod, storeAsClient);
-						}
-					}
-					else if(AbstractButton.class.isAssignableFrom(aClass))
-					{  // special handling AbstractButton subclasses
-						if("mnemonic".equals(name) || "displayedMnemonicIndex".equals(name))
-						{ // AbstractButton#mnemonic
-							continue;
-						}
-						else
-						{
-							property = new IntroIntProperty(name, readMethod, writeMethod, storeAsClient);
-						}
-					}
-					else if(JTabbedPane.class.isAssignableFrom(aClass))
-					{
-						if(SwingProperties.SELECTED_INDEX.equals(name))
-						{
-							continue;
-						}
-						property = new IntroIntProperty(name, readMethod, writeMethod, storeAsClient);
-					}
-					else
-					{
-						property = new IntroIntProperty(name, readMethod, writeMethod, storeAsClient);
-					}
-				}
-				else if(boolean.class.equals(propertyType))
-				{ // boolean
-					property = new IntroBooleanProperty(name, readMethod, writeMethod, storeAsClient);
-				}
-				else if(double.class.equals(propertyType))
-				{
-					property = new IntroPrimitiveTypeProperty(name, readMethod, writeMethod, storeAsClient, Double.class);
-				}
-				else if(float.class.equals(propertyType))
-				{
-					property = new IntroPrimitiveTypeProperty(name, readMethod, writeMethod, storeAsClient, Float.class);
-				}
-				else if(long.class.equals(propertyType))
-				{
-					property = new IntroPrimitiveTypeProperty(name, readMethod, writeMethod, storeAsClient, Long.class);
-				}
-				else if(byte.class.equals(propertyType))
-				{
-					property = new IntroPrimitiveTypeProperty(name, readMethod, writeMethod, storeAsClient, Byte.class);
-				}
-				else if(short.class.equals(propertyType))
-				{
-					property = new IntroPrimitiveTypeProperty(name, readMethod, writeMethod, storeAsClient, Short.class);
-				}
-				else if(char.class.equals(propertyType))
-				{ // java.lang.String
-					property = new IntroCharProperty(name, readMethod, writeMethod, storeAsClient);
-				}
-				else if(String.class.equals(propertyType))
-				{ // java.lang.String
-					property = new IntroStringProperty(name, readMethod, writeMethod, myProject, storeAsClient);
-				}
-				else if(Insets.class.equals(propertyType))
-				{ // java.awt.Insets
-					property = new IntroInsetsProperty(name, readMethod, writeMethod, storeAsClient);
-				}
-				else if(Dimension.class.equals(propertyType))
-				{ // java.awt.Dimension
-					property = new IntroDimensionProperty(name, readMethod, writeMethod, storeAsClient);
-				}
-				else if(Rectangle.class.equals(propertyType))
-				{ // java.awt.Rectangle
-					property = new IntroRectangleProperty(name, readMethod, writeMethod, storeAsClient);
-				}
-				else if(Component.class.isAssignableFrom(propertyType))
-				{
-					if(JSplitPane.class.isAssignableFrom(aClass) && (name.equals("leftComponent") || name.equals("rightComponent") ||
-							name.equals("topComponent") || name.equals("bottomComponent")))
-					{
-						// these properties are set through layout
-						continue;
-					}
-					if(JTabbedPane.class.isAssignableFrom(aClass) && name.equals(SwingProperties.SELECTED_COMPONENT))
-					{
-						// can't set selectedComponent because of set property / add child sequence
-						continue;
-					}
-					if(JMenuBar.class.isAssignableFrom(propertyType) || JPopupMenu.class.isAssignableFrom(propertyType))
-					{
-						// no menu editing yet
-						continue;
-					}
-					Condition<RadComponent> filter = null;
-					if(name.equals(SwingProperties.LABEL_FOR))
-					{
-						filter = t -> {
+                Properties properties = (myProject == null) ? new Properties() : Properties.getInstance();
+                if (int.class.equals(propertyType)) { // int
+                    IntEnumEditor.Pair[] enumPairs = properties.getEnumPairs(aClass, name);
+                    if (enumPairs != null) {
+                        property = createIntEnumProperty(name, readMethod, writeMethod, enumPairs);
+                    }
+                    else if (JLabel.class.isAssignableFrom(aClass)) { // special handling for javax.swing.JLabel
+                        if (JLabel.class.isAssignableFrom(aClass) && ("displayedMnemonic".equals(name) || "displayedMnemonicIndex".equals(name))) { // skip JLabel#displayedMnemonic and JLabel#displayedMnemonicIndex
+                            continue;
+                        }
+                        else {
+                            property = new IntroIntProperty(name, readMethod, writeMethod, storeAsClient);
+                        }
+                    }
+                    else if (AbstractButton.class.isAssignableFrom(aClass)) {  // special handling AbstractButton subclasses
+                        if ("mnemonic".equals(name) || "displayedMnemonicIndex".equals(name)) { // AbstractButton#mnemonic
+                            continue;
+                        }
+                        else {
+                            property = new IntroIntProperty(name, readMethod, writeMethod, storeAsClient);
+                        }
+                    }
+                    else if (JTabbedPane.class.isAssignableFrom(aClass)) {
+                        if (SwingProperties.SELECTED_INDEX.equals(name)) {
+                            continue;
+                        }
+                        property = new IntroIntProperty(name, readMethod, writeMethod, storeAsClient);
+                    }
+                    else {
+                        property = new IntroIntProperty(name, readMethod, writeMethod, storeAsClient);
+                    }
+                }
+                else if (boolean.class.equals(propertyType)) { // boolean
+                    property = new IntroBooleanProperty(name, readMethod, writeMethod, storeAsClient);
+                }
+                else if (double.class.equals(propertyType)) {
+                    property = new IntroPrimitiveTypeProperty(name, readMethod, writeMethod, storeAsClient, Double.class);
+                }
+                else if (float.class.equals(propertyType)) {
+                    property = new IntroPrimitiveTypeProperty(name, readMethod, writeMethod, storeAsClient, Float.class);
+                }
+                else if (long.class.equals(propertyType)) {
+                    property = new IntroPrimitiveTypeProperty(name, readMethod, writeMethod, storeAsClient, Long.class);
+                }
+                else if (byte.class.equals(propertyType)) {
+                    property = new IntroPrimitiveTypeProperty(name, readMethod, writeMethod, storeAsClient, Byte.class);
+                }
+                else if (short.class.equals(propertyType)) {
+                    property = new IntroPrimitiveTypeProperty(name, readMethod, writeMethod, storeAsClient, Short.class);
+                }
+                else if (char.class.equals(propertyType)) { // java.lang.String
+                    property = new IntroCharProperty(name, readMethod, writeMethod, storeAsClient);
+                }
+                else if (String.class.equals(propertyType)) { // java.lang.String
+                    property = new IntroStringProperty(name, readMethod, writeMethod, myProject, storeAsClient);
+                }
+                else if (Insets.class.equals(propertyType)) { // java.awt.Insets
+                    property = new IntroInsetsProperty(name, readMethod, writeMethod, storeAsClient);
+                }
+                else if (Dimension.class.equals(propertyType)) { // java.awt.Dimension
+                    property = new IntroDimensionProperty(name, readMethod, writeMethod, storeAsClient);
+                }
+                else if (Rectangle.class.equals(propertyType)) { // java.awt.Rectangle
+                    property = new IntroRectangleProperty(name, readMethod, writeMethod, storeAsClient);
+                }
+                else if (Component.class.isAssignableFrom(propertyType)) {
+                    if (JSplitPane.class.isAssignableFrom(aClass) && (name.equals("leftComponent") || name.equals("rightComponent") ||
+                        name.equals("topComponent") || name.equals("bottomComponent"))) {
+                        // these properties are set through layout
+                        continue;
+                    }
+                    if (JTabbedPane.class.isAssignableFrom(aClass) && name.equals(SwingProperties.SELECTED_COMPONENT)) {
+                        // can't set selectedComponent because of set property / add child sequence
+                        continue;
+                    }
+                    if (JMenuBar.class.isAssignableFrom(propertyType) || JPopupMenu.class.isAssignableFrom(propertyType)) {
+                        // no menu editing yet
+                        continue;
+                    }
+                    Condition<RadComponent> filter = null;
+                    if (name.equals(SwingProperties.LABEL_FOR)) {
+                        filter = t -> {
                             ComponentItem item = getItem(t.getComponentClassName());
                             return item != null && item.isCanAttachLabel();
                         };
-					}
-					property = new IntroComponentProperty(name, readMethod, writeMethod, propertyType, filter, storeAsClient);
-				}
-				else if(Color.class.equals(propertyType))
-				{
-					property = new IntroColorProperty(name, readMethod, writeMethod, storeAsClient);
-				}
-				else if(Font.class.equals(propertyType))
-				{
-					property = new IntroFontProperty(name, readMethod, writeMethod, storeAsClient);
-				}
-				else if(Icon.class.equals(propertyType))
-				{
-					property = new IntroIconProperty(name, readMethod, writeMethod, storeAsClient);
-				}
-				else if(ListModel.class.isAssignableFrom(propertyType))
-				{
-					property = new IntroListModelProperty(name, readMethod, writeMethod, storeAsClient);
-				}
-				else if(Enum.class.isAssignableFrom(propertyType))
-				{
-					property = new IntroEnumProperty(name, readMethod, writeMethod, storeAsClient, propertyType);
-				}
-				else
-				{
-					// other types are not supported (yet?)
-					continue;
-				}
+                    }
+                    property = new IntroComponentProperty(name, readMethod, writeMethod, propertyType, filter, storeAsClient);
+                }
+                else if (Color.class.equals(propertyType)) {
+                    property = new IntroColorProperty(name, readMethod, writeMethod, storeAsClient);
+                }
+                else if (Font.class.equals(propertyType)) {
+                    property = new IntroFontProperty(name, readMethod, writeMethod, storeAsClient);
+                }
+                else if (Icon.class.equals(propertyType)) {
+                    property = new IntroIconProperty(name, readMethod, writeMethod, storeAsClient);
+                }
+                else if (ListModel.class.isAssignableFrom(propertyType)) {
+                    property = new IntroListModelProperty(name, readMethod, writeMethod, storeAsClient);
+                }
+                else if (Enum.class.isAssignableFrom(propertyType)) {
+                    property = new IntroEnumProperty(name, readMethod, writeMethod, storeAsClient, propertyType);
+                }
+                else {
+                    // other types are not supported (yet?)
+                    continue;
+                }
 
-				result.add(property);
-			}
-		}
-		catch(IntrospectionException e)
-		{
-			throw new RuntimeException(e);
-		}
+                result.add(property);
+            }
+        }
+        catch (IntrospectionException e) {
+            throw new RuntimeException(e);
+        }
 
-		IntrospectedProperty[] properties = result.toArray(new IntrospectedProperty[result.size()]);
-		myClass2Properties.put(aClass, properties);
-		return properties;
-	}
+        IntrospectedProperty[] properties = result.toArray(new IntrospectedProperty[result.size()]);
+        myClass2Properties.put(aClass, properties);
+        return properties;
+    }
 
-	/**
-	 * @return introspected property with the given <code>name</code> of the
-	 * specified <code>class</code>. The method returns <code>null</code> if there is no
-	 * property with the such name.
-	 */
-	@Nullable
-	public IntrospectedProperty getIntrospectedProperty(@Nonnull RadComponent component, @Nonnull String name)
-	{
-		IntrospectedProperty[] properties = getIntrospectedProperties(component);
-		for(IntrospectedProperty property : properties)
-		{
-			if(name.equals(property.getName()))
-			{
-				return property;
-			}
-		}
-		return null;
-	}
+    /**
+     * @return introspected property with the given <code>name</code> of the
+     * specified <code>class</code>. The method returns <code>null</code> if there is no
+     * property with the such name.
+     */
+    @Nullable
+    public IntrospectedProperty getIntrospectedProperty(@Nonnull RadComponent component, @Nonnull String name) {
+        IntrospectedProperty[] properties = getIntrospectedProperties(component);
+        for (IntrospectedProperty property : properties) {
+            if (name.equals(property.getName())) {
+                return property;
+            }
+        }
+        return null;
+    }
 
-	/**
-	 * @return "inplace" property for the component with the specified class.
-	 * <b>DO NOT USE THIS METHOD DIRECTLY</b>. Use {@link RadComponent#getInplaceProperty(int, int) }
-	 * instead.
-	 */
-	@Nullable
-	public IntrospectedProperty getInplaceProperty(@Nonnull RadComponent component)
-	{
-		String inplaceProperty = Properties.getInstance().getInplaceProperty(component.getComponentClass());
-		IntrospectedProperty[] properties = getIntrospectedProperties(component);
-		for(int i = properties.length - 1; i >= 0; i--)
-		{
-			IntrospectedProperty property = properties[i];
-			if(property.getName().equals(inplaceProperty))
-			{
-				return property;
-			}
-		}
-		return null;
-	}
+    /**
+     * @return "inplace" property for the component with the specified class.
+     * <b>DO NOT USE THIS METHOD DIRECTLY</b>. Use {@link RadComponent#getInplaceProperty(int, int) }
+     * instead.
+     */
+    @Nullable
+    public IntrospectedProperty getInplaceProperty(@Nonnull RadComponent component) {
+        String inplaceProperty = Properties.getInstance().getInplaceProperty(component.getComponentClass());
+        IntrospectedProperty[] properties = getIntrospectedProperties(component);
+        for (int i = properties.length - 1; i >= 0; i--) {
+            IntrospectedProperty property = properties[i];
+            if (property.getName().equals(inplaceProperty)) {
+                return property;
+            }
+        }
+        return null;
+    }
 
-	public static boolean isRemovable(@Nonnull GroupItem group)
-	{
-		ComponentItem[] items = group.getItems();
-		for(int i = items.length - 1; i >= 0; i--)
-		{
-			if(!items[i].isRemovable())
-			{
-				return false;
-			}
-		}
-		return true;
-	}
+    public static boolean isRemovable(@Nonnull GroupItem group) {
+        ComponentItem[] items = group.getItems();
+        for (int i = items.length - 1; i >= 0; i--) {
+            if (!items[i].isRemovable()) {
+                return false;
+            }
+        }
+        return true;
+    }
 
-	/**
-	 * Updates UI of editors and renderers of all introspected properties
-	 */
-	private final class MyLafManagerListener implements LafManagerListener
-	{
-		private void updateUI(Property property)
-		{
-			PropertyRenderer renderer = property.getRenderer();
-			renderer.updateUI();
-			PropertyEditor editor = property.getEditor();
-			if(editor != null)
-			{
-				editor.updateUI();
-			}
-			Property[] children = property.getChildren(null);
-			for(int i = children.length - 1; i >= 0; i--)
-			{
-				updateUI(children[i]);
-			}
-		}
+    /**
+     * Updates UI of editors and renderers of all introspected properties
+     */
+    private final class MyLafManagerListener implements StyleChangeListener {
+        private void updateUI(Property property) {
+            PropertyRenderer renderer = property.getRenderer();
+            renderer.updateUI();
+            PropertyEditor editor = property.getEditor();
+            if (editor != null) {
+                editor.updateUI();
+            }
+            Property[] children = property.getChildren(null);
+            for (int i = children.length - 1; i >= 0; i--) {
+                updateUI(children[i]);
+            }
+        }
 
-		@Override
-        public void lookAndFeelChanged(LafManager source)
-		{
-			for(IntrospectedProperty[] properties : myClass2Properties.values())
-			{
-				LOG.assertTrue(properties != null);
-				for(int j = properties.length - 1; j >= 0; j--)
-				{
-					updateUI(properties[j]);
-				}
-			}
-		}
-	}
+        @Override
+        public void styleChanged(Style style, Style style1) {
+            for (IntrospectedProperty[] properties : myClass2Properties.values()) {
+                LOG.assertTrue(properties != null);
+                for (int j = properties.length - 1; j >= 0; j--) {
+                    updateUI(properties[j]);
+                }
+            }
+        }
+    }
 
-	static interface Listener
-	{
-		void groupsChanged(Palette palette);
-	}
+    static interface Listener {
+        void groupsChanged(Palette palette);
+    }
 }
