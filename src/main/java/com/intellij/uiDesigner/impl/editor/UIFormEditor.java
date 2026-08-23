@@ -18,23 +18,23 @@ package com.intellij.uiDesigner.impl.editor;
 import com.intellij.uiDesigner.impl.FormEditingUtil;
 import com.intellij.uiDesigner.impl.FormHighlightingPass;
 import com.intellij.uiDesigner.impl.GuiFormFileType;
-import com.intellij.uiDesigner.impl.UIDesignerBundle;
 import com.intellij.uiDesigner.impl.designSurface.GuiEditor;
 import com.intellij.uiDesigner.impl.radComponents.RadComponent;
 import consulo.document.Document;
 import consulo.document.FileDocumentManager;
 import consulo.fileEditor.FileEditor;
-import consulo.fileEditor.FileEditorLocation;
 import consulo.fileEditor.FileEditorState;
 import consulo.fileEditor.FileEditorStateLevel;
 import consulo.fileEditor.highlight.BackgroundEditorHighlighter;
 import consulo.fileEditor.highlight.HighlightingPass;
 import consulo.fileEditor.structureView.StructureViewBuilder;
 import consulo.language.file.light.LightVirtualFile;
-import consulo.language.psi.PsiDocumentManager;
 import consulo.language.util.ModuleUtilCore;
 import consulo.module.Module;
 import consulo.project.Project;
+import consulo.ui.Component;
+import consulo.ui.ex.awtUnsafe.TargetAWT;
+import consulo.uiDesigner.impl.localize.UIDesignerLocalize;
 import consulo.util.dataholder.UserDataHolderBase;
 import consulo.virtualFileSystem.VirtualFile;
 import jakarta.annotation.Nonnull;
@@ -64,6 +64,11 @@ public final class UIFormEditor extends UserDataHolderBase implements /*Navigata
     }
 
     @Override
+    public Component getUIComponent() {
+        return TargetAWT.wrap(myEditor);
+    }
+
+    @Override
     @Nonnull
     public JComponent getComponent() {
         return myEditor;
@@ -82,7 +87,7 @@ public final class UIFormEditor extends UserDataHolderBase implements /*Navigata
     @Override
     @Nonnull
     public String getName() {
-        return UIDesignerBundle.message("title.gui.designer");
+        return UIDesignerLocalize.titleGuiDesigner().get();
     }
 
     public GuiEditor getEditor() {
@@ -101,14 +106,6 @@ public final class UIFormEditor extends UserDataHolderBase implements /*Navigata
     }
 
     @Override
-    public void selectNotify() {
-    }
-
-    @Override
-    public void deselectNotify() {
-    }
-
-    @Override
     public void addPropertyChangeListener(@Nonnull PropertyChangeListener listener) {
         //TODO[anton,vova]
     }
@@ -124,11 +121,6 @@ public final class UIFormEditor extends UserDataHolderBase implements /*Navigata
             myBackgroundEditorHighlighter = new MyBackgroundEditorHighlighter(myEditor);
         }
         return myBackgroundEditorHighlighter;
-    }
-
-    @Override
-    public FileEditorLocation getCurrentLocation() {
-        return null;
     }
 
     @Override
@@ -180,22 +172,6 @@ public final class UIFormEditor extends UserDataHolderBase implements /*Navigata
     public VirtualFile getFile() {
         return myFile;
     }
-
-  /*
-  public boolean canNavigateTo(@NotNull final Navigatable navigatable) {
-    if (navigatable instanceof ComponentNavigatable) {
-      return true;
-    }
-    return (navigatable instanceof OpenFileDescriptor) && (((OpenFileDescriptor)navigatable).getOffset() >= 0 || (
-      ((OpenFileDescriptor)navigatable).getLine() != -1 && ((OpenFileDescriptor)navigatable).getColumn() != -1));
-  }
-
-  public void navigateTo(@NotNull final Navigatable navigatable) {
-    if (navigatable instanceof ComponentNavigatable) {
-      String componentId = ((ComponentNavigatable))
-    }
-  }
-  */
 
     private class MyBackgroundEditorHighlighter implements BackgroundEditorHighlighter {
         private final HighlightingPass[] myPasses;
