@@ -20,139 +20,94 @@ import consulo.index.io.PersistentHashMap;
 import consulo.index.io.data.DataExternalizer;
 import consulo.index.io.data.IOUtil;
 import consulo.util.io.FileUtil;
-import org.jetbrains.annotations.NonNls;
 
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Iterator;
+import java.nio.file.Path;
 
-public abstract class BindingsStateCache<T>
-{
-	private static class FileKeyDescriptor implements KeyDescriptor<File>
-	{
-		public static final FileKeyDescriptor INSTANCE = new FileKeyDescriptor();
+public abstract class BindingsStateCache<T> {
+    private static class PathKeyDescriptor implements KeyDescriptor<Path> {
+        public static final PathKeyDescriptor INSTANCE = new PathKeyDescriptor();
 
-		@Override
-		public int hashCode(File value)
-		{
-			return FileUtil.fileHashCode(value);
-		}
+        @Override
+        public int hashCode(Path value) {
+            return FileUtil.pathHashCode(value.toString());
+        }
 
-		@Override
-		public boolean equals(File val1, File val2)
-		{
-			return FileUtil.filesEqual(val1, val2);
-		}
+        @Override
+        public boolean equals(Path val1, Path val2) {
+            return FileUtil.pathsEqual(val1.toString(), val2.toString());
+        }
 
-		@Override
-		public void save(DataOutput out, File value) throws IOException
-		{
-			IOUtil.writeUTF(out, value.getPath());
-		}
+        @Override
+        public void save(DataOutput out, Path value) throws IOException {
+            IOUtil.writeUTF(out, value.toString());
+        }
 
-		@Override
-		public File read(DataInput in) throws IOException
-		{
-			return new File(IOUtil.readUTF(in));
-		}
-	}
+        @Override
+        public Path read(DataInput in) throws IOException {
+            return Path.of(IOUtil.readUTF(in));
+        }
+    }
 
-	private PersistentHashMap<File, T> myMap;
-	private final File myBaseFile;
+    private PersistentHashMap<Path, T> myMap;
+    private final File myBaseFile;
 
-	public BindingsStateCache(@NonNls File storePath) throws IOException
-	{
-		myBaseFile = storePath;
-		myMap = createMap(storePath);
-	}
+    public BindingsStateCache(File storePath) throws IOException {
+        myBaseFile = storePath;
+        myMap = createMap(storePath);
+    }
 
-	protected abstract T read(DataInput stream) throws IOException;
+    protected abstract T read(DataInput stream) throws IOException;
 
-	protected abstract void write(T t, DataOutput out) throws IOException;
+    protected abstract void write(T t, DataOutput out) throws IOException;
 
-	public void force()
-	{
-		myMap.force();
-	}
+    public void close() throws IOException {
+        myMap.close();
+    }
 
-	public void close() throws IOException
-	{
-		myMap.close();
-	}
+    public boolean wipe() {
+        try {
+            myMap.close();
+        }
+        catch (IOException ignored) {
+        }
+        PersistentHashMap.deleteFilesStartingWith(myBaseFile);
+        try {
+            myMap = createMap(myBaseFile);
+        }
+        catch (IOException ignored) {
+            return false;
+        }
+        return true;
+    }
 
-	public boolean wipe()
-	{
-		try
-		{
-			myMap.close();
-		}
-		catch(IOException ignored)
-		{
-		}
-		PersistentHashMap.deleteFilesStartingWith(myBaseFile);
-		try
-		{
-			myMap = createMap(myBaseFile);
-		}
-		catch(IOException ignored)
-		{
-			return false;
-		}
-		return true;
-	}
+    public void update(Path file, T state) throws IOException {
+        if (state != null) {
+            myMap.put(file, state);
+        }
+        else {
+            myMap.remove(file);
+        }
+    }
 
-	public void update(@NonNls File file, T state) throws IOException
-	{
-		if(state != null)
-		{
-			myMap.put(file, state);
-		}
-		else
-		{
-			remove(file);
-		}
-	}
+    public T getState(Path file) throws IOException {
+        return myMap.get(file);
+    }
 
-	public void remove(File file) throws IOException
-	{
-		myMap.remove(file);
-	}
+    private PersistentHashMap<Path, T> createMap(File file) throws IOException {
+        return new PersistentHashMap<>(file, PathKeyDescriptor.INSTANCE, new DataExternalizer<T>() {
+            @Override
+            public void save(DataOutput out, T value) throws IOException {
+                BindingsStateCache.this.write(value, out);
+            }
 
-	public T getState(File file) throws IOException
-	{
-		return myMap.get(file);
-	}
-
-	public Collection<File> getFiles() throws IOException
-	{
-		return myMap.getAllKeysWithExistingMapping();
-	}
-
-	public Iterator<File> getFilesIterator() throws IOException
-	{
-		return myMap.getAllKeysWithExistingMapping().iterator();
-	}
-
-
-	private PersistentHashMap<File, T> createMap(File file) throws IOException
-	{
-		return new PersistentHashMap<>(file, FileKeyDescriptor.INSTANCE, new DataExternalizer<T>()
-		{
-			@Override
-			public void save(DataOutput out, T value) throws IOException
-			{
-				BindingsStateCache.this.write(value, out);
-			}
-
-			@Override
-			public T read(DataInput in) throws IOException
-			{
-				return BindingsStateCache.this.read(in);
-			}
-		});
-	}
-
+            @Override
+            public T read(DataInput in) throws IOException {
+                return BindingsStateCache.this.read(in);
+            }
+        });
+    }
 }

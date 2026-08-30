@@ -256,19 +256,19 @@ public final class PreviewFormAction extends AnAction implements AnActionWithSyn
             );
 
             if (bundleSet.size() > 0) {
-                Set<VirtualFile> virtualFiles = new HashSet<>();
+                Set<Path> files = new HashSet<>();
                 Set<Module> modules = new HashSet<>();
                 PropertiesReferenceManager manager = PropertiesReferenceManager.getInstance(module.getProject());
                 for (String bundleName : bundleSet) {
                     for (PropertiesFile propFile : manager.findPropertiesFiles(module, bundleName)) {
-                        virtualFiles.add(propFile.getVirtualFile());
+                        files.add(propFile.getVirtualFile().toNioPath());
                         Module moduleForFile = ModuleUtilCore.findModuleForFile(propFile.getVirtualFile(), module.getProject());
                         if (moduleForFile != null) {
                             modules.add(moduleForFile);
                         }
                     }
                 }
-                FileSetCompileScope scope = new FileSetCompileScope(virtualFiles, modules.toArray(new Module[modules.size()]));
+                FileSetCompileScope scope = new FileSetCompileScope(files, modules.toArray(new Module[modules.size()]));
 
                 CompilerManager.getInstance(module.getProject()).make(
                     scope,

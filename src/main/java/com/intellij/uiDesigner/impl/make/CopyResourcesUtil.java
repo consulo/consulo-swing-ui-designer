@@ -22,8 +22,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 public final class CopyResourcesUtil {
   private CopyResourcesUtil() {
@@ -77,7 +75,7 @@ public final class CopyResourcesUtil {
     copyStreamToFile(stream, file);
   }
 
-  public static List<File> copyFormsRuntime(String targetDir, boolean deleteOnExit) throws IOException {
+  public static void copyFormsRuntime(String targetDir, boolean deleteOnExit) throws IOException {
     String[] runtimeClasses = {
       "AbstractLayout",
       "DimensionInfo",
@@ -92,10 +90,8 @@ public final class CopyResourcesUtil {
       "VerticalInfo",
     };
 
-    List<File> copied = new ArrayList<>();
     for (String runtimeClass : runtimeClasses) {
-      copied.add(copyClass(targetDir, "com/intellij/uiDesigner/core/" + runtimeClass, deleteOnExit));
+      copyClass(targetDir, "com/intellij/uiDesigner/core/" + runtimeClass, deleteOnExit);
     }
-    return copied;
   }
 }
