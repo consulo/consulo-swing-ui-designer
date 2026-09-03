@@ -154,9 +154,11 @@ public final class GuiDesignerConfigurable implements ProjectConfigurable, Confi
 
             Label label = Label.create(UIDesignerLocalize.labelGenerateGuiInto());
 
-            ValueGroup<Boolean> group = ValueGroup.createBool();
-            myRbInstrumentClasses = RadioButton.create(UIDesignerLocalize.radioGenerateIntoClass()).toGroup(group);
-            myRbInstrumentSources = RadioButton.create(UIDesignerLocalize.radioGenerateIntoJava()).toGroup(group);
+            RadioGroup<Boolean> group = RadioGroup.create();
+            myRbInstrumentClasses = group.newButton(UIDesignerLocalize.radioGenerateIntoClass(), Boolean.TRUE);
+            myRbInstrumentSources = group.newButton(UIDesignerLocalize.radioGenerateIntoJava(), Boolean.FALSE);
+
+            group.setValue(Boolean.TRUE);
 
             myPanel.add(
                 HorizontalLayout.create()
@@ -188,66 +190,6 @@ public final class GuiDesignerConfigurable implements ProjectConfigurable, Confi
             myPanel.add(myResizeHeaders);
         }
     }
-
-//	private final class MyApplyRunnable implements Runnable {
-//		private final DispatchThreadProgressWindow myProgressWindow;
-//
-//		public MyApplyRunnable(final DispatchThreadProgressWindow progressWindow) {
-//			myProgressWindow = progressWindow;
-//		}
-//
-//		/**
-//		 * Removes all generated sources
-//		 */
-//		private void vanishGeneratedSources() {
-//			PsiShortNamesCache cache = PsiShortNamesCache.getInstance(myProject);
-//			PsiMethod[] methods =
-//              cache.getMethodsByName(AsmCodeGenerator.SETUP_METHOD_NAME, GlobalSearchScope.projectScope(myProject));
-//
-//			CodeInsightUtil.preparePsiElementsForWrite(methods);
-//
-//			for (int i = 0; i < methods.length; i++) {
-//				PsiMethod method = methods[i];
-//				PsiClass aClass = method.getContainingClass();
-//				if (aClass != null) {
-//					try {
-//						PsiFile psiFile = aClass.getContainingFile();
-//						LOG.assertTrue(psiFile != null);
-//						VirtualFile vFile = psiFile.getVirtualFile();
-//						LOG.assertTrue(vFile != null);
-//						myProgressWindow.setText(UIDesignerBundle.message("progress.converting", vFile.getPresentableUrl()));
-//						myProgressWindow.setFraction(((double) i) / ((double) methods.length));
-//						if (vFile.isWritable()) {
-//							FormSourceCodeGenerator.cleanup(aClass);
-//						}
-//					}
-//					catch(IncorrectOperationException e) {
-//						LOG.error(e);
-//					}
-//				}
-//			}
-//		}
-//
-//		/**
-//		 * Launches vanish/generate sources processes
-//		 */
-//		private void applyImpl() {
-//			CommandProcessor.getInstance().executeCommand(
-//              myProject,
-//              () -> ApplicationManager.getApplication().runWriteAction(() -> {
-//		            PsiDocumentManager.getInstance(myProject).commitAllDocuments();
-//		            vanishGeneratedSources();
-//		    	}),
-//              "",
-//              null
-//          );
-//		}
-//
-//		@Override
-//		public void run() {
-//			ProgressManager.getInstance().runProcess(() -> applyImpl(), myProgressWindow);
-//		}
-//	}
 
     @Nonnull
     @Override
