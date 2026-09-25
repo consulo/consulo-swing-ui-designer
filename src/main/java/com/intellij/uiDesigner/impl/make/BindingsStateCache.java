@@ -74,7 +74,7 @@ public abstract class BindingsStateCache<T> {
         }
         catch (IOException ignored) {
         }
-        PersistentHashMap.deleteFilesStartingWith(myBaseFile);
+        IOUtil.deleteAllFilesStartingWith(myBaseFile);
         try {
             myMap = createMap(myBaseFile);
         }
@@ -98,7 +98,7 @@ public abstract class BindingsStateCache<T> {
     }
 
     private PersistentHashMap<Path, T> createMap(File file) throws IOException {
-        return new PersistentHashMap<>(file, PathKeyDescriptor.INSTANCE, new DataExternalizer<T>() {
+        return new PersistentHashMap<>(file.toPath(), PathKeyDescriptor.INSTANCE, new DataExternalizer<T>() {
             @Override
             public void save(DataOutput out, T value) throws IOException {
                 BindingsStateCache.this.write(value, out);
