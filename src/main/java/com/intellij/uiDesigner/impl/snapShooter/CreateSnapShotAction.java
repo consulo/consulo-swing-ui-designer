@@ -130,7 +130,7 @@ public class CreateSnapShotAction extends AnAction implements AnActionWithSyncUp
             if (config.getConfiguration() instanceof ApplicationConfiguration) {
                 ApplicationConfiguration appConfig = (ApplicationConfiguration) config.getConfiguration();
                 appConfigurations.add(config);
-                if (appConfig.ENABLE_SWING_INSPECTOR) {
+                if (SnapShooterRunConfigurationFragment.isEnabled(appConfig)) {
                     SnapShooterConfigurationSettings settings = SnapShooterConfigurationSettings.get(appConfig);
                     snapshotConfiguration = config;
                     if (settings.getLastPort() > 0) {
@@ -361,7 +361,7 @@ public class CreateSnapShotAction extends AnAction implements AnActionWithSyncUp
             }
             snapshotConfiguration = configurations.get(rc);
         }
-        ((ApplicationConfiguration) snapshotConfiguration.getConfiguration()).ENABLE_SWING_INSPECTOR = true;
+        SnapShooterRunConfigurationFragment.setEnabled((ApplicationConfiguration) snapshotConfiguration.getConfiguration(), true);
         return snapshotConfiguration;
     }
 

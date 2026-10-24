@@ -38,10 +38,7 @@ import consulo.util.io.ClassPathUtil;
 import consulo.util.io.NetUtil;
 import consulo.util.lang.ObjectUtil;
 import consulo.util.lang.xml.XmlStringUtil;
-import consulo.util.xml.serializer.InvalidDataException;
-import consulo.util.xml.serializer.WriteExternalException;
 import jakarta.annotation.Nonnull;
-import org.jdom.Element;
 
 import java.io.IOException;
 import java.util.Set;
@@ -63,7 +60,7 @@ public class SnapShooterConfigurationExtension extends RunConfigurationExtension
             settings = new SnapShooterConfigurationSettings();
             appConfiguration.putUserData(SnapShooterConfigurationSettings.SNAP_SHOOTER_KEY, settings);
         }
-        if (appConfiguration.ENABLE_SWING_INSPECTOR) {
+        if (SnapShooterRunConfigurationFragment.isEnabled(appConfiguration)) {
             try {
                 settings.setLastPort(NetUtil.findAvailableSocketPort());
             }
@@ -72,8 +69,8 @@ public class SnapShooterConfigurationExtension extends RunConfigurationExtension
             }
         }
 
-        if (appConfiguration.ENABLE_SWING_INSPECTOR && settings.getLastPort() != -1) {
-            params.getProgramParametersList().prepend(appConfiguration.MAIN_CLASS_NAME);
+        if (SnapShooterRunConfigurationFragment.isEnabled(appConfiguration) && settings.getLastPort() != -1) {
+            params.getProgramParametersList().prepend(appConfiguration.getMainClassName());
             params.getProgramParametersList().prepend(Integer.toString(settings.getLastPort()));
             // add +1 because idea_rt.jar will be added as the last entry to the classpath
             params.getProgramParametersList().prepend(Integer.toString(params.getClassPath().getPathList().size() + 1));
@@ -117,20 +114,8 @@ public class SnapShooterConfigurationExtension extends RunConfigurationExtension
         }
     }
 
-    @Nonnull
-    @Override
-    public String getSerializationId() {
-        return "snapshooter";
-    }
 
-    @Override
-    public void readExternal(@Nonnull RunConfigurationBase runConfiguration, @Nonnull Element element) throws InvalidDataException {
-    }
 
-    @Override
-    public void writeExternal(@Nonnull RunConfigurationBase runConfiguration, @Nonnull Element element) throws WriteExternalException {
-        throw new WriteExternalException();
-    }
 
     @Override
     public void extendCreatedConfiguration(@Nonnull RunConfigurationBase runJavaConfiguration, @Nonnull Location location) {

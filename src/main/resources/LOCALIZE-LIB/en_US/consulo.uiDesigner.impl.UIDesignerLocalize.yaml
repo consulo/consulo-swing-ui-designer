@@ -622,6 +622,8 @@ snapshot.no.public.constructor:
     text: "The class {0} does not have a public constructor.\r\nHow should instances of this class be handled?"
 snapshot.title:
     text: Create Form Snapshot
+run.configuration.fragment.snapshooter:
+    text: Enable capturing form snapshots
 swing.inspector.title:
     text: Swing Inspector
 error.card.already.exists:
