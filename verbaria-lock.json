@@ -3,11 +3,11 @@
   "project" : "consulo-swing-ui-designer",
   "projectVersion" : "master",
   "sourceLocale" : "en-US",
-  "generatedAt" : "2026-07-24T07:30:53.514240521Z",
+  "generatedAt" : "2026-10-24T12:38:43.753636710Z",
   "documents" : {
     "consulo.uiDesigner.impl.UIDesignerLocalize" : {
       "source" : {
-        "sig" : "9b32afba462dafb8b5b82c76e6bcf71c"
+        "sig" : "6ca3dd6849cc07199277a420d052a0d9"
       }
     }
   }
