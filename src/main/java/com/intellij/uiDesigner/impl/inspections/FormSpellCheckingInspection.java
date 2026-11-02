@@ -23,7 +23,7 @@ import com.intellij.uiDesigner.lw.IProperty;
 import com.intellij.uiDesigner.lw.StringDescriptor;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.document.util.TextRange;
-import consulo.language.spellchecker.editor.SpellcheckerEngineManager;
+import consulo.language.spellchecker.editor.SpellCheckerManager;
 import consulo.language.spellcheker.tokenizer.splitter.PlainTextTokenSplitter;
 import consulo.language.spellcheker.tokenizer.splitter.SplitContext;
 import consulo.module.Module;
@@ -56,14 +56,14 @@ public class FormSpellCheckingInspection extends StringDescriptorInspection {
             return;
         }
         Project project = module.getProject();
-        final SpellcheckerEngineManager manager = project.getInstance(SpellcheckerEngineManager.class);
+        final SpellCheckerManager manager = SpellCheckerManager.getInstance(project);
         PlainTextTokenSplitter.getInstance().split(
             SplitContext.of(
                 value,
                 textRange -> {
                     final String word = textRange.substring(value);
-                    if (manager.hasProblem(project, word)) {
-                        final List<String> suggestions = manager.getSuggestions(project, value);
+                    if (manager.hasProblem(word)) {
+                        final List<String> suggestions = manager.getSuggestions(word);
                         if (suggestions.size() > 0 && prop instanceof IntroStringProperty) {
                             EditorQuickFixProvider changeToProvider =
                                 (editor, component12) -> new PopupQuickFix<String>(editor, "Change to...", component12) {
@@ -91,26 +91,21 @@ public class FormSpellCheckingInspection extends StringDescriptorInspection {
                                     }
                                 };
 
-                            if (manager.canSaveUserWords(project)) {
-                                EditorQuickFixProvider acceptProvider =
-                                    (editor, component1) -> new QuickFix(editor, "Save '" + word + "' to dictionary", component1) {
-                                        @Override
-                                        public void run() {
-                                            manager.acceptWordAsCorrect(editor.getProject(), word);
-                                        }
-                                    };
-                                collector.addError(
-                                    getID(),
-                                    component,
-                                    prop,
-                                    "Typo in word '" + word + "'",
-                                    changeToProvider,
-                                    acceptProvider
-                                );
-                            }
-                            else {
-                                collector.addError(getID(), component, prop, "Typo in word '" + word + "'", changeToProvider);
-                            }
+                            EditorQuickFixProvider acceptProvider =
+                                (editor, component1) -> new QuickFix(editor, "Save '" + word + "' to dictionary", component1) {
+                                    @Override
+                                    public void run() {
+                                        manager.acceptWordAsCorrect(word);
+                                    }
+                                };
+                            collector.addError(
+                                getID(),
+                                component,
+                                prop,
+                                "Typo in word '" + word + "'",
+                                changeToProvider,
+                                acceptProvider
+                            );
                         }
                         else {
                             collector.addError(getID(), component, prop, "Typo in word '" + word + "'");
