@@ -28,6 +28,8 @@ import consulo.language.editor.PlatformDataKeys;
 import consulo.logging.Logger;
 import consulo.ui.Point2D;
 import consulo.ui.PopupOwner;
+import consulo.ui.event.details.KeyCode;
+import consulo.ui.event.details.KeyStroke;
 import consulo.ui.ex.action.ActionManager;
 import consulo.ui.ex.action.AnAction;
 import consulo.ui.ex.action.CustomShortcutSet;
@@ -90,7 +92,7 @@ public final class GlassLayer extends JComponent implements DataProvider, PopupO
 
         // F2 should start inplace editing
         StartInplaceEditingAction startInplaceEditingAction = new StartInplaceEditingAction(editor);
-        startInplaceEditingAction.registerCustomShortcutSet(new CustomShortcutSet(KeyStroke.getKeyStroke(KeyEvent.VK_F2, 0)), this);
+        startInplaceEditingAction.registerCustomShortcutSet(new CustomShortcutSet(KeyStroke.pressed(KeyCode.F2)), this);
     }
 
     private void registerKeyboardAction(AnAction action, String actionId) {

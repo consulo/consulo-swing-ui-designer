@@ -26,6 +26,7 @@ import consulo.project.Project;
 import consulo.ui.ex.action.AnAction;
 import consulo.ui.ex.action.AnActionEvent;
 import consulo.ui.ex.awt.ScrollPaneFactory;
+import consulo.ui.ex.awtUnsafe.TargetAWT;
 import consulo.virtualFileSystem.VirtualFile;
 import consulo.ui.ex.awt.PopupHandler;
 import consulo.ui.ex.awt.JBTabbedPane;
@@ -97,7 +98,7 @@ public class PaletteWindow extends JPanel implements LightToolWindowContent, Dat
 		myScrollPane.addMouseListener(new MyScrollPanePopupHandler());
 		myScrollPane.setBorder(null);
 		KeyStroke escStroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
-		new ClearActiveItemAction().registerCustomShortcutSet(new CustomShortcutSet(escStroke), myScrollPane);
+		new ClearActiveItemAction().registerCustomShortcutSet(new CustomShortcutSet(TargetAWT.from(escStroke)), myScrollPane);
 
 		if(!ApplicationManager.getApplication().isHeadlessEnvironment())
 		{

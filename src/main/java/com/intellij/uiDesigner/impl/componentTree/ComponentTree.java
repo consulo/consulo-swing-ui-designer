@@ -44,6 +44,8 @@ import consulo.language.editor.rawHighlight.SeverityRegistrar;
 import consulo.language.psi.util.EditSourceUtil;
 import consulo.logging.Logger;
 import consulo.project.Project;
+import consulo.ui.event.details.KeyCode;
+import consulo.ui.event.details.KeyStroke;
 import consulo.ui.ex.DeleteProvider;
 import consulo.ui.ex.JBColor;
 import consulo.ui.ex.SimpleTextAttributes;
@@ -71,7 +73,6 @@ import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.*;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.*;
@@ -126,7 +127,7 @@ public final class ComponentTree extends Tree implements DataProvider
 
 		// F2 should start inplace editing
 		myStartInplaceEditingAction = new StartInplaceEditingAction(null);
-		myStartInplaceEditingAction.registerCustomShortcutSet(new CustomShortcutSet(KeyStroke.getKeyStroke(KeyEvent.VK_F2, 0)), this);
+		myStartInplaceEditingAction.registerCustomShortcutSet(new CustomShortcutSet(KeyStroke.pressed(KeyCode.F2)), this);
 
 		if(!ApplicationManager.getApplication().isHeadlessEnvironment())
 		{

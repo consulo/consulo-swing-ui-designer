@@ -391,10 +391,8 @@ public final class GuiEditor extends JPanel implements DesignerEditorPanelFacade
 
         myActiveDecorationLayer.installSelectionWatcher();
 
-        ActionManager.getInstance().getAction("GuiDesigner.IncreaseIndent").registerCustomShortcutSet(new CustomShortcutSet(KeyStroke.getKeyStroke
-            (KeyEvent.VK_TAB, 0)), myGlassLayer);
-        ActionManager.getInstance().getAction("GuiDesigner.DecreaseIndent").registerCustomShortcutSet(new CustomShortcutSet(KeyStroke.getKeyStroke
-            (KeyEvent.VK_TAB, KeyEvent.SHIFT_MASK)), myGlassLayer);
+        ActionManager.getInstance().getAction("GuiDesigner.IncreaseIndent").registerCustomShortcutSet(new CustomShortcutSet(TargetAWT.from(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0))), myGlassLayer);
+        ActionManager.getInstance().getAction("GuiDesigner.DecreaseIndent").registerCustomShortcutSet(new CustomShortcutSet(TargetAWT.from(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, KeyEvent.SHIFT_MASK))), myGlassLayer);
 
         DesignerToolWindowManager.getInstance(myProject).bind(GuiEditor.this);
         PaletteToolWindowManager.getInstance(myProject).bind(GuiEditor.this);
