@@ -387,7 +387,7 @@ public final class PreviewFormAction extends AnAction implements AnActionWithSyn
                         @Override
                         public void processTerminated(ProcessEvent event) {
                             AsyncFileService asyncFileService = Application.get().getInstance(AsyncFileService.class);
-                            asyncFileService.asyncDelete(new File(myTempPath));
+                            asyncFileService.asyncDelete(Path.of(myTempPath));
                         }
                     });
                     return executionResult;
