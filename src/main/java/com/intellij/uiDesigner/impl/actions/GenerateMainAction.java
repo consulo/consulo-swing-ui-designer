@@ -142,7 +142,10 @@ public class GenerateMainAction extends AnAction implements AnActionWithAsyncUpd
 
     @Override
     public Coroutine<?, ?> updateAsync(AnActionEvent e) {
-        return ActionSafeReadLock.run(e, presentation -> presentation.setEnabledAndVisible(isActionEnabled(e))).toCoroutine();
+        return ActionSafeReadLock.run(e, presentation -> {
+            // isActionEnabled needs a project and an editor - its snapshot is made from Editor.KEY
+            presentation.setEnabledAndVisible(e.getData(Project.KEY) != null && e.getData(Editor.KEY) != null);
+        }, presentation -> presentation.setEnabledAndVisible(isActionEnabled(e))).toCoroutine();
     }
 
     @RequiredReadAction

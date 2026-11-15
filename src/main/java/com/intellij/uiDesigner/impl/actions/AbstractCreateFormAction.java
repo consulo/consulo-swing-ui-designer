@@ -31,6 +31,7 @@ import consulo.localize.LocalizeValue;
 import consulo.module.Module;
 import consulo.module.content.ProjectFileIndex;
 import consulo.module.content.ProjectRootManager;
+import consulo.module.extension.ModuleExtensionHelper;
 import consulo.project.Project;
 import consulo.ui.ex.action.AnActionEvent;
 import consulo.ui.ex.action.AnActionWithAsyncUpdate;
@@ -60,6 +61,17 @@ public abstract class AbstractCreateFormAction extends CreateElementActionBase i
         return CallSubroutine.call(() -> super.updateAsync(e))
             .toCoroutine()
             .then(ActionSafeReadLock.run(e, presentation -> {
+                // as below, a presentation the create action has not enabled stays as it is
+                Project project = e.getData(Project.KEY);
+                if (project == null || project.isDisposed() || !presentation.isEnabled()) {
+                    return;
+                }
+                // the form class needs a module with java - without any such module the check below hides the action
+                if (!ModuleExtensionHelper.getInstance(project).hasModuleExtension(JavaModuleExtension.class)) {
+                    presentation.setEnabled(false);
+                    presentation.setVisible(false);
+                }
+            }, presentation -> {
                 Project project = e.getData(Project.KEY);
                 if (project != null && presentation.isEnabled()) {
                     Module module = e.getData(Module.KEY);

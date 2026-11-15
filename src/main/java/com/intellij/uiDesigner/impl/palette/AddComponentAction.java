@@ -135,18 +135,28 @@ public class AddComponentAction extends AnAction implements AnActionWithAsyncUpd
     @Override
     public Coroutine<?, ?> updateAsync(AnActionEvent e) {
         return ActionSafeReadLock.run(e, presentation -> {
-            Project project = e.getData(Project.KEY);
-            if (e.getData(GroupItem.DATA_KEY) != null ||
-                e.getData(ComponentItem.DATA_KEY) != null) {
-                e.getPresentation().setVisible(true);
+            if (hasPaletteItem(e)) {
+                // the palette provides its items directly, so a palette item is decided without the lock
+                Project project = e.getData(Project.KEY);
                 GroupItem groupItem = e.getData(GroupItem.DATA_KEY);
-                e.getPresentation().setEnabled(project != null && (groupItem == null || !groupItem.isReadOnly()));
+                presentation.setVisible(true);
+                presentation.setEnabled(project != null && (groupItem == null || !groupItem.isReadOnly()));
             }
             else {
-                PsiFile psiFile = e.getData(LangDataKeys.PSI_FILE);
-                e.getPresentation().setVisible(psiFile != null && findElementToAdd(psiFile) != null);
+                // outside the palette only the visibility is changed, and it depends on PSI
+                presentation.setVisible(true);
             }
+        }, presentation -> {
+            if (hasPaletteItem(e)) {
+                return;
+            }
+            PsiFile psiFile = e.getData(LangDataKeys.PSI_FILE);
+            presentation.setVisible(psiFile != null && findElementToAdd(psiFile) != null);
         }).toCoroutine();
+    }
+
+    private static boolean hasPaletteItem(AnActionEvent e) {
+        return e.getData(GroupItem.DATA_KEY) != null || e.getData(ComponentItem.DATA_KEY) != null;
     }
 
     @Nullable
